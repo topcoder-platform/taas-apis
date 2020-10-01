@@ -1,0 +1,1573 @@
+openapi: 3.0.0
+info:
+  title: Bookings microservice
+  description: Bookings microservice
+  version: 1.0.0
+servers:
+- url: /api/{apiVersion}/
+  variables:
+    apiVersion:
+      default: 'v1'
+      description: The REST API version
+tags:
+  - name: Jobs
+  - name: JobCandidates
+  - name: ResourceBookings
+paths:
+  /jobs:
+    post:
+      tags:
+        - Jobs
+      description: |
+        Create job.
+
+        **Authorization** Topcoder token with write terms scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - Jobs
+      description: |
+        Search terms of use.
+
+        **Authorization** Topcoder token with read job scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: id
+            enum: ['id','createdAt','startDate','endDate','rateType','status']
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ['desc','asc']
+          description: The sort order.
+        - in: query
+          name: projectId
+          required: false
+          schema:
+            type: integer
+          description: The project id.
+        - in: query
+          name: externalId
+          required: false
+          schema:
+            type: string
+          description: The external id.
+        - in: query
+          name: description
+          required: false
+          schema:
+            type: string
+          description: The description.
+        - in: query
+          name: startDate
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The job start date.
+        - in: query
+          name: endDate
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The job end date.
+        - in: query
+          name: resourceType
+          required: false
+          schema:
+            type: string
+          description: The resource type.
+        - in: query
+          name: skill
+          required: false
+          schema:
+            type: string
+          description: The skill.
+        - in: query
+          name: rateType
+          required: false
+          schema:
+            type: string
+            enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: The rate type.
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: The rate type.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /jobs/{id}:
+    get:
+      tags: 
+        - Jobs
+      description: |
+        Get job information by id.
+        
+        **Authorization** Topcoder token with read job scope is allowed
+      security:
+        - bearerAuth: []
+      parameters: 
+        - in: path
+          name: id
+          description: The job id.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags: 
+        - Jobs
+      description: | 
+        Delete the job.
+
+        **Authorization** Topcoder token with delete job scope is allowed
+      security: 
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: "The id of job."
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags: 
+        - Jobs
+      description: |
+        Update the job.
+
+        **Authorization** Topcoder token with update job scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of job
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                  - $ref: '#/components/schemas/JobRequestBody'
+                  - $ref: '#/components/schemas/JobPatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags: 
+        - Jobs
+      description: |
+        Update job.
+
+        **Authorization** Topcoder token with patch job scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id job.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /jobCandidates:
+    post:
+      tags:
+        - JobCandidates
+      description: |
+        Create Job candidate.
+
+        **Authorization** Topcoder token with write JobCandidate scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCandidateRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobCandidate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - JobCandidates
+      description: |
+        Search job candidate.
+
+        **Authorization** Topcoder token with read JobCandidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: id
+            enum: ['id','status']
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ['desc','asc']
+        - in: query
+          name: jobId
+          required: false
+          schema:
+            type: integer
+          description: The job id.
+        - in: query
+          name: userId
+          required: false
+          schema:
+            type: integer
+          description: The user id.
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: ['open', 'selected', 'shortlist', 'rejected']
+          description: The user id.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobCandidate'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /jobCandidates/{id}:
+    get:
+      tags: 
+        - JobCandidates
+      description: |
+        Get job candidate information by id.
+        
+        **Authorization** Topcoder token with read job candidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters: 
+        - in: path
+          name: id
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobCandidate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags: 
+        - JobCandidates
+      description: | 
+        Delete the job.
+
+        **Authorization** Topcoder token with delete job candidate scope is allowed
+      security: 
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The job candidate id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags: 
+        - JobCandidates
+      description: |
+        Update the job candidate.
+
+        **Authorization** Topcoder token with update JobCandidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/JobCandidateRequestBody'
+                - $ref: '#/components/schemas/JobCandidatePatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobCandidate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags: 
+        - JobCandidates
+      description: |
+        Partail update job candidate.
+
+        **Authorization** Topcoder token with update Job candidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCandidatePatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobCandidate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /resourceBookings:
+    post:
+      tags:
+        - ResourceBookings
+      description: |
+        Create Resource booking.
+
+        **Authorization** Topcoder token with write Resource booking scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceBookingRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBooking'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - ResourceBookings
+      description: |
+        Search resource booking.
+
+        **Authorization** Topcoder token with read resource booking scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: id
+            enum: ['id','status','startDate','endDate','rateType','customerRate','memberRate']
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ['desc','asc']
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: ['assigned', 'in-progress', 'completed']
+          description: The status.
+        - in: query
+          name: startDate
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The resource booking start date.
+        - in: query
+          name: endDate
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The resource booking end date.
+        - in: query
+          name: rateType
+          required: false
+          schema:
+            type: string
+            enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: The rate type.
+          
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResourceBooking'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /resourceBookings/{id}:
+    get:
+      tags: 
+        - ResourceBookings
+      description: |
+        Get resource booking by id.
+        
+        **Authorization** Topcoder token with read resource booking scope is allowed
+      security:
+        - bearerAuth: []
+      parameters: 
+        - in: path
+          name: id
+          description: The resource booking id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBooking'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags: 
+        - ResourceBookings
+      description: | 
+        Delete the resource booking.
+
+        **Authorization** Topcoder token with delete resource booking scope is allowed
+      security: 
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of resource booking.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags: 
+        - ResourceBookings
+      description: |
+        Update the resource booking.
+
+        **Authorization** Topcoder token with update resource booking scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of resource booking.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ResourceBookingRequestBody'
+                - $ref: '#/components/schemas/ResourceBookingPatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBooking'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags: 
+        - ResourceBookings
+      description: |
+        Partial Update resource booking.
+
+        **Authorization** Topcoder token with update job candidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of resource booking.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceBookingPatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBooking'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Job:
+      required:
+        - id
+        - projectId
+        - externalId
+        - description
+        - startDate
+        - endDate
+        - numPositions
+        - resourceType
+        - rateType
+        - skills
+        - status
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        projectId:
+          type: integer
+          example: 21
+          description: "The project id."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        description:
+          type: string
+          example: "Dummy Description"
+          description: "The description."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        numPositions:
+          type: integer
+          example: 13
+          description: "The number of positions for the job."
+        resourceType:
+          type: string
+          example: "Dummy Resource Type"
+          description: "The resource type of job."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+        skills:
+          type: array
+          description: "The skills."
+          items:
+            type: string
+            example: 'Java'
+            description: "The skill name."
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: "The job status."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The job created date."
+        createdBy:
+          type: string
+          example: 'topocder user'
+          description: "The user who created the job.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The job last updated at."
+        updatedBy:
+          type: string
+          example: 'topcoder user'
+          description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobRequestBody:
+      required:
+        - projectId
+        - externalId
+        - description
+        - startDate
+        - endDate
+        - numPositions
+        - resourceType
+        - rateType
+        - skills
+      properties:
+        projectId:
+          type: integer
+          example: 21
+          description: "The project id."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        description:
+          type: string
+          example: "Dummy Description"
+          description: "The description."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        numPositions:
+          type: integer
+          example: 13
+          description: "The number of positions for the job."
+        resourceType:
+          type: string
+          example: "Dummy Resource Type"
+          description: "The resource type of job."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+        skills:
+          type: array
+          description: "The skills."
+          items:
+            type: string
+            example: 'Java'
+            description: "The skill name."
+    JobCandidate:
+      required: 
+        - id
+        - jobId
+        - userId
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        jobId:
+          type: string
+          format: uuid
+          description: "The project id."
+        userId:
+          type: integer
+          example: 2323
+          description: "The user id."
+        status:
+          type: string
+          enum: ['open', 'selected', 'shortlist', 'rejected']
+          description: "The job status."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The job created date."
+        createdBy:
+          type: string
+          example: 'topocder user'
+          description: "The user who created the job.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The job last updated at."
+        updatedBy:
+          type: string
+          example: 'topcoder user'
+          description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobCandidateRequestBody:
+      required: 
+        - jobId
+        - userId
+      properties:
+        jobId:
+          type: string
+          format: uuid
+          description: "The project id."
+        userId:
+          type: integer
+          example: 2323
+          description: "The user id."
+    JobCandidatePatchRequestBody:
+      properties:
+        status:
+          type: string
+          enum: ['open', 'selected', 'shortlist', 'rejected']
+    JobPatchRequestBody:
+      properties:
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+    ResourceBooking:
+      required:
+        - id
+        - projectId
+        - userId
+        - status
+        - startDate
+        - endDate
+        - memberRate
+        - customerRate
+        - rateType
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        projectId:
+          type: integer
+          example: 21
+          description: "The project id."
+        userId:
+          type: integer
+          example: 1212
+          description: "The external id."
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: "The job status."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        memberRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The member rate."
+        customerRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The customer rate."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The job created date."
+        createdBy:
+          type: string
+          example: 'topocder user'
+          description: "The user who created the job.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The job last updated at."
+        updatedBy:
+          type: string
+          example: 'topcoder user'
+          description: "The user who updated the job last time.(Will get the user info from the token)"
+    ResourceBookingRequestBody:
+      required:
+        - projectId
+        - userId
+        - status
+        - startDate
+        - endDate
+        - memberRate
+        - customerRate
+        - rateType
+      properties:
+        projectId:
+          type: integer
+          example: 21
+          description: "The project id."
+        userId:
+          type: integer
+          example: 1212
+          description: "The external id."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        memberRate:
+          type: number
+          format: float
+          example: 13.23
+          description: "The member rate."
+        customerRate:
+          type: number
+          format: float
+          example: 13
+          description: "The customer rate."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+    ResourceBookingPatchRequestBody:
+      properties:
+        status:
+          type: string
+          enum: ['assigned', 'in-progress', 'completed']
+    Error:
+      required:
+        - message
+      properties:
+        message:
+          type: string
