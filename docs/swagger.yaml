@@ -21,7 +21,7 @@ paths:
       description: |
         Create job.
 
-        **Authorization** Topcoder token with write terms scope is allowed
+        **Authorization** Topcoder token with write job scope is allowed
       security:
         - bearerAuth: []
       requestBody:
@@ -64,7 +64,7 @@ paths:
       tags:
         - Jobs
       description: |
-        Search terms of use.
+        Search jobs.
 
         **Authorization** Topcoder token with read job scope is allowed
       security:
@@ -1310,12 +1310,17 @@ components:
           description: "The skills."
           items:
             type: string
-            example: 'Java'
-            description: "The skill name."
+            format: uuid
+            description: "The skill id."
         status:
           type: string
           enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
           description: "The job status."
+        candidates:
+          type: array
+          description: "The job candidates."
+          items:
+            $ref: '#/components/schemas/JobCandidate'
         createdAt:
           type: string
           format: date-time
@@ -1383,8 +1388,8 @@ components:
           description: "The skills."
           items:
             type: string
-            example: 'Java'
-            description: "The skill name."
+            format: uuid
+            description: "The skill id."
     JobCandidate:
       required: 
         - id
@@ -1447,6 +1452,39 @@ components:
         status:
           type: string
           enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+        description:
+          type: string
+          example: "Dummy Description"
+          description: "The description."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        numPositions:
+          type: integer
+          example: 13
+          description: "The number of positions for the job."
+        resourceType:
+          type: string
+          example: "Dummy Resource Type"
+          description: "The resource type of job."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+        skills:
+          type: array
+          description: "The skills."
+          items:
+            type: string
+            format: uuid
+            description: "The skill id."
     ResourceBooking:
       required:
         - id
@@ -1472,6 +1510,10 @@ components:
         userId:
           type: integer
           example: 1212
+          description: "The external id."
+        jobId:
+          type: string
+          format: uuid
           description: "The external id."
         status:
           type: string
@@ -1536,6 +1578,10 @@ components:
           type: integer
           example: 1212
           description: "The external id."
+        jobId:
+          type: string
+          format: uuid
+          description: "The job id."
         startDate:
           type: string
           format: date-time
@@ -1565,6 +1611,30 @@ components:
         status:
           type: string
           enum: ['assigned', 'in-progress', 'completed']
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        memberRate:
+          type: number
+          format: float
+          example: 13.23
+          description: "The member rate."
+        customerRate:
+          type: number
+          format: float
+          example: 13
+          description: "The customer rate."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
     Error:
       required:
         - message
