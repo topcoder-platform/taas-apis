@@ -7,7 +7,7 @@ servers:
 - url: /api/{apiVersion}/
   variables:
     apiVersion:
-      default: 'v1'
+      default: 'v5'
       description: The REST API version
 tags:
   - name: Jobs
@@ -536,7 +536,8 @@ paths:
           name: jobId
           required: false
           schema:
-            type: integer
+            type: string
+            format: uuid
           description: The job id.
         - in: query
           name: userId
@@ -1610,7 +1611,7 @@ components:
       properties:
         status:
           type: string
-          enum: ['assigned', 'in-progress', 'completed']
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
         startDate:
           type: string
           format: date-time
