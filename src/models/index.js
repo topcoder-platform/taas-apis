@@ -13,7 +13,7 @@ const config = require('config')
 const basename = path.basename(module.filename)
 const db = {}
 
-const sequelize = new Sequelize(config.get('POSTGRES_URL'), {
+const sequelize = new Sequelize(config.get('DATABASE_URL'), {
   logging: false
 })
 

@@ -3,7 +3,7 @@
 ## Dependencies
 
 - nodejs https://nodejs.org/en/ (v12+)
-- Postgres
+- PostgreSQL
 - ElasticSearch (7.x)
 
 ## Configuration
@@ -22,10 +22,10 @@ The following parameters can be set in config files or in env variables:
 - `AUTH0_CLIENT_ID`: Auth0 client id, used to get TC M2M token
 - `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
 - `AUTH0_PROXY_SERVER_URL`: Proxy Auth0 URL, used to get TC M2M token
-- `POSTGRES_URL`: Postgres database url.
-- `DB_SCHEMA_NAME`: string - postgres database target schema
+- `DATABASE_URL`: PostgreSQL database url.
+- `DB_SCHEMA_NAME`: string - PostgreSQL database target schema
 - `PROJECT_API_URL`: the project service url
-- `TC_API`: the topcoder v5 url
+- `TC_API`: the Topcoder v5 url
 - `ORG_ID`: the organization id
 - `HOST`: the elasticsearch host
 - `ES_INDEX_JOB`: the job index
@@ -33,9 +33,9 @@ The following parameters can be set in config files or in env variables:
 - `ES_INDEX_RESOURCE_BOOKING`: the resource booking index
 
 
-## Postgres Database Setup
-Go to https://www.postgresql.org/ download and install the Postgres.
-Modify `POSTGRES_URL` under `config/default.js` to meet your environment.
+## PostgreSQL Database Setup
+Go to https://www.postgresql.org/ download and install the PostgreSQL.
+Modify `DATABASE_URL` under `config/default.js` to meet your environment.
 Run `npm run init-db` to create table
 
 ## ElasticSearch Setup
@@ -50,7 +50,7 @@ Run `npm run delete-index` to delete ES index.
 - Run lint `npm run lint`
 - Run lint fix `npm run lint:fix`
 - Clear and init db `npm run init-db`
-- Clear and create es index `npm run delete-index, npm run create-index`
+- Clear and create es index `npm run delete-index && npm run create-index`
 - Start app `npm start`
 - App is running at `http://localhost:3000`
 

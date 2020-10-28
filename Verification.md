@@ -2,11 +2,10 @@
 
 ## Postman test
 - Refer `tools/mock-project-service/ReadMe.md` to start the mock app
-- Refer `ReadMe.md` to start the app and postgres database
+- Refer `ReadMe.md` to start the app and postgreSQL database
 - Run `npm run init-db` to init db before testing.
 - Run `npm run create-index` to create es index before testing
 - Import Postman collection and environment file in the `docs` folder to Postman and execute the scripts to validate the app from top to bottom.
-
 
 
 ## Unit test Coverage

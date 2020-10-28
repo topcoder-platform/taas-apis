@@ -15,7 +15,7 @@ module.exports = {
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
 
-  POSTGRES_URL: process.env.POSTGRES_URL || 'postgres://postgres:postgres@localhost:5432/postgres',
+  DATABASE_URL: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres',
   DB_SCHEMA_NAME: process.env.DB_SCHEMA_NAME || 'bookings',
   PROJECT_API_URL: process.env.PROJECT_API_URL || 'http://localhost:4000',
 
