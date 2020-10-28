@@ -543,7 +543,8 @@ paths:
           name: userId
           required: false
           schema:
-            type: integer
+            type: string
+            format: uuid
           description: The user id.
         - in: query
           name: status
@@ -1407,8 +1408,9 @@ components:
           format: uuid
           description: "The project id."
         userId:
-          type: integer
-          example: 2323
+          type: string
+          format: uuid
+          example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The user id."
         status:
           type: string
@@ -1440,8 +1442,9 @@ components:
           format: uuid
           description: "The project id."
         userId:
-          type: integer
-          example: 2323
+          type: string
+          format: uuid
+          example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The user id."
     JobCandidatePatchRequestBody:
       properties:
@@ -1509,8 +1512,9 @@ components:
           example: 21
           description: "The project id."
         userId:
-          type: integer
-          example: 1212
+          type: string
+          format: uuid
+          example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The external id."
         jobId:
           type: string
@@ -1576,8 +1580,9 @@ components:
           example: 21
           description: "The project id."
         userId:
-          type: integer
-          example: 1212
+          type: string
+          format: uuid
+          example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The external id."
         jobId:
           type: string

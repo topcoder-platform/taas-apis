@@ -48,7 +48,7 @@ module.exports = (sequelize) => {
       },
       userId: {
         field: 'user_id',
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false
       },
       jobId: {
@@ -91,7 +91,7 @@ module.exports = (sequelize) => {
       },
       createdBy: {
         field: 'created_by',
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false
       },
       updatedAt: {
@@ -100,7 +100,7 @@ module.exports = (sequelize) => {
       },
       updatedBy: {
         field: 'updated_by',
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
       deletedAt: {
         field: 'deleted_at',

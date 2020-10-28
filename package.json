@@ -9,14 +9,16 @@
     "lint": "standard",
     "lint:fix": "standard --fix",
     "init-db": "node src/init-db.js",
-    "test-data": "node src/test-data.js",
-    "test": "mocha test/unit/*.test.js --exit",
-    "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --exit"
+    "create-index": "node scripts/createIndex.js",
+    "delete-index": "node scripts/deleteIndex.js",
+    "test": "mocha test/unit/*.test.js --timeout 30000 --exit",
+    "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --timeout 30000 --exit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@elastic/elasticsearch": "^7.9.1",
     "config": "^3.3.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -32,6 +34,7 @@
     "superagent": "^6.1.0",
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js#feature/auth0-proxy-server",
     "util": "^0.12.3",
+    "uuid": "^8.3.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -43,9 +46,14 @@
     "standard": "^14.3.4"
   },
   "standard": {
-    "env": [ "mocha" ]
+    "env": [
+      "mocha"
+    ]
   },
   "nyc": {
-    "exclude": ["src/common/logger.js", "test/unit/**"]
+    "exclude": [
+      "src/common/logger.js",
+      "test/unit/**"
+    ]
   }
 }

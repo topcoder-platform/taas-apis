@@ -7,18 +7,27 @@ const Joi = require('joi')
 const util = require('util')
 const config = require('config')
 const getParams = require('get-parameter-names')
-const { createLogger, format, transports } = require('winston')
+const winston = require('winston')
 
-const logger = createLogger({
-  level: config.LOG_LEVEL,
-  transports: [
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.simple()
-      )
-    })
-  ]
+const {
+  combine, timestamp, colorize, align, printf
+} = winston.format
+
+const basicFormat = printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+
+const transports = []
+if (!config.DISABLE_LOGGING) {
+  transports.push(new (winston.transports.Console)({ level: config.LOG_LEVEL }))
+}
+
+const logger = winston.createLogger({
+  transports,
+  format: combine(
+    colorize(),
+    align(),
+    timestamp(),
+    basicFormat
+  )
 })
 
 logger.config = config
@@ -32,14 +41,8 @@ logger.logFullError = (err, signature) => {
   if (!err) {
     return
   }
-  if (signature) {
-    logger.error(`Error happened in ${signature}`)
-  }
-  logger.error(util.inspect(err))
-  if (!err.logged) {
-    logger.error(err.stack)
-    err.logged = true
-  }
+  logger.error((signature ? (`${signature} : `) : '') + util.inspect(err))
+  err.logged = true
 }
 
 /**
@@ -49,16 +52,10 @@ logger.logFullError = (err, signature) => {
  * @private
  */
 const _sanitizeObject = (obj) => {
+  const hideFields = ['auth']
   try {
-    return JSON.parse(JSON.stringify(obj, (name, value) => {
-      const removeFields = ['currentUser', 'text']
-      if (_.includes(removeFields, name)) {
-        return '<removed>'
-      }
-      if (_.isArray(value) && value.length > 30) {
-        return `Array(${value.length})`
-      }
-      return value
+    return JSON.parse(JSON.stringify(obj, (k, v) => {
+      return _.includes(hideFields, k) ? '<removed>' : v
     }))
   } catch (e) {
     return obj

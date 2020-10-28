@@ -4,6 +4,8 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const config = require('config')
+const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -32,9 +34,19 @@ getJobCandidate.schema = Joi.object().keys({
  * @returns {Object} the created jobCandidate
  */
 async function createJobCandidate (currentUser, jobCandidate) {
+  jobCandidate.id = uuid()
   jobCandidate.createdAt = new Date()
-  jobCandidate.createdBy = currentUser.userId
+  jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
   jobCandidate.status = 'open'
+
+  const esClient = helper.getESClient()
+  await esClient.create({
+    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    id: jobCandidate.id,
+    body: _.omit(jobCandidate, 'id'),
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   const created = await JobCandidate.create(jobCandidate)
   return helper.clearObject(created.dataValues)
 }
@@ -43,7 +55,7 @@ createJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidate: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
-    userId: Joi.number().integer().required()
+    userId: Joi.string().uuid().required()
   }).required()
 }).required()
 
@@ -57,16 +69,27 @@ createJobCandidate.schema = Joi.object().keys({
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
   const projectId = await JobCandidate.getProjectId(jobCandidate.dataValues.jobId)
-  if (!currentUser.isBookingManager) {
+  if (projectId && !currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(projectId, currentUser.jwtToken)
     if (!connect) {
-      if (jobCandidate.dataValues.userId !== currentUser.userId) {
+      if (jobCandidate.dataValues.userId !== await helper.getUserId(currentUser.userId)) {
         throw new errors.ForbiddenError('You are not allowed to perform this action!')
       }
     }
   }
   data.updatedAt = new Date()
-  data.updatedBy = currentUser.userId
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+
+  const esClient = helper.getESClient()
+  await esClient.update({
+    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    id,
+    body: {
+      doc: data
+    },
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   await jobCandidate.update(data)
   const result = helper.clearObject(_.assign(jobCandidate.dataValues, data))
   return result
@@ -107,7 +130,7 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
-    userId: Joi.number().integer().required(),
+    userId: Joi.string().uuid().required(),
     status: Joi.jobCandidateStatus()
   }).required()
 }).required()
@@ -121,6 +144,16 @@ async function deleteJobCandidate (currentUser, id) {
   if (!currentUser.isBookingManager) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
+
+  const esClient = helper.getESClient()
+  await esClient.delete({
+    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    id,
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  }, {
+    ignore: [404]
+  })
+
   const jobCandidate = await JobCandidate.findById(id)
   await jobCandidate.update({ deletedAt: new Date() })
 }
@@ -138,29 +171,54 @@ deleteJobCandidate.schema = Joi.object().keys({
 async function searchJobCandidates (criteria) {
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
-
   if (!criteria.sortBy) {
-    criteria.sortBy = 'id'
+    criteria.sortBy = '_id'
+  }
+  if (criteria.sortBy === 'id') {
+    criteria.sortBy = '_id'
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const query = {
-    order: [[criteria.sortBy, criteria.sortOrder]],
-    where: _.assign({ deletedAt: null }, _.omit(criteria, ['perPage', 'page', 'sortBy', 'sortOrder'])),
-    limit: perPage,
-    offset: (page - 1) * perPage
+  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+
+  const esQuery = {
+    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    body: {
+      query: {
+        bool: {
+          must: []
+        }
+      },
+      from: (page - 1) * perPage,
+      size: perPage,
+      sort
+    }
   }
 
-  const result = await JobCandidate.findAndCountAll(query)
+  _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+    esQuery.body.query.bool.must.push({
+      term: {
+        [key]: {
+          value
+        }
+      }
+    })
+  })
+  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
 
-  logger.debug(`Query: ${JSON.stringify(query)}`)
+  const esClient = helper.getESClient()
+  const { body } = await esClient.search(esQuery)
 
   return {
-    total: result.count,
+    total: body.hits.total.value,
     page,
     perPage,
-    result: _.map(result.rows, (row) => helper.clearObject(row.dataValues))
+    result: _.map(body.hits.hits, (hit) => {
+      const obj = _.cloneDeep(hit._source)
+      obj.id = hit._id
+      return obj
+    })
   }
 }
 
@@ -171,7 +229,7 @@ searchJobCandidates.schema = Joi.object().keys({
     sortBy: Joi.string().valid('id', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     jobId: Joi.string().uuid(),
-    userId: Joi.number().integer(),
+    userId: Joi.string().uuid(),
     status: Joi.jobCandidateStatus()
   }).required()
 }).required()

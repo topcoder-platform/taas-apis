@@ -6,6 +6,15 @@ const querystring = require('querystring')
 const config = require('config')
 const _ = require('lodash')
 const request = require('superagent')
+const elasticsearch = require('@elastic/elasticsearch')
+const errors = require('../common/errors')
+
+const m2mAuth = require('tc-core-library-js').auth.m2m
+
+const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
+
+// ES Client mapping
+const esClients = {}
 
 /**
  * Wrap async function to standard express function
@@ -124,9 +133,88 @@ async function isConnectMember (projectId, jwtToken) {
   return true
 }
 
+/**
+ * Get ES Client
+ * @return {Object} Elastic Host Client Instance
+ */
+function getESClient () {
+  const esHost = config.get('esConfig.HOST')
+  if (!esClients.client) {
+    esClients.client = new elasticsearch.Client({
+      node: esHost
+    })
+  }
+  return esClients.client
+}
+
+/*
+ * Function to get M2M token
+ * @returns {Promise}
+ */
+const getM2Mtoken = async () => {
+  return m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+}
+
+/**
+ * Function to encode query string
+ * @param {Object} queryObj the query object
+ * @param {String} nesting the nesting string
+ * @returns {String} query string
+ */
+function encodeQueryString (queryObj, nesting = '') {
+  const pairs = Object.entries(queryObj).map(([key, val]) => {
+    // Handle the nested, recursive case, where the value to encode is an object itself
+    if (typeof val === 'object') {
+      return encodeQueryString(val, nesting + `${key}.`)
+    } else {
+      // Handle base case, where the value to encode is simply a string.
+      return [nesting + key, val].map(querystring.escape).join('=')
+    }
+  })
+  return pairs.join('&')
+}
+
+/**
+ * Function to get user ids
+ * @param {Integer} userId  user id from jwt token
+ * @returns {String} user id.
+ */
+async function getUserIds (userId) {
+  const token = await getM2Mtoken()
+  const q = {
+    enrich: true,
+    externalProfile: {
+      organizationId: config.ORG_ID,
+      externalId: userId
+    }
+  }
+  const url = `${config.TC_API}/users?${encodeQueryString(q)}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return res.body
+}
+
+/**
+ * Function to get user id
+ * @param {Integer} userId  user id from jwt token
+ * @returns {String} user id.
+ */
+async function getUserId (userId) {
+  const ids = await getUserIds(userId)
+  if (_.isEmpty(ids)) {
+    throw new errors.NotFoundError('user id not found')
+  }
+  return ids[0].id
+}
+
 module.exports = {
   autoWrapExpress,
   setResHeaders,
   clearObject,
-  isConnectMember
+  isConnectMember,
+  getESClient,
+  getUserId
 }

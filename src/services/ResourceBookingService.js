@@ -4,6 +4,8 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const config = require('config')
+const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -46,9 +48,19 @@ async function createResourceBooking (currentUser, resourceBooking) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
+  resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
-  resourceBooking.createdBy = currentUser.userId
+  resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
   resourceBooking.status = 'sourcing'
+
+  const esClient = helper.getESClient()
+  await esClient.create({
+    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+    id: resourceBooking.id,
+    body: _.omit(resourceBooking, 'id'),
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   const created = await ResourceBooking.create(resourceBooking)
   return helper.clearObject(created.dataValues)
 }
@@ -57,7 +69,7 @@ createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    userId: Joi.number().integer().required(),
+    userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
@@ -83,7 +95,18 @@ async function updateResourceBooking (currentUser, id, data) {
     }
   }
   data.updatedAt = new Date()
-  data.updatedBy = currentUser.userId
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+
+  const esClient = helper.getESClient()
+  await esClient.update({
+    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+    id,
+    body: {
+      doc: data
+    },
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   await resourceBooking.update(data)
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
@@ -129,7 +152,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    userId: Joi.number().integer().required(),
+    userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
@@ -149,6 +172,16 @@ async function deleteResourceBooking (currentUser, id) {
   if (!currentUser.isBookingManager) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
+
+  const esClient = helper.getESClient()
+  await esClient.delete({
+    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+    id,
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  }, {
+    ignore: [404]
+  })
+
   const resourceBooking = await ResourceBooking.findById(id)
   await resourceBooking.update({ deletedAt: new Date() })
 }
@@ -168,30 +201,54 @@ async function searchResourceBookings (criteria) {
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
 
   if (!criteria.sortBy) {
-    criteria.sortBy = 'id'
+    criteria.sortBy = '_id'
   }
+  if (criteria.sortBy === 'id') {
+    criteria.sortBy = '_id'
+  }
+
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const query = {
-    order: [[criteria.sortBy, criteria.sortOrder]],
-    where: _.assign({ deletedAt: null }, _.omit(criteria, ['perPage', 'page', 'sortBy', 'sortOrder'])),
-    attributes: {
-      exclude: ['deletedAt']
-    },
-    limit: perPage,
-    offset: (page - 1) * perPage
+  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+
+  const esQuery = {
+    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+    body: {
+      query: {
+        bool: {
+          must: []
+        }
+      },
+      from: (page - 1) * perPage,
+      size: perPage,
+      sort
+    }
   }
 
-  const result = await ResourceBooking.findAndCountAll(query)
+  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+    esQuery.body.query.bool.must.push({
+      term: {
+        [key]: {
+          value
+        }
+      }
+    })
+  })
+  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
 
-  logger.debug(`Query: ${JSON.stringify(query)}`)
+  const esClient = helper.getESClient()
+  const { body } = await esClient.search(esQuery)
 
   return {
-    total: result.count,
+    total: body.hits.total.value,
     page,
     perPage,
-    result: _.map(result.rows, (row) => helper.clearObject(row.dataValues))
+    result: _.map(body.hits.hits, (hit) => {
+      const obj = _.cloneDeep(hit._source)
+      obj.id = hit._id
+      return obj
+    })
   }
 }
 

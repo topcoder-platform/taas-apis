@@ -1,9 +1,10 @@
 # Topcoder Bookings API
 
 ## Postman test
-- Refer `mock-project-service/ReadMe.md` to start the mock app
+- Refer `tools/mock-project-service/ReadMe.md` to start the mock app
 - Refer `ReadMe.md` to start the app and postgres database
 - Run `npm run init-db` to init db before testing.
+- Run `npm run create-index` to create es index before testing
 - Import Postman collection and environment file in the `docs` folder to Postman and execute the scripts to validate the app from top to bottom.
 
 
@@ -11,19 +12,19 @@
 ## Unit test Coverage
 
 
-  62 passing (176ms)
+ 63 passing (43s)
 
 
 File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 ----------------------------|---------|----------|---------|---------|-------------------
-All files                   |   99.36 |       96 |     100 |   99.67 |                   
+All files                   |   99.49 |    97.62 |     100 |   99.74 |                   
  config                     |     100 |      100 |     100 |     100 |                   
   default.js                |     100 |      100 |     100 |     100 |                   
   test.js                   |     100 |      100 |     100 |     100 |                   
  src                        |   90.48 |       50 |     100 |   94.12 |                   
   bootstrap.js              |   90.48 |       50 |     100 |   94.12 | 18                
- src/common                 |     100 |    96.55 |     100 |     100 |                   
-  errors.js                 |     100 |       50 |     100 |     100 | 23                
+ src/common                 |     100 |      100 |     100 |     100 |                   
+  errors.js                 |     100 |      100 |     100 |     100 |                   
   helper.js                 |     100 |      100 |     100 |     100 |                   
  src/models                 |     100 |    92.86 |     100 |     100 |                   
   Job.js                    |     100 |      100 |     100 |     100 |                   

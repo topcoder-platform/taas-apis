@@ -4,7 +4,8 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
-const { Op } = require('sequelize')
+const config = require('config')
+const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -40,9 +41,19 @@ async function createJob (currentUser, job) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
+  job.id = uuid()
   job.createdAt = new Date()
-  job.createdBy = currentUser.userId
+  job.createdBy = await helper.getUserId(currentUser.userId)
   job.status = 'sourcing'
+
+  const esClient = helper.getESClient()
+  await esClient.create({
+    index: config.get('esConfig.ES_INDEX_JOB'),
+    id: job.id,
+    body: _.omit(job, 'id'),
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   const created = await Job.create(job)
   return helper.clearObject(created.dataValues)
 }
@@ -77,8 +88,20 @@ async function updateJob (currentUser, id, data) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
+
   data.updatedAt = new Date()
-  data.updatedBy = currentUser.userId
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+
+  const esClient = helper.getESClient()
+  await esClient.update({
+    index: config.get('esConfig.ES_INDEX_JOB'),
+    id,
+    body: {
+      doc: data
+    },
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
+
   await job.update(data)
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
@@ -148,6 +171,15 @@ async function deleteJob (currentUser, id) {
   if (!currentUser.isBookingManager) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
+
+  const esClient = helper.getESClient()
+  await esClient.delete({
+    index: config.get('esConfig.ES_INDEX_JOB'),
+    id,
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  }, {
+    ignore: [404]
+  })
   const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
 }
@@ -165,41 +197,95 @@ deleteJob.schema = Joi.object().keys({
 async function searchJobs (criteria) {
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
-
   if (!criteria.sortBy) {
-    criteria.sortBy = 'id'
+    criteria.sortBy = '_id'
+  }
+  if (criteria.sortBy === 'id') {
+    criteria.sortBy = '_id'
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const query = {
-    order: [[criteria.sortBy, criteria.sortOrder]],
-    include: [{ model: Job._models.JobCandidate, as: 'candidates', where: { deletedAt: null }, attributes: { exclude: ['deletedAt'] }, required: false }],
-    where: _.assign({ deletedAt: null }, _.omit(criteria, ['perPage', 'page', 'sortBy', 'sortOrder', 'skill'])),
-    attributes: {
-      exclude: ['deletedAt']
-    },
-    limit: perPage,
-    offset: (page - 1) * perPage
-  }
-  if (criteria.skill) {
-    query.where.skills = {
-      [Op.contains]: [criteria.skill]
+  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+
+  const esQuery = {
+    index: config.get('esConfig.ES_INDEX_JOB'),
+    body: {
+      query: {
+        bool: {
+          must: []
+        }
+      },
+      from: (page - 1) * perPage,
+      size: perPage,
+      sort
     }
   }
 
-  const result = await Job.findAndCountAll(query)
+  _.each(_.pick(criteria, ['projectId', 'externalId', 'description', 'startDate', 'endDate', 'resourceType', 'skill', 'rateType', 'status']), (value, key) => {
+    let must
+    if (key === 'description') {
+      must = {
+        match: {
+          [key]: {
+            query: value
+          }
+        }
+      }
+    } else if (key === 'skill') {
+      must = {
+        terms: {
+          skills: [value]
+        }
+      }
+    } else {
+      must = {
+        term: {
+          [key]: {
+            value
+          }
+        }
+      }
+    }
+    esQuery.body.query.bool.must.push(must)
+  })
+  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
 
-  logger.debug(`Query: ${JSON.stringify(query)}`)
+  const esClient = helper.getESClient()
+  const { body } = await esClient.search(esQuery)
+  const result = await Promise.all(_.map(body.hits.hits, async (hit) => {
+    const jobRecord = _.cloneDeep(hit._source)
+    jobRecord.id = hit._id
+
+    const { body } = await esClient.search({
+      index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+      body: {
+        query: {
+          term: {
+            jobId: {
+              value: jobRecord.id
+            }
+          }
+        }
+      }
+    })
+
+    if (body.hits.total.value > 0) {
+      const candidates = _.map(body.hits.hits, (hit) => {
+        const candidateRecord = _.cloneDeep(hit._source)
+        candidateRecord.id = hit._id
+        return candidateRecord
+      })
+      jobRecord.candidates = candidates
+    }
+    return jobRecord
+  }))
 
   return {
-    total: result.count,
+    total: body.hits.total.value,
     page,
     perPage,
-    result: _.map(result.rows, (row) => {
-      row.dataValues.candidates = _.map(row.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
-      return helper.clearObject(row.dataValues)
-    })
+    result
   }
 }
 

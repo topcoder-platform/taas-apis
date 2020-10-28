@@ -1,9 +1,11 @@
+
 const bookingManagerUser = {
   roles: [
     'Topcoder User',
     'copilot',
     'Connect Manager',
-    'bookingmanager'
+    'bookingmanager',
+    'u-bahn'
   ],
   iss: 'https://api.topcoder.com',
   handle: 'pshah_manager',
@@ -13,17 +15,20 @@ const bookingManagerUser = {
   email: 'vikas.agarwal+pshah_manager@topcoder.com',
   jti: '83a7b1cd-15b7-4529-b3a1-7c2282bbc750',
   isBookingManager: true,
-  jwtToken: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJUb3Bjb2RlciBVc2VyIiwiY29waWxvdCIsIkNvbm5lY3QgTWFuYWdlciIsImJvb2tpbmdtYW5hZ2VyIl0sImlzcyI6Imh0dHBzOi8vYXBpLnRvcGNvZGVyLmNvbSIsImhhbmRsZSI6InBzaGFoX21hbmFnZXIiLCJleHAiOjU1NTMwMTk5MjU5LCJ1c2VySWQiOiI0MDE1Mjg1NiIsImlhdCI6MTYwMjEzNjk3MCwiZW1haWwiOiJ2aWthcy5hZ2Fyd2FsK3BzaGFoX21hbmFnZXJAdG9wY29kZXIuY29tIiwianRpIjoiODNhN2IxY2QtMTViNy00NTI5LWIzYTEtN2MyMjgyYmJjNzUwIn0.KlFs8zg059p0P6YLikR5adJSI0trLrPyvQavoaUuOAU'
+  jwtToken: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik5VSkZORGd4UlRVME5EWTBOVVkzTlRkR05qTXlRamxETmpOQk5UYzVRVUV3UlRFeU56TTJRUSJ9.eyJodHRwczovL3RvcGNvZGVyLWRldi5jb20vcm9sZXMiOlsiVG9wY29kZXIgVXNlciIsImNvcGlsb3QiLCJDb25uZWN0IE1hbmFnZXIiLCJib29raW5nbWFuYWdlciIsInUtYmFobiJdLCJodHRwczovL3RvcGNvZGVyLWRldi5jb20vdXNlcklkIjoiNDAxNTI4NTYiLCJodHRwczovL3RvcGNvZGVyLWRldi5jb20vaGFuZGxlIjoicHNoYWhfbWFuYWdlciIsImh0dHBzOi8vdG9wY29kZXItZGV2LmNvbS91c2VyX2lkIjoiYXV0aDB8NDAxNTI4NTYiLCJodHRwczovL3RvcGNvZGVyLWRldi5jb20vdGNzc28iOiI0MDE1Mjg1Nnw4MTM0ZjQ4ZWJlMTFhODQ4YTM3NTllNWVmOWU5MmYyMTQ2OTJlMjExMzA0MGM4MmI1ZDhmNTgxYzZkZmNjYzg4IiwiaHR0cHM6Ly90b3Bjb2Rlci1kZXYuY29tL2FjdGl2ZSI6dHJ1ZSwibmlja25hbWUiOiJwc2hhaF9tYW5hZ2VyIiwibmFtZSI6InZpa2FzLmFnYXJ3YWwrcHNoYWhfbWFuYWdlckB0b3Bjb2Rlci5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvOTJhZmIyZjBlZDUyZmRmYWUxZjM3MTAyMWFlNjUwMTM_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZ2aS5wbmciLCJ1cGRhdGVkX2F0IjoiMjAyMC0xMC0yNFQwODoyODoyNC4xODRaIiwiZW1haWwiOiJ2aWthcy5hZ2Fyd2FsK3BzaGFoX21hbmFnZXJAdG9wY29kZXIuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vYXV0aC50b3Bjb2Rlci1kZXYuY29tLyIsInN1YiI6ImF1dGgwfDQwMTUyODU2IiwiYXVkIjoiQlhXWFVXbmlsVlVQZE4wMXQyU2UyOVR3MlpZTkdadkgiLCJpYXQiOjE2MDM1NDMzMzgsImV4cCI6MzMxNjA0NTI3MzgsIm5vbmNlIjoiUjFBMmN6WXVWVFptYmpaSFJHOTJWbDlEU1VKNlVsbHZRWGMzUkhoNVMzWldkV1pEY0ROWE1FWjFYdz09In0.2gPsqZTgS1rtiNa1USm3KPA6Xsv3TcHxuDFofgIbeOM'
 }
 
 const connectUser = {
   roles: [
-    'Connect User'
+    'Topcoder User',
+    'copilot',
+    'Connect Manager',
+    'u-bahn'
   ],
   iss: 'https://api.topcoder.com',
   sub: 'connect_user',
   exp: 55530199259,
-  userId: '35267983',
+  userId: '8547899',
   iat: 1602136970,
   email: 'connectUser@topcoder.com',
   jti: '83a7b1cd-15b7-4529-b3a1-7c2282bbc750',
@@ -38,12 +43,12 @@ const topCoderUser = {
   iss: 'https://api.topcoder.com',
   handle: 'topcoder_user',
   exp: 55530199259,
-  userId: '35267983',
+  userId: '8547899',
   iat: 1602136970,
   email: 'topcoderUser@topcoder.com',
   jti: '83a7b1cd-15b7-4529-b3a1-7c2282bbc750',
   isBookingManager: false,
-  jwtToken: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJUb3Bjb2RlciBVc2VyIl0sImlzcyI6Imh0dHBzOi8vYXBpLnRvcGNvZGVyLmNvbSIsImhhbmRsZSI6InRvcGNvZGVyX3VzZXIiLCJleHAiOjU1NTMwMTk5MjU5LCJ1c2VySWQiOiIzNTI2Nzk4MyIsImlhdCI6MTYwMjEzNjk3MCwiZW1haWwiOiJ0b3Bjb2RlclVzZXJAdG9wY29kZXIuY29tIiwianRpIjoiODNhN2IxY2QtMTViNy00NTI5LWIzYTEtN2MyMjgyYmJjNzUwIiwiaXNCb29raW5nTWFuYWdlciI6ZmFsc2V9.In0nxYIKEGR3QtQrKhmgHFKjzsBjEdNxdLSj6U2zxRk'
+  jwtToken: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik5VSkZORGd4UlRVME5EWTBOVVkzTlRkR05qTXlRamxETmpOQk5UYzVRVUV3UlRFeU56TTJRUSJ9.eyJodHRwczovL3RvcGNvZGVyLWRldi5jb20vcm9sZXMiOlsiVG9wY29kZXIgVXNlciJdLCJodHRwczovL3RvcGNvZGVyLWRldi5jb20vdXNlcklkIjoiODU0Nzg5OSIsImh0dHBzOi8vdG9wY29kZXItZGV2LmNvbS9oYW5kbGUiOiJwc2hhaF9tYW5hZ2VyIiwiaHR0cHM6Ly90b3Bjb2Rlci1kZXYuY29tL3VzZXJfaWQiOiJhdXRoMHw0MDE1Mjg1NiIsImh0dHBzOi8vdG9wY29kZXItZGV2LmNvbS90Y3NzbyI6IjQwMTUyODU2fDgxMzRmNDhlYmUxMWE4NDhhMzc1OWU1ZWY5ZTkyZjIxNDY5MmUyMTEzMDQwYzgyYjVkOGY1ODFjNmRmY2NjODgiLCJodHRwczovL3RvcGNvZGVyLWRldi5jb20vYWN0aXZlIjp0cnVlLCJuaWNrbmFtZSI6InBzaGFoX21hbmFnZXIiLCJuYW1lIjoidmlrYXMuYWdhcndhbCtwc2hhaF9tYW5hZ2VyQHRvcGNvZGVyLmNvbSIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci85MmFmYjJmMGVkNTJmZGZhZTFmMzcxMDIxYWU2NTAxMz9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRnZpLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDIwLTEwLTI0VDA4OjI4OjI0LjE4NFoiLCJlbWFpbCI6InZpa2FzLmFnYXJ3YWwrcHNoYWhfbWFuYWdlckB0b3Bjb2Rlci5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9hdXRoLnRvcGNvZGVyLWRldi5jb20vIiwic3ViIjoiYXV0aDB8NDAxNTI4NTYiLCJhdWQiOiJCWFdYVVduaWxWVVBkTjAxdDJTZTI5VHcyWllOR1p2SCIsImlhdCI6MTYwMzU0MzMzOCwiZXhwIjozMzE2MDQ1MjczOCwibm9uY2UiOiJSMUEyY3pZdVZUWm1ialpIUkc5MlZsOURTVUo2VWxsdlFYYzNSSGg1UzNaV2RXWkRjRE5YTUVaMVh3PT0ifQ.HbAisH30DLcbFNQeIifSzk1yhDmlGHNpPi9LSZbAowo'
 }
 
 const jobRequestBody = {
@@ -89,7 +94,7 @@ const jobResponseBody = {
       {
         id: '5d09b0fb-5164-4b8c-9d04-525e840741e9',
         jobId: '36762910-4efa-4db4-9b2a-c9ab54c232ed',
-        userId: 1212,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
         status: 'open',
         createdAt: '2020-10-08T12:59:16.426Z',
         createdBy: 'pshah_manager'
@@ -129,14 +134,14 @@ const partiallyUpdateJobRequestBody = {
 
 const jobCandidateRequestBody = {
   jobId: jobResponseBody.dataValues.id,
-  userId: 1212
+  userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a'
 }
 
 const jobCandidateResponseBody = {
   dataValues: {
     id: '6e69b20f-144e-4edd-b68e-bd21f37f4b3e',
     jobId: '6093e58c-683d-4022-8482-5515e8345016',
-    userId: 35267983,
+    userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
     createdAt: '2020-10-09T00:51:38.663Z',
     createdBy: 'pshah_manager',
     status: 'open'
@@ -145,7 +150,7 @@ const jobCandidateResponseBody = {
 
 const fullyUpdateJobCandidateRequestBody = {
   jobId: jobResponseBody.dataValues.id,
-  userId: 35267983,
+  userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
   status: 'selected'
 }
 
@@ -155,7 +160,7 @@ const partiallyUpdateJobCandidateRequestBody = {
 
 const resourceBookingRequestBody = {
   projectId: 21,
-  userId: 1212,
+  userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
   jobId: jobResponseBody.dataValues.id,
   startDate: '2020-09-27T04:17:23.131Z',
   endDate: '2020-09-27T04:17:23.131Z',
@@ -168,7 +173,7 @@ const resourceBookingResponseBody = {
   dataValues: {
     id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
     projectId: 21,
-    userId: 1212,
+    userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
     jobId: '6093e58c-683d-4022-8482-5515e8345016',
     startDate: '2020-09-27T04:17:23.131Z',
     endDate: '2020-09-27T04:17:23.131Z',
@@ -183,7 +188,7 @@ const resourceBookingResponseBody = {
 
 const fullyUpdateResourceBookingRequestBody = {
   projectId: 21,
-  userId: 1212,
+  userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
   jobId: resourceBookingResponseBody.dataValues.jobId,
   startDate: '2020-09-27T04:17:23.131Z',
   endDate: '2020-09-27T04:17:23.131Z',

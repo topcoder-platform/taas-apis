@@ -1,3 +1,4 @@
+
 const { Sequelize, Model } = require('sequelize')
 const config = require('config')
 const errors = require('../common/errors')
@@ -112,7 +113,7 @@ module.exports = (sequelize) => {
       },
       createdBy: {
         field: 'created_by',
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false
       },
       updatedAt: {
@@ -121,7 +122,7 @@ module.exports = (sequelize) => {
       },
       updatedBy: {
         field: 'updated_by',
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
       deletedAt: {
         field: 'deleted_at',

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 process.env.NODE_ENV = 'test'
+const _ = require('lodash')
 require('../../src/bootstrap')
 
 const expect = require('chai').expect
@@ -10,6 +11,9 @@ const {
   bookingManagerUser, connectUser, topCoderUser, jobRequestBody,
   jobResponseBody, fullyUpdateJobRequestBody, partiallyUpdateJobRequestBody, unexpected
 } = require('./common/testData')
+const helper = require('../../src/common/helper')
+
+const esClient = helper.getESClient()
 
 const Job = models.Job
 
@@ -17,7 +21,7 @@ describe('job service test', () => {
   describe('create job test', () => {
     it('create job with booking manager user success ', async () => {
       const stub = sinon.stub(Job, 'create').callsFake(() => {
-        return jobResponseBody
+        return _.cloneDeep(jobResponseBody)
       })
       const entity = await service.createJob(bookingManagerUser, jobRequestBody)
       expect(entity).to.deep.eql(jobResponseBody.dataValues)
@@ -27,12 +31,21 @@ describe('job service test', () => {
 
     it('create job with connect user success ', async () => {
       const stub = sinon.stub(Job, 'create').callsFake(() => {
-        return jobResponseBody
+        return _.cloneDeep(jobResponseBody)
       })
       const entity = await service.createJob(connectUser, jobRequestBody)
       expect(entity).to.deep.eql(jobResponseBody.dataValues)
       expect(stub.calledOnce).to.be.true
       stub.restore()
+    })
+
+    it('create job with connect user failed user id not exist ', async () => {
+      try {
+        await service.createJob(_.assign({}, connectUser, { userId: 'not_exist' }), jobRequestBody)
+        unexpected()
+      } catch (err) {
+        expect(err.message).to.equal('user id not found')
+      }
     })
 
     it('create job with connect user failed ', async () => {
@@ -46,12 +59,13 @@ describe('job service test', () => {
   })
 
   describe('get job test', () => {
-    it('get jobsuccess', async () => {
+    it('get job success', async () => {
+      const jobResBody = _.cloneDeep(jobResponseBody)
       const stub = sinon.stub(Job, 'findOne').callsFake(() => {
-        return jobResponseBody
+        return jobResBody
       })
       const entity = await service.getJob(jobResponseBody.dataValues.id)
-      expect(entity).to.deep.eql(jobResponseBody.dataValues)
+      expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledOnce).to.be.true
       stub.restore()
     })
@@ -73,6 +87,7 @@ describe('job service test', () => {
 
   describe('fully update job test', () => {
     it('fully update job test with booking manager success', async () => {
+      const jobResBody = _.cloneDeep(jobResponseBody)
       const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
         return {
           dataValues: {
@@ -83,15 +98,19 @@ describe('job service test', () => {
           }
         }
       }).onSecondCall().callsFake(() => {
-        return jobResponseBody
+        return jobResBody
       })
+      const stubUpdate = sinon.stub(esClient, 'update').callsFake(async () => {})
+
       const entity = await service.fullyUpdateJob(bookingManagerUser, jobResponseBody.dataValues.id, fullyUpdateJobRequestBody)
-      expect(entity).to.deep.eql(jobResponseBody.dataValues)
+      expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       stub.restore()
+      stubUpdate.restore()
     })
 
     it('fully update job test with connect user success', async () => {
+      const jobResBody = _.cloneDeep(jobResponseBody)
       const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
         return {
           dataValues: {
@@ -102,26 +121,38 @@ describe('job service test', () => {
           }
         }
       }).onSecondCall().callsFake(() => {
-        return jobResponseBody
+        return jobResBody
       })
+      const stubUpdate = sinon.stub(esClient, 'update').callsFake(async () => {})
+
       const entity = await service.fullyUpdateJob(connectUser, jobResponseBody.dataValues.id, fullyUpdateJobRequestBody)
-      expect(entity).to.deep.eql(jobResponseBody.dataValues)
+      expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       stub.restore()
+      stubUpdate.restore()
     })
 
     it('fully update job test with topcoder user failed', async () => {
+      const stub = sinon.stub(Job, 'findOne').callsFake(() => {
+        return {
+          dataValues: {
+            projectId: 'not_exist'
+          }
+        }
+      })
       try {
         await service.fullyUpdateJob(topCoderUser, jobResponseBody.dataValues.id, fullyUpdateJobRequestBody)
         unexpected()
       } catch (error) {
         expect(error.message).to.equal('You are not allowed to perform this action!')
       }
+      stub.restore()
     })
   })
 
   describe('partially update job test', () => {
     it('partially update job with booking manager success', async () => {
+      const jobResBody = _.cloneDeep(jobResponseBody)
       const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
         return {
           dataValues: {
@@ -132,15 +163,18 @@ describe('job service test', () => {
           }
         }
       }).onSecondCall().callsFake(() => {
-        return jobResponseBody
+        return jobResBody
       })
+      const stubUpdate = sinon.stub(esClient, 'update').callsFake(async () => {})
       const entity = await service.partiallyUpdateJob(bookingManagerUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
-      expect(entity).to.deep.eql(jobResponseBody.dataValues)
+      expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       stub.restore()
+      stubUpdate.restore()
     })
 
     it('partially update job with connect user success', async () => {
+      const jobResBody = _.cloneDeep(jobResponseBody)
       const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
         return {
           dataValues: {
@@ -151,20 +185,30 @@ describe('job service test', () => {
           }
         }
       }).onSecondCall().callsFake(() => {
-        return jobResponseBody
+        return jobResBody
       })
+      const stubUpdate = sinon.stub(esClient, 'update').callsFake(async () => {})
       const entity = await service.partiallyUpdateJob(connectUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
-      expect(entity).to.deep.eql(jobResponseBody.dataValues)
+      expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       stub.restore()
+      stubUpdate.restore()
     })
 
     it('partially update job with topcoder user failed', async () => {
+      const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
+        return {
+          dataValues: {
+            projectId: 'not_exist'
+          }
+        }
+      })
       try {
-        await service.partiallyUpdateJob(connectUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
+        await service.partiallyUpdateJob(topCoderUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
       } catch (error) {
         expect(error.message).to.equal('You are not allowed to perform this action!')
       }
+      stub.restore()
     })
   })
 
@@ -180,9 +224,11 @@ describe('job service test', () => {
           }
         }
       })
+      const stubDelete = sinon.stub(esClient, 'delete').callsFake(async () => {})
       await service.deleteJob(bookingManagerUser, jobResponseBody.dataValues.id)
       expect(stub.calledOnce).to.be.true
       stub.restore()
+      stubDelete.restore()
     })
 
     it('delete job test with connect user failed', async () => {
@@ -206,28 +252,71 @@ describe('job service test', () => {
 
   describe('search jobs test', () => {
     it('search jobs success', async () => {
-      const stub = sinon.stub(Job, 'findAndCountAll').callsFake(() => {
+      const stub = sinon.stub(esClient, 'search').onFirstCall().callsFake(() => {
         return {
-          count: 1,
-          rows: [jobResponseBody]
+          body: {
+            hits: {
+              total: {
+                value: 1
+              },
+              hits: [{
+                _id: jobResponseBody.dataValues.id,
+                _source: _.omit(jobResponseBody.dataValues, ['id'])
+              }]
+            }
+          }
+        }
+      }).onSecondCall().callsFake(() => {
+        return {
+          body: {
+            hits: {
+              total: {
+                value: 1
+              },
+              hits: [{
+                _id: jobResponseBody.dataValues.candidates[0].id,
+                _source: _.omit(jobResponseBody.dataValues.candidates[0], ['id'])
+              }]
+            }
+          }
         }
       })
-      const entity = await service.searchJobs({ sortBy: 'id', sortOrder: 'asc', page: 1, perPage: 1, skill: '56fdc405-eccc-4189-9e83-c78abf844f50' })
+      const entity = await service.searchJobs({ sortBy: 'id', sortOrder: 'asc', page: 1, perPage: 1, skill: '56fdc405-eccc-4189-9e83-c78abf844f50', description: 'description 1', rateType: 'hourly' })
       expect(entity.result[0]).to.deep.eql(jobResponseBody.dataValues)
-      expect(stub.calledOnce).to.be.true
+      expect(stub.calledTwice).to.be.true
       stub.restore()
     })
 
     it('search jobs without query parameters success', async () => {
-      const stub = sinon.stub(Job, 'findAndCountAll').callsFake(() => {
+      const stub = sinon.stub(esClient, 'search').onFirstCall().callsFake(() => {
         return {
-          count: 1,
-          rows: [jobResponseBody]
+          body: {
+            hits: {
+              total: {
+                value: 1
+              },
+              hits: [{
+                _id: jobResponseBody.dataValues.id,
+                _source: _.omit(jobResponseBody.dataValues, ['id'])
+              }]
+            }
+          }
+        }
+      }).onSecondCall().callsFake(() => {
+        return {
+          body: {
+            hits: {
+              total: {
+                value: 0
+              },
+              hits: []
+            }
+          }
         }
       })
       const entity = await service.searchJobs({})
       expect(entity.result[0]).to.deep.eql(jobResponseBody.dataValues)
-      expect(stub.calledOnce).to.be.true
+      expect(stub.calledTwice).to.be.true
       stub.restore()
     })
   })

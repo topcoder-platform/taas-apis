@@ -39,7 +39,7 @@ module.exports = (sequelize) => {
         const job = await JobCandidate._models.Job.findById(jobId)
         return job.dataValues.projectId
       } catch (error) {
-        throw new errors.NotFoundError('projectId doesn\'t exists.')
+        return null
       }
     }
   }
@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
       },
       userId: {
         field: 'user_id',
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false
       },
       status: {
@@ -72,7 +72,7 @@ module.exports = (sequelize) => {
       },
       createdBy: {
         field: 'created_by',
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false
       },
       updatedAt: {
@@ -81,7 +81,7 @@ module.exports = (sequelize) => {
       },
       updatedBy: {
         field: 'updated_by',
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
       deletedAt: {
         field: 'deleted_at',
