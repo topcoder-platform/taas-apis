@@ -9,6 +9,7 @@
 ## Configuration
 
 Configuration for the application is at `config/default.js`.
+
 The following parameters can be set in config files or in env variables:
 
 - `LOG_LEVEL`: the log level, default is 'debug'
@@ -34,15 +35,15 @@ The following parameters can be set in config files or in env variables:
 
 
 ## PostgreSQL Database Setup
-Go to https://www.postgresql.org/ download and install the PostgreSQL.
-Modify `DATABASE_URL` under `config/default.js` to meet your environment.
-Run `npm run init-db` to create table
+- Go to https://www.postgresql.org/ download and install the PostgreSQL.
+- Modify `DATABASE_URL` under `config/default.js` to meet your environment.
+- Run `npm run init-db` to create table
 
 ## ElasticSearch Setup
-Go to https://www.elastic.co/downloads/ download and install the elasticsearch.
-Modify `esConfig` under `config/default.js` to meet your environment.
-Run `npm run create-index` to create ES index.
-Run `npm run delete-index` to delete ES index.
+- Go to https://www.elastic.co/downloads/ download and install the elasticsearch.
+- Modify `esConfig` under `config/default.js` to meet your environment.
+- Run `npm run create-index` to create ES index.
+- Run `npm run delete-index` to delete ES index.
 
 ## Local Deployment
 
