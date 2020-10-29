@@ -57,8 +57,6 @@ The following parameters can be set in config files or in env variables:
 
 ## Testing
 - Run tools/mock-project-service app
-- Run `npm run init-db`
-- Run `npm run create-index`
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
 
