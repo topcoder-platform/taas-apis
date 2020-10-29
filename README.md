@@ -56,7 +56,6 @@ The following parameters can be set in config files or in env variables:
 - App is running at `http://localhost:3000`
 
 ## Testing
-- Run tools/mock-project-service app
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
 
