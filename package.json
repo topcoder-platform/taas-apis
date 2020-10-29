@@ -32,7 +32,7 @@
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.5",
     "superagent": "^6.1.0",
-    "tc-core-library-js": "github:appirio-tech/tc-core-library-js#feature/auth0-proxy-server",
+    "tc-core-library-js": "github:appirio-tech/tc-core-library-js#v2.6.5",
     "util": "^0.12.3",
     "uuid": "^8.3.1",
     "winston": "^3.3.3"
