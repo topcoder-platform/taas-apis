@@ -21,25 +21,34 @@ const esClient = helper.getESClient()
 const ResourceBooking = models.ResourceBooking
 
 describe('resourceBooking service test', () => {
+  beforeEach(() => {
+    sinon.restore()
+  })
+
   describe('create resource booking test', () => {
+    let stubESCreate
+    beforeEach(() => {
+      stubESCreate = sinon.stub(esClient, 'create').callsFake(async () => {})
+    })
+
     it('create resource booking with booking manager success ', async () => {
-      const stubCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
+      const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
         return resourceBookingResponseBody
       })
       const entity = await service.createResourceBooking(bookingManagerUser, resourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingResponseBody.dataValues)
-      expect(stubCreate.calledOnce).to.be.true
-      stubCreate.restore()
+      expect(stubDBCreate.calledOnce).to.be.true
+      expect(stubESCreate.calledOnce).to.be.true
     })
 
     it('create resource booking with connect user success ', async () => {
-      const stubCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
+      const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
         return resourceBookingResponseBody
       })
       const entity = await service.createResourceBooking(connectUser, resourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingResponseBody.dataValues)
-      expect(stubCreate.calledOnce).to.be.true
-      stubCreate.restore()
+      expect(stubDBCreate.calledOnce).to.be.true
+      expect(stubESCreate.calledOnce).to.be.true
     })
 
     it('create resource booking with topcoder user failed ', async () => {
@@ -60,7 +69,6 @@ describe('resourceBooking service test', () => {
       const entity = await service.getResourceBooking(bookingManagerUser, resourceBookingResponseBody.dataValues.id)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stub.calledOnce).to.be.true
-      stub.restore()
     })
 
     it('get resource booking with connect user success', async () => {
@@ -71,7 +79,6 @@ describe('resourceBooking service test', () => {
       const entity = await service.getResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id)
       expect(entity).to.deep.eql(_.omit(resourceBookingRes.dataValues, ['memberRate']))
       expect(stub.calledOnce).to.be.true
-      stub.restore()
     })
 
     it('get resource booking with topcoder user success', async () => {
@@ -82,7 +89,6 @@ describe('resourceBooking service test', () => {
       const entity = await service.getResourceBooking(topCoderUser, resourceBookingResponseBody.dataValues.id)
       expect(entity).to.deep.eql(_.omit(resourceBookingRes.dataValues, ['customerRate']))
       expect(stub.calledOnce).to.be.true
-      stub.restore()
     })
 
     it('get resource booking with resource booking not exist success', async () => {
@@ -94,12 +100,16 @@ describe('resourceBooking service test', () => {
       } catch (error) {
         expect(error.message).to.equal(`ResourceBooking with id: ${resourceBookingResponseBody.dataValues.id} doesn't exists.`)
         expect(stub.calledOnce).to.be.true
-        stub.restore()
       }
     })
   })
 
   describe('fully update resource booking test', () => {
+    let stubESUpdate
+    beforeEach(() => {
+      stubESUpdate = sinon.stub(esClient, 'update').callsFake(() => {})
+    })
+
     it('fully update resource booking test with booking manager success', async () => {
       const resourceBookingRes = _.cloneDeep(resourceBookingResponseBody)
       const stubResourceBookingFindOne = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
@@ -108,12 +118,10 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubES = sinon.stub(esClient, 'update').callsFake(() => {})
       const entity = await service.fullyUpdateResourceBooking(bookingManagerUser, resourceBookingResponseBody.dataValues.id, fullyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
-      stubES.restore()
+      expect(stubESUpdate.calledOnce).to.be.true
     })
 
     it('fully update resource booking test with connect user success', async () => {
@@ -124,12 +132,10 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubES = sinon.stub(esClient, 'update').callsFake(() => {})
       const entity = await service.fullyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, fullyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
-      stubES.restore()
+      expect(stubESUpdate.calledOnce).to.be.true
     })
 
     it('fully update resource booking test with topcoder user failed', async () => {
@@ -147,11 +153,15 @@ describe('resourceBooking service test', () => {
         expect(stubResourceBookingFindOne.calledOnce).to.be.true
         expect(error.message).to.equal('You are not allowed to perform this action!')
       }
-      stubResourceBookingFindOne.restore()
     })
   })
 
   describe('partially update resource booking test', () => {
+    let stubESUpdate
+    beforeEach(() => {
+      stubESUpdate = sinon.stub(esClient, 'update').callsFake(() => {})
+    })
+
     it('partially update resource booking test with booking manager success', async () => {
       const resourceBookingRes = _.cloneDeep(resourceBookingResponseBody)
       const stubResourceBookingFindOne = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
@@ -160,13 +170,10 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubES = sinon.stub(esClient, 'update').callsFake(() => {})
       const entity = await service.partiallyUpdateResourceBooking(bookingManagerUser, resourceBookingResponseBody.dataValues.id, partiallyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
-      expect(stubES.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
-      stubES.restore()
+      expect(stubESUpdate.calledOnce).to.be.true
     })
 
     it('partially update resource booking test with connect user success', async () => {
@@ -177,12 +184,10 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubES = sinon.stub(esClient, 'update').callsFake(() => {})
       const entity = await service.partiallyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, partiallyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
-      stubES.restore()
+      expect(stubESUpdate.calledOnce).to.be.true
     })
 
     it('partially update resource booking test with topcoder user failed', async () => {
@@ -200,7 +205,6 @@ describe('resourceBooking service test', () => {
         expect(error.message).to.equal('You are not allowed to perform this action!')
       }
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
     })
   })
 
@@ -216,8 +220,6 @@ describe('resourceBooking service test', () => {
       await service.deleteResourceBooking(bookingManagerUser, resourceBookingResponseBody.dataValues.id)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
       expect(stubES.calledOnce).to.be.true
-      stubResourceBookingFindOne.restore()
-      stubES.restore()
     })
 
     it('delete resource booking test with connect user failed', async () => {
@@ -259,7 +261,6 @@ describe('resourceBooking service test', () => {
       const entity = await service.searchResourceBookings({ sortBy: 'id', sortOrder: 'asc', page: 1, perPage: 1, status: 'sourcing' })
       expect(entity.result[0]).to.deep.eql(resourceBookingResponseBody.dataValues)
       expect(stub.calledOnce).to.be.true
-      stub.restore()
     })
 
     it('search resource booking without query parameters success', async () => {
@@ -281,7 +282,6 @@ describe('resourceBooking service test', () => {
       const entity = await service.searchResourceBookings({})
       expect(entity.result[0]).to.deep.eql(resourceBookingResponseBody.dataValues)
       expect(stub.calledOnce).to.be.true
-      stub.restore()
     })
   })
 })
