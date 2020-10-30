@@ -21,6 +21,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "config": "^3.3.2",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-interceptor": "^1.2.0",
     "get-parameter-names": "^0.3.0",
