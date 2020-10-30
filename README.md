@@ -5,6 +5,8 @@
 - nodejs https://nodejs.org/en/ (v12+)
 - PostgreSQL
 - ElasticSearch (7.x)
+- Docker
+- Docker-Compose
 
 ## Configuration
 
@@ -54,6 +56,9 @@ The following parameters can be set in config files or in env variables:
 - Clear and create es index `npm run delete-index && npm run create-index`
 - Start app `npm start`
 - App is running at `http://localhost:3000`
+
+## Docker Deployment
+- Run `docker-compose up`
 
 ## Testing
 - Run `npm run test` to execute unit tests
