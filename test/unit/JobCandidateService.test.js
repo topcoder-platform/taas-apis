@@ -19,7 +19,23 @@ const JobCandidate = models.JobCandidate
 const Job = models.Job
 
 describe('jobCandidate service test', () => {
+  let isConnectMember
+  let userId
+  let stubIsConnectMember
+  let stubGetUserId
   beforeEach(() => {
+    isConnectMember = true
+    stubIsConnectMember = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+      return isConnectMember
+    })
+
+    userId = 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a'
+    stubGetUserId = sinon.stub(helper, 'getUserId').callsFake(() => {
+      return userId
+    })
+  })
+
+  afterEach(() => {
     sinon.restore()
   })
 
@@ -39,6 +55,7 @@ describe('jobCandidate service test', () => {
       expect(entity).to.deep.eql(jobCandidateRes.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create job candidate with connect user success ', async () => {
@@ -50,6 +67,7 @@ describe('jobCandidate service test', () => {
       expect(entity).to.deep.eql(jobCandidateRes.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create job candidate with topcoder user success', async () => {
@@ -125,16 +143,13 @@ describe('jobCandidate service test', () => {
       const stubJobFindOne = sinon.stub(Job, 'findOne').callsFake(() => {
         return _.cloneDeep(jobResponseBody)
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.fullyUpdateJobCandidate(connectUser, jobCandidateResponseBody.dataValues.id, fullyUpdateJobCandidateRequestBody)
       expect(entity).to.deep.eql(jobCandidateRes.dataValues)
       expect(stubJobCandidateFindOne.calledOnce).to.be.true
       expect(stubJobFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
     })
 
     it('fully update job candidate test with topcoder user success', async () => {
@@ -158,6 +173,8 @@ describe('jobCandidate service test', () => {
     })
 
     it('fully update job candidate test with topcoder user failed', async () => {
+      userId = '544e281f-62a0-4e45-8cc1-bac434bb3a54'
+      isConnectMember = false
       const jobCandidateRes = _.cloneDeep(jobCandidateResponseBody)
       const stubJobCandidateFindOne = sinon.stub(JobCandidate, 'findOne').callsFake(() => {
         return {
@@ -215,19 +232,18 @@ describe('jobCandidate service test', () => {
       const stubJobFindOne = sinon.stub(Job, 'findOne').callsFake(() => {
         return _.cloneDeep(jobResponseBody)
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.partiallyUpdateJobCandidate(connectUser, jobCandidateResponseBody.dataValues.id, partiallyUpdateJobCandidateRequestBody)
       expect(entity).to.deep.eql(jobCandidateRes.dataValues)
       expect(stubJobCandidateFindOne.calledOnce).to.be.true
       expect(stubJobFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
     })
 
     it('partially update job candidate test with topcoder user failed', async () => {
+      isConnectMember = false
+      userId = '544e281f-62a0-4e45-8cc1-bac434bb3a54'
       const jobCandidateRes = _.cloneDeep(jobCandidateResponseBody)
       const stubJobCandidateFindOne = sinon.stub(JobCandidate, 'findOne').callsFake(() => {
         return {
