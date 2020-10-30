@@ -17,7 +17,7 @@ module.exports = {
 
   DATABASE_URL: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres',
   DB_SCHEMA_NAME: process.env.DB_SCHEMA_NAME || 'bookings',
-  PROJECT_API_URL: process.env.PROJECT_API_URL || 'http://localhost:4000',
+  PROJECT_API_URL: process.env.PROJECT_API_URL || 'https://api.topcoder-dev.com',
 
   esConfig: {
     HOST: process.env.ES_HOST || 'http://localhost:9200',

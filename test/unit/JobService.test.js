@@ -43,20 +43,27 @@ describe('job service test', () => {
       const stubDBCreate = sinon.stub(Job, 'create').callsFake(() => {
         return _.cloneDeep(jobResponseBody)
       })
-
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
       const entity = await service.createJob(connectUser, jobRequestBody)
       expect(entity).to.deep.eql(jobResponseBody.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('create job with connect user failed user id not exist ', async () => {
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
       try {
         await service.createJob(_.assign({}, connectUser, { userId: 'not_exist' }), jobRequestBody)
         unexpected()
       } catch (err) {
         expect(err.message).to.equal('user id not found')
       }
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('create job with connect user failed ', async () => {
@@ -135,11 +142,15 @@ describe('job service test', () => {
       }).onSecondCall().callsFake(() => {
         return jobResBody
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
 
       const entity = await service.fullyUpdateJob(connectUser, jobResponseBody.dataValues.id, fullyUpdateJobRequestBody)
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('fully update job test with topcoder user failed', async () => {
@@ -201,10 +212,15 @@ describe('job service test', () => {
       }).onSecondCall().callsFake(() => {
         return jobResBody
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
+
       const entity = await service.partiallyUpdateJob(connectUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('partially update job with topcoder user failed', async () => {

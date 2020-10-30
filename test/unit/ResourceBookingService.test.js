@@ -45,10 +45,15 @@ describe('resourceBooking service test', () => {
       const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
         return resourceBookingResponseBody
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
+
       const entity = await service.createResourceBooking(connectUser, resourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingResponseBody.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('create resource booking with topcoder user failed ', async () => {
@@ -76,9 +81,14 @@ describe('resourceBooking service test', () => {
       const stub = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
         return resourceBookingRes
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
+
       const entity = await service.getResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id)
       expect(entity).to.deep.eql(_.omit(resourceBookingRes.dataValues, ['memberRate']))
       expect(stub.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('get resource booking with topcoder user success', async () => {
@@ -132,10 +142,15 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
+
       const entity = await service.fullyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, fullyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('fully update resource booking test with topcoder user failed', async () => {
@@ -184,10 +199,15 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
+      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+        return true
+      })
+
       const entity = await service.partiallyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, partiallyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubConnect.calledOnce).to.be.true
     })
 
     it('partially update resource booking test with topcoder user failed', async () => {
