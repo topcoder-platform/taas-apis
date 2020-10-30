@@ -21,7 +21,23 @@ const esClient = helper.getESClient()
 const ResourceBooking = models.ResourceBooking
 
 describe('resourceBooking service test', () => {
+  let isConnectMember
+  let userId
+  let stubIsConnectMember
+  let stubGetUserId
   beforeEach(() => {
+    isConnectMember = true
+    stubIsConnectMember = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+      return isConnectMember
+    })
+
+    userId = 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a'
+    stubGetUserId = sinon.stub(helper, 'getUserId').callsFake(() => {
+      return userId
+    })
+  })
+
+  afterEach(() => {
     sinon.restore()
   })
 
@@ -45,18 +61,17 @@ describe('resourceBooking service test', () => {
       const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
         return resourceBookingResponseBody
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.createResourceBooking(connectUser, resourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingResponseBody.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create resource booking with topcoder user failed ', async () => {
+      isConnectMember = false
       try {
         await service.createResourceBooking(topCoderUser, resourceBookingRequestBody)
       } catch (error) {
@@ -81,17 +96,15 @@ describe('resourceBooking service test', () => {
       const stub = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
         return resourceBookingRes
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.getResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id)
       expect(entity).to.deep.eql(_.omit(resourceBookingRes.dataValues, ['memberRate']))
       expect(stub.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
     })
 
     it('get resource booking with topcoder user success', async () => {
+      isConnectMember = false
       const resourceBookingRes = _.cloneDeep(resourceBookingResponseBody)
       const stub = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
         return resourceBookingRes
@@ -142,18 +155,16 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.fullyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, fullyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
     })
 
     it('fully update resource booking test with topcoder user failed', async () => {
+      isConnectMember = false
       const resourceBookingRes = _.cloneDeep(resourceBookingResponseBody)
       const stubResourceBookingFindOne = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
         return {
@@ -199,18 +210,16 @@ describe('resourceBooking service test', () => {
           update: () => { return null }
         }
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.partiallyUpdateResourceBooking(connectUser, resourceBookingResponseBody.dataValues.id, partiallyUpdateResourceBookingRequestBody)
       expect(entity).to.deep.eql(resourceBookingRes.dataValues)
       expect(stubResourceBookingFindOne.calledOnce).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
     })
 
     it('partially update resource booking test with topcoder user failed', async () => {
+      isConnectMember = false
       const resourceBookingRes = _.cloneDeep(resourceBookingResponseBody)
       const stubResourceBookingFindOne = sinon.stub(ResourceBooking, 'findOne').callsFake(() => {
         return {

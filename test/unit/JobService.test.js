@@ -12,13 +12,30 @@ const {
   jobResponseBody, fullyUpdateJobRequestBody, partiallyUpdateJobRequestBody, unexpected
 } = require('./common/testData')
 const helper = require('../../src/common/helper')
+const errors = require('../../src/common/errors')
 
 const esClient = helper.getESClient()
 
 const Job = models.Job
 
 describe('job service test', () => {
+  let isConnectMember
+  let userId
+  let stubIsConnectMember
+  let stubGetUserId
   beforeEach(() => {
+    isConnectMember = true
+    stubIsConnectMember = sinon.stub(helper, 'isConnectMember').callsFake(() => {
+      return isConnectMember
+    })
+
+    userId = 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a'
+    stubGetUserId = sinon.stub(helper, 'getUserId').callsFake(() => {
+      return userId
+    })
+  })
+
+  afterEach(() => {
     sinon.restore()
   })
 
@@ -37,36 +54,39 @@ describe('job service test', () => {
       expect(entity).to.deep.eql(jobResponseBody.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create job with connect user success ', async () => {
       const stubDBCreate = sinon.stub(Job, 'create').callsFake(() => {
         return _.cloneDeep(jobResponseBody)
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
       const entity = await service.createJob(connectUser, jobRequestBody)
       expect(entity).to.deep.eql(jobResponseBody.dataValues)
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubESCreate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create job with connect user failed user id not exist ', async () => {
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
+      stubGetUserId.restore()
+      stubGetUserId = sinon.stub(helper, 'getUserId').callsFake(() => {
+        throw new errors.NotFoundError('user id not found')
       })
+
       try {
         await service.createJob(_.assign({}, connectUser, { userId: 'not_exist' }), jobRequestBody)
         unexpected()
       } catch (err) {
         expect(err.message).to.equal('user id not found')
       }
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('create job with connect user failed ', async () => {
+      isConnectMember = false
       try {
         await service.createJob(topCoderUser, jobRequestBody)
         unexpected()
@@ -126,6 +146,7 @@ describe('job service test', () => {
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('fully update job test with connect user success', async () => {
@@ -142,18 +163,17 @@ describe('job service test', () => {
       }).onSecondCall().callsFake(() => {
         return jobResBody
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
 
       const entity = await service.fullyUpdateJob(connectUser, jobResponseBody.dataValues.id, fullyUpdateJobRequestBody)
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('fully update job test with topcoder user failed', async () => {
+      isConnectMember = false
       const stub = sinon.stub(Job, 'findOne').callsFake(() => {
         return {
           dataValues: {
@@ -196,6 +216,7 @@ describe('job service test', () => {
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('partially update job with connect user success', async () => {
@@ -212,18 +233,16 @@ describe('job service test', () => {
       }).onSecondCall().callsFake(() => {
         return jobResBody
       })
-      const stubConnect = sinon.stub(helper, 'isConnectMember').callsFake(() => {
-        return true
-      })
-
       const entity = await service.partiallyUpdateJob(connectUser, jobResponseBody.dataValues.id, partiallyUpdateJobRequestBody)
       expect(entity).to.deep.eql(jobResBody.dataValues)
       expect(stub.calledTwice).to.be.true
       expect(stubESUpdate.calledOnce).to.be.true
-      expect(stubConnect.calledOnce).to.be.true
+      expect(stubIsConnectMember.calledOnce).to.be.true
+      expect(stubGetUserId.calledOnce).to.be.true
     })
 
     it('partially update job with topcoder user failed', async () => {
+      isConnectMember = false
       const stub = sinon.stub(Job, 'findOne').onFirstCall().callsFake(() => {
         return {
           dataValues: {

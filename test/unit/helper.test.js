@@ -1,12 +1,22 @@
 /* eslint-disable no-unused-expressions */
 process.env.NODE_ENV = 'test'
-require('../../src/bootstrap')
 
+require('../../src/bootstrap')
 const _ = require('lodash')
+const sinon = require('sinon')
+const rewire = require('rewire')
+const request = require('superagent')
 const expect = require('chai').expect
-const helper = require('../../src/common/helper')
+const helper = rewire('../../src/common/helper')
 
 describe('helper test', () => {
+  before(() => {
+
+  })
+  beforeEach(() => {
+    sinon.restore()
+  })
+
   describe('setResHeaders test', () => {
     const req = {
       protocol: 'http',
@@ -129,6 +139,91 @@ describe('helper test', () => {
       const res = helper.autoWrapExpress(obj)
       expect(res).to.be.a('object')
       expect(res.fn).to.be.a('function')
+    })
+  })
+
+  describe('getUserId test', () => {
+    it('isConnectMember return true', async () => {
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            return this
+          }
+        }
+      })
+      const res = await helper.isConnectMember()
+      expect(res).to.be.true
+    })
+
+    it('isConnectMember return false', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              throw new Error()
+            }
+            return this
+          }
+        }
+      })
+      const res = await helper.isConnectMember()
+      expect(res).to.be.false
+    })
+  })
+
+  describe('getUserId test', () => {
+    const id = '9966a0cf-c1c9-457b-9a4b-e6d1f4cec88d'
+    it('getUserId return id', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: [{ id }]
+              }
+            }
+            return this
+          }
+        }
+      })
+      helper.__set__('m2m', {
+        getMachineToken: function () {
+          return 'm2mToken'
+        }
+      })
+      const res = await helper.getUserId(8547899)
+      expect(res).to.equal(id)
+    })
+
+    it('getUserId return id', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: []
+              }
+            }
+            return this
+          }
+        }
+      })
+      helper.__set__('m2m', {
+        getMachineToken: function () {
+          return 'm2mToken'
+        }
+      })
+      try {
+        await helper.getUserId(44532)
+      } catch (err) {
+        expect(err.message).to.equal('user id not found')
+      }
     })
   })
 })

@@ -31,6 +31,7 @@
     "lodash": "^4.17.20",
     "pg": "^8.4.0",
     "pg-hstore": "^2.3.3",
+    "rewire": "^5.0.0",
     "sequelize": "^6.3.5",
     "superagent": "^6.1.0",
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js#v2.6.5",
