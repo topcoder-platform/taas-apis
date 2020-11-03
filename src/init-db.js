@@ -6,7 +6,7 @@ const models = require('./models')
 const logger = require('./common/logger')
 
 const initDB = async () => {
- // await models.sequelize.dropSchema(config.DB_SCHEMA_NAME)
+  // await models.sequelize.dropSchema(config.DB_SCHEMA_NAME)
   await models.sequelize.createSchema(config.DB_SCHEMA_NAME)
   await models.sequelize.sync({ force: true })
 }
