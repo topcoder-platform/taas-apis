@@ -3,7 +3,7 @@ set -eo pipefail
 APP_NAME=$1
 UPDATE_CACHE=""
 echo "" > docker/api.env
-docker build -f docker/Dockerfile -t $APP_NAME:latest
+docker build -f docker/Dockerfile -t $APP_NAME:latest .
 docker create --name app $APP_NAME:latest
 
 if [ -d node_modules ]
