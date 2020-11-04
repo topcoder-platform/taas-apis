@@ -10,9 +10,11 @@ const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
+const m2mAuthUbahn = require('tc-core-library-js').auth.m2m
 
 //const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
-const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID','AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
+const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_PROXY_SERVER_URL']))
+const m2mU = m2mAuthUbahn(_.pick(config, ['AUTH0_URL', 'UBAHN_AUTH0_AUDIENCE', 'AUTH0_PROXY_SERVER_URL']))
 
 
 // ES Client mapping
@@ -157,6 +159,14 @@ const getM2Mtoken = async () => {
   return m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
+/*
+ * Function to get M2M token
+ * @returns {Promise}
+ */
+const getM2MUtoken = async () => {
+  return m2mU.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+}
+
 /**
  * Function to encode query string
  * @param {Object} queryObj the query object
@@ -182,7 +192,7 @@ function encodeQueryString (queryObj, nesting = '') {
  * @returns {String} user id.
  */
 async function getUserIds (userId) {
-  const token = await getM2Mtoken()
+  const token = await getM2MUtoken()
   const q = {
     enrich: true,
     externalProfile: {

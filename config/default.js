@@ -8,6 +8,7 @@ module.exports = {
   VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/", "https://auth.topcoder-dev.com/"]',
   AUTH0_URL: process.env.AUTH0_URL,
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
+  UBAHN_AUTH0_AUDIENCE: process.env.Ubahn_AUTH0_AUDIENCE,
   TOKEN_CACHE_TIME: process.env.TOKEN_CACHE_TIME,
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
