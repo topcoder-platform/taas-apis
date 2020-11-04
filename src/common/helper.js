@@ -14,7 +14,7 @@ const m2mAuthUbahn = require('tc-core-library-js').auth.m2m
 
 //const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
 const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_PROXY_SERVER_URL']))
-const m2mU = m2mAuthUbahn(_.pick(config, ['AUTH0_URL', 'UBAHN_AUTH0_AUDIENCE', 'AUTH0_PROXY_SERVER_URL']))
+const m2mU = m2mAuthUbahn(config.uM2mConfig)
 
 
 // ES Client mapping

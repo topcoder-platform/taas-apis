@@ -8,7 +8,6 @@ module.exports = {
   VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/", "https://auth.topcoder-dev.com/"]',
   AUTH0_URL: process.env.AUTH0_URL,
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
-  UBAHN_AUTH0_AUDIENCE: process.env.UBAHN_AUTH0_AUDIENCE,
   TOKEN_CACHE_TIME: process.env.TOKEN_CACHE_TIME,
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
@@ -20,7 +19,11 @@ module.exports = {
   DATABASE_URL: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres',
   DB_SCHEMA_NAME: process.env.DB_SCHEMA_NAME || 'bookings',
   PROJECT_API_URL: process.env.PROJECT_API_URL || 'https://api.topcoder-dev.com',
-
+  uM2mConfig: {
+    AUTH0_AUDIENCE: process.env.UBAHN_AUTH0_AUDIENCE,
+    AUTH0_URL: process.env.AUTH0_URL,
+    AUTH0_PROXY_SERVER_URL: process.env.AUTH0_PROXY_SERVER_URL
+  },
   esConfig: {
     HOST: process.env.ES_HOST || 'http://localhost:9200',
     ES_INDEX_JOB: process.env.ES_INDEX_JOB || 'job',
