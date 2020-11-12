@@ -199,7 +199,7 @@ describe('helper test', () => {
       expect(res).to.equal(id)
     })
 
-    it('getUserId return id', async () => {
+    it('getUserId catch not found', async () => {
       let i = 0
       sinon.stub(request, 'get').callsFake(() => {
         return {
@@ -222,7 +222,7 @@ describe('helper test', () => {
       try {
         await helper.getUserId(44532)
       } catch (err) {
-        expect(err.message).to.equal('user id not found')
+        expect(err.message).to.equal('userId: 44532 "user" not found')
       }
     })
   })

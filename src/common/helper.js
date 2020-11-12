@@ -3,17 +3,39 @@
  */
 
 const querystring = require('querystring')
+const AWS = require('aws-sdk')
 const config = require('config')
 const _ = require('lodash')
 const request = require('superagent')
 const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
+const logger = require('./logger')
+const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
+
+AWS.config.region = config.esConfig.AWS_REGION
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
 
-//const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
-const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID','AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
+// const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
+const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
 
+let busApiClient
+
+/**
+ * Get bus api client.
+ *
+ * @returns {Object} the bus api client
+ */
+function getBusApiClient () {
+  if (busApiClient) {
+    return busApiClient
+  }
+  busApiClient = busApi({
+    AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
+    ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'BUSAPI_URL', 'KAFKA_ERROR_TOPIC', 'AUTH0_PROXY_SERVER_URL'])
+  })
+  return busApiClient
+}
 
 // ES Client mapping
 const esClients = {}
@@ -68,6 +90,9 @@ function getPageLink (req, page) {
  * @param {Object} result the operation result
  */
 function setResHeaders (req, res, result) {
+  if (result.fromDb) {
+    return
+  }
   const totalPages = Math.ceil(result.total / result.perPage)
   if (result.page > 1) {
     res.set('X-Prev-Page', result.page - 1)
@@ -140,10 +165,26 @@ async function isConnectMember (projectId, jwtToken) {
  * @return {Object} Elastic Host Client Instance
  */
 function getESClient () {
-  const esHost = config.get('esConfig.HOST')
-  if (!esClients.client) {
+  if (esClients.client) {
+    return esClients.client
+  }
+
+  const host = config.esConfig.HOST
+  const cloudId = config.esConfig.ELASTICCLOUD.id
+  if (cloudId) {
+    // Elastic Cloud configuration
     esClients.client = new elasticsearch.Client({
-      node: esHost
+      cloud: {
+        id: cloudId
+      },
+      auth: {
+        username: config.esConfig.ELASTICCLOUD.username,
+        password: config.esConfig.ELASTICCLOUD.password
+      }
+    })
+  } else {
+    esClients.client = new elasticsearch.Client({
+      node: host
     })
   }
   return esClients.client
@@ -154,7 +195,7 @@ function getESClient () {
  * @returns {Promise}
  */
 const getM2Mtoken = async () => {
-  return m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+  return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
 /**
@@ -207,9 +248,40 @@ async function getUserIds (userId) {
 async function getUserId (userId) {
   const ids = await getUserIds(userId)
   if (_.isEmpty(ids)) {
-    throw new errors.NotFoundError('user id not found')
+    throw new errors.NotFoundError(`userId: ${userId} "user" not found`)
   }
   return ids[0].id
+}
+
+/**
+ * Send Kafka event message
+ * @params {String} topic the topic name
+ * @params {Object} payload the payload
+ */
+async function postEvent (topic, payload) {
+  logger.debug({ component: 'helper', context: 'postEvent', message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(payload)}` })
+  const client = getBusApiClient()
+  const message = {
+    topic,
+    originator: config.KAFKA_MESSAGE_ORIGINATOR,
+    timestamp: new Date().toISOString(),
+    'mime-type': 'application/json',
+    payload
+  }
+  await client.postEvent(message)
+}
+
+/**
+ * Test if an error is document missing exception
+ *
+ * @param {Object} err the err
+ * @returns {Boolean} the result
+ */
+function isDocumentMissingException (err) {
+  if (err.statusCode === 404) {
+    return true
+  }
+  return false
 }
 
 module.exports = {
@@ -218,5 +290,8 @@ module.exports = {
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId
+  getUserId,
+  postEvent,
+  getBusApiClient,
+  isDocumentMissingException
 }

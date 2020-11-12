@@ -240,6 +240,12 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -636,6 +642,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1039,6 +1051,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1246,6 +1264,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /health:
+    get:
+      tags:
+        - Health
+      description: |
+        Get health status of the app.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckRun'
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckRun'
 components:
   securitySchemes:
     bearerAuth:
@@ -1641,6 +1678,13 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+    CheckRun:
+      type: object
+      properties:
+        checksRun:
+          type: integer
+      required:
+        - checksRun
     Error:
       required:
         - message

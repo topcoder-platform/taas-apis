@@ -10,10 +10,13 @@ const getParams = require('get-parameter-names')
 const winston = require('winston')
 
 const {
-  combine, timestamp, colorize, align, printf
+  combine, timestamp, colorize, printf
 } = winston.format
 
-const basicFormat = printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+const basicFormat = printf(info => {
+  const location = `${info.component}${info.context ? ` ${info.context}` : ''}`
+  return `[${info.timestamp}] ${location} ${info.level} : ${info.message}`
+})
 
 const transports = []
 if (!config.DISABLE_LOGGING) {
@@ -23,8 +26,11 @@ if (!config.DISABLE_LOGGING) {
 const logger = winston.createLogger({
   transports,
   format: combine(
+    winston.format(info => {
+      info.level = info.level.toUpperCase()
+      return info
+    })(),
     colorize(),
-    align(),
     timestamp(),
     basicFormat
   )
@@ -33,15 +39,20 @@ const logger = winston.createLogger({
 logger.config = config
 
 /**
- * Log error details with signature
- * @param err the error
- * @param signature the signature
+ * Log error details
+ * @param {Object} err the error
+ * @param {Object} context contains extra info about errors
  */
-logger.logFullError = (err, signature) => {
+logger.logFullError = (err, context = {}) => {
   if (!err) {
     return
   }
-  logger.error((signature ? (`${signature} : `) : '') + util.inspect(err))
+  if (err.logged) {
+    return
+  }
+  const signature = context.signature ? `${context.signature} : ` : ''
+  const errMessage = err.message || util.inspect(err).split('\n')[0]
+  logger.error({ ..._.pick(context, ['component', 'context']), message: `${signature}${errMessage}` })
   err.logged = true
 }
 
@@ -79,29 +90,37 @@ const _combineObject = (params, arr) => {
 /**
  * Decorate all functions of a service and log debug information if DEBUG is enabled
  * @param {Object} service the service
+ * @param {String} serviceName the service name
  */
-logger.decorateWithLogging = (service) => {
+logger.decorateWithLogging = (service, serviceName) => {
   if (logger.config.LOG_LEVEL !== 'debug') {
     return
   }
   _.each(service, (method, name) => {
     const params = method.params || getParams(method)
     service[name] = async function () {
-      logger.debug(`ENTER ${name}`)
-      logger.debug('input arguments')
       const args = Array.prototype.slice.call(arguments)
-      logger.debug(util.inspect(_sanitizeObject(_combineObject(params, args))))
+      logger.debug({
+        component: serviceName,
+        context: name,
+        message: `input arguments: ${util.inspect(_sanitizeObject(_combineObject(params, args)), { compact: true, breakLength: Infinity })}`
+      })
       try {
         const result = await method.apply(this, arguments)
-        logger.debug(`EXIT ${name}`)
-        logger.debug('output arguments')
-        if (result !== null && result !== undefined) {
-          logger.debug(util.inspect(_sanitizeObject(result)))
-        }
+        logger.debug({
+          component: serviceName,
+          context: name,
+          message: `output arguments: ${result !== null && result !== undefined
+              ? util.inspect(_sanitizeObject(result), { compact: true, breakLength: Infinity })
+              : undefined}`
+        })
         return result
-      } catch (e) {
-        logger.logFullError(e, name)
-        throw e
+      } catch (err) {
+        logger.logFullError(err, {
+          component: serviceName,
+          context: name
+        })
+        throw err
       }
     }
   })
@@ -140,10 +159,11 @@ logger.decorateWithValidators = function (service) {
 /**
  * Apply logger and validation decorators
  * @param {Object} service the service to wrap
+ * @param {String} serviceName the service name
  */
-logger.buildService = (service) => {
+logger.buildService = (service, serviceName) => {
   logger.decorateWithValidators(service)
-  logger.decorateWithLogging(service)
+  logger.decorateWithLogging(service, serviceName)
 }
 
 module.exports = logger
