@@ -229,7 +229,7 @@ async function searchResourceBookings (criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -289,7 +289,8 @@ searchResourceBookings.schema = Joi.object().keys({
     status: Joi.jobStatus(),
     startDate: Joi.date(),
     endDate: Joi.date(),
-    rateType: Joi.rateType()
+    rateType: Joi.rateType(),
+    projectId: Joi.number().integer()
   }).required()
 }).required()
 

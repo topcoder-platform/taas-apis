@@ -51,7 +51,12 @@ logger.logFullError = (err, context = {}) => {
     return
   }
   const signature = context.signature ? `${context.signature} : ` : ''
-  const errMessage = err.message || util.inspect(err).split('\n')[0]
+  let errMessage
+  if (err.response && err.response.error) {
+    errMessage = err.response.error.message
+  } else {
+    errMessage = err.message || util.inspect(err).split('\n')[0]
+  }
   logger.error({ ..._.pick(context, ['component', 'context']), message: `${signature}${errMessage}` })
   err.logged = true
 }

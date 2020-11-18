@@ -209,6 +209,556 @@ const partiallyUpdateResourceBookingRequestBody = {
 
 const unexpected = () => { throw new Error('should not reach here') }
 
+const projectRequestBody = [
+  { id: 9050, name: 'sample' },
+  { id: 9056, name: 'Invitation Test Max' },
+  { id: 9063, name: 'Project001{codejam}' },
+  { id: 9072, name: 'Project Name Edited' },
+  { id: 9080, name: 'sdfdf' },
+  { id: 9081, name: 'Test' },
+  { id: 9091, name: 'Test 1 Max' },
+  { id: 9096, name: 'test 1' },
+  { id: 9097, name: 'test 2' },
+  { id: 9099, name: 'Test' },
+  { id: 9101, name: 'testin vikasverma' },
+  { id: 9102, name: 'Test' },
+  { id: 9132, name: 'Copilot Invite Test Max' },
+  { id: 9133, name: 'Test' },
+  { id: 9138, name: 'Update node versions 5 {codejam}' },
+  { id: 9153, name: 'y' },
+  { id: 9155, name: 'error' },
+  { id: 9157, name: '3950-vikasverma' },
+  { id: 9175, name: 'project' },
+  { id: 9176, name: 'Testing 4-24-20 at 4-20' }
+]
+
+const userRequestBody = [
+  {
+    id: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',
+    handle: 'PE335869',
+    firstName: ' Peddaram',
+    lastName: ' Varalakshmi'
+  },
+  {
+    id: '10803918-ded0-4906-9442-65dc8819de91',
+    handle: 'Gayathri_1994',
+    firstName: 'Gayathri',
+    lastName: 'Sekar'
+  },
+  {
+    id: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+    handle: 'Sandrine_Kuvalis98',
+    firstName: 'Mekhi',
+    lastName: 'Tremblay'
+  },
+  {
+    id: '460bddcd-3580-4f2a-bfe8-5ba6d8f6f6af',
+    handle: 'Lourdes0',
+    firstName: 'Larissa',
+    lastName: 'Sporer'
+  },
+  {
+    id: '4f2dc463-e24b-4b4a-8cde-c0122fbfb8ac',
+    handle: 'Demond39',
+    firstName: 'Domenic',
+    lastName: 'Casper'
+  },
+  {
+    id: '39203872-707a-41b8-a587-18cab2557632',
+    handle: 'testkeychng204',
+    firstName: 'Testing',
+    lastName: 'Mithun'
+  },
+  {
+    id: 'b074236c-bb33-449f-9320-72437a064c38',
+    handle: 'MA40018690',
+    firstName: 'Mangasamudram',
+    lastName: 'Teja'
+  },
+  {
+    id: 'cdaeb417-e400-4df1-b484-f99ae10b4800',
+    handle: 'Leilani_Fahey35',
+    firstName: 'Godfrey',
+    lastName: 'Morar'
+  },
+  {
+    id: 'ecec4ad8-3a1d-4646-8641-25054e8f2d33',
+    handle: 'Bernadine17',
+    firstName: 'Elmore',
+    lastName: 'Sanford'
+  },
+  {
+    id: '28df7acf-d7b1-467c-8ee5-594c7bace8dc',
+    handle: 'Sylvan_Gorczany',
+    firstName: 'Samara',
+    lastName: 'Schultz'
+  },
+  {
+    id: '6910d2f4-a50a-4494-8f46-6de1f3d032c2',
+    handle: 'Aditya65',
+    firstName: 'Clemens',
+    lastName: 'Rodriguez'
+  },
+  {
+    id: '9bf08a13-29b6-4ef9-a2b6-d967c1c50fb4',
+    handle: 'Abirami_S',
+    firstName: 'Abirami',
+    lastName: 'SenthilNathan'
+  },
+  {
+    id: '25f7b0e8-10a1-4bbc-b2f9-dacb1c72f1e9',
+    handle: 'Gaurav..Kumar',
+    firstName: 'Gaurav',
+    lastName: 'Kumar'
+  },
+  {
+    id: '6fa6d708-68a6-47be-9591-4b5100921b3a',
+    handle: 'Kian.DuBuque',
+    firstName: 'Myles',
+    lastName: 'Connelly'
+  },
+  {
+    id: '8edca7c4-0e71-4688-952a-42227f73ca32',
+    handle: 'BinoyVipin',
+    firstName: 'Binoy',
+    lastName: 'V'
+  },
+  {
+    id: '247aaea8-f7e0-4ac8-b89e-4d78b76226b0',
+    handle: 'saikrupa87',
+    firstName: 'Miriyala',
+    lastName: 'Saikrupa reddy'
+  },
+  {
+    id: 'cc7a694c-44a0-412b-9d1d-f98f7fe26a21',
+    handle: 'SriV_1672',
+    firstName: 'Srinivas',
+    lastName: 'Merugu'
+  },
+  {
+    id: '07744775-eff1-443d-b56b-9d09ed02e599',
+    handle: 'Aachal',
+    firstName: 'Aachal ',
+    lastName: 'Jain'
+  },
+  {
+    id: '0668fe37-b9cf-481b-8769-c3615833f80a',
+    handle: 'satadipa',
+    firstName: 'Satadipa',
+    lastName: 'Datta'
+  },
+  {
+    id: '844fad5d-f19e-444b-be2e-ba9c36d34265',
+    handle: 'BA249730',
+    firstName: 'Balamurali',
+    lastName: 'B'
+  }
+]
+
+const memberRequestBody = [
+  {
+    userId: 305384,
+    handleLower: 'mess',
+    photoURL: 'https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/mess-1601487458118.jpeg'
+  },
+  {
+    userId: 88773829,
+    handleLower: 'pe335869'
+  },
+  {
+    userId: 8547899,
+    handleLower: 'tonyj',
+    photoURL: 'https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg'
+  },
+  {
+    userId: 8547893,
+    handleLower: 'gayathri_1994',
+    photoURL: 'https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg'
+  }
+]
+
+const skillsRequestBody = [
+  { id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1', name: 'ACI Concrete Strength Testing Technician' },
+  { id: '59ee7b42-f3f3-48c9-bdca-e8396b241793', name: '2D Computer Graphics' },
+  { id: '1b585c26-2649-4078-8369-b599fe6a9d75', name: 'ACCP Certified' },
+  { id: '8b757998-ff7d-4b3a-9fee-a49d3e41da03', name: '3D Projection' },
+  { id: 'bcfc8806-cae6-47ff-b0c9-f604acfc8c99', name: '35 Mm Films' },
+  { id: 'db4358f3-c9a3-4afd-94a4-2d352d6bfa60', name: 'Nintex Workflow for SharePoint' },
+  { id: '077533be-8029-4585-8b8e-9efc2dc43f53', name: 'CA Service Virtualization' },
+  { id: 'f682838c-a9a7-4b47-8c2e-45d5132c04d7', name: 'SOAP UI Testing' },
+  { id: '13dda8dc-4c34-4751-bbab-aab76d757cbb', name: 'JavaBean' },
+  { id: '99b930b5-1b91-4df1-8b17-d9307107bb51', name: 'Excel' },
+  { id: '513ba597-5ad1-4177-8556-35583e0cc6ac', name: 'Microsoft Dynamics 365 Portals' },
+  { id: 'ee4c50c1-c8c3-475e-b6b6-edbd136a19d6', name: 'SFDC Lightening Components' },
+  { id: '1c67b60d-32a3-4dcd-8bc4-947bc476fcd1', name: 'Performance Point' },
+  { id: '70834003-3eba-452c-9bc4-a6d9d637a10e', name: 'AI/ML App Testing' },
+  { id: '89139c80-d0a2-47c2-aa16-14589d5afd10', name: 'User Testing' },
+  { id: '866ee344-5328-4c1d-b9ae-1c003f8fef16', name: 'DB2 Testing' },
+  { id: '9f2d9127-6a2e-4506-ad76-c4ab63577b09', name: 'IndexedDB' },
+  { id: 'c854ab55-5922-4be1-8ecc-b3bc1f8629af', name: 'InVision' },
+  { id: '9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b', name: 'List' },
+  { id: '57ef43c2-4227-4ea1-bc5a-287321f3f8b2', name: 'Microsoft Dynamics AX 2012 - Retail' }
+]
+
+const userSkillsRequestBody = [
+  { id: '5d313a7b-795b-42a2-9e7e-dc5e81c2f2b5', name: 'Java' },
+  { id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1', name: 'ACI Concrete Strength Testing Technician' }
+]
+
+const resourceBookingsRequestBody = [
+  {
+    projectId: 9063,
+    userId: '4f2dc463-e24b-4b4a-8cde-c0122fbfb8ac',
+    jobId: '1d9e8c1a-e653-4d31-a799-2685e41da216',
+    startDate: '2020-09-28T04:17:23.131Z',
+    endDate: '2020-12-30T04:17:23.131Z',
+    memberRate: 13.23,
+    customerRate: 11.11,
+    rateType: 'hourly',
+    status: 'assigned',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '3d9e8c1a-e653-4d31-a799-2685e41da216'
+  },
+  {
+    projectId: 9056,
+    userId: '460bddcd-3580-4f2a-bfe8-5ba6d8f6f6af',
+    jobId: '1d9e8c1a-e653-4d31-a799-2685e41da215',
+    startDate: '2020-09-28T04:17:23.131Z',
+    endDate: '2020-12-30T04:17:23.131Z',
+    memberRate: 13.23,
+    customerRate: 156.7,
+    rateType: 'hourly',
+    status: 'assigned',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '3d9e8c1a-e653-4d31-a799-2685e41da215'
+  },
+  {
+    projectId: 9050,
+    userId: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+    jobId: '1d9e8c1a-e653-4d31-a799-2685e41da214',
+    startDate: '2020-09-28T04:17:23.131Z',
+    endDate: '2020-12-30T04:17:23.131Z',
+    memberRate: 13.23,
+    customerRate: 16.7,
+    rateType: 'hourly',
+    status: 'assigned',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '3d9e8c1a-e653-4d31-a799-2685e41da214'
+  },
+  {
+    projectId: 9050,
+    userId: '10803918-ded0-4906-9442-65dc8819de91',
+    jobId: '1d9e8c1a-e653-4d31-a799-2685e41da213',
+    startDate: '2020-09-22T04:17:23.131Z',
+    endDate: '2020-10-27T04:17:23.131Z',
+    memberRate: 13.23,
+    customerRate: 14.5,
+    rateType: 'hourly',
+    status: 'assigned',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '3d9e8c1a-e653-4d31-a799-2685e41da213'
+  },
+  {
+    projectId: 9050,
+    userId: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',
+    jobId: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+    startDate: '2020-09-27T04:17:23.131Z',
+    endDate: '2021-11-11T04:17:23.131Z',
+    memberRate: 13.23,
+    customerRate: 13,
+    rateType: 'hourly',
+    status: 'assigned',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '3d9e8c1a-e653-4d31-a799-2685e41da212'
+  }
+]
+
+const jobsRequestBody = [
+  {
+    projectId: 9063,
+    externalId: '1212',
+    description: 'Dummy Description',
+    startDate: '2020-09-27T04:17:23.131Z',
+    endDate: '2020-10-09T04:17:23.131Z',
+    numPositions: 10,
+    resourceType: 'Dummy Resource Type',
+    rateType: 'hourly',
+    skills: [
+      '1b585c26-2649-4078-8369-b599fe6a9d75',
+      'bcfc8806-cae6-47ff-b0c9-f604acfc8c99'
+    ],
+    status: 'sourcing',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '1d9e8c1a-e653-4d31-a799-2685e41da215'
+  },
+  {
+    projectId: 9063,
+    externalId: '1212',
+    description: 'Dummy Description',
+    startDate: '2020-09-17T04:17:23.131Z',
+    endDate: '2020-10-19T04:17:23.131Z',
+    numPositions: 20,
+    resourceType: 'Dummy Resource Type',
+    rateType: 'hourly',
+    skills: [
+      '8b757998-ff7d-4b3a-9fee-a49d3e41da03',
+      'bcfc8806-cae6-47ff-b0c9-f604acfc8c99'
+    ],
+    status: 'sourcing',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '1d9e8c1a-e653-4d31-a799-2685e41da214',
+    candidates: [
+      {
+        jobId: '1d9e8c1a-e653-4d31-a799-2685e41da214',
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        status: 'open',
+        createdAt: '2020-11-11T04:17:23.131Z',
+        createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        id: '2d9e8c1a-e653-4d31-a799-2685e41da214'
+      }
+    ]
+  },
+  {
+    projectId: 9056,
+    externalId: '1212',
+    description: 'Dummy Description',
+    startDate: '2020-09-29T04:17:23.131Z',
+    endDate: '2020-10-17T04:17:23.131Z',
+    numPositions: 11,
+    resourceType: 'Dummy Resource Type',
+    rateType: 'hourly',
+    skills: [
+      'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+      '59ee7b42-f3f3-48c9-bdca-e8396b241793',
+      'bcfc8806-cae6-47ff-b0c9-f604acfc8c99'
+    ],
+    status: 'sourcing',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '1d9e8c1a-e653-4d31-a799-2685e41da213',
+    candidates: [
+      {
+        jobId: '1d9e8c1a-e653-4d31-a799-2685e41da213',
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        status: 'open',
+        createdAt: '2020-11-11T04:17:23.131Z',
+        createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        id: '2d9e8c1a-e653-4d31-a799-2685e41da213'
+      }
+    ]
+  },
+  {
+    projectId: 9050,
+    externalId: '1212',
+    description: 'Dummy Description',
+    startDate: '2020-09-27T04:17:23.131Z',
+    endDate: '2020-10-17T04:17:23.131Z',
+    numPositions: 13,
+    resourceType: 'Dummy Resource Type',
+    rateType: 'hourly',
+    skills: [
+      'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+      '59ee7b42-f3f3-48c9-bdca-e8396b241793',
+      '1b585c26-2649-4078-8369-b599fe6a9d75',
+      '8b757998-ff7d-4b3a-9fee-a49d3e41da03',
+      'bcfc8806-cae6-47ff-b0c9-f604acfc8c99'
+    ],
+    status: 'sourcing',
+    createdAt: '2020-11-11T04:17:23.131Z',
+    createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+    id: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+    candidates: [
+      {
+        jobId: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+        userId: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+        status: 'open',
+        createdAt: '2020-11-11T04:17:23.131Z',
+        createdBy: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        id: '2d9e8c1a-e653-4d31-a799-2685e41da212'
+      }
+    ]
+  }
+]
+
+const taasTeamItem0ResponseBody = {
+  id: 9050,
+  name: 'sample',
+  weeklyCount: 29.7,
+  resources: [
+    {
+      id: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',
+      handle: 'PE335869',
+      firstName: ' Peddaram',
+      lastName: ' Varalakshmi'
+    },
+    {
+      id: '10803918-ded0-4906-9442-65dc8819de91',
+      handle: 'Gayathri_1994',
+      firstName: 'Gayathri',
+      lastName: 'Sekar',
+      photo_url: 'https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg'
+    },
+    {
+      id: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+      handle: 'Sandrine_Kuvalis98',
+      firstName: 'Mekhi',
+      lastName: 'Tremblay'
+    }
+  ],
+  startDate: new Date('2020-09-22T04:17:23.131Z'),
+  endDate: new Date('2021-11-11T04:17:23.131Z'),
+  totalPositions: 13
+}
+
+const taasTeam9050ResponseBody = {
+  id: 9050,
+  name: 'sample',
+  weeklyCount: 29.7,
+  resources: [
+    {
+      id: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',
+      handle: 'PE335869',
+      firstName: ' Peddaram',
+      lastName: ' Varalakshmi',
+      customerRate: 13,
+      job: {
+        id: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+        name: 'Dummy Description'
+      },
+      skills: [
+        {
+          id: '5d313a7b-795b-42a2-9e7e-dc5e81c2f2b5',
+          name: 'Java'
+        },
+        {
+          id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+          name: 'ACI Concrete Strength Testing Technician'
+        }
+
+      ],
+      skillMatched: 1
+    },
+    {
+      id: '10803918-ded0-4906-9442-65dc8819de91',
+      handle: 'Gayathri_1994',
+      firstName: 'Gayathri',
+      lastName: 'Sekar',
+      customerRate: 14.5,
+      photo_url: 'https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg',
+      job: {
+        id: '1d9e8c1a-e653-4d31-a799-2685e41da213',
+        name: 'Dummy Description'
+      },
+      skills: [
+        {
+          id: '5d313a7b-795b-42a2-9e7e-dc5e81c2f2b5',
+          name: 'Java'
+        },
+        {
+          id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+          name: 'ACI Concrete Strength Testing Technician'
+        }
+      ],
+      skillMatched: 1
+    },
+    {
+      id: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+      handle: 'Sandrine_Kuvalis98',
+      firstName: 'Mekhi',
+      lastName: 'Tremblay',
+      customerRate: 16.7,
+      job: {
+        id: '1d9e8c1a-e653-4d31-a799-2685e41da214',
+        name: 'Dummy Description'
+      },
+      skills: [
+        {
+          id: '5d313a7b-795b-42a2-9e7e-dc5e81c2f2b5',
+          name: 'Java'
+        },
+        {
+          id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+          name: 'ACI Concrete Strength Testing Technician'
+        }
+      ],
+      skillMatched: 1
+    }
+  ],
+  startDate: new Date('2020-09-22T04:17:23.131Z'),
+  endDate: new Date('2021-11-11T04:17:23.131Z'),
+  jobs: [
+    {
+      id: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+      description: 'Dummy Description',
+      startDate: '2020-09-27T04:17:23.131Z',
+      endDate: '2020-10-17T04:17:23.131Z',
+      numPositions: 13,
+      rateType: 'hourly',
+      skills: [
+        {
+          id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+          name: 'ACI Concrete Strength Testing Technician'
+        },
+        {
+          id: '59ee7b42-f3f3-48c9-bdca-e8396b241793',
+          name: '2D Computer Graphics'
+        },
+        {
+          id: '1b585c26-2649-4078-8369-b599fe6a9d75',
+          name: 'ACCP Certified'
+        },
+        {
+          id: '8b757998-ff7d-4b3a-9fee-a49d3e41da03',
+          name: '3D Projection'
+        },
+        {
+          id: 'bcfc8806-cae6-47ff-b0c9-f604acfc8c99',
+          name: '35 Mm Films'
+        }
+      ],
+      status: 'sourcing'
+    }
+  ]
+}
+
+const jobDetailResponseBody = {
+  id: '1d9e8c1a-e653-4d31-a799-2685e41da212',
+  description: 'Dummy Description',
+  candidates: [
+    {
+      id: '5bd69a82-c2cb-476f-9462-0883d3b28b90',
+      handle: 'Sandrine_Kuvalis98',
+      firstName: 'Mekhi',
+      lastName: 'Tremblay',
+      resumeLink: null,
+      status: 'open',
+      skills: [
+        {
+          id: '5d313a7b-795b-42a2-9e7e-dc5e81c2f2b5',
+          name: 'Java'
+        },
+        {
+          id: 'cb01fd31-e8d2-4e34-8bf3-b149705de3e1',
+          name: 'ACI Concrete Strength Testing Technician'
+        }
+      ],
+      job: {
+        id: '1d9e8c1a-e653-4d31-a799-2685e41da214',
+        name: 'Dummy Description'
+      },
+      skillMatched: 1,
+      customerRate: 16.7
+    }
+  ]
+}
+
 module.exports = {
   bookingManagerUser,
   connectUser,
@@ -225,5 +775,15 @@ module.exports = {
   resourceBookingResponseBody,
   fullyUpdateResourceBookingRequestBody,
   partiallyUpdateResourceBookingRequestBody,
-  unexpected
+  unexpected,
+  projectRequestBody,
+  userRequestBody,
+  memberRequestBody,
+  skillsRequestBody,
+  userSkillsRequestBody,
+  resourceBookingsRequestBody,
+  jobsRequestBody,
+  taasTeamItem0ResponseBody,
+  taasTeam9050ResponseBody,
+  jobDetailResponseBody
 }

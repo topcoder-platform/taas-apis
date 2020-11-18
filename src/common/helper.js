@@ -284,6 +284,114 @@ function isDocumentMissingException (err) {
   return false
 }
 
+/**
+ * Function to get projects
+ * @param {String} token the user request token
+ * @returns the request result
+ */
+async function getProjects (token) {
+  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return _.map(res.body, item => {
+    return _.pick(item, ['id', 'name'])
+  })
+}
+
+/**
+ * Function to get users
+ * @param {String} token the user request token
+ * @returns the request result
+ */
+async function getUsers (token) {
+  const url = `${config.TC_API}/users`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return _.map(res.body, item => {
+    return _.pick(item, ['id', 'handle', 'firstName', 'lastName'])
+  })
+}
+
+/**
+ * Function to get members
+ * @param {String} token the user request token
+ * @param {Array} handles the handle array
+ * @returns the request result
+ */
+async function getMembers (token, handles) {
+  const handlesStr = _.map(handles, handle => {
+    return '%22' + handle.toLowerCase() + '%22'
+  }).join(',')
+  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
+
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return res.body
+}
+
+/**
+ * Function to get project by id
+ * @param {String} token the user request token
+ * @param {Number} id project id
+ * @returns the request result
+ */
+async function getProjectById (token, id) {
+  const url = `${config.TC_API}/projects/${id}`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return _.pick(res.body, ['id', 'name'])
+}
+
+/**
+ * Function to get skills
+ * @param {String} token the user request token
+ * @returns the request result
+ */
+async function getSkills (token) {
+  const url = `${config.TC_API}/skills`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return _.map(res.body, item => {
+    return _.pick(item, ['id', 'name'])
+  })
+}
+
+/**
+ * Function to get user skills
+ * @param {String} token the user request token
+ * @param {String} userId user id
+ * @returns the request result
+ */
+async function getUserSkill (token, userId) {
+  const url = `${config.TC_API}/users/${userId}/skills`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  return _.map(res.body, item => {
+    return {
+      id: item.id,
+      name: item.skill.name
+    }
+  })
+}
+
 module.exports = {
   autoWrapExpress,
   setResHeaders,
@@ -293,5 +401,11 @@ module.exports = {
   getUserId,
   postEvent,
   getBusApiClient,
-  isDocumentMissingException
+  isDocumentMissingException,
+  getProjects,
+  getUsers,
+  getMembers,
+  getProjectById,
+  getSkills,
+  getUserSkill
 }

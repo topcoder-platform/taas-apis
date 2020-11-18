@@ -280,6 +280,14 @@ async function searchJobs (criteria) {
       }
       esQuery.body.query.bool.must.push(must)
     })
+    // If criteria contains projectIds, filter projectId with this value
+    if (criteria.projectIds) {
+      esQuery.body.query.bool.filter = [{
+        terms: {
+          projectId: criteria.projectIds
+        }
+      }]
+    }
     logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
@@ -362,7 +370,8 @@ searchJobs.schema = Joi.object().keys({
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     rateType: Joi.rateType(),
-    status: Joi.jobStatus()
+    status: Joi.jobStatus(),
+    projectIds: Joi.array().items(Joi.number().integer()).single()
   }).required()
 }).required()
 

@@ -11,6 +11,7 @@
     "init-db": "node src/init-db.js",
     "create-index": "node scripts/createIndex.js",
     "delete-index": "node scripts/deleteIndex.js",
+    "test-data": "node scripts/insert-es-data.js",
     "test": "mocha test/unit/*.test.js --timeout 30000 --exit",
     "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --timeout 30000 --exit"
   },

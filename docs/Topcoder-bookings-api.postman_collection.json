@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "48d00a68-e5e9-44b4-bc6e-357a3e95d1d6",
+		"_postman_id": "e5068685-d152-46a2-acd9-41752e953288",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2e346a9f-de3c-485d-8681-59271541dd78",
+								"id": "c5b7367f-d0eb-4960-8bbf-c8becaf31674",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -59,7 +59,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6420b802-df77-4836-9458-1c1d02c4bb51",
+								"id": "d5c25c00-0033-4a0b-a71d-704f0fb77119",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -104,7 +104,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3ccfd704-685e-48e4-91e8-b9a475e0ce76",
+								"id": "0045ccac-5ce6-4c85-96d0-4747e38ce0af",
 								"exec": [
 									""
 								],
@@ -148,7 +148,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "16f1cca4-3de4-47ec-9769-e80e2287f6c5",
+								"id": "3f694a2f-50c7-45f9-b070-8b35d1356dac",
 								"exec": [
 									""
 								],
@@ -192,7 +192,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b2f757a8-8355-409a-850d-cf9c2570b5be",
+								"id": "6d26576b-f1a6-453b-b370-9e043585a4b6",
 								"exec": [
 									""
 								],
@@ -1186,7 +1186,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5c05699c-7312-4f41-beb5-883401ea2fe0",
+								"id": "78c7277b-d167-473a-98c2-5d6f9bb8a6d4",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1231,7 +1231,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "401b5076-4055-4bc4-b63c-4366cffe4806",
+								"id": "cc3159cd-9d47-4781-b34e-2ffeb241835b",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1276,7 +1276,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "96fd60e4-fefd-4a0c-bcff-afb0aed66756",
+								"id": "e124c44c-4c49-4cee-ac6d-de02189b6b5f",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1321,7 +1321,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3c191203-4715-4bc5-8f30-b4204e58ea46",
+								"id": "dd94720e-938a-4cc6-9256-f325a11f2adc",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1366,7 +1366,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f1257f98-a3ec-49d4-8e8a-613e0c5c2273",
+								"id": "9af0ad9d-5b5a-4bd2-961a-3da81b3646ca",
 								"exec": [
 									""
 								],
@@ -2183,7 +2183,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "29ff4137-5b1f-4be4-bf5d-b0a1aab70eb5",
+								"id": "fbec4b77-da8e-4a68-8041-2b53f51b53a1",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2228,7 +2228,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1693d79f-cbea-4b20-b04f-c7d0278116b2",
+								"id": "ec104283-7052-4e4e-bb47-243091b27cca",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2273,7 +2273,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9895bedf-46f2-43bb-904b-f7c90e078cc4",
+								"id": "b0557557-4d52-402d-819b-238f764fefcf",
 								"exec": [
 									""
 								],
@@ -2317,7 +2317,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1e0fdfea-6ef0-4a5f-abcd-a60b47ed3eb7",
+								"id": "837fc794-5bae-4903-8486-e37ae066faf0",
 								"exec": [
 									""
 								],
@@ -2361,7 +2361,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "414d9fae-4cc1-442e-b8a6-4827fd44e33a",
+								"id": "be5356b8-8068-4a6d-a17b-a2cef3cf6593",
 								"exec": [
 									""
 								],
@@ -3200,6 +3200,85 @@
 							"path": [
 								"resourceBookings",
 								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Taas Teams",
+			"item": [
+				{
+					"name": "GET /taas-teams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_connectUser}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_connectUser}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/9050",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"9050"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id/jobs/:jobId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_connectUser}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/9050/jobs/1d9e8c1a-e653-4d31-a799-2685e41da212",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"9050",
+								"jobs",
+								"1d9e8c1a-e653-4d31-a799-2685e41da212"
 							]
 						}
 					},

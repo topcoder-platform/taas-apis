@@ -22,7 +22,7 @@ async function checkHealth (req, res) {
   await conn
     .authenticate()
     .then(() => {
-      logger.info({ component: 'src/controllers/HealthCheckController.js', context: 'checkHealth', message: 'Connection has been established successfully.' })
+      logger.info({ component: 'HealthCheckController', context: 'checkHealth', message: 'Connection has been established successfully.' })
     })
     .catch(err => {
       logger.logFullError(err, { component: 'HealthCheckController', context: 'checkHealth' })
