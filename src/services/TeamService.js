@@ -81,8 +81,11 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
   const result = []
   for (const project of projects) {
+    console.log("for loop - project: ", project)
     const rbs = _.filter(resourceBookings, { projectId: project.id })
+    console.log("for loop - rbs: ", rbs)
     const res = _.clone(project)
+    console.log("for loop - res: ", res)
     res.weeklyCount = 0
     res.resources = []
 
@@ -118,6 +121,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
       }
 
       const userIds = _.map(rbs, 'userId')
+      console.log("line124 userIds : ", userIds)
       const userInfos = _.filter(users, item => {
         return userIds.indexOf(item.id) > -1
       })
@@ -125,8 +129,10 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         res.resources = userInfos
 
         const userHandles = _.map(userInfos, 'handle')
+        console.log("line132 userHandles : ", userHandles)
         // Get user photo from /v5/members
         const members = await helper.getMembers(currentUser.jwtToken, userHandles)
+              console.log("line134 members : ", members)
 
         for (const item of res.resources) {
           const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
@@ -153,6 +159,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
     }
 
     const jobsTmp = _.filter(jobs, { projectId: project.id })
+    console.log("line162 jobsTmp : ", jobsTmp)
     if (jobsTmp && jobsTmp.length > 0) {
       if (isSearch) {
         // Count total positions
