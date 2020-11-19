@@ -14,7 +14,7 @@ const ResourceBookingService = require('./ResourceBookingService')
  * @param {String} projectId project id
  * @returns the request result
  */
-async function _getAssignedResourceBooking(projectId) {
+async function _getAssignedResourceBooking (projectId) {
   const criteria = { status: 'assigned' }
   if (projectId) {
     criteria.projectId = projectId
@@ -28,7 +28,7 @@ async function _getAssignedResourceBooking(projectId) {
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getJobsByProjectIds(projectIds) {
+async function _getJobsByProjectIds (projectIds) {
   const { result } = await JobService.searchJobs({ projectIds })
   return result
 }
@@ -38,7 +38,7 @@ async function _getJobsByProjectIds(projectIds) {
  * @param {Object} currentUser the user who perform this operation
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchTeams(currentUser) {
+async function searchTeams (currentUser) {
   // Get projects from /v5/projects
   const projects = await helper.getProjects(currentUser.jwtToken)
 
@@ -56,7 +56,7 @@ searchTeams.schema = Joi.object().keys({
  * @param {Object} isSearch the flag whether for search function
  * @returns {Object} the search result
  */
-async function getTeamDetail(currentUser, projects, isSearch = true) {
+async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get users from /v5/users
   const users = await helper.getUsers(currentUser.jwtToken)
@@ -173,7 +173,7 @@ async function getTeamDetail(currentUser, projects, isSearch = true) {
  * @param {String} id the job id
  * @returns {Object} the team
  */
-async function getTeam(currentUser, id) {
+async function getTeam (currentUser, id) {
   // Get users from /v5/projects
   const project = await helper.getProjectById(currentUser.jwtToken, id)
 
@@ -232,7 +232,7 @@ getTeam.schema = Joi.object().keys({
  * @param {String} jobId the job id
  * @returns the team job
  */
-async function getTeamJob(currentUser, id, jobId) {
+async function getTeamJob (currentUser, id, jobId) {
   // Get jobs from taas api
   const jobs = await _getJobsByProjectIds([id])
   const job = _.find(jobs, { id: jobId })
