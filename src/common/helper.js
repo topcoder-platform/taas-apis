@@ -313,7 +313,8 @@ async function getUsers (token) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-      logger.debug("getUsers debug",res.body)
+      logger.debug("getUsers debug :" + res.body)
+      console.log("getUsers debug :",res.body)
   return _.map(res.body, item => {
     return _.pick(item, ['id', 'handle', 'firstName', 'lastName'])
   })
@@ -336,7 +337,8 @@ async function getMembers (token, handles) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    logger.debug("getMembers debug",res.body)
+    logger.debug("getMembers debug : " + res.body)
+  console.log("getMembers console :",res.body)
   return res.body
 }
 
@@ -353,7 +355,8 @@ async function getProjectById (token, id) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  logger.debug("getProjectById debug",res.body)
+  logger.debug("getProjectById debug " + res.body)
+  console.log("getProjectById console :",res.body)
   return _.pick(res.body, ['id', 'name'])
 }
 
@@ -369,7 +372,8 @@ async function getSkills (token) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  logger.debug("getskills debug",res.body)
+  logger.debug("getskills debug " + res.body)
+  console.log("getskills console :",res.body)
   return _.map(res.body, item => {
     return _.pick(item, ['id', 'name'])
   })
