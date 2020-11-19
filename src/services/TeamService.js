@@ -41,7 +41,8 @@ async function _getJobsByProjectIds (projectIds) {
 async function searchTeams (currentUser) {
   // Get projects from /v5/projects
   const projects = await helper.getProjects(currentUser.jwtToken)
-
+  console.log("searchTeams : ", projects)
+  console.log("currentUser : ", currentUser)
   return await getTeamDetail(currentUser, projects)
 }
 
@@ -58,12 +59,16 @@ searchTeams.schema = Joi.object().keys({
  */
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
+  console.log("getTeamDetail  - projectIds : ", projectIds)
   // Get users from /v5/users
   const users = await helper.getUsers(currentUser.jwtToken)
+    console.log("getTeamDetail - users: ", users)
   // Get resourceBookings from taas api
   const resourceBookings = await _getAssignedResourceBooking()
+      console.log("getTeamDetail - resourceBookings: ", resourceBookings)
   // Get jobs from taas api
   const jobs = await _getJobsByProjectIds(projectIds)
+        console.log("getTeamDetail - jobs: ", jobs)
 
   // Get first week day and last week day
   const curr = new Date()
