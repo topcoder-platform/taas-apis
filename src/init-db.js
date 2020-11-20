@@ -6,17 +6,19 @@ const models = require('./models')
 const logger = require('./common/logger')
 
 const initDB = async () => {
-  // await models.sequelize.dropSchema(config.DB_SCHEMA_NAME)
+  if (process.argv[2] === 'force') {
+    await models.sequelize.dropSchema(config.DB_SCHEMA_NAME)
+  }
   await models.sequelize.createSchema(config.DB_SCHEMA_NAME)
   await models.sequelize.sync({ force: true })
 }
 
 if (!module.parent) {
   initDB().then(() => {
-    logger.info('Database synced successfully')
+    logger.info({ component: 'init-db', message: 'Database synced successfully' })
     process.exit()
   }).catch((e) => {
-    logger.logFullError(e)
+    logger.logFullError(e, { component: 'init-db' })
     process.exit(1)
   })
 }

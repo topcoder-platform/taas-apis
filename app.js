@@ -8,8 +8,8 @@ const config = require('config')
 const express = require('express')
 const cors = require('cors')
 const HttpStatus = require('http-status-codes')
-const logger = require('./src/common/logger')
 const interceptor = require('express-interceptor')
+const logger = require('./src/common/logger')
 
 // setup express app
 const app = express()
@@ -52,7 +52,7 @@ require('./app-routes')(app)
 // The error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  logger.logFullError(err, req.signature || `${req.method} ${req.url}`)
+  logger.logFullError(err, { component: 'app', signature: req.signature || `${req.method}_${req.url}` })
   const errorResponse = {}
   const status = err.isJoi ? HttpStatus.BAD_REQUEST : (err.status || err.httpStatus || HttpStatus.INTERNAL_SERVER_ERROR)
 
@@ -87,7 +87,7 @@ app.use((err, req, res, next) => {
 })
 
 const server = app.listen(app.get('port'), () => {
-  logger.info(`Express server listening on port ${app.get('port')}`)
+  logger.info({ component: 'app', message: `Express server listening on port ${app.get('port')}` })
 })
 
 if (process.env.NODE_ENV === 'test') {

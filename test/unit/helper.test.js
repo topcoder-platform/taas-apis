@@ -142,7 +142,7 @@ describe('helper test', () => {
     })
   })
 
-  describe('getUserId test', () => {
+  describe('isConnectMember test', () => {
     it('isConnectMember return true', async () => {
       sinon.stub(request, 'get').callsFake(() => {
         return {
@@ -199,7 +199,7 @@ describe('helper test', () => {
       expect(res).to.equal(id)
     })
 
-    it('getUserId return id', async () => {
+    it('getUserId catch not found', async () => {
       let i = 0
       sinon.stub(request, 'get').callsFake(() => {
         return {
@@ -222,8 +222,137 @@ describe('helper test', () => {
       try {
         await helper.getUserId(44532)
       } catch (err) {
-        expect(err.message).to.equal('user id not found')
+        expect(err.message).to.equal('userId: 44532 "user" not found')
       }
+    })
+  })
+
+  describe('getProjects test', () => {
+    it('getProjects return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: [{ id: 1001, name: 'name' }]
+              }
+            }
+            return this
+          }
+        }
+      })
+      const res = await helper.getProjects('token')
+      expect(res).to.be.a('array')
+    })
+  })
+
+  describe('getProjectById test', () => {
+    it('getProjectById return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: { id: 1001, name: 'name' }
+              }
+            }
+            return this
+          }
+        }
+      })
+
+      const res = await helper.getProjectById('token', 1001)
+      expect(res).to.be.a('object')
+    })
+  })
+
+  describe('getUsers test', () => {
+    it('getUsers return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: [{ id: '1001', handle: 'handle', firstName: 'Bill', lastName: 'Gate' }]
+              }
+            }
+            return this
+          }
+        }
+      })
+
+      const res = await helper.getUsers('token')
+      expect(res).to.be.a('array')
+    })
+  })
+
+  describe('getMembers test', () => {
+    it('getMembers return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: { id: '1001', name: 'name' }
+              }
+            }
+            return this
+          }
+        }
+      })
+
+      const res = await helper.getMembers('token', ['name1', 'name2'])
+      expect(res).to.be.a('object')
+    })
+  })
+
+  describe('getSkills test', () => {
+    it('getSkills return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: [{ id: 1001, name: 'name' }]
+              }
+            }
+            return this
+          }
+        }
+      })
+      const res = await helper.getSkills('token')
+      expect(res).to.be.a('array')
+    })
+  })
+
+  describe('getUserSkill test', () => {
+    it('getUserSkill return entity result', async () => {
+      let i = 0
+      sinon.stub(request, 'get').callsFake(() => {
+        return {
+          set: function () {
+            i++
+            if (i === 3) {
+              return {
+                body: [{ id: 1001, skill: { name: 'name' } }]
+              }
+            }
+            return this
+          }
+        }
+      })
+      const res = await helper.getUserSkill('token', '1001')
+      expect(res).to.be.a('array')
     })
   })
 })

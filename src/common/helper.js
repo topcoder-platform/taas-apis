@@ -3,17 +3,43 @@
  */
 
 const querystring = require('querystring')
+const AWS = require('aws-sdk')
 const config = require('config')
 const _ = require('lodash')
 const request = require('superagent')
 const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
+const logger = require('./logger')
+const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
+
+const localLogger = {
+  debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message })
+}
+
+AWS.config.region = config.esConfig.AWS_REGION
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
 
-//const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
-const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID','AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
+// const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
+const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
 
+let busApiClient
+
+/**
+ * Get bus api client.
+ *
+ * @returns {Object} the bus api client
+ */
+function getBusApiClient () {
+  if (busApiClient) {
+    return busApiClient
+  }
+  busApiClient = busApi({
+    AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
+    ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'BUSAPI_URL', 'KAFKA_ERROR_TOPIC', 'AUTH0_PROXY_SERVER_URL'])
+  })
+  return busApiClient
+}
 
 // ES Client mapping
 const esClients = {}
@@ -68,6 +94,9 @@ function getPageLink (req, page) {
  * @param {Object} result the operation result
  */
 function setResHeaders (req, res, result) {
+  if (result.fromDb) {
+    return
+  }
   const totalPages = Math.ceil(result.total / result.perPage)
   if (result.page > 1) {
     res.set('X-Prev-Page', result.page - 1)
@@ -140,10 +169,26 @@ async function isConnectMember (projectId, jwtToken) {
  * @return {Object} Elastic Host Client Instance
  */
 function getESClient () {
-  const esHost = config.get('esConfig.HOST')
-  if (!esClients.client) {
+  if (esClients.client) {
+    return esClients.client
+  }
+
+  const host = config.esConfig.HOST
+  const cloudId = config.esConfig.ELASTICCLOUD.id
+  if (cloudId) {
+    // Elastic Cloud configuration
     esClients.client = new elasticsearch.Client({
-      node: esHost
+      cloud: {
+        id: cloudId
+      },
+      auth: {
+        username: config.esConfig.ELASTICCLOUD.username,
+        password: config.esConfig.ELASTICCLOUD.password
+      }
+    })
+  } else {
+    esClients.client = new elasticsearch.Client({
+      node: host
     })
   }
   return esClients.client
@@ -154,7 +199,7 @@ function getESClient () {
  * @returns {Promise}
  */
 const getM2Mtoken = async () => {
-  return m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+  return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
 /**
@@ -196,6 +241,7 @@ async function getUserIds (userId) {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserIds', message: `response body: ${JSON.stringify(res.body)}` })
   return res.body
 }
 
@@ -207,9 +253,150 @@ async function getUserIds (userId) {
 async function getUserId (userId) {
   const ids = await getUserIds(userId)
   if (_.isEmpty(ids)) {
-    throw new errors.NotFoundError('user id not found')
+    throw new errors.NotFoundError(`userId: ${userId} "user" not found`)
   }
   return ids[0].id
+}
+
+/**
+ * Send Kafka event message
+ * @params {String} topic the topic name
+ * @params {Object} payload the payload
+ */
+async function postEvent (topic, payload) {
+  logger.debug({ component: 'helper', context: 'postEvent', message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(payload)}` })
+  const client = getBusApiClient()
+  const message = {
+    topic,
+    originator: config.KAFKA_MESSAGE_ORIGINATOR,
+    timestamp: new Date().toISOString(),
+    'mime-type': 'application/json',
+    payload
+  }
+  await client.postEvent(message)
+}
+
+/**
+ * Test if an error is document missing exception
+ *
+ * @param {Object} err the err
+ * @returns {Boolean} the result
+ */
+function isDocumentMissingException (err) {
+  if (err.statusCode === 404) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Function to get projects
+ * @param {String} token the user request token
+ * @returns the request result
+ */
+async function getProjects (token) {
+  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.map(res.body, item => {
+    return _.pick(item, ['id', 'name'])
+  })
+}
+
+/**
+ * Function to get users
+ * @param {String} token the user request token
+ * @param {String} userId the user id
+ * @returns the request result
+ */
+async function getUserById (token, userId) {
+  const res = await request
+    .get(`${config.TC_API}/users/${userId}`)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+}
+
+/**
+ * Function to get members
+ * @param {String} token the user request token
+ * @param {Array} handles the handle array
+ * @returns the request result
+ */
+async function getMembers (token, handles) {
+  const handlesStr = _.map(handles, handle => {
+    return '%22' + handle.toLowerCase() + '%22'
+  }).join(',')
+  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
+
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
+  return res.body
+}
+
+/**
+ * Function to get project by id
+ * @param {String} token the user request token
+ * @param {Number} id project id
+ * @returns the request result
+ */
+async function getProjectById (token, id) {
+  const url = `${config.TC_API}/projects/${id}`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id', 'name'])
+}
+
+/**
+ * Function to get skill by id
+ * @param {String} token the user request token
+ * @param {String} skillId the skill Id
+ * @returns the request result
+ */
+async function getSkillById (token, skillId) {
+  const res = await request
+    .get(`${config.TC_API}/skills/${skillId}`)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getSkillById', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id', 'name'])
+}
+
+/**
+ * Function to get user skills
+ * @param {String} token the user request token
+ * @param {String} userId user id
+ * @returns the request result
+ */
+async function getUserSkill (token, userId) {
+  const url = `${config.TC_API}/users/${userId}/skills`
+  const res = await request
+    .get(url)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserSkill', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.map(res.body, item => {
+    return {
+      id: item.id,
+      name: item.skill.name
+    }
+  })
 }
 
 module.exports = {
@@ -218,5 +405,14 @@ module.exports = {
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId
+  getUserId,
+  postEvent,
+  getBusApiClient,
+  isDocumentMissingException,
+  getProjects,
+  getUserById,
+  getMembers,
+  getProjectById,
+  getSkillById,
+  getUserSkill
 }

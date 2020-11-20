@@ -11,7 +11,7 @@ const helper = require('../common/helper')
  * @param res the response
  */
 async function getResourceBooking (req, res) {
-  res.send(await service.getResourceBooking(req.authUser, req.params.id))
+  res.send(await service.getResourceBooking(req.authUser, req.params.id, req.query.fromDb))
 }
 
 /**

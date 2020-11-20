@@ -11,6 +11,7 @@
     "init-db": "node src/init-db.js",
     "create-index": "node scripts/createIndex.js",
     "delete-index": "node scripts/deleteIndex.js",
+    "test-data": "node scripts/insert-es-data.js",
     "test": "mocha test/unit/*.test.js --timeout 30000 --exit",
     "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --timeout 30000 --exit"
   },
@@ -19,6 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
+    "@topcoder-platform/topcoder-bus-api-wrapper": "github:topcoder-platform/tc-bus-api-wrapper",
+    "aws-sdk": "^2.787.0",
     "config": "^3.3.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

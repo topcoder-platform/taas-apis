@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
         }
       })
       if (!resourceBooking) {
-        throw new errors.NotFoundError(`ResourceBooking with id: ${id} doesn't exists.`)
+        throw new errors.NotFoundError(`id: ${id} "ResourceBooking" doesn't exists.`)
       }
       return resourceBooking
     }

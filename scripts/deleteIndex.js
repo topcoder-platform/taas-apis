@@ -7,7 +7,7 @@ const logger = require('../src/common/logger')
 const helper = require('../src/common/helper')
 
 async function deleteIndex () {
-  logger.info('ES Index deletion started!')
+  logger.info({ component: 'deleteIndex', message: 'ES Index deletion started!' })
   const esClient = helper.getESClient()
   const indices = [config.get('esConfig.ES_INDEX_JOB'),
     config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
@@ -16,11 +16,11 @@ async function deleteIndex () {
     await esClient.indices.delete({
       index
     })
-    logger.info(`ES Index ${index} deletion succeeded!`)
+    logger.info({ component: 'deleteIndex', message: `ES Index ${index} deletion succeeded!` })
   }
   process.exit(0)
 }
 deleteIndex().catch((err) => {
-  logger.logFullError(err)
+  logger.logFullError(err, { component: 'deleteIndex' })
   process.exit(1)
 })

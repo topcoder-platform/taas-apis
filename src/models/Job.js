@@ -46,7 +46,7 @@ module.exports = (sequelize) => {
       }
       const job = await Job.findOne(criteria)
       if (!job) {
-        throw new errors.NotFoundError(`Job with id: ${id} doesn't exists.`)
+        throw new errors.NotFoundError(`id: ${id} "Job" doesn't exists.`)
       }
       return job
     }

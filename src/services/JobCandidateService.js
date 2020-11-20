@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
@@ -12,19 +13,38 @@ const errors = require('../common/errors')
 const models = require('../models')
 
 const JobCandidate = models.JobCandidate
+const esClient = helper.getESClient()
 
 /**
  * Get jobCandidate by id
  * @param {String} id the jobCandidate id
+ * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the jobCandidate
  */
-async function getJobCandidate (id) {
+async function getJobCandidate (id, fromDb = false) {
+  if (!fromDb) {
+    try {
+      const jobCandidate = await esClient.get({
+        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
+        id
+      })
+      const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
+      return jobCandidateRecord
+    } catch (err) {
+      if (helper.isDocumentMissingException(err)) {
+        throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
+      }
+      logger.logFullError(err, { component: 'JobCandidateService', context: 'getJobCandidate' })
+    }
+  }
+  logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
   const jobCandidate = await JobCandidate.findById(id)
   return helper.clearObject(jobCandidate.dataValues)
 }
 
 getJobCandidate.schema = Joi.object().keys({
-  id: Joi.string().guid().required()
+  id: Joi.string().guid().required(),
+  fromDb: Joi.boolean()
 }).required()
 
 /**
@@ -39,15 +59,8 @@ async function createJobCandidate (currentUser, jobCandidate) {
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
   jobCandidate.status = 'open'
 
-  const esClient = helper.getESClient()
-  await esClient.create({
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    id: jobCandidate.id,
-    body: _.omit(jobCandidate, 'id'),
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   const created = await JobCandidate.create(jobCandidate)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, jobCandidate)
   return helper.clearObject(created.dataValues)
 }
 
@@ -80,17 +93,8 @@ async function updateJobCandidate (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  const esClient = helper.getESClient()
-  await esClient.update({
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    id,
-    body: {
-      doc: data
-    },
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   await jobCandidate.update(data)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, { id, ...data })
   const result = helper.clearObject(_.assign(jobCandidate.dataValues, data))
   return result
 }
@@ -145,17 +149,9 @@ async function deleteJobCandidate (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const esClient = helper.getESClient()
-  await esClient.delete({
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    id,
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  }, {
-    ignore: [404]
-  })
-
   const jobCandidate = await JobCandidate.findById(id)
   await jobCandidate.update({ deletedAt: new Date() })
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
 deleteJobCandidate.schema = Joi.object().keys({
@@ -172,53 +168,76 @@ async function searchJobCandidates (criteria) {
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
   if (!criteria.sortBy) {
-    criteria.sortBy = '_id'
-  }
-  if (criteria.sortBy === 'id') {
-    criteria.sortBy = '_id'
+    criteria.sortBy = 'id'
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+  try {
+    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
 
-  const esQuery = {
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    body: {
-      query: {
-        bool: {
-          must: []
-        }
-      },
-      from: (page - 1) * perPage,
-      size: perPage,
-      sort
-    }
-  }
-
-  _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
-    esQuery.body.query.bool.must.push({
-      term: {
-        [key]: {
-          value
-        }
+    const esQuery = {
+      index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+      body: {
+        query: {
+          bool: {
+            must: []
+          }
+        },
+        from: (page - 1) * perPage,
+        size: perPage,
+        sort
       }
+    }
+
+    _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+      esQuery.body.query.bool.must.push({
+        term: {
+          [key]: {
+            value
+          }
+        }
+      })
     })
+    logger.debug({ component: 'JobCandidateService', context: 'searchJobCandidates', message: `Query: ${JSON.stringify(esQuery)}` })
+
+    const { body } = await esClient.search(esQuery)
+
+    return {
+      total: body.hits.total.value,
+      page,
+      perPage,
+      result: _.map(body.hits.hits, (hit) => {
+        const obj = _.cloneDeep(hit._source)
+        obj.id = hit._id
+        return obj
+      })
+    }
+  } catch (err) {
+    logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
+  }
+  logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
+  const filter = {
+    [Op.and]: [{ deletedAt: null }]
+  }
+  _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+    filter[Op.and].push({ [key]: value })
   })
-  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
-
-  const esClient = helper.getESClient()
-  const { body } = await esClient.search(esQuery)
-
+  const jobCandidates = await JobCandidate.findAll({
+    where: filter,
+    attributes: {
+      exclude: ['deletedAt']
+    },
+    offset: ((page - 1) * perPage),
+    limit: perPage,
+    order: [[criteria.sortBy, criteria.sortOrder]]
+  })
   return {
-    total: body.hits.total.value,
+    fromDb: true,
+    total: jobCandidates.length,
     page,
     perPage,
-    result: _.map(body.hits.hits, (hit) => {
-      const obj = _.cloneDeep(hit._source)
-      obj.id = hit._id
-      return obj
-    })
+    result: _.map(jobCandidates, jobCandidate => helper.clearObject(jobCandidate.dataValues))
   }
 }
 

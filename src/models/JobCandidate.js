@@ -29,7 +29,7 @@ module.exports = (sequelize) => {
         }
       })
       if (!jobCandidate) {
-        throw new errors.NotFoundError(`JobCandidate with id: ${id} doesn't exists.`)
+        throw new errors.NotFoundError(`id: ${id} "JobCandidate" doesn't exists.`)
       }
       return jobCandidate
     }

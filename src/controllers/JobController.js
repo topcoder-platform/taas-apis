@@ -11,7 +11,7 @@ const helper = require('../common/helper')
  * @param res the response
  */
 async function getJob (req, res) {
-  res.send(await service.getJob(req.params.id))
+  res.send(await service.getJob(req.params.id, req.query.fromDb))
 }
 
 /**

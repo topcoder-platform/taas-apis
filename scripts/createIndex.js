@@ -7,7 +7,6 @@ const logger = require('../src/common/logger')
 const helper = require('../src/common/helper')
 
 async function createIndex () {
-  logger.info('ES Index creation started!')
   const esClient = helper.getESClient()
 
   const indices = [
@@ -75,12 +74,12 @@ async function createIndex () {
 
   for (const index of indices) {
     await esClient.indices.create(index)
-    logger.info(`ES Index ${index.index} creation succeeded!`)
+    logger.info({ component: 'createIndex', message: `ES Index ${index.index} creation succeeded!` })
   }
   process.exit(0)
 }
 
 createIndex().catch((err) => {
-  logger.logFullError(err)
+  logger.logFullError(err, { component: 'createIndex' })
   process.exit(1)
 })

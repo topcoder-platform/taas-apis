@@ -68,6 +68,8 @@ workflows:
             branches:
               only:
                 - dev
+                - feature/es-segregation
+                - feature/integration-test-fix
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.

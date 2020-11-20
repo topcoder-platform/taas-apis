@@ -13,6 +13,7 @@ tags:
   - name: Jobs
   - name: JobCandidates
   - name: ResourceBookings
+  - name: Teams
 paths:
   /jobs:
     post:
@@ -240,6 +241,12 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -636,6 +643,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1039,6 +1052,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1246,6 +1265,159 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /taas-teams:
+    get:
+      tags:
+        - Teams
+      description: |
+        Search my teams. Teams is project in topcoder with type=='talent-as-a-service'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /taas-teams/{id}:
+    get:
+      tags:
+        - Teams
+      description: |
+        Gets the team details. Should check if user has permission on the project or not by checking if he is connect user or not
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamDetail'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /taas-teams/{id}/jobs/{jobId}:
+    get:
+      tags:
+        - Teams
+      description: |
+        Gets the job details including all candidates. Should check if user has permission on the project or not by checking if he is connect user or not
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The job id.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetail'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /health:
+    get:
+      tags:
+        - Health
+      description: |
+        Get health status of the app.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckRun'
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckRun'
 components:
   securitySchemes:
     bearerAuth:
@@ -1641,6 +1813,215 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+    CheckRun:
+      type: object
+      properties:
+        checksRun:
+          type: integer
+      required:
+        - checksRun
+    Team:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The team id."
+        name:
+          type: string
+          example: "1212"
+          description: "The team name."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The end date."
+        weeklyCost:
+          type: number
+          format: decimal
+          example: 5000.50  
+          description: "The average weekly cost"
+        totalPositions:
+          type: integer
+          description: 'The sum of number of positions opening in all job'
+        resources: 
+          type: array
+          description: "The rosources that are assigned"
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The user id."
+        handle:
+          type: string
+          example: "Tony"
+          description: "The project id."
+        photo_url:
+          type: string
+          format: url
+          example: "https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg"
+          description: "The user avatar."
+        firstName:
+                type: string
+                example: 'Tony'
+                description: 'The first name of user'
+        lastName:
+          type: string
+          example: 'J'
+          description: 'The last name of user'
+    TeamDetail:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The team id."
+        name:
+          type: string
+          example: "1212"
+          description: "The team name."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The end date."
+        weeklyCost:
+          type: number
+          format: decimal
+          example: 5000.50  
+          description: "The average weekly cost"
+        resources: 
+          type: array
+          description: "The rosources that are assigned"
+          items:
+            allOf: 
+             - $ref: '#/components/schemas/User'
+            type: object
+            properties:
+              customerRate:
+                type: integer
+                format: float
+                example: 13
+                description: "The customer rate."
+              skills: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+              skillMatched:
+                type: integer
+                description: The percentage of skill matched for that particular job he/she is assinged
+              job:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: The job id the member is assinged at
+                  name:
+                    type: string
+                    description: The job name the member is assinged at
+        jobs: 
+          type: array
+          description: "The jobs which are opened"
+          items:
+            $ref: '#/components/schemas/JobForTeam'
+    Skill: 
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The skill id."
+        name: 
+          type: string
+          example: 'React'
+          description: The skill name.
+    JobForTeam:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        description:
+          type: string
+          example: "Dummy Description"
+          description: "The description."
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job start date."
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-09-27T04:17:23.131Z"
+          description: "The job end date."
+        numPositions:
+          type: integer
+          example: 13
+          description: "The number of positions for the job."
+        rateType:
+          type: string
+          enum: ['hourly', 'daily', 'weekly', 'monthly']
+          description: "The rate type of the job."
+        skills:
+          type: array
+          description: "The skills."
+          items:
+            $ref: '#/components/schemas/Skill'
+        customerRate:
+          type: integer
+          format: float
+          example: 5500
+          description: "The customer rate."
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: "The job status."
+    JobDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        description:
+          type: string
+          example: "Dummy Description"
+          description: "The description."
+        candidates:
+          type: array
+          items:
+            allOf: 
+               - $ref: '#/components/schemas/User'
+            type: object
+            properties:
+              resumeLink: 
+                type: string
+                format: url
+                description: 'The link for the resume that can be downloaded'
+              status:
+                type: string
+                enum: ['open', 'selected', 'shortlist', 'rejected']
+                description: "The job status."
+              skills: 
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Skill'
+              skillMatched:
+                type: integer
+                description: The percentage of skill matched for that particular job he/she is assinged
     Error:
       required:
         - message

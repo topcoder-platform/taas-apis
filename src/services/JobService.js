@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
@@ -12,20 +13,75 @@ const errors = require('../common/errors')
 const models = require('../models')
 
 const Job = models.Job
+const esClient = helper.getESClient()
+
+/**
+ * populate candidates for a job.
+ *
+ * @param {String} jobId the job id
+ * @returns {Array} the list of candidates
+ */
+async function _getJobCandidates (jobId) {
+  const { body } = await esClient.search({
+    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    body: {
+      query: {
+        term: {
+          jobId: {
+            value: jobId
+          }
+        }
+      }
+    }
+  })
+
+  if (body.hits.total.value === 0) {
+    return []
+  }
+  const candidates = _.map(body.hits.hits, (hit) => {
+    const candidateRecord = _.cloneDeep(hit._source)
+    candidateRecord.id = hit._id
+    return candidateRecord
+  })
+  return candidates
+}
 
 /**
  * Get job by id
  * @param {String} id the job id
+ * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the job
  */
-async function getJob (id) {
+async function getJob (id, fromDb = false) {
+  if (!fromDb) {
+    try {
+      const job = await esClient.get({
+        index: config.esConfig.ES_INDEX_JOB,
+        id
+      })
+      const jobId = job.body._id
+      const jobRecord = { id: jobId, ...job.body._source }
+      const candidates = await _getJobCandidates(jobId)
+      if (candidates.length) {
+        jobRecord.candidates = candidates
+      }
+      return jobRecord
+    } catch (err) {
+      if (helper.isDocumentMissingException(err)) {
+        throw new errors.NotFoundError(`id: ${id} "Job" not found`)
+      }
+      logger.logFullError(err, { component: 'JobService', context: 'getJob' })
+    }
+  }
+  logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
 }
 
 getJob.schema = Joi.object().keys({
-  id: Joi.string().guid().required()
+  id: Joi.string().guid().required(),
+  fromDb: Joi.boolean()
 }).required()
 
 /**
@@ -46,15 +102,8 @@ async function createJob (currentUser, job) {
   job.createdBy = await helper.getUserId(currentUser.userId)
   job.status = 'sourcing'
 
-  const esClient = helper.getESClient()
-  await esClient.create({
-    index: config.get('esConfig.ES_INDEX_JOB'),
-    id: job.id,
-    body: _.omit(job, 'id'),
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   const created = await Job.create(job)
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
   return helper.clearObject(created.dataValues)
 }
 
@@ -92,17 +141,8 @@ async function updateJob (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  const esClient = helper.getESClient()
-  await esClient.update({
-    index: config.get('esConfig.ES_INDEX_JOB'),
-    id,
-    body: {
-      doc: data
-    },
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   await job.update(data)
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data })
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
@@ -172,16 +212,9 @@ async function deleteJob (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const esClient = helper.getESClient()
-  await esClient.delete({
-    index: config.get('esConfig.ES_INDEX_JOB'),
-    id,
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  }, {
-    ignore: [404]
-  })
   const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
+  await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
 
 deleteJob.schema = Joi.object().keys({
@@ -198,94 +231,128 @@ async function searchJobs (criteria) {
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
   if (!criteria.sortBy) {
-    criteria.sortBy = '_id'
-  }
-  if (criteria.sortBy === 'id') {
-    criteria.sortBy = '_id'
+    criteria.sortBy = 'id'
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+  try {
+    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
 
-  const esQuery = {
-    index: config.get('esConfig.ES_INDEX_JOB'),
-    body: {
-      query: {
-        bool: {
-          must: []
-        }
-      },
-      from: (page - 1) * perPage,
-      size: perPage,
-      sort
-    }
-  }
-
-  _.each(_.pick(criteria, ['projectId', 'externalId', 'description', 'startDate', 'endDate', 'resourceType', 'skill', 'rateType', 'status']), (value, key) => {
-    let must
-    if (key === 'description') {
-      must = {
-        match: {
-          [key]: {
-            query: value
-          }
-        }
-      }
-    } else if (key === 'skill') {
-      must = {
-        terms: {
-          skills: [value]
-        }
-      }
-    } else {
-      must = {
-        term: {
-          [key]: {
-            value
-          }
-        }
-      }
-    }
-    esQuery.body.query.bool.must.push(must)
-  })
-  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
-
-  const esClient = helper.getESClient()
-  const { body } = await esClient.search(esQuery)
-  const result = await Promise.all(_.map(body.hits.hits, async (hit) => {
-    const jobRecord = _.cloneDeep(hit._source)
-    jobRecord.id = hit._id
-
-    const { body } = await esClient.search({
-      index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    const esQuery = {
+      index: config.get('esConfig.ES_INDEX_JOB'),
       body: {
         query: {
+          bool: {
+            must: []
+          }
+        },
+        from: (page - 1) * perPage,
+        size: perPage,
+        sort
+      }
+    }
+
+    _.each(_.pick(criteria, ['projectId', 'externalId', 'description', 'startDate', 'endDate', 'resourceType', 'skill', 'rateType', 'status']), (value, key) => {
+      let must
+      if (key === 'description') {
+        must = {
+          match: {
+            [key]: {
+              query: value
+            }
+          }
+        }
+      } else if (key === 'skill') {
+        must = {
+          terms: {
+            skills: [value]
+          }
+        }
+      } else {
+        must = {
           term: {
-            jobId: {
-              value: jobRecord.id
+            [key]: {
+              value
             }
           }
         }
       }
+      esQuery.body.query.bool.must.push(must)
     })
-
-    if (body.hits.total.value > 0) {
-      const candidates = _.map(body.hits.hits, (hit) => {
-        const candidateRecord = _.cloneDeep(hit._source)
-        candidateRecord.id = hit._id
-        return candidateRecord
-      })
-      jobRecord.candidates = candidates
+    // If criteria contains projectIds, filter projectId with this value
+    if (criteria.projectIds) {
+      esQuery.body.query.bool.filter = [{
+        terms: {
+          projectId: criteria.projectIds
+        }
+      }]
     }
-    return jobRecord
-  }))
+    logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
 
+    const { body } = await esClient.search(esQuery)
+    const result = await Promise.all(_.map(body.hits.hits, async (hit) => {
+      const jobRecord = _.cloneDeep(hit._source)
+      jobRecord.id = hit._id
+      const candidates = await _getJobCandidates(jobRecord.id)
+      if (candidates.length) {
+        jobRecord.candidates = candidates
+      }
+      return jobRecord
+    }))
+
+    return {
+      total: body.hits.total.value,
+      page,
+      perPage,
+      result
+    }
+  } catch (err) {
+    logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
+  }
+  logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
+  const filter = {
+    [Op.and]: [{ deletedAt: null }]
+  }
+  _.each(_.pick(criteria, ['projectId', 'externalId', 'startDate', 'endDate', 'resourceType', 'rateType', 'status']), (value, key) => {
+    filter[Op.and].push({ [key]: value })
+  })
+  if (criteria.description) {
+    filter.description = {
+      [Op.like]: `%${criteria.description}%`
+    }
+  }
+  if (criteria.skills) {
+    filter.skills = {
+      [Op.contains]: [criteria.skills]
+    }
+  }
+  const jobs = await Job.findAll({
+    where: filter,
+    attributes: {
+      exclude: ['deletedAt']
+    },
+    offset: ((page - 1) * perPage),
+    limit: perPage,
+    order: [[criteria.sortBy, criteria.sortOrder]],
+    include: [{
+      model: models.JobCandidate,
+      as: 'candidates',
+      where: {
+        deletedAt: null
+      },
+      required: false,
+      attributes: {
+        exclude: ['deletedAt']
+      }
+    }]
+  })
   return {
-    total: body.hits.total.value,
+    fromDb: true,
+    total: jobs.length,
     page,
     perPage,
-    result
+    result: _.map(jobs, job => helper.clearObject(job.dataValues))
   }
 }
 
@@ -303,7 +370,8 @@ searchJobs.schema = Joi.object().keys({
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     rateType: Joi.rateType(),
-    status: Joi.jobStatus()
+    status: Joi.jobStatus(),
+    projectIds: Joi.array().items(Joi.number().integer()).single()
   }).required()
 }).required()
 

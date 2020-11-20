@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
@@ -12,27 +13,56 @@ const errors = require('../common/errors')
 const models = require('../models')
 
 const ResourceBooking = models.ResourceBooking
+const esClient = helper.getESClient()
+
+/**
+ * filter fields of resource booking by user role.
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} resourceBooking the resourceBooking with all fields
+ * @returns {Object} the resourceBooking
+ */
+async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
+  if (currentUser.isBookingManager) {
+    return helper.clearObject(resourceBooking)
+  } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
+    return _.omit(helper.clearObject(resourceBooking), 'memberRate')
+  } else {
+    return _.omit(helper.clearObject(resourceBooking), 'customerRate')
+  }
+}
 
 /**
  * Get resourceBooking by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the resourceBooking id
+ * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the resourceBooking
  */
-async function getResourceBooking (currentUser, id) {
-  const resourceBooking = await ResourceBooking.findById(id)
-  if (currentUser.isBookingManager) {
-    return helper.clearObject(resourceBooking.dataValues)
-  } else if (await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)) {
-    return _.omit(helper.clearObject(resourceBooking.dataValues), 'memberRate')
-  } else {
-    return _.omit(helper.clearObject(resourceBooking.dataValues), 'customerRate')
+async function getResourceBooking (currentUser, id, fromDb = false) {
+  if (!fromDb) {
+    try {
+      const resourceBooking = await esClient.get({
+        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
+        id
+      })
+      const resourceBookingRecord = { id: resourceBooking.body._id, ...resourceBooking.body._source }
+      return _getResourceBookingFilteringFields(currentUser, resourceBookingRecord)
+    } catch (err) {
+      if (helper.isDocumentMissingException(err)) {
+        throw new errors.NotFoundError(`id: ${id} "ResourceBooking" not found`)
+      }
+      logger.logFullError(err, { component: 'ResourceBookingService', context: 'getResourceBooking' })
+    }
   }
+  logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
+  const resourceBooking = await ResourceBooking.findById(id)
+  return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
 }
 
 getResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  id: Joi.string().guid().required()
+  id: Joi.string().guid().required(),
+  fromDb: Joi.boolean()
 }).required()
 
 /**
@@ -53,15 +83,8 @@ async function createResourceBooking (currentUser, resourceBooking) {
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
   resourceBooking.status = 'sourcing'
 
-  const esClient = helper.getESClient()
-  await esClient.create({
-    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    id: resourceBooking.id,
-    body: _.omit(resourceBooking, 'id'),
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   const created = await ResourceBooking.create(resourceBooking)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, resourceBooking)
   return helper.clearObject(created.dataValues)
 }
 
@@ -97,17 +120,8 @@ async function updateResourceBooking (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  const esClient = helper.getESClient()
-  await esClient.update({
-    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    id,
-    body: {
-      doc: data
-    },
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  })
-
   await resourceBooking.update(data)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data })
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }
@@ -173,17 +187,9 @@ async function deleteResourceBooking (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const esClient = helper.getESClient()
-  await esClient.delete({
-    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    id,
-    refresh: 'true' // refresh ES so that it is visible for read operations instantly
-  }, {
-    ignore: [404]
-  })
-
   const resourceBooking = await ResourceBooking.findById(id)
   await resourceBooking.update({ deletedAt: new Date() })
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
 deleteResourceBooking.schema = Joi.object().keys({
@@ -201,54 +207,76 @@ async function searchResourceBookings (criteria) {
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
 
   if (!criteria.sortBy) {
-    criteria.sortBy = '_id'
+    criteria.sortBy = 'id'
   }
-  if (criteria.sortBy === 'id') {
-    criteria.sortBy = '_id'
-  }
-
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  const sort = [{ [criteria.sortBy]: { order: criteria.sortOrder } }]
+  try {
+    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
 
-  const esQuery = {
-    index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    body: {
-      query: {
-        bool: {
-          must: []
-        }
-      },
-      from: (page - 1) * perPage,
-      size: perPage,
-      sort
-    }
-  }
-
-  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
-    esQuery.body.query.bool.must.push({
-      term: {
-        [key]: {
-          value
-        }
+    const esQuery = {
+      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+      body: {
+        query: {
+          bool: {
+            must: []
+          }
+        },
+        from: (page - 1) * perPage,
+        size: perPage,
+        sort
       }
+    }
+
+    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId']), (value, key) => {
+      esQuery.body.query.bool.must.push({
+        term: {
+          [key]: {
+            value
+          }
+        }
+      })
     })
+    logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
+
+    const { body } = await esClient.search(esQuery)
+
+    return {
+      total: body.hits.total.value,
+      page,
+      perPage,
+      result: _.map(body.hits.hits, (hit) => {
+        const obj = _.cloneDeep(hit._source)
+        obj.id = hit._id
+        return obj
+      })
+    }
+  } catch (err) {
+    logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
+  }
+  logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
+  const filter = {
+    [Op.and]: [{ deletedAt: null }]
+  }
+  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+    filter[Op.and].push({ [key]: value })
   })
-  logger.debug(`Query: ${JSON.stringify(esQuery)}`)
-
-  const esClient = helper.getESClient()
-  const { body } = await esClient.search(esQuery)
-
+  const resourceBookings = await ResourceBooking.findAll({
+    where: filter,
+    attributes: {
+      exclude: ['deletedAt']
+    },
+    offset: ((page - 1) * perPage),
+    limit: perPage,
+    order: [[criteria.sortBy, criteria.sortOrder]]
+  })
   return {
-    total: body.hits.total.value,
+    fromDb: true,
+    total: resourceBookings.length,
     page,
     perPage,
-    result: _.map(body.hits.hits, (hit) => {
-      const obj = _.cloneDeep(hit._source)
-      obj.id = hit._id
-      return obj
-    })
+    result: _.map(resourceBookings, resourceBooking => helper.clearObject(resourceBooking.dataValues))
   }
 }
 
@@ -261,7 +289,8 @@ searchResourceBookings.schema = Joi.object().keys({
     status: Joi.jobStatus(),
     startDate: Joi.date(),
     endDate: Joi.date(),
-    rateType: Joi.rateType()
+    rateType: Joi.rateType(),
+    projectId: Joi.number().integer()
   }).required()
 }).required()
 
