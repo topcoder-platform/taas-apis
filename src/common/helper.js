@@ -12,6 +12,10 @@ const errors = require('../common/errors')
 const logger = require('./logger')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
+const localLogger = {
+  debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message })
+}
+
 AWS.config.region = config.esConfig.AWS_REGION
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
@@ -237,6 +241,7 @@ async function getUserIds (userId) {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserIds', message: `response body: ${JSON.stringify(res.body)}` })
   return res.body
 }
 
@@ -296,6 +301,7 @@ async function getProjects (token) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
   return _.map(res.body, item => {
     return _.pick(item, ['id', 'name'])
   })
@@ -304,18 +310,17 @@ async function getProjects (token) {
 /**
  * Function to get users
  * @param {String} token the user request token
+ * @param {String} userId the user id
  * @returns the request result
  */
-async function getUsers (token) {
-  const url = `${config.TC_API}/users`
+async function getUserById (token, userId) {
   const res = await request
-    .get(url)
+    .get(`${config.TC_API}/users/${userId}`)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  return _.map(res.body, item => {
-    return _.pick(item, ['id', 'handle', 'firstName', 'lastName'])
-  })
+  localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
 }
 
 /**
@@ -335,6 +340,7 @@ async function getMembers (token, handles) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
   return res.body
 }
 
@@ -351,24 +357,24 @@ async function getProjectById (token, id) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
   return _.pick(res.body, ['id', 'name'])
 }
 
 /**
- * Function to get skills
+ * Function to get skill by id
  * @param {String} token the user request token
+ * @param {String} skillId the skill Id
  * @returns the request result
  */
-async function getSkills (token) {
-  const url = `${config.TC_API}/skills`
+async function getSkillById (token, skillId) {
   const res = await request
-    .get(url)
+    .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  return _.map(res.body, item => {
-    return _.pick(item, ['id', 'name'])
-  })
+  localLogger.debug({ context: 'getSkillById', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id', 'name'])
 }
 
 /**
@@ -384,6 +390,7 @@ async function getUserSkill (token, userId) {
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserSkill', message: `response body: ${JSON.stringify(res.body)}` })
   return _.map(res.body, item => {
     return {
       id: item.id,
@@ -403,9 +410,9 @@ module.exports = {
   getBusApiClient,
   isDocumentMissingException,
   getProjects,
-  getUsers,
+  getUserById,
   getMembers,
   getProjectById,
-  getSkills,
+  getSkillById,
   getUserSkill
 }

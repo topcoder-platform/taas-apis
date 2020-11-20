@@ -116,7 +116,7 @@ logger.decorateWithLogging = (service, serviceName) => {
           component: serviceName,
           context: name,
           message: `output arguments: ${result !== null && result !== undefined
-              ? util.inspect(_sanitizeObject(result), { compact: true, breakLength: Infinity })
+              ? util.inspect(_sanitizeObject(result), { compact: true, breakLength: Infinity, depth: null })
               : undefined}`
         })
         return result

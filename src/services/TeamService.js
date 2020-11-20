@@ -58,10 +58,8 @@ searchTeams.schema = Joi.object().keys({
  */
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
-  // Get users from /v5/users
-  const users = await helper.getUsers(currentUser.jwtToken)
   // Get resourceBookings from taas api
-  const resourceBookings = await _getAssignedResourceBooking(currentUser.jwtToken)
+  const resourceBookings = await _getAssignedResourceBooking()
   // Get jobs from taas api
   const jobs = await _getJobsByProjectIds(projectIds)
 
@@ -112,10 +110,9 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       }
 
-      const userIds = _.map(rbs, 'userId')
-      const userInfos = _.filter(users, item => {
-        return userIds.indexOf(item.id) > -1
-      })
+      const usersPromises = []
+      _.map(rbs, (rb) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, rb.userId)) })
+      const userInfos = await Promise.all(usersPromises)
       if (userInfos && userInfos.length > 0) {
         res.resources = userInfos
 
@@ -178,8 +175,6 @@ async function getTeam (currentUser, id) {
   const project = await helper.getProjectById(currentUser.jwtToken, id)
 
   const result = await getTeamDetail(currentUser, [project], false)
-  // Get users from /v5/skills
-  const skills = await helper.getSkills(currentUser.jwtToken)
 
   const teamDetail = result[0]
 
@@ -188,11 +183,9 @@ async function getTeam (currentUser, id) {
   if (teamDetail && teamDetail.jobs) {
     for (const job of teamDetail.jobs) {
       if (job.skills) {
-        jobSkills = _.map(job.skills, skill => {
-          return _.find(skills, item => {
-            return item.id === skill
-          })
-        })
+        const usersPromises = []
+        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(currentUser.jwtToken, skillId)) })
+        jobSkills = await Promise.all(usersPromises)
         job.skills = jobSkills
       }
     }
@@ -249,12 +242,9 @@ async function getTeamJob (currentUser, id, jobId) {
   const jobSkills = job.skills
 
   if (job && job.candidates && job.candidates.length > 0) {
-    // Get job candidates from /v5/users
-    const users = await helper.getUsers(currentUser.jwtToken)
-    const userIds = _.map(job.candidates, 'userId')
-    const candidates = _.filter(users, item => {
-      return userIds.indexOf(item.id) > -1
-    })
+    const usersPromises = []
+    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, candidate.userId)) })
+    const candidates = await Promise.all(usersPromises)
 
     const userHandles = _.map(candidates, 'handle')
     if (userHandles && userHandles.length > 0) {

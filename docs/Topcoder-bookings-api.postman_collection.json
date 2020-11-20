@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e5068685-d152-46a2-acd9-41752e953288",
+		"_postman_id": "266c56d9-a96a-4f45-9220-95620f026041",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c5b7367f-d0eb-4960-8bbf-c8becaf31674",
+								"id": "4f296739-8f36-4d76-be66-269aa4c6c34a",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -34,7 +34,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -59,7 +59,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d5c25c00-0033-4a0b-a71d-704f0fb77119",
+								"id": "5d118bcb-ea69-4f92-b267-7a807deef522",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -79,7 +79,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -104,7 +104,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0045ccac-5ce6-4c85-96d0-4747e38ce0af",
+								"id": "cb499304-14a4-4c9e-a43f-4a3356f917aa",
 								"exec": [
 									""
 								],
@@ -123,7 +123,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -148,7 +148,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3f694a2f-50c7-45f9-b070-8b35d1356dac",
+								"id": "c0f62918-f916-468a-9e81-5151f1869f9f",
 								"exec": [
 									""
 								],
@@ -167,7 +167,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -192,7 +192,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6d26576b-f1a6-453b-b370-9e043585a4b6",
+								"id": "ab099735-7af0-4f99-b274-a9be3f70ffd3",
 								"exec": [
 									""
 								],
@@ -211,7 +211,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -725,7 +725,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -758,7 +758,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -791,7 +791,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -824,7 +824,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -857,7 +857,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1186,7 +1186,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "78c7277b-d167-473a-98c2-5d6f9bb8a6d4",
+								"id": "6b168a78-7f6b-4000-bd44-3b9c76f0277e",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1231,7 +1231,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "cc3159cd-9d47-4781-b34e-2ffeb241835b",
+								"id": "bc965016-a5d4-4f08-9994-3f4865915125",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1276,7 +1276,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e124c44c-4c49-4cee-ac6d-de02189b6b5f",
+								"id": "751ec141-ef8d-4893-8802-d814006c8304",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1321,7 +1321,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dd94720e-938a-4cc6-9256-f325a11f2adc",
+								"id": "0fbba452-0387-494b-b09d-4efc7805a273",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1366,7 +1366,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9af0ad9d-5b5a-4bd2-961a-3da81b3646ca",
+								"id": "c7ad1e24-852b-4f35-9131-81e0470f82be",
 								"exec": [
 									""
 								],
@@ -2183,7 +2183,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fbec4b77-da8e-4a68-8041-2b53f51b53a1",
+								"id": "84511971-c664-4334-b3de-2d5e3642ce95",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2203,7 +2203,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2228,7 +2228,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ec104283-7052-4e4e-bb47-243091b27cca",
+								"id": "fde28c86-d477-4214-8441-f74d99f4b654",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2248,7 +2248,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2273,7 +2273,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b0557557-4d52-402d-819b-238f764fefcf",
+								"id": "7e928dd2-24be-4349-9e7c-6e8ccec4d6e7",
 								"exec": [
 									""
 								],
@@ -2292,7 +2292,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2317,7 +2317,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "837fc794-5bae-4903-8486-e37ae066faf0",
+								"id": "25e3434c-0935-4aed-ab5f-7dc240acf95e",
 								"exec": [
 									""
 								],
@@ -2336,7 +2336,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2361,7 +2361,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "be5356b8-8068-4a6d-a17b-a2cef3cf6593",
+								"id": "ce94fcb6-b450-4cb6-bf65-18ab34a168ec",
 								"exec": [
 									""
 								],
@@ -2380,7 +2380,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2756,7 +2756,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2789,7 +2789,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2822,7 +2822,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2855,7 +2855,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2888,7 +2888,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": 21,\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3246,13 +3246,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/9050",
+							"raw": "{{URL}}/taas-teams/:projectId",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								"9050"
+								":projectId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								}
 							]
 						}
 					},
@@ -3270,15 +3276,25 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/9050/jobs/1d9e8c1a-e653-4d31-a799-2685e41da212",
+							"raw": "{{URL}}/taas-teams/:projectId/jobs/:jobId",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								"9050",
+								":projectId",
 								"jobs",
-								"1d9e8c1a-e653-4d31-a799-2685e41da212"
+								":jobId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								},
+								{
+									"key": "jobId",
+									"value": "948a25a6-086f-4a96-aad5-9ccd2d3e87b2"
+								}
 							]
 						}
 					},
