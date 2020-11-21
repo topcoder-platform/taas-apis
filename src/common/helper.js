@@ -298,6 +298,9 @@ async function getProjects (token) {
   const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
+    .query({
+      memberOnly: true
+    })
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
