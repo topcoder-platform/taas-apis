@@ -295,7 +295,7 @@ function isDocumentMissingException (err) {
  * @returns the request result
  */
 async function getProjects (token) {
-  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+/*  const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
     .query({
@@ -306,6 +306,30 @@ async function getProjects (token) {
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
   return _.map(res.body, item => {
+    return _.pick(item, ['id', 'name'])
+  })*/
+  
+  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+  let data = []
+  let page = 1
+  while (true) {
+    const res = await request
+      .get(url)
+      .query({
+        page,
+        memberOnly: true
+      })
+      .set('Authorization', token)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getProjects', message: `page ${page} - response body: ${JSON.stringify(res.body)}` })
+    data = [...data, ...res.body]
+    page += 1
+    if (!res.headers['x-next-page']) {
+      break
+    }
+  }
+  return _.map(data, item => {
     return _.pick(item, ['id', 'name'])
   })
 }
@@ -333,7 +357,7 @@ async function getUserById (token, userId) {
  * @returns the request result
  */
 async function getMembers (token, handles) {
-  const handlesStr = _.map(handles, handle => {
+ /* const handlesStr = _.map(handles, handle => {
     return '%22' + handle.toLowerCase() + '%22'
   }).join(',')
   const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
@@ -344,7 +368,32 @@ async function getMembers (token, handles) {
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
-  return res.body
+  return res.body */
+  
+    const handlesStr = _.map(handles, handle => {
+    return '%22' + handle.toLowerCase() + '%22'
+  }).join(',')
+  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
+
+  let data = []
+  let page = 1
+  while (true) {
+    const res = await request
+      .get(url)
+      .query({
+        page
+      })
+      .set('Authorization', token)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getMembers', message: `page ${page} - response body: ${JSON.stringify(res.body)}` })
+    data = [...data, ...res.body]
+    page += 1
+    if (!res.headers['x-next-page']) {
+      break
+    }
+  }
+  return data
 }
 
 /**
