@@ -23,6 +23,11 @@ const m2mAuth = require('tc-core-library-js').auth.m2m
 // const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
 const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
 
+const topcoderM2M = m2mAuth({
+  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
+  ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL'])
+})
+
 let busApiClient
 
 /**
@@ -202,6 +207,14 @@ const getM2Mtoken = async () => {
   return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
+/*
+ * Function to get M2M token to access topcoder resources(e.g. /v3/users)
+ * @returns {Promise}
+ */
+const getTopcoderM2MToken = async () => {
+  return await topcoderM2M.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+}
+
 /**
  * Function to encode query string
  * @param {Object} queryObj the query object
@@ -308,6 +321,27 @@ async function getProjects (token) {
 }
 
 /**
+ * Get topcoder user by id from /v3/users.
+ *
+ * @param {String} userId the legacy user id
+ * @returns {Object} the user
+ */
+async function getTopcoderUserById (userId) {
+  const token = await getTopcoderM2MToken()
+  const res = await request
+    .get(config.TOPCODER_USERS_API)
+    .query({ filter: `id=${userId}` })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getTopcoderUserById', message: `response body: ${JSON.stringify(res.body)}` })
+  const user = _.get(res.body, 'result.content[0]')
+  if (!user) {
+    throw new errors.NotFoundError(`userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`)
+  }
+  return user
+}
+
+/**
  * Function to get users
  * @param {String} token the user request token
  * @param {String} userId the user id
@@ -321,6 +355,39 @@ async function getUserById (token, userId) {
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
   return _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+}
+
+/**
+ * Function to create user in ubhan
+ * @param {Object} data the user data
+ * @returns the request result
+ */
+async function createUbhanUser ({ handle, firstName, lastName }) {
+  const token = await getM2Mtoken()
+  const res = await request
+    .post(`${config.TC_API}/users`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send({ handle, firstName, lastName })
+  localLogger.debug({ context: 'createUbhanUser', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id'])
+}
+
+/**
+ * Function to create external profile for a ubhan user
+ * @param {String} userId the user id(with uuid format)
+ * @param {Object} data the profile data
+ */
+async function createUserExternalProfile (userId, { organizationId, externalId }) {
+  const token = await getM2Mtoken()
+  const res = await request
+    .post(`${config.TC_API}/users/${userId}/externalProfiles`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send({ organizationId, externalId: String(externalId) })
+  localLogger.debug({ context: 'createUserExternalProfile', message: `response body: ${JSON.stringify(res.body)}` })
 }
 
 /**
@@ -410,7 +477,10 @@ module.exports = {
   getBusApiClient,
   isDocumentMissingException,
   getProjects,
+  getTopcoderUserById,
   getUserById,
+  createUbhanUser,
+  createUserExternalProfile,
   getMembers,
   getProjectById,
   getSkillById,
