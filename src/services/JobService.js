@@ -4,6 +4,7 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const HttpStatus = require('http-status-codes')
 const config = require('config')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
@@ -44,6 +45,34 @@ async function _getJobCandidates (jobId) {
     return candidateRecord
   })
   return candidates
+}
+
+/**
+ * Validate if all skills exist.
+ *
+ * @param {Array} skills the list of skills
+ * @returns {undefined}
+ */
+async function _validateSkills (skills) {
+  const m2mToken = await helper.getM2Mtoken()
+  const responses = await Promise.all(
+    skills.map(
+      skill => helper.getSkillById(`Bearer ${m2mToken}`, skill)
+        .then(() => {
+          return { found: true }
+        })
+        .catch(err => {
+          if (err.status !== HttpStatus.NOT_FOUND) {
+            throw err
+          }
+          return { found: false, skill }
+        })
+    )
+  )
+  const errResponses = responses.filter(res => !res.found)
+  if (errResponses.length) {
+    throw new errors.BadRequestError(`Invalid skills: [${errResponses.map(res => res.skill)}]`)
+  }
 }
 
 /**
@@ -97,6 +126,7 @@ async function createJob (currentUser, job) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
+  await _validateSkills(job.skills)
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
@@ -136,6 +166,9 @@ async function updateJob (currentUser, id, data) {
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
+  }
+  if (data.skills) {
+    await _validateSkills(data.skills)
   }
 
   data.updatedAt = new Date()

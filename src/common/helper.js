@@ -462,6 +462,7 @@ module.exports = {
   getBusApiClient,
   isDocumentMissingException,
   getProjects,
+  getM2Mtoken,
   getUserById,
   getMembers,
   getProjectById,
