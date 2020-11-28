@@ -71,6 +71,8 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
   const firstDay = new Date(curr.setDate(first))
   const lastDay = new Date(curr.setDate(last))
+  lastDay.setHours(23, 59, 59, 59) // the end of the day
+  logger.debug({ component: 'TeamService', context: 'getTeamDetail', message: `week started: ${firstDay}, week ended: ${lastDay}` })
 
   const result = []
   for (const project of projects) {
@@ -104,8 +106,9 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         const startDate = new Date(item.startDate)
         const endDate = new Date(item.endDate)
 
-        if ((!item.startDate || (startDate <= firstDay && startDate < lastDay)) &&
-          (!item.endDate || (endDate >= lastDay && endDate > firstDay))) {
+        // normally startDate is smaller than endDate for a resourceBooking so not check if startDate < endDate
+        if ((!item.startDate || startDate < lastDay) &&
+          (!item.endDate || endDate > firstDay)) {
           res.weeklyCount += item.customerRate
         }
       }
