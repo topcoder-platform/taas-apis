@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
@@ -44,6 +45,34 @@ async function _getJobCandidates (jobId) {
     return candidateRecord
   })
   return candidates
+}
+
+/**
+ * Validate if all skills exist.
+ *
+ * @param {Array} skills the list of skills
+ * @returns {undefined}
+ */
+async function _validateSkills (skills) {
+  const m2mToken = await helper.getM2Mtoken()
+  const responses = await Promise.all(
+    skills.map(
+      skill => helper.getSkillById(`Bearer ${m2mToken}`, skill)
+        .then(() => {
+          return { found: true }
+        })
+        .catch(err => {
+          if (err.status !== HttpStatus.NOT_FOUND) {
+            throw err
+          }
+          return { found: false, skill }
+        })
+    )
+  )
+  const errResponses = responses.filter(res => !res.found)
+  if (errResponses.length) {
+    throw new errors.BadRequestError(`Invalid skills: [${errResponses.map(res => res.skill)}]`)
+  }
 }
 
 /**
@@ -91,6 +120,7 @@ getJob.schema = Joi.object().keys({
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
+  await _validateSkills(job.skills)
   if (!currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(job.projectId, currentUser.jwtToken)
     if (!connect) {
@@ -130,6 +160,9 @@ createJob.schema = Joi.object().keys({
  * @returns {Object} the updated job
  */
 async function updateJob (currentUser, id, data) {
+  if (data.skills) {
+    await _validateSkills(data.skills)
+  }
   let job = await Job.findById(id)
   if (!currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)

@@ -406,6 +406,7 @@ module.exports = {
   isConnectMember,
   getESClient,
   getUserId,
+  getM2Mtoken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,
