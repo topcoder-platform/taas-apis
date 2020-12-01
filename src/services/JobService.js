@@ -114,19 +114,13 @@ getJob.schema = Joi.object().keys({
 }).required()
 
 /**
- * Create job
+ * Create job. All member can create a job.
  * @params {Object} currentUser the user who perform this operation
  * @params {Object} job the job to be created
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
   await _validateSkills(job.skills)
-  if (!currentUser.isBookingManager) {
-    const connect = await helper.isConnectMember(job.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
@@ -153,7 +147,7 @@ createJob.schema = Joi.object().keys({
 }).required()
 
 /**
- * Update job
+ * Update job. Normal user can only update the job he/she created.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} job id
  * @params {Object} data the data to be updated
@@ -164,15 +158,18 @@ async function updateJob (currentUser, id, data) {
     await _validateSkills(data.skills)
   }
   let job = await Job.findById(id)
+  const ubhanUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+      if (ubhanUserId !== job.createdBy) {
+        throw new errors.ForbiddenError('You are not allowed to perform this action!')
+      }
     }
   }
 
   data.updatedAt = new Date()
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+  data.updatedBy = ubhanUserId
 
   await job.update(data)
   await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data })
@@ -236,16 +233,19 @@ fullyUpdateJob.schema = Joi.object().keys({
 }).required()
 
 /**
- * Delete job by id
+ * Delete job by id. Normal user can only delete the job he/she created.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
 async function deleteJob (currentUser, id) {
+  const job = await Job.findById(id)
   if (!currentUser.isBookingManager) {
-    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    const ubhanUserId = await helper.getUserId(currentUser.userId)
+    if (ubhanUserId !== job.createdBy) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    }
   }
 
-  const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }

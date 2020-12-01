@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "266c56d9-a96a-4f45-9220-95620f026041",
+		"_postman_id": "35048a3f-8fc2-448a-a76b-84018421c548",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4f296739-8f36-4d76-be66-269aa4c6c34a",
+								"id": "e9fa0faf-a74f-4773-9062-ec0beb5282ad",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -59,7 +59,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5d118bcb-ea69-4f92-b267-7a807deef522",
+								"id": "5e70de3f-213c-4b45-9a0d-6c8466edc158",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -99,14 +99,15 @@
 					"response": []
 				},
 				{
-					"name": "create job with member",
+					"name": "create job with member success",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "cb499304-14a4-4c9e-a43f-4a3356f917aa",
+								"id": "aa97c213-e7d7-4583-a148-d6a06413403f",
 								"exec": [
-									""
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"jobIdCreatedByMember\",data.id);"
 								],
 								"type": "text/javascript"
 							}
@@ -123,7 +124,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -148,7 +149,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c0f62918-f916-468a-9e81-5151f1869f9f",
+								"id": "f1f4f692-9df3-42ab-939a-40fae57dfd75",
 								"exec": [
 									""
 								],
@@ -192,7 +193,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ab099735-7af0-4f99-b274-a9be3f70ffd3",
+								"id": "3cd48952-dd0a-4893-958e-2dd53d504b91",
 								"exec": [
 									""
 								],
@@ -320,13 +321,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/jobs/{{jobId}}",
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobs",
-								"{{jobId}}"
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -779,7 +780,21 @@
 					"response": []
 				},
 				{
-					"name": "put job with member",
+					"name": "put job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cf9e7a1f-dcbd-4971-bf72-ff1ccfce8f3c",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -791,7 +806,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description updated\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -806,6 +821,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put job with member success",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description updated\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -944,7 +992,21 @@
 					"response": []
 				},
 				{
-					"name": "patch job with member",
+					"name": "patch job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "07133dc2-316e-4404-98b6-c3f8056557fe",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -956,7 +1018,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"description\": \"Dummy Description updated 2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -971,6 +1033,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch job with member success",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"Dummy Description updated 2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -1043,14 +1138,14 @@
 					"response": []
 				},
 				{
-					"name": "delete job with menber",
+					"name": "delete job with booking manager",
 					"request": {
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Authorization",
 								"type": "text",
-								"value": "Bearer {{token_member}}"
+								"value": "Bearer {{token_bookingManager}}"
 							}
 						],
 						"body": {
@@ -1109,14 +1204,28 @@
 					"response": []
 				},
 				{
-					"name": "delete job with booking manager",
+					"name": "delete job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "70634304-5c18-4817-b450-75fbe96c2b0f",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Authorization",
 								"type": "text",
-								"value": "Bearer {{token_bookingManager}}"
+								"value": "Bearer {{token_member}}"
 							}
 						],
 						"body": {
@@ -1136,6 +1245,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete job with member success",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -1186,7 +1328,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6b168a78-7f6b-4000-bd44-3b9c76f0277e",
+								"id": "f255609a-48fe-45db-8716-ec44966516a4",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1231,7 +1373,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bc965016-a5d4-4f08-9994-3f4865915125",
+								"id": "acf51116-1650-4887-99ed-d096ac604e92",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1276,7 +1418,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "751ec141-ef8d-4893-8802-d814006c8304",
+								"id": "3d949037-a5f6-4070-8230-f344497bbf94",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1321,7 +1463,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0fbba452-0387-494b-b09d-4efc7805a273",
+								"id": "752e75ca-207c-4ebb-b5fd-5a1d7b88e00c",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1366,7 +1508,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c7ad1e24-852b-4f35-9131-81e0470f82be",
+								"id": "309180a1-03e5-4c79-a92b-665aaa764783",
 								"exec": [
 									""
 								],
@@ -2183,7 +2325,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "84511971-c664-4334-b3de-2d5e3642ce95",
+								"id": "a012d801-2727-4a42-bd3c-0a6f59a06892",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2228,7 +2370,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fde28c86-d477-4214-8441-f74d99f4b654",
+								"id": "abf51d77-d171-4574-812d-5c9eb15b277e",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2273,7 +2415,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7e928dd2-24be-4349-9e7c-6e8ccec4d6e7",
+								"id": "86177859-f04f-4499-9673-1a5d5a2a97ff",
 								"exec": [
 									""
 								],
@@ -2317,7 +2459,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "25e3434c-0935-4aed-ab5f-7dc240acf95e",
+								"id": "2e8bc196-31b8-4be5-9486-df03eaa53d3f",
 								"exec": [
 									""
 								],
@@ -2361,7 +2503,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ce94fcb6-b450-4cb6-bf65-18ab34a168ec",
+								"id": "98f57ace-31f1-478a-b3a4-a78013198f66",
 								"exec": [
 									""
 								],

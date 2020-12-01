@@ -16,29 +16,6 @@ const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
 
 /**
- * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
- *
- * In the case the user does not exist in /v5/users but can be found in /v3/users
- * Fetch the user info from /v3/users and create a new user in /v5/users.
- *
- * @params {Object} currentUser the user who perform this operation
- * @returns {undefined}
- */
-async function _ensureUbhanUserId (currentUser) {
-  try {
-    return await helper.getUserId(currentUser.userId)
-  } catch (err) {
-    if (!(err instanceof errors.NotFoundError)) {
-      throw err
-    }
-    const topcoderUser = await helper.getTopcoderUserById(currentUser.userId)
-    const user = await helper.createUbhanUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
-    await helper.createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
-    return user.id
-  }
-}
-
-/**
  * Get jobCandidate by id
  * @param {String} id the jobCandidate id
  * @param {Boolean} fromDb flag if query db for data or not
@@ -79,7 +56,7 @@ getJobCandidate.schema = Joi.object().keys({
 async function createJobCandidate (currentUser, jobCandidate) {
   jobCandidate.id = uuid()
   jobCandidate.createdAt = new Date()
-  jobCandidate.createdBy = await _ensureUbhanUserId(currentUser)
+  jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
   jobCandidate.status = 'open'
 
   const created = await JobCandidate.create(jobCandidate)
@@ -105,7 +82,7 @@ createJobCandidate.schema = Joi.object().keys({
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
   const projectId = await JobCandidate.getProjectId(jobCandidate.dataValues.jobId)
-  const userId = await _ensureUbhanUserId(currentUser)
+  const userId = await helper.getUserId(currentUser.userId)
   if (projectId && !currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(projectId, currentUser.jwtToken)
     if (!connect) {
