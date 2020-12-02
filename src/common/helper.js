@@ -466,22 +466,43 @@ async function getUserSkill (token, userId) {
   })
 }
 
+/**
+ * Encapsulate the getUserId function.
+ * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
+ *
+ * In the case the user does not exist in /v5/users but can be found in /v3/users
+ * Fetch the user info from /v3/users and create a new user in /v5/users.
+ *
+ * @params {Object} currentUser the user who perform this operation
+ * @returns {String} the ubhan user id
+ */
+async function ensureUbhanUserId (currentUser) {
+  try {
+    return await getUserId(currentUser.userId)
+  } catch (err) {
+    if (!(err instanceof errors.NotFoundError)) {
+      throw err
+    }
+    const topcoderUser = await getTopcoderUserById(currentUser.userId)
+    const user = await createUbhanUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
+    await createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
+    return user.id
+  }
+}
+
 module.exports = {
   autoWrapExpress,
   setResHeaders,
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId,
+  getUserId: (userId) => ensureUbhanUserId({ userId }),
   getM2Mtoken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,
   getProjects,
-  getTopcoderUserById,
   getUserById,
-  createUbhanUser,
-  createUserExternalProfile,
   getMembers,
   getProjectById,
   getSkillById,
