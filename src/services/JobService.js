@@ -142,6 +142,7 @@ createJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string().required(),
     rateType: Joi.rateType(),
+    workload: Joi.workload().default('full-time'),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
@@ -200,6 +201,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1),
     resourceType: Joi.string(),
     rateType: Joi.rateType(),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid())
   }).required()
 }).required()
@@ -227,6 +229,7 @@ fullyUpdateJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string().required(),
     rateType: Joi.rateType().required(),
+    workload: Joi.workload().required(),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus()
   }).required()
@@ -286,7 +289,18 @@ async function searchJobs (criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['projectId', 'externalId', 'description', 'startDate', 'endDate', 'resourceType', 'skill', 'rateType', 'status']), (value, key) => {
+    _.each(_.pick(criteria, [
+      'projectId',
+      'externalId',
+      'description',
+      'startDate',
+      'endDate',
+      'resourceType',
+      'skill',
+      'rateType',
+      'workload',
+      'status'
+    ]), (value, key) => {
       let must
       if (key === 'description') {
         must = {
@@ -347,7 +361,16 @@ async function searchJobs (criteria) {
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['projectId', 'externalId', 'startDate', 'endDate', 'resourceType', 'rateType', 'status']), (value, key) => {
+  _.each(_.pick(criteria, [
+    'projectId',
+    'externalId',
+    'startDate',
+    'endDate',
+    'resourceType',
+    'rateType',
+    'workload',
+    'status'
+  ]), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.description) {
@@ -403,6 +426,7 @@ searchJobs.schema = Joi.object().keys({
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     rateType: Joi.rateType(),
+    workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single()
   }).required()
