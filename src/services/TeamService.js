@@ -4,6 +4,7 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const dateFNS = require('date-fns')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const JobService = require('./JobService')
@@ -65,13 +66,9 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
   // Get first week day and last week day
   const curr = new Date()
-  curr.setHours(0, 0, 0, 0)
-  const first = curr.getDate() - curr.getDay()
-  const last = first + 6
+  const firstDay = dateFNS.startOfWeek(curr)
+  const lastDay = dateFNS.endOfWeek(curr)
 
-  const firstDay = new Date(curr.setDate(first))
-  const lastDay = new Date(curr.setDate(last))
-  lastDay.setHours(23, 59, 59, 59) // the end of the day
   logger.debug({ component: 'TeamService', context: 'getTeamDetail', message: `week started: ${firstDay}, week ended: ${lastDay}` })
 
   const result = []
