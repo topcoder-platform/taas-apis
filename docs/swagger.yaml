@@ -22,7 +22,7 @@ paths:
       description: |
         Create job.
 
-        **Authorization** Topcoder token with write job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       requestBody:
@@ -67,7 +67,7 @@ paths:
       description: |
         Search jobs.
 
-        **Authorization** Topcoder token with read job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       parameters:
@@ -231,7 +231,7 @@ paths:
       description: |
         Get job information by id.
         
-        **Authorization** Topcoder token with read job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       parameters: 
@@ -290,7 +290,7 @@ paths:
       description: | 
         Delete the job.
 
-        **Authorization** Topcoder token with delete job scope is allowed
+        **Authorization** Every topcoder member can delete the job he/she created. bookingmanager can delete all jobs.
       security: 
         - bearerAuth: []
       parameters:
@@ -340,7 +340,7 @@ paths:
       description: |
         Update the job.
 
-        **Authorization** Topcoder token with update job scope is allowed
+        **Authorization** Every topcoder member can update the job he/she created. bookingmanager and connectmember can update all jobs.
       security:
         - bearerAuth: []
       parameters:
