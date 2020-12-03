@@ -111,7 +111,19 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
       }
 
       const usersPromises = []
-      _.map(rbs, (rb) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, rb.userId)) })
+      _.map(rbs, (rb) => {
+        usersPromises.push(
+          helper.getUserById(currentUser.jwtToken, rb.userId)
+            .then(user => {
+              // If call function is not search, add jobId field
+              if (!isSearch) {
+                user.jobId = rb.jobId
+                user.customerRate = rb.customerRate
+              }
+              return user
+            })
+        )
+      })
       const userInfos = await Promise.all(usersPromises)
       if (userInfos && userInfos.length > 0) {
         res.resources = userInfos
@@ -124,21 +136,6 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
           const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
           if (findMember && findMember.photoURL) {
             item.photo_url = findMember.photoURL
-          }
-
-          if (!isSearch) {
-            // If call function is not search, add job field
-            const findRbs = _.find(rbs, { userId: item.id })
-            if (findRbs) {
-              item.customerRate = findRbs.customerRate
-              const job = _.find(jobs, { id: findRbs.jobId })
-              if (job) {
-                item.job = {
-                  id: job.id,
-                  name: job.description
-                }
-              }
-            }
           }
         }
       }
@@ -236,7 +233,8 @@ async function getTeamJob (currentUser, id, jobId) {
   }
   const result = {
     id: job.id,
-    description: job.description
+    description: job.description,
+    skills: job.skills
   }
 
   const jobSkills = job.skills
