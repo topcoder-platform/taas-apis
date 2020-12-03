@@ -233,8 +233,13 @@ async function getTeamJob (currentUser, id, jobId) {
   }
   const result = {
     id: job.id,
-    description: job.description,
-    skills: job.skills
+    description: job.description
+  }
+
+  if (job.skills) {
+    result.skills = await Promise.all(
+      _.map(job.skills, (skillId) => helper.getSkillById(currentUser.jwtToken, skillId))
+    )
   }
 
   const jobSkills = job.skills
