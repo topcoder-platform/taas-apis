@@ -23,6 +23,7 @@ async function createIndex () {
             numPositions: { type: 'integer' },
             resourceType: { type: 'keyword' },
             rateType: { type: 'keyword' },
+            workload: { type: 'keyword' },
             skills: { type: 'keyword' },
             status: { type: 'keyword' },
             createdAt: { type: 'date' },

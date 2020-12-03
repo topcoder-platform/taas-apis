@@ -146,6 +146,13 @@ paths:
             type: string
           description: The skill.
         - in: query
+          name: workload
+          required: false
+          schema:
+            type: string
+            enum: ['full-time', 'fractional']
+          description: The rate type.
+        - in: query
           name: rateType
           required: false
           schema:
@@ -1479,6 +1486,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."
@@ -1557,6 +1568,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."
@@ -1654,6 +1669,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."

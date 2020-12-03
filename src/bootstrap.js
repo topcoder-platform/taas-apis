@@ -5,6 +5,7 @@ const logger = require('./common/logger')
 
 Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
+Joi.workload = () => Joi.string().valid('full-time', 'fractional')
 Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected')
 
 function buildServices (dir) {
