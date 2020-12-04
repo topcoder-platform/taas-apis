@@ -11,6 +11,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const JobCandidateService = require('./JobCandidateService')
 
 const ResourceBooking = models.ResourceBooking
 const esClient = helper.getESClient()
@@ -120,8 +121,34 @@ async function updateResourceBooking (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  await resourceBooking.update(data)
+  const updatedResourceBooking = await resourceBooking.update(data)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data })
+  // When we are updating the status of ResourceBooking to `assigned`
+  // the corresponding JobCandidate record (with the same userId and jobId)
+  // should be updated with the status `selected`
+  if (data.status === 'assigned') {
+    const candidates = await models.JobCandidate.findAll({
+      where: {
+        jobId: updatedResourceBooking.jobId,
+        userId: updatedResourceBooking.userId,
+        status: {
+          [Op.not]: 'selected'
+        },
+        deletedAt: null
+      }
+    })
+    await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
+      currentUser,
+      candidate.id,
+      { status: 'selected' }
+    ).then(result => {
+      logger.debug({
+        component: 'ResourceBookingService',
+        context: 'updatedResourceBooking',
+        message: `id: ${result.id} candidate got selected.`
+      })
+    })))
+  }
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }
