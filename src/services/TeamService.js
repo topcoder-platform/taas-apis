@@ -41,10 +41,7 @@ async function _getJobsByProjectIds (projectIds) {
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchTeams (currentUser, criteria) {
-  let sort = `${criteria.sortBy}`
-  if (criteria.sortOrder) {
-    sort = `${criteria.sortBy} ${criteria.sortOrder}`
-  }
+  const sort = `${criteria.sortBy} ${criteria.sortOrder}`
   // Get projects from /v5/projects with searching criteria
   const { total, page, perPage, result: projects } = await helper.getProjects(
     currentUser.jwtToken,
