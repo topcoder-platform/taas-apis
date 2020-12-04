@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "418b385c-5ce1-4810-b357-cddf05adf271",
+		"_postman_id": "282e8342-2d5a-4566-8509-f2f240a594a0",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ff119e52-58f4-4501-8193-dd8c75f9ba4a",
+								"id": "a2236151-22f2-46c7-869a-858eb7da1ab8",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -59,7 +59,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "66169f57-ba0e-4a88-85c3-e27ee380c332",
+								"id": "91236482-d7b2-4acd-a47d-e9f9ac833bad",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -104,7 +104,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "31016a7d-5de6-4802-92f8-b1c7a9afcc4a",
+								"id": "1e5b5bdf-6ff0-4d96-8018-8698bc359674",
 								"exec": [
 									"var data = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"jobIdCreatedByMember\",data.id);"
@@ -149,7 +149,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0b96c49d-6fb7-49ab-bfe1-4623ffe1be10",
+								"id": "0b469a8d-8119-4907-ac37-a69a1766754d",
 								"exec": [
 									""
 								],
@@ -193,7 +193,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bce80082-b100-466d-a196-73e9c38e2b9d",
+								"id": "fec863ef-1db6-4008-8a9d-ef616e3cac4d",
 								"exec": [
 									""
 								],
@@ -785,7 +785,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "40f37d6f-508f-47ba-bbd4-41e1e0c3a4a2",
+								"id": "28720714-8006-4fd5-b3b8-0c588266bb5e",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -997,7 +997,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5d25999b-14ec-432c-bf11-028ec73a7140",
+								"id": "aa7fa1f8-cca2-4323-8266-ff4e770dae10",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -1209,7 +1209,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5f89405c-6907-41c8-8630-ccb5d5d640e6",
+								"id": "8299d83c-e5c3-4639-8c4a-bf783f178fb2",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -1328,7 +1328,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "865f0f13-444b-4247-902d-b3e6cdb1898e",
+								"id": "cbee0ff6-5824-447c-915d-466bfd5242bc",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1373,7 +1373,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "37973c93-a13f-448d-8f02-af7f18818df2",
+								"id": "6a1b4404-55ef-40e8-981a-3cb9e960d6ea",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1418,7 +1418,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "79490454-9392-42f1-8f07-7ab1950318df",
+								"id": "a42f6045-fdb2-4d61-8dd4-a919573f5d24",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1463,7 +1463,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "99a176e1-645b-47ca-91b4-940fbebc65f6",
+								"id": "b133db18-fa52-4a59-9e35-5e7d340b7f1d",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1508,7 +1508,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "92b01e89-a317-4663-95f0-ecb861fceefb",
+								"id": "6cd47ee8-4139-4309-8cb1-ceb74d2d06eb",
 								"exec": [
 									""
 								],
@@ -2325,7 +2325,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d8fcb38d-6699-4710-9db2-13fb3c814dff",
+								"id": "2722fecc-08fa-4d6e-9895-e7ed844f21c9",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2370,7 +2370,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "45daab6c-adbd-4083-84e9-0e64640e6d95",
+								"id": "86edd7ff-eef6-4976-ae59-101fbe154e2c",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2415,7 +2415,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "daa443f9-6ba1-48b0-9c59-b7e7e4192244",
+								"id": "10be7afd-f528-4abf-a524-a9642678c436",
 								"exec": [
 									""
 								],
@@ -2459,7 +2459,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "693dffa5-7de5-4940-8e1b-3053cb6a5684",
+								"id": "ad50f131-aff8-4e32-acda-d647889d4dc3",
 								"exec": [
 									""
 								],
@@ -2503,7 +2503,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dba6c30b-b9c8-4750-8f97-e98bb21aa436",
+								"id": "ebe085f5-b1ce-455b-b147-c4c6f4cd4283",
 								"exec": [
 									""
 								],
@@ -3365,12 +3365,37 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams",
+							"raw": "{{URL}}/taas-teams?perPage=10&page=1&name=*taas*&sortBy=lastActivityAt&sortOrder=desc",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "*taas*",
+									"description": "case-insensitive; support wildcard match"
+								},
+								{
+									"key": "sortBy",
+									"value": "lastActivityAt",
+									"description": "allows: createdAt, updatedAt, lastActivityAt, id, status, name, type, best match"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"description": "allows: asc, desc"
+								}
 							]
 						}
 					},
