@@ -1278,6 +1278,44 @@ paths:
         - Teams
       description: |
         Search my teams. Teams is project in topcoder with type=='talent-as-a-service'
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: createdAt
+            enum: ['createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match']
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ['desc','asc']
+          description: The sort order. Not allowed when sortBy is `best match`.
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          description: filter by name, case-insensitive; support wildcard match.
+          example: '*taas*'
       security:
         - bearerAuth: []
       responses:
@@ -1289,6 +1327,35 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Team'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
         '400':
           description: Bad request
           content:

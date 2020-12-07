@@ -14,7 +14,10 @@ const logger = require('./src/common/logger')
 // setup express app
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  // Allow browsers access pagination data in headers
+  exposedHeaders: ['X-Page', 'X-Per-Page', 'X-Total', 'X-Total-Pages', 'X-Prev-Page', 'X-Next-Page']
+}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.set('port', config.PORT)
