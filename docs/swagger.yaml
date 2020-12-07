@@ -172,12 +172,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+                    
           headers:
             X-Next-Page:
               schema:
@@ -573,12 +571,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/JobCandidate'
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobCandidate'
+                    
           headers:
             X-Next-Page:
               schema:
@@ -982,12 +978,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ResourceBooking'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceBooking'
+                    
           headers:
             X-Next-Page:
               schema:
