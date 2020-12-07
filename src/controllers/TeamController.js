@@ -12,7 +12,7 @@ const helper = require('../common/helper')
 async function searchTeams (req, res) {
   const result = await service.searchTeams(req.authUser, req.query)
   helper.setResHeaders(req, res, result)
-  res.send({ result: result.result })
+  res.send(result.result)
 }
 
 /**
