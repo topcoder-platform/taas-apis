@@ -65,7 +65,7 @@ searchTeams.schema = Joi.object().keys({
   criteria: Joi.object().keys({
     page: Joi.page(),
     perPage: Joi.perPage(),
-    sortBy: Joi.string().valid('createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match').default('createdAt'),
+    sortBy: Joi.string().valid('createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match').default('lastActivityAt'),
     sortOrder: Joi.when('sortBy', {
       is: 'best match',
       then: Joi.forbidden().label('sortOrder(with sortBy being `best match`)'),
