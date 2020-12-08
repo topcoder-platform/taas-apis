@@ -50,6 +50,38 @@ function getBusApiClient () {
 const esClients = {}
 
 /**
+ * Check if exists.
+ *
+ * @param {Array} source the array in which to search for the term
+ * @param {Array | String} term the term to search
+ */
+function checkIfExists (source, term) {
+  let terms
+
+  if (!_.isArray(source)) {
+    throw new Error('Source argument should be an array')
+  }
+
+  source = source.map(s => s.toLowerCase())
+
+  if (_.isString(term)) {
+    terms = term.toLowerCase().split(' ')
+  } else if (_.isArray(term)) {
+    terms = term.map(t => t.toLowerCase())
+  } else {
+    throw new Error('Term argument should be either a string or an array')
+  }
+
+  for (let i = 0; i < terms.length; i++) {
+    if (source.includes(terms[i])) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Wrap async function to standard express function
  * @param {Function} fn the async function
  * @returns {Function} the wrapped function
@@ -491,13 +523,21 @@ async function ensureUbhanUserId (currentUser) {
 }
 
 module.exports = {
+  checkIfExists,
   autoWrapExpress,
   setResHeaders,
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId: (userId) => ensureUbhanUserId({ userId }),
+  getUserId: async (userId) => {
+    // check m2m user id
+    if (userId === config.m2m.M2M_AUDIT_USER_ID) {
+      return config.m2m.M2M_AUDIT_USER_ID
+    }
+    return ensureUbhanUserId({ userId })
+  },
   getM2Mtoken,
+  getTopcoderM2MToken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,
