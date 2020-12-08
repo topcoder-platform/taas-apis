@@ -6,6 +6,7 @@ const _ = require('lodash')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const helper = require('./src/common/helper')
+const errors = require('./src/common/errors')
 const routes = require('./src/routes')
 const constants = require('./app-constants')
 const authenticator = require('tc-core-library-js').middleware.jwtAuthenticator
@@ -37,11 +38,22 @@ module.exports = (app) => {
         })
 
         actions.push((req, res, next) => {
-          req.authUser.jwtToken = req.headers.authorization
-          if (_.includes(req.authUser.roles, constants.UserRoles.BookingManager)) {
-            req.authUser.isBookingManager = true
+          if (req.authUser.isMachine) {
+            // M2M
+            if (!req.authUser.scopes || !helper.checkIfExists(def.scopes, req.authUser.scopes)) {
+              next(new errors.ForbiddenError('You are not allowed to perform this action!'))
+            } else {
+              req.authUser.userId = config.m2m.M2M_AUDIT_USER_ID
+              req.authUser.handle = config.m2m.M2M_AUDIT_HANDLE
+              next()
+            }
+          } else {
+            req.authUser.jwtToken = req.headers.authorization
+            if (_.includes(req.authUser.roles, constants.UserRoles.BookingManager)) {
+              req.authUser.isBookingManager = true
+            }
+            next()
           }
-          next()
         })
       }
 

@@ -160,7 +160,7 @@ async function updateJob (currentUser, id, data) {
   }
   let job = await Job.findById(id)
   const ubhanUserId = await helper.getUserId(currentUser.userId)
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
       if (ubhanUserId !== job.createdBy) {
@@ -242,7 +242,7 @@ fullyUpdateJob.schema = Joi.object().keys({
  */
 async function deleteJob (currentUser, id) {
   const job = await Job.findById(id)
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const ubhanUserId = await helper.getUserId(currentUser.userId)
     if (ubhanUserId !== job.createdBy) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
