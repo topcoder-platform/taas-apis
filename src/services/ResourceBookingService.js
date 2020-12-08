@@ -23,7 +23,7 @@ const esClient = helper.getESClient()
  * @returns {Object} the resourceBooking
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.isBookingManager) {
+  if (currentUser.isBookingManager || currentUser.isMachine) {
     return helper.clearObject(resourceBooking)
   } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
     return _.omit(helper.clearObject(resourceBooking), 'memberRate')
@@ -73,7 +73,7 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -113,7 +113,7 @@ createResourceBooking.schema = Joi.object().keys({
 async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
   const isDiffStatus = resourceBooking.status !== data.status
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -211,7 +211,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
  * @params {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 

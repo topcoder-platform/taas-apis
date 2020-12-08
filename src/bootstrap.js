@@ -3,6 +3,8 @@ const Joi = require('joi')
 const path = require('path')
 const logger = require('./common/logger')
 
+Joi.page = () => Joi.number().integer().min(1).default(1)
+Joi.perPage = () => Joi.number().integer().min(1).default(20)
 Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')

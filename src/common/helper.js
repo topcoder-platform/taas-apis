@@ -50,6 +50,38 @@ function getBusApiClient () {
 const esClients = {}
 
 /**
+ * Check if exists.
+ *
+ * @param {Array} source the array in which to search for the term
+ * @param {Array | String} term the term to search
+ */
+function checkIfExists (source, term) {
+  let terms
+
+  if (!_.isArray(source)) {
+    throw new Error('Source argument should be an array')
+  }
+
+  source = source.map(s => s.toLowerCase())
+
+  if (_.isString(term)) {
+    terms = term.toLowerCase().split(' ')
+  } else if (_.isArray(term)) {
+    terms = term.map(t => t.toLowerCase())
+  } else {
+    throw new Error('Term argument should be either a string or an array')
+  }
+
+  for (let i = 0; i < terms.length; i++) {
+    if (source.includes(terms[i])) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Wrap async function to standard express function
  * @param {Function} fn the async function
  * @returns {Function} the wrapped function
@@ -124,14 +156,6 @@ function setResHeaders (req, res, result) {
     }
     res.set('Link', link)
   }
-
-  // Allow browsers access pagination data in headers
-  let accessControlExposeHeaders = res.get('Access-Control-Expose-Headers') || ''
-  accessControlExposeHeaders += accessControlExposeHeaders ? ', ' : ''
-  // append new values, to not override values set by someone else
-  accessControlExposeHeaders += 'X-Page, X-Per-Page, X-Total, X-Total-Pages, X-Prev-Page, X-Next-Page'
-
-  res.set('Access-Control-Expose-Headers', accessControlExposeHeaders)
 }
 
 /**
@@ -305,19 +329,27 @@ function isDocumentMissingException (err) {
 /**
  * Function to get projects
  * @param {String} token the user request token
+ * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getProjects (token) {
+async function getProjects (token, criteria = {}) {
   const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
+    .query(criteria)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.map(res.body, item => {
+  const result = _.map(res.body, item => {
     return _.pick(item, ['id', 'name'])
   })
+  return {
+    total: Number(_.get(res.headers, 'x-total')),
+    page: Number(_.get(res.headers, 'x-page')),
+    perPage: Number(_.get(res.headers, 'x-per-page')),
+    result
+  }
 }
 
 /**
@@ -491,13 +523,21 @@ async function ensureUbhanUserId (currentUser) {
 }
 
 module.exports = {
+  checkIfExists,
   autoWrapExpress,
   setResHeaders,
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId: (userId) => ensureUbhanUserId({ userId }),
+  getUserId: async (userId) => {
+    // check m2m user id
+    if (userId === config.m2m.M2M_AUDIT_USER_ID) {
+      return config.m2m.M2M_AUDIT_USER_ID
+    }
+    return ensureUbhanUserId({ userId })
+  },
   getM2Mtoken,
+  getTopcoderM2MToken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,

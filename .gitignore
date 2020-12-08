@@ -117,3 +117,6 @@ dist
 
 # api.env
 api.env
+
+# macOS files
+.DS_Store

@@ -2,6 +2,7 @@
  * Controller for TaaS teams endpoints
  */
 const service = require('../services/TeamService')
+const helper = require('../common/helper')
 
 /**
  * Search teams
@@ -9,7 +10,9 @@ const service = require('../services/TeamService')
  * @param res the response
  */
 async function searchTeams (req, res) {
-  res.send(await service.searchTeams(req.authUser))
+  const result = await service.searchTeams(req.authUser, req.query)
+  helper.setResHeaders(req, res, result)
+  res.send(result.result)
 }
 
 /**

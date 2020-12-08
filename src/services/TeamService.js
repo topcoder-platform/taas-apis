@@ -37,17 +37,46 @@ async function _getJobsByProjectIds (projectIds) {
 /**
  * List teams
  * @param {Object} currentUser the user who perform this operation
+ * @param {Object} criteria the search criteria
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchTeams (currentUser) {
-  // Get projects from /v5/projects
-  const projects = await helper.getProjects(currentUser.jwtToken)
-
-  return await getTeamDetail(currentUser, projects)
+async function searchTeams (currentUser, criteria) {
+  if (currentUser.isMachine) {
+    const m2mToken = await helper.getM2Mtoken()
+    currentUser.jwtToken = `Bearer ${m2mToken}`
+  }
+  const sort = `${criteria.sortBy} ${criteria.sortOrder}`
+  // Get projects from /v5/projects with searching criteria
+  const { total, page, perPage, result: projects } = await helper.getProjects(
+    currentUser.jwtToken,
+    {
+      page: criteria.page,
+      perPage: criteria.perPage,
+      name: criteria.name,
+      sort
+    }
+  )
+  return {
+    total,
+    page,
+    perPage,
+    result: await getTeamDetail(currentUser, projects)
+  }
 }
 
 searchTeams.schema = Joi.object().keys({
-  currentUser: Joi.object().required()
+  currentUser: Joi.object().required(),
+  criteria: Joi.object().keys({
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    sortBy: Joi.string().valid('createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match').default('lastActivityAt'),
+    sortOrder: Joi.when('sortBy', {
+      is: 'best match',
+      then: Joi.forbidden().label('sortOrder(with sortBy being `best match`)'),
+      otherwise: Joi.string().valid('asc', 'desc').default('desc')
+    }),
+    name: Joi.string()
+  }).required()
 }).required()
 
 /**
@@ -75,7 +104,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
   for (const project of projects) {
     const rbs = _.filter(resourceBookings, { projectId: project.id })
     const res = _.clone(project)
-    res.weeklyCount = 0
+    res.weeklyCost = 0
     res.resources = []
 
     if (rbs && rbs.length > 0) {
@@ -106,7 +135,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         // normally startDate is smaller than endDate for a resourceBooking so not check if startDate < endDate
         if ((!item.startDate || startDate < lastDay) &&
           (!item.endDate || endDate > firstDay)) {
-          res.weeklyCount += item.customerRate
+          res.weeklyCost += item.customerRate
         }
       }
 
@@ -168,6 +197,10 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
  * @returns {Object} the team
  */
 async function getTeam (currentUser, id) {
+  if (currentUser.isMachine) {
+    const m2mToken = await helper.getM2Mtoken()
+    currentUser.jwtToken = `Bearer ${m2mToken}`
+  }
   // Get users from /v5/projects
   const project = await helper.getProjectById(currentUser.jwtToken, id)
 
@@ -223,6 +256,10 @@ getTeam.schema = Joi.object().keys({
  * @returns the team job
  */
 async function getTeamJob (currentUser, id, jobId) {
+  if (currentUser.isMachine) {
+    const m2mToken = await helper.getM2Mtoken()
+    currentUser.jwtToken = `Bearer ${m2mToken}`
+  }
   // Get jobs from taas api
   const jobs = await _getJobsByProjectIds([id])
   const job = _.find(jobs, { id: jobId })
@@ -252,7 +289,13 @@ async function getTeamJob (currentUser, id, jobId) {
     const userHandles = _.map(candidates, 'handle')
     if (userHandles && userHandles.length > 0) {
       // Get user photo from /v5/members
-      const members = await helper.getMembers(currentUser.jwtToken, userHandles)
+      let members
+      if (currentUser.isMachine) {
+        const m2mToken = await helper.getTopcoderM2MToken()
+        members = await helper.getMembers(`Bearer ${m2mToken}`, userHandles)
+      } else {
+        members = await helper.getMembers(currentUser.jwtToken, userHandles)
+      }
 
       for (const item of candidates) {
         item.resumeLink = null
