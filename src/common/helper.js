@@ -156,14 +156,6 @@ function setResHeaders (req, res, result) {
     }
     res.set('Link', link)
   }
-
-  // Allow browsers access pagination data in headers
-  let accessControlExposeHeaders = res.get('Access-Control-Expose-Headers') || ''
-  accessControlExposeHeaders += accessControlExposeHeaders ? ', ' : ''
-  // append new values, to not override values set by someone else
-  accessControlExposeHeaders += 'X-Page, X-Per-Page, X-Total, X-Total-Pages, X-Prev-Page, X-Next-Page'
-
-  res.set('Access-Control-Expose-Headers', accessControlExposeHeaders)
 }
 
 /**
@@ -337,19 +329,27 @@ function isDocumentMissingException (err) {
 /**
  * Function to get projects
  * @param {String} token the user request token
+ * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getProjects (token) {
+async function getProjects (token, criteria = {}) {
   const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
+    .query(criteria)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.map(res.body, item => {
+  const result = _.map(res.body, item => {
     return _.pick(item, ['id', 'name'])
   })
+  return {
+    total: Number(_.get(res.headers, 'x-total')),
+    page: Number(_.get(res.headers, 'x-page')),
+    perPage: Number(_.get(res.headers, 'x-per-page')),
+    result
+  }
 }
 
 /**

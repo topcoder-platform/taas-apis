@@ -4089,12 +4089,37 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams",
+							"raw": "{{URL}}/taas-teams?perPage=10&page=1&name=*taas*&sortBy=lastActivityAt&sortOrder=desc",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "*taas*",
+									"description": "case-insensitive; support wildcard match"
+								},
+								{
+									"key": "sortBy",
+									"value": "lastActivityAt",
+									"description": "allows: createdAt, updatedAt, lastActivityAt, id, status, name, type, best match"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"description": "allows: asc, desc"
+								}
 							]
 						}
 					},
