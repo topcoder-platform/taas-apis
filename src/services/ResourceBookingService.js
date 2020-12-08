@@ -112,6 +112,7 @@ createResourceBooking.schema = Joi.object().keys({
  */
 async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
+  const isDiffStatus = resourceBooking.status !== data.status
   if (!currentUser.isBookingManager) {
     const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
@@ -126,7 +127,7 @@ async function updateResourceBooking (currentUser, id, data) {
   // When we are updating the status of ResourceBooking to `assigned`
   // the corresponding JobCandidate record (with the same userId and jobId)
   // should be updated with the status `selected`
-  if (data.status === 'assigned') {
+  if (isDiffStatus && data.status === 'assigned') {
     const candidates = await models.JobCandidate.findAll({
       where: {
         jobId: updatedResourceBooking.jobId,
