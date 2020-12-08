@@ -109,7 +109,7 @@ describe('Team service test', () => {
       expect(entity[0]).to.deep.eql({
         id: 9050,
         name: 'sample',
-        weeklyCount: 0,
+        weeklyCost: 0,
         resources: []
       })
       expect(stubGetProjects.calledOnce).to.be.true

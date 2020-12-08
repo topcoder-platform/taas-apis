@@ -100,7 +100,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
   for (const project of projects) {
     const rbs = _.filter(resourceBookings, { projectId: project.id })
     const res = _.clone(project)
-    res.weeklyCount = 0
+    res.weeklyCost = 0
     res.resources = []
 
     if (rbs && rbs.length > 0) {
@@ -131,7 +131,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         // normally startDate is smaller than endDate for a resourceBooking so not check if startDate < endDate
         if ((!item.startDate || startDate < lastDay) &&
           (!item.endDate || endDate > firstDay)) {
-          res.weeklyCount += item.customerRate
+          res.weeklyCost += item.customerRate
         }
       }
 
