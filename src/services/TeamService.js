@@ -280,7 +280,7 @@ async function getTeamJob (currentUser, id, jobId) {
 
   if (job && job.candidates && job.candidates.length > 0) {
     const usersPromises = []
-    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, candidate.userId)) })
+    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, candidate.userId, true)) })
     const candidates = await Promise.all(usersPromises)
 
     const userHandles = _.map(candidates, 'handle')
