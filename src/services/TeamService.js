@@ -142,7 +142,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
       const usersPromises = []
       _.map(rbs, (rb) => {
         usersPromises.push(
-          helper.getUserById(currentUser.jwtToken, rb.userId)
+          helper.getUserById(currentUser.jwtToken, rb.userId, true)
             .then(user => {
               // If call function is not search, add jobId field
               if (!isSearch) {
@@ -224,13 +224,10 @@ async function getTeam (currentUser, id) {
   // add resources skills for result
   if (teamDetail && teamDetail.resources) {
     for (const user of teamDetail.resources) {
-      const userSkills = await helper.getUserSkill(currentUser.jwtToken, user.id)
-      user.skills = userSkills
-
       user.skillMatched = 0
-      if (userSkills && userSkills.length > 0) {
+      if (user.skills && user.skills.length > 0) {
         for (const jobSkill of jobSkills) {
-          if (_.find(userSkills, userSkill => {
+          if (_.find(user.skills, userSkill => {
             return userSkill.id === jobSkill.id
           })) {
             user.skillMatched += 1
@@ -308,14 +305,10 @@ async function getTeamJob (currentUser, id, jobId) {
           item.photo_url = findMember.photoURL
         }
 
-        // Get user skill details from /v5/user/:id/skills
-        const userSkills = await helper.getUserSkill(currentUser.jwtToken, item.id)
-        item.skills = userSkills
-
         item.skillMatched = 0
-        if (userSkills && userSkills.length > 0) {
+        if (item.skills && item.skills.length > 0) {
           for (const jobSkillId of jobSkills) {
-            if (_.find(userSkills, userSkill => {
+            if (_.find(item.skills, userSkill => {
               return userSkill.id === jobSkillId
             })) {
               item.skillMatched += 1

@@ -379,14 +379,21 @@ async function getTopcoderUserById (userId) {
  * @param {String} userId the user id
  * @returns the request result
  */
-async function getUserById (token, userId) {
+async function getUserById (token, userId, enrich) {
   const res = await request
-    .get(`${config.TC_API}/users/${userId}`)
+    .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+
+  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+
+  if (enrich) {
+    user.skills = (res.body.skills || []).map((skillObj) => _.pick(skillObj.skill, ['id', 'name']))
+  }
+
+  return user
 }
 
 /**
