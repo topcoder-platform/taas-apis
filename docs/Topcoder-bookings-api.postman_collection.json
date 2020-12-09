@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8a85ef5b-c835-427b-ab3c-27a1a99ba290",
+		"_postman_id": "5d74e7a7-d744-4176-994a-62a8ac68efef",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a174d4ac-8b78-416a-a3cc-f14f66205e2f",
+								"id": "eede316e-3a6b-456a-aa23-18a058e9ea49",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -59,7 +59,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "002ddcbb-ce9e-4be5-ab41-5a4f91fff9a0",
+								"id": "e400497c-7e5c-43e1-8402-d21e8dd5a903",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobIdCreatedByM2M\",data.id);"
@@ -104,7 +104,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b06555c1-081b-4116-835d-151a1b2f63db",
+								"id": "d835a72e-cebb-4a22-8186-838c6a427a6c",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -149,7 +149,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0e4d2512-c12e-4688-ba62-e203de36def3",
+								"id": "f9889f54-be41-49cf-94d4-a4f39043ee41",
 								"exec": [
 									"var data = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"jobIdCreatedByMember\",data.id);"
@@ -194,7 +194,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "76617d98-f3f2-4ae6-85e9-bbe6a9ebf646",
+								"id": "a79f30e7-6491-483d-b016-a6ff9a0cd0b3",
 								"exec": [
 									""
 								],
@@ -238,7 +238,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b3154f8d-54da-46e4-b3fd-440dca435329",
+								"id": "d0a3307a-ad6a-4123-a1ec-dd0a30fc8b6c",
 								"exec": [
 									""
 								],
@@ -982,7 +982,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "60c1b84d-0e09-41e8-96ab-a1ea4c40e158",
+								"id": "1cd415d8-f6e3-43d9-812d-68fe3dc5a707",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -1227,7 +1227,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "908ef69d-1da9-46b0-bbb2-4b783459d40b",
+								"id": "809d595d-b657-4527-90fa-c9396cf9a0ce",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -1472,7 +1472,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9f3a84e8-9374-455e-8bdb-294b1615fd67",
+								"id": "578a12d8-13d7-4557-9e7b-8958ba75191e",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
@@ -1591,7 +1591,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9a3b174a-b59b-440d-be00-e9789133327e",
+								"id": "df26ced2-6c95-4833-9c2e-db07ccb43d90",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1636,7 +1636,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1c40e1a1-b3be-4463-b0c3-896a999d2bae",
+								"id": "51ac0814-9cbb-4b5a-81fc-9fa9e8f82131",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateIdCreatedByM2M\",data.id);"
@@ -1681,7 +1681,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "04adbcc4-af7e-48aa-a16e-c6c259274c6e",
+								"id": "e2482a20-1719-4791-ae49-7c2f052510c5",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1726,7 +1726,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7868dace-3232-428d-aa73-803ed4993b0a",
+								"id": "7cb7e30a-5afa-469d-bb58-6eec4f51d1c4",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1771,7 +1771,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a2e2bf97-2ef0-4c66-a485-c8640f8e1a43",
+								"id": "373fb1e4-2f3c-4182-9f8f-342e62be61a9",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1816,7 +1816,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6f6d5a0c-77e2-40f5-ab77-d3f1057d4880",
+								"id": "a79dc990-c63d-442a-9b33-9c2fd70d8391",
 								"exec": [
 									""
 								],
@@ -2816,7 +2816,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "41049db0-7673-4f58-964b-9890c1fb20b7",
+								"id": "936361be-5be1-47b1-b2e8-453e67302af3",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2861,7 +2861,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e119a03a-c75d-4e6e-8feb-8f295719124c",
+								"id": "eb606efa-595d-466f-b41d-8a6d14f5f160",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingIdCreatedByM2M\",data.id);"
@@ -2906,7 +2906,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bdc6338a-79fb-4da0-a4fb-d512e10a0013",
+								"id": "177053c5-325e-4663-9918-afba02fd09f3",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2951,7 +2951,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eb3ab1d2-c077-407d-bb27-4a726b8060f4",
+								"id": "5a42e489-1d61-486a-b5ac-4cfd24950338",
 								"exec": [
 									""
 								],
@@ -2995,7 +2995,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "15628973-b3cc-40a9-bcc8-949bc69d5b23",
+								"id": "25fd464b-ef8b-45b7-ad51-9350469d7e8e",
 								"exec": [
 									""
 								],
@@ -3039,7 +3039,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "19f15ea4-efd9-40d9-ad83-0695e8cb2bc0",
+								"id": "73138739-2706-4dfa-8ded-7e74de85962e",
 								"exec": [
 									""
 								],
@@ -4318,7 +4318,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f05e4a3b-0212-4fcd-99c6-3a5ea7735250",
+										"id": "2066b7ec-8e67-4dee-b6bf-d39e780af162",
 										"exec": [
 											"var data = JSON.parse(responseBody);",
 											"",
@@ -4392,7 +4392,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "aa7b3bf1-d744-4190-8e80-707b532bdfb1",
+										"id": "b580af07-2ac9-4166-b695-a0acc28f047a",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -4417,7 +4417,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"Designer #1\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"ee4c50c1-c8c3-475e-b6b6-edbd136a19d6\",\r\n        \"89139c80-d0a2-47c2-aa16-14589d5afd10\",\r\n        \"9f2d9127-6a2e-4506-ad76-c4ab63577b09\",\r\n        \"9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b\",\r\n        \"c854ab55-5922-4be1-8ecc-b3bc1f8629af\",\r\n        \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n        \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job1\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"ee4c50c1-c8c3-475e-b6b6-edbd136a19d6\",\r\n        \"89139c80-d0a2-47c2-aa16-14589d5afd10\",\r\n        \"9f2d9127-6a2e-4506-ad76-c4ab63577b09\",\r\n        \"9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b\",\r\n        \"c854ab55-5922-4be1-8ecc-b3bc1f8629af\",\r\n        \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n        \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4449,7 +4449,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7dd20ad6-cdef-4729-930f-c60cd08916b1",
+										"id": "7600ff0d-60a9-4eac-b962-783d12ec6528",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -4474,7 +4474,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"Front-End Developer #2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4499,7 +4499,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "0de7c3ec-f9bd-439a-a48b-536571e8299e",
+										"id": "d4c844ea-c78b-4cad-b8d0-f91d1ef19bd6",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -4549,7 +4549,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "1c12c1ce-9c9c-43ef-bbdb-afd2b51b0dd4",
+										"id": "25cd6303-d5b8-4c78-b793-fbe85768d68e",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -4599,7 +4599,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4fa51760-a365-4539-b482-9983bcf7f02c",
+										"id": "6736cab7-df48-4af5-87be-0aee6416d75d",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4645,7 +4645,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7bfe4379-84a7-43c9-a3d0-34d7b9ae7d01",
+										"id": "4b912181-560a-4187-b230-440de69d4a74",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4691,7 +4691,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "b59ce584-58f3-47c9-a909-fa6778f418f5",
+										"id": "a7d5916a-6984-466a-a72c-59d767d1fb1d",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4737,7 +4737,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "6d0807c5-edfc-480e-bd2b-2c94c2ec8f07",
+										"id": "26560e50-5fc7-47fc-a9dc-88052e65b04e",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4783,7 +4783,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7f9ca91a-c2ae-4616-a8e2-0d41b39a4559",
+										"id": "e22ffd91-332d-47f8-a1ae-add1b8e528f4",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4829,7 +4829,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d4122d98-02c3-4152-b3a2-6a9f12d2aca4",
+										"id": "0e54787d-a531-4784-a3e9-15253ac203e0",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4875,7 +4875,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "32b361aa-0011-49a1-9a18-4796e1660bdc",
+										"id": "9ca4c42f-aa60-43c0-8865-3759642e775e",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4921,7 +4921,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "baa0558e-c74a-4667-979c-d3e6fa3ea2aa",
+										"id": "6f75c0bb-c0b1-4eab-8949-c191ec1b304b",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -4967,7 +4967,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "466003be-222a-4800-b490-e7c7498a1eb7",
+										"id": "95c4b4a8-c260-4675-a7ff-b8a35348ad80",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5014,7 +5014,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e53cea2d-d0f4-42cb-ac73-39e6b324b7c1",
+										"id": "6f7cc660-bb1a-4c43-a29a-11f12fbfb5c9",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5061,7 +5061,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "86bb9e58-8770-4afe-928d-95b9922224e6",
+										"id": "bfe73179-6098-41cf-bebc-d7385d57d478",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5115,7 +5115,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5b507df6-d85a-43dc-a32a-8c6988cfb492",
+										"id": "41e6556a-11e4-40bb-be17-41d2b286881e",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5140,7 +5140,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"Back-End Developer #3\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": []\r\n}\r\n",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job3\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": []\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5165,7 +5165,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "fc6d08e5-03b5-4edc-9cec-d39b70930c19",
+										"id": "ea9cc291-3382-46bc-b30d-16d19e334776",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5211,7 +5211,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "718d4b34-b642-4132-af76-3c7e338c8edc",
+										"id": "bf84527d-be67-4aba-a24b-4669d75c8644",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5257,7 +5257,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7498ab0a-d6a2-4581-bc57-203c3614e59e",
+										"id": "d3c18fa5-01a3-42d6-b84c-a97a31c1ceca",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5303,7 +5303,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8d350c13-b63c-4122-8420-590109723f23",
+										"id": "76ebfb97-90a6-45f6-a0d4-402cbe77a5a8",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5349,7 +5349,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b52d98d-3236-46f1-8a62-ec71bfa17db3",
+										"id": "23c32a83-f20c-4a70-a33d-94eb49468d70",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5395,7 +5395,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "9aa8a01a-ebee-4641-bd59-e31a89e41002",
+										"id": "02c6f86d-e2a6-4b32-85d8-753c2ce40ecf",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5441,7 +5441,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "b8df1a4f-4bd8-425b-8a50-8a31042b3fa7",
+										"id": "95933381-82e4-40ec-bbc3-0f888863793c",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5487,7 +5487,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "aebacb9d-9e2b-419d-9f83-16fb8fac80d0",
+										"id": "17e1204b-7282-47d6-9e5c-f3efa268d69d",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5533,7 +5533,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "2db8e8e3-3f73-49e2-8c7b-203593ecd257",
+										"id": "1fb3860d-bfd3-42fe-b1cb-e3aec43a7068",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5579,7 +5579,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "eef44eaa-a541-454f-8e35-029e256719f4",
+										"id": "65e40a53-7ab1-4295-b55b-67913c66c642",
 										"exec": [
 											"pm.test(\"Successful POST request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -5625,7 +5625,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "3eddf21c-d9b1-4248-8baf-9185df59931a",
+										"id": "5f2d37dd-94a5-4ff0-b6dd-ba285f820a62",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5675,7 +5675,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f5bc861f-dae5-49b6-b0e5-2fab8900f348",
+										"id": "012da7ca-70b0-474c-9478-7d5f0896c5ee",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5725,7 +5725,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "746bedf6-a9c4-40e0-811b-7d940757c87f",
+										"id": "a802d37f-e1e3-4c28-98f8-f065dcc91c12",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5775,7 +5775,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "ffe14de5-ec63-4c1b-b8c8-9d3713283e67",
+										"id": "23c93c49-59af-4193-bd24-ed7730ac801d",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5825,7 +5825,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "3bf5bac7-ebb8-40b2-a326-e2d3da8c0a3b",
+										"id": "955cc007-f31f-4ed4-93a7-54c0efd1e0cb",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5875,7 +5875,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d5222da2-57f9-4a63-b3ba-8cf949628ad2",
+										"id": "496e1faf-3ecf-47db-8b9a-56b08958164d",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5925,7 +5925,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "26035f48-5dcc-4879-b5cc-cff68282ca07",
+										"id": "5696cc95-b1f3-4ef0-88d4-cd2b6f46a7ec",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -5975,7 +5975,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f3c58ef3-dc1a-402b-a496-49255284b270",
+										"id": "85b2f034-a66b-45bb-b6c9-db95e77a08f8",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -6025,7 +6025,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "6f0a8185-58ec-47f3-8c96-d2a88ff4a5bb",
+										"id": "dcae5aff-6734-4192-9abd-59b91c62f78b",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -6075,7 +6075,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e09b2898-7ee6-4abf-8dd7-95964a05ac19",
+										"id": "002e4a7e-4d0f-48f6-95ee-e3daf81431aa",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -6125,7 +6125,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "19db0df8-46b3-4642-9c57-a3593bc9e011",
+										"id": "7791a3df-da95-440e-8b59-91dc7918fb9e",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6172,7 +6172,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "6aa34685-b1fa-430f-9242-c6700a17422b",
+										"id": "2c44579b-d9d3-405b-b265-ea73c35128ed",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6219,7 +6219,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "3e8cfe28-fe2d-4db1-8e6b-3621c84fedea",
+										"id": "49ab91cd-f5d4-44a9-823c-7980d8d8e896",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6266,7 +6266,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d80f6e76-7a0c-466d-90d5-a7c9a0049a5e",
+										"id": "ba45ce14-076d-4bc6-8e95-4bd7db32a9bc",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6313,7 +6313,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "9f2100e6-4e66-48d0-b0fe-247979d63ad1",
+										"id": "3a57e69b-a02c-4cca-b225-11d7fa4e780d",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6360,7 +6360,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7ce25ebd-d9be-4a01-adbf-19387db61f75",
+										"id": "da3d9d7d-fd9a-41de-9378-840e34f01d8d",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6407,7 +6407,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "453678c7-9ebc-4599-b0b3-223b89cc5e26",
+										"id": "67d7211b-2d23-47e0-8fad-b9725221c17e",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6454,7 +6454,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "427d92c9-d68b-4da2-84c2-546cec1ef34e",
+										"id": "124fe3ee-0314-4da3-b564-da848d11d1a6",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6501,7 +6501,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "128712e4-9d75-42f3-8a3f-68afc2cdfc7d",
+										"id": "fd8103a8-3369-429d-8ba0-a46c3b7b1f04",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6548,7 +6548,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "54199830-cf4f-4cb4-bc21-12c5e6c144cc",
+										"id": "cbc8fa49-6f36-461b-b1a9-70dd3b82572e",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6595,7 +6595,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "226ceac8-1870-44f1-bde8-4664640cf511",
+										"id": "ace9e189-c5f8-4eab-931b-3714f9e37260",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6649,7 +6649,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "295d310b-76e9-4fc2-8fde-cb3267dc5e14",
+										"id": "c7fb7228-ca43-4cef-804a-23c25e9df21e",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -6674,7 +6674,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"QA #4\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job4\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6699,7 +6699,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "b0c2fd5b-7d45-4b48-a8f7-181897c4be85",
+										"id": "67892217-b9e9-4b20-947d-df49d8a0f855",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
@@ -6753,7 +6753,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "a728bdb2-1fa0-4075-ba1f-af3e7fbf96a9",
+										"id": "db632f9d-a83b-42f7-861b-da3ded160f45",
 										"exec": [
 											"var data = JSON.parse(responseBody);\r",
 											"\r",
@@ -6778,7 +6778,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"Data-Scientist #5\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job5\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6803,7 +6803,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "caedca49-bc10-457c-9aa9-106cfa1e8625",
+										"id": "73d2a47b-47d8-4681-b9dc-905d987b4ca9",
 										"exec": [
 											"pm.test(\"Successful PATCH request\", function () {",
 											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
