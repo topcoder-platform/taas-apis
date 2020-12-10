@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "266c56d9-a96a-4f45-9220-95620f026041",
+		"_postman_id": "5d74e7a7-d744-4176-994a-62a8ac68efef",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4f296739-8f36-4d76-be66-269aa4c6c34a",
+								"id": "eede316e-3a6b-456a-aa23-18a058e9ea49",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -34,7 +34,52 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create job with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e400497c-7e5c-43e1-8402-d21e8dd5a903",
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"jobIdCreatedByM2M\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_m2m_create_job}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -59,7 +104,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5d118bcb-ea69-4f92-b267-7a807deef522",
+								"id": "d835a72e-cebb-4a22-8186-838c6a427a6c",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobId\",data.id);"
@@ -79,7 +124,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -99,14 +144,15 @@
 					"response": []
 				},
 				{
-					"name": "create job with member",
+					"name": "create job with member success",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "cb499304-14a4-4c9e-a43f-4a3356f917aa",
+								"id": "f9889f54-be41-49cf-94d4-a4f39043ee41",
 								"exec": [
-									""
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"jobIdCreatedByMember\",data.id);"
 								],
 								"type": "text/javascript"
 							}
@@ -123,7 +169,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -148,7 +194,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c0f62918-f916-468a-9e81-5151f1869f9f",
+								"id": "a79f30e7-6491-483d-b016-a6ff9a0cd0b3",
 								"exec": [
 									""
 								],
@@ -167,7 +213,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -192,7 +238,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ab099735-7af0-4f99-b274-a9be3f70ffd3",
+								"id": "d0a3307a-ad6a-4123-a1ec-dd0a30fc8b6c",
 								"exec": [
 									""
 								],
@@ -211,7 +257,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\r\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\r\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\r\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\r\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -249,6 +295,30 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get job with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_job}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -320,13 +390,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/jobs/{{jobId}}",
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobs",
-								"{{jobId}}"
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -418,8 +488,103 @@
 									"disabled": true
 								},
 								{
-									"key": "",
-									"value": "",
+									"key": "workload",
+									"value": "full-time",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search jobs with with m2m all",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_job}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "21",
+									"disabled": true
+								},
+								{
+									"key": "externalId",
+									"value": "1212",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "Dummy",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2020-09-27T04:17:23.131Z",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2020-09-27T04:17:23.131Z",
+									"disabled": true
+								},
+								{
+									"key": "resourceType",
+									"value": "Dummy Resource Type",
+									"disabled": true
+								},
+								{
+									"key": "skill",
+									"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+									"disabled": true
+								},
+								{
+									"key": "rateType",
+									"value": "hourly",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "sourcing",
+									"disabled": true
+								},
+								{
+									"key": "workload",
+									"value": "full-time",
 									"disabled": true
 								}
 							]
@@ -513,8 +678,8 @@
 									"disabled": true
 								},
 								{
-									"key": "",
-									"value": "",
+									"key": "workload",
+									"value": "full-time",
 									"disabled": true
 								}
 							]
@@ -608,8 +773,8 @@
 									"disabled": true
 								},
 								{
-									"key": "",
-									"value": "",
+									"key": "workload",
+									"value": "fractional",
 									"disabled": true
 								}
 							]
@@ -703,8 +868,8 @@
 									"disabled": true
 								},
 								{
-									"key": "",
-									"value": "",
+									"key": "workload",
+									"value": "full-time",
 									"disabled": true
 								}
 							]
@@ -725,7 +890,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -740,6 +905,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put job with m2m update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_job}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -758,7 +956,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -779,7 +977,21 @@
 					"response": []
 				},
 				{
-					"name": "put job with member",
+					"name": "put job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1cd415d8-f6e3-43d9-812d-68fe3dc5a707",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -791,7 +1003,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description updated\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -806,6 +1018,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put job with member success",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description updated\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -824,7 +1069,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -857,7 +1102,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -890,7 +1135,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -905,6 +1150,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch job with m2m update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_job}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -923,7 +1201,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -944,7 +1222,21 @@
 					"response": []
 				},
 				{
-					"name": "patch job with member",
+					"name": "patch job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "809d595d-b657-4527-90fa-c9396cf9a0ce",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -956,7 +1248,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"description\": \"Dummy Description updated 2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -971,6 +1263,39 @@
 							"path": [
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch job with member success",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"Dummy Description updated 2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
 							]
 						}
 					},
@@ -989,7 +1314,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1022,73 +1347,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobs/{{jobId}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobs",
-								"{{jobId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete job with menber",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token_member}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobs/{{jobId}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobs",
-								"{{jobId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete job with connect user",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token_connectUser}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1142,6 +1401,152 @@
 					"response": []
 				},
 				{
+					"name": "delete job with m2m delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_delete_job}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete job with connect user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete job with member 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "578a12d8-13d7-4557-9e7b-8958ba75191e",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete job with member success",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs/{{jobIdCreatedByMember}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs",
+								"{{jobIdCreatedByMember}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete job with invalid token",
 					"request": {
 						"method": "DELETE",
@@ -1186,7 +1591,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6b168a78-7f6b-4000-bd44-3b9c76f0277e",
+								"id": "df26ced2-6c95-4833-9c2e-db07ccb43d90",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1226,12 +1631,57 @@
 					"response": []
 				},
 				{
+					"name": "create job candidate with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51ac0814-9cbb-4b5a-81fc-9fa9e8f82131",
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"jobCandidateIdCreatedByM2M\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_create_job_candidate}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create job candidate with connect user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "bc965016-a5d4-4f08-9994-3f4865915125",
+								"id": "e2482a20-1719-4791-ae49-7c2f052510c5",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1276,7 +1726,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "751ec141-ef8d-4893-8802-d814006c8304",
+								"id": "7cb7e30a-5afa-469d-bb58-6eec4f51d1c4",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1321,7 +1771,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0fbba452-0387-494b-b09d-4efc7805a273",
+								"id": "373fb1e4-2f3c-4182-9f8f-342e62be61a9",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
@@ -1366,7 +1816,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c7ad1e24-852b-4f35-9131-81e0470f82be",
+								"id": "a79dc990-c63d-442a-9b33-9c2fd70d8391",
 								"exec": [
 									""
 								],
@@ -1423,6 +1873,30 @@
 							"path": [
 								"jobCandidates",
 								"{{jobCandidateId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get job candidate with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_job_candidate}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -1515,6 +1989,66 @@
 								"key": "Authorization",
 								"type": "text",
 								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc",
+									"disabled": true
+								},
+								{
+									"key": "jobId",
+									"value": "46225f4c-c2a3-4603-a141-0277e96fabfa",
+									"disabled": true
+								},
+								{
+									"key": "userId",
+									"value": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "shortlist",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search job candidates with m2m all",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_job_candidate}}"
 							}
 						],
 						"url": {
@@ -1776,6 +2310,39 @@
 					"response": []
 				},
 				{
+					"name": "put job candidate with m2m update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_job_candidate}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"status\": \"selected\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put job candidate with connect user",
 					"request": {
 						"method": "PUT",
@@ -1935,6 +2502,39 @@
 							"path": [
 								"jobCandidates",
 								"{{jobCandidateId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch job candidate with m2m update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_job_candidate}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -2170,6 +2770,39 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "delete job candidate with m2m delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_delete_job_candidate}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -2183,7 +2816,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "84511971-c664-4334-b3de-2d5e3642ce95",
+								"id": "936361be-5be1-47b1-b2e8-453e67302af3",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2223,12 +2856,57 @@
 					"response": []
 				},
 				{
+					"name": "create resource booking with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eb606efa-595d-466f-b41d-8a6d14f5f160",
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"resourceBookingIdCreatedByM2M\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_create_resource_booking}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create resource booking with connect user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "fde28c86-d477-4214-8441-f74d99f4b654",
+								"id": "177053c5-325e-4663-9918-afba02fd09f3",
 								"exec": [
 									"var data = JSON.parse(responseBody);\r",
 									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
@@ -2273,7 +2951,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7e928dd2-24be-4349-9e7c-6e8ccec4d6e7",
+								"id": "5a42e489-1d61-486a-b5ac-4cfd24950338",
 								"exec": [
 									""
 								],
@@ -2317,7 +2995,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "25e3434c-0935-4aed-ab5f-7dc240acf95e",
+								"id": "25fd464b-ef8b-45b7-ad51-9350469d7e8e",
 								"exec": [
 									""
 								],
@@ -2361,7 +3039,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ce94fcb6-b450-4cb6-bf65-18ab34a168ec",
+								"id": "73138739-2706-4dfa-8ded-7e74de85962e",
 								"exec": [
 									""
 								],
@@ -2418,6 +3096,30 @@
 							"path": [
 								"resourceBookings",
 								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_resource_booking}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -2510,6 +3212,71 @@
 								"key": "Authorization",
 								"type": "text",
 								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2020-09-27T04:17:23.131Z",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2020-09-27T04:17:23.131Z",
+									"disabled": true
+								},
+								{
+									"key": "rateType",
+									"value": "hourly",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "sourcing",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with m2m all",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_resource_booking}}"
 							}
 						],
 						"url": {
@@ -2777,6 +3544,39 @@
 					"response": []
 				},
 				{
+					"name": "put resource booking with m2m update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_resource_booking}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put resource booking with connect user",
 					"request": {
 						"method": "PUT",
@@ -2936,6 +3736,39 @@
 							"path": [
 								"resourceBookings",
 								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking with m2m update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_resource_booking}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingIdCreatedByM2M}}"
 							]
 						}
 					},
@@ -3173,6 +4006,39 @@
 					"response": []
 				},
 				{
+					"name": "delete resource booking with m2m delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_delete_resource_booking}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete resource booking with invalid token",
 					"request": {
 						"method": "DELETE",
@@ -3223,6 +4089,54 @@
 							}
 						],
 						"url": {
+							"raw": "{{URL}}/taas-teams?perPage=10&page=1&name=*taas*&sortBy=lastActivityAt&sortOrder=desc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "*taas*",
+									"description": "case-insensitive; support wildcard match"
+								},
+								{
+									"key": "sortBy",
+									"value": "lastActivityAt",
+									"description": "allows: createdAt, updatedAt, lastActivityAt, id, status, name, type, best match"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"description": "allows: asc, desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_taas_team}}"
+							}
+						],
+						"url": {
 							"raw": "{{URL}}/taas-teams",
 							"host": [
 								"{{URL}}"
@@ -3243,6 +4157,36 @@
 								"key": "Authorization",
 								"value": "Bearer {{token_connectUser}}",
 								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:projectId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":projectId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_taas_team}}"
 							}
 						],
 						"url": {
@@ -3299,6 +4243,42 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id/jobs/:jobId with m2m read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_taas_team}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:projectId/jobs/:jobId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":projectId",
+								"jobs",
+								":jobId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								},
+								{
+									"key": "jobId",
+									"value": "948a25a6-086f-4a96-aad5-9ccd2d3e87b2"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -3322,6 +4302,2551 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Create Demo Data For Team",
+			"item": [
+				{
+					"name": "Get Users",
+					"item": [
+						{
+							"name": "Get Users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2066b7ec-8e67-4dee-b6bf-d39e780af162",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var demoUsers = 20;",
+											"",
+											"pm.test('We need to have at least ' + demoUsers + ' demo userIds. Define them in {{demoUserIdN}} variables.', function () {",
+											"    for (var i = 0; i < demoUsers; i++) {",
+											"        var variableName = \"demoUserId\" + (i + 1);",
+											"        var existentValue = pm.variables.get(variableName);",
+											"        var user = data[i];",
+											"",
+											"        pm.expect(!!user || !!existentValue).to.be.true;",
+											"",
+											"        postman.setEnvironmentVariable(variableName, user.id);",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token_bookingManager}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.topcoder-dev.com/v5/users?perPage=20",
+									"protocol": "https",
+									"host": [
+										"api",
+										"topcoder-dev",
+										"com"
+									],
+									"path": [
+										"v5",
+										"users"
+									],
+									"query": [
+										{
+											"key": "perPage",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create job #1 \"sourcing\"",
+					"item": [
+						{
+							"name": "create job #1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b580af07-2ac9-4166-b695-a0acc28f047a",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJobId1\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job1\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"ee4c50c1-c8c3-475e-b6b6-edbd136a19d6\",\r\n        \"89139c80-d0a2-47c2-aa16-14589d5afd10\",\r\n        \"9f2d9127-6a2e-4506-ad76-c4ab63577b09\",\r\n        \"9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b\",\r\n        \"c854ab55-5922-4be1-8ecc-b3bc1f8629af\",\r\n        \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n        \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create job #2 \"in-review\"",
+					"item": [
+						{
+							"name": "create job #2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7600ff0d-60a9-4eac-b962-783d12ec6528",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJobId2\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job2\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n        \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n        \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n        \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n        \"6388a632-c3ad-4525-9a73-66a527c03672\",\r\n        \"23839f38-6f19-4de9-9d28-f020056bca73\",\r\n        \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\r\n        \"b403f209-63b5-42bc-9b5f-1564416640d8\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d4c844ea-c78b-4cad-b8d0-f91d1ef19bd6",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob1candidateId1\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "25cd6303-d5b8-4c78-b793-fbe85768d68e",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob1candidateId2\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId2}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6736cab7-df48-4af5-87be-0aee6416d75d",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId3}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b912181-560a-4187-b230-440de69d4a74",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId4}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a7d5916a-6984-466a-a72c-59d767d1fb1d",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId5}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "26560e50-5fc7-47fc-a9dc-88052e65b04e",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId6}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e22ffd91-332d-47f8-a1ae-add1b8e528f4",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId7}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0e54787d-a531-4784-a3e9-15253ac203e0",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId8}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9ca4c42f-aa60-43c0-8865-3759642e775e",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId9}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #2 candidate 10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6f75c0bb-c0b1-4eab-8949-c191ec1b304b",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId2}}\",\r\n  \"userId\": \"{{demoUserId10}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #2 candidate 1 to \"shortlist\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "95c4b4a8-c260-4675-a7ff-b8a35348ad80",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates/{{demoJob1candidateId1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates",
+										"{{demoJob1candidateId1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #2 candidate 2 to \"rejected\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6f7cc660-bb1a-4c43-a29a-11f12fbfb5c9",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"rejected\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates/{{demoJob1candidateId2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates",
+										"{{demoJob1candidateId2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #2 status to \"in-review\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bfe73179-6098-41cf-bebc-d7385d57d478",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"in-review\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs/{{demoJobId2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs",
+										"{{demoJobId2}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create job #3 \"assigned\"",
+					"item": [
+						{
+							"name": "create job #3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "41e6556a-11e4-40bb-be17-41d2b286881e",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJobId3\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job3\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": []\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 11",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ea9cc291-3382-46bc-b30d-16d19e334776",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId11}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 12",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bf84527d-be67-4aba-a24b-4669d75c8644",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId12}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 13",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d3c18fa5-01a3-42d6-b84c-a97a31c1ceca",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId13}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 14",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "76ebfb97-90a6-45f6-a0d4-402cbe77a5a8",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId14}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 15",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "23c32a83-f20c-4a70-a33d-94eb49468d70",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId15}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 16",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "02c6f86d-e2a6-4b32-85d8-753c2ce40ecf",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId16}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 17",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "95933381-82e4-40ec-bbc3-0f888863793c",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId17}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 18",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "17e1204b-7282-47d6-9e5c-f3efa268d69d",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId18}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 19",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1fb3860d-bfd3-42fe-b1cb-e3aec43a7068",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId19}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job #3 candidate 20",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "65e40a53-7ab1-4295-b55b-67913c66c642",
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"userId\": \"{{demoUserId20}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 11",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5f2d37dd-94a5-4ff0-b6dd-ba285f820a62",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId11\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId11}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 12",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "012da7ca-70b0-474c-9478-7d5f0896c5ee",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId12\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId12}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 13",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a802d37f-e1e3-4c28-98f8-f065dcc91c12",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId13\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId13}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 14",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "23c93c49-59af-4193-bd24-ed7730ac801d",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId14\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId14}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 15",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "955cc007-f31f-4ed4-93a7-54c0efd1e0cb",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId15\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId15}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 16",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "496e1faf-3ecf-47db-8b9a-56b08958164d",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId16\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId16}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 17",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5696cc95-b1f3-4ef0-88d4-cd2b6f46a7ec",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId17\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId17}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 18",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "85b2f034-a66b-45bb-b6c9-db95e77a08f8",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId18\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId18}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 19",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dcae5aff-6734-4192-9abd-59b91c62f78b",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId19\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId19}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job 3 resource booking 20",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "002e4a7e-4d0f-48f6-95ee-e3daf81431aa",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJob3resourceCandiateId20\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId20}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 11 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7791a3df-da95-440e-8b59-91dc7918fb9e",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId11}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId11}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 12 status to \"in-review\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2c44579b-d9d3-405b-b265-ea73c35128ed",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"in-review\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId12}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId12}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 13 status to \"closed\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "49ab91cd-f5d4-44a9-823c-7980d8d8e896",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"closed\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId13}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId13}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 14 status to \"cancelled\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ba45ce14-076d-4bc6-8e95-4bd7db32a9bc",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"cancelled\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId14}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId14}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 15 status to \"sourcing\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3a57e69b-a02c-4cca-b225-11d7fa4e780d",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"sourcing\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId15}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId15}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 16 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "da3d9d7d-fd9a-41de-9378-840e34f01d8d",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId16}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId16}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 17 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "67d7211b-2d23-47e0-8fad-b9725221c17e",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId17}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId17}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 18 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "124fe3ee-0314-4da3-b564-da848d11d1a6",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId18}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId18}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 19 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fd8103a8-3369-429d-8ba0-a46c3b7b1f04",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId19}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId19}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job 3 resource booking 20 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "cbc8fa49-6f36-461b-b1a9-70dd3b82572e",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings/{{demoJob3resourceCandiateId20}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings",
+										"{{demoJob3resourceCandiateId20}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #3 status to \"assigned\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ace9e189-c5f8-4eab-931b-3714f9e37260",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"assigned\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs/{{demoJobId3}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs",
+										"{{demoJobId3}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create job #4 \"closed\"",
+					"item": [
+						{
+							"name": "create job #4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c7fb7228-ca43-4cef-804a-23c25e9df21e",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJobId4\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job4\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\r\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\r\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #4 status to \"closed\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "67892217-b9e9-4b20-947d-df49d8a0f855",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"closed\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs/{{demoJobId4}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs",
+										"{{demoJobId4}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create job #5 \"cancelled\"",
+					"item": [
+						{
+							"name": "create job #5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "db632f9d-a83b-42f7-861b-da3ded160f45",
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+											"});\r",
+											"\r",
+											"postman.setEnvironmentVariable(\"demoJobId5\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"0\",\r\n  \"description\": \"taas-demo-job5\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 7,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\r\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\r\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update job #5 status to \"cancelled\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "73d2a47b-47d8-4681-b9dc-905d987b4ca9",
+										"exec": [
+											"pm.test(\"Successful PATCH request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"status\": \"cancelled\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs/{{demoJobId5}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs",
+										"{{demoJobId5}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}

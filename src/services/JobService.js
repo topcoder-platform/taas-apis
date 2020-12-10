@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
@@ -47,6 +48,34 @@ async function _getJobCandidates (jobId) {
 }
 
 /**
+ * Validate if all skills exist.
+ *
+ * @param {Array} skills the list of skills
+ * @returns {undefined}
+ */
+async function _validateSkills (skills) {
+  const m2mToken = await helper.getM2Mtoken()
+  const responses = await Promise.all(
+    skills.map(
+      skill => helper.getSkillById(`Bearer ${m2mToken}`, skill)
+        .then(() => {
+          return { found: true }
+        })
+        .catch(err => {
+          if (err.status !== HttpStatus.NOT_FOUND) {
+            throw err
+          }
+          return { found: false, skill }
+        })
+    )
+  )
+  const errResponses = responses.filter(res => !res.found)
+  if (errResponses.length) {
+    throw new errors.BadRequestError(`Invalid skills: [${errResponses.map(res => res.skill)}]`)
+  }
+}
+
+/**
  * Get job by id
  * @param {String} id the job id
  * @param {Boolean} fromDb flag if query db for data or not
@@ -85,18 +114,13 @@ getJob.schema = Joi.object().keys({
 }).required()
 
 /**
- * Create job
+ * Create job. All member can create a job.
  * @params {Object} currentUser the user who perform this operation
  * @params {Object} job the job to be created
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
-  if (!currentUser.isBookingManager) {
-    const connect = await helper.isConnectMember(job.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
+  await _validateSkills(job.skills)
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
@@ -118,28 +142,35 @@ createJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string().required(),
     rateType: Joi.rateType(),
+    workload: Joi.workload().default('full-time'),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
 
 /**
- * Update job
+ * Update job. Normal user can only update the job he/she created.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} job id
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
 async function updateJob (currentUser, id, data) {
+  if (data.skills) {
+    await _validateSkills(data.skills)
+  }
   let job = await Job.findById(id)
-  if (!currentUser.isBookingManager) {
+  const ubhanUserId = await helper.getUserId(currentUser.userId)
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+      if (ubhanUserId !== job.createdBy) {
+        throw new errors.ForbiddenError('You are not allowed to perform this action!')
+      }
     }
   }
 
   data.updatedAt = new Date()
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+  data.updatedBy = ubhanUserId
 
   await job.update(data)
   await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data })
@@ -170,6 +201,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1),
     resourceType: Joi.string(),
     rateType: Joi.rateType(),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid())
   }).required()
 }).required()
@@ -197,22 +229,26 @@ fullyUpdateJob.schema = Joi.object().keys({
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string().required(),
     rateType: Joi.rateType().required(),
+    workload: Joi.workload().required(),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus()
   }).required()
 }).required()
 
 /**
- * Delete job by id
+ * Delete job by id. Normal user can only delete the job he/she created.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
 async function deleteJob (currentUser, id) {
-  if (!currentUser.isBookingManager) {
-    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  const job = await Job.findById(id)
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
+    const ubhanUserId = await helper.getUserId(currentUser.userId)
+    if (ubhanUserId !== job.createdBy) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    }
   }
 
-  const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
@@ -253,7 +289,18 @@ async function searchJobs (criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['projectId', 'externalId', 'description', 'startDate', 'endDate', 'resourceType', 'skill', 'rateType', 'status']), (value, key) => {
+    _.each(_.pick(criteria, [
+      'projectId',
+      'externalId',
+      'description',
+      'startDate',
+      'endDate',
+      'resourceType',
+      'skill',
+      'rateType',
+      'workload',
+      'status'
+    ]), (value, key) => {
       let must
       if (key === 'description') {
         must = {
@@ -314,7 +361,16 @@ async function searchJobs (criteria) {
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['projectId', 'externalId', 'startDate', 'endDate', 'resourceType', 'rateType', 'status']), (value, key) => {
+  _.each(_.pick(criteria, [
+    'projectId',
+    'externalId',
+    'startDate',
+    'endDate',
+    'resourceType',
+    'rateType',
+    'workload',
+    'status'
+  ]), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.description) {
@@ -370,6 +426,7 @@ searchJobs.schema = Joi.object().keys({
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     rateType: Joi.rateType(),
+    workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single()
   }).required()

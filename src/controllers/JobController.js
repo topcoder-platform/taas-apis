@@ -59,7 +59,7 @@ async function deleteJob (req, res) {
 async function searchJobs (req, res) {
   const result = await service.searchJobs(req.query)
   helper.setResHeaders(req, res, result)
-  res.send({ result: result.result })
+  res.send(result.result)
 }
 
 module.exports = {

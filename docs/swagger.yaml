@@ -22,7 +22,7 @@ paths:
       description: |
         Create job.
 
-        **Authorization** Topcoder token with write job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       requestBody:
@@ -67,7 +67,7 @@ paths:
       description: |
         Search jobs.
 
-        **Authorization** Topcoder token with read job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       parameters:
@@ -146,6 +146,13 @@ paths:
             type: string
           description: The skill.
         - in: query
+          name: workload
+          required: false
+          schema:
+            type: string
+            enum: ['full-time', 'fractional']
+          description: The rate type.
+        - in: query
           name: rateType
           required: false
           schema:
@@ -165,12 +172,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+                    
           headers:
             X-Next-Page:
               schema:
@@ -231,7 +236,7 @@ paths:
       description: |
         Get job information by id.
         
-        **Authorization** Topcoder token with read job scope is allowed
+        **Authorization** All topcoder members are allowed
       security:
         - bearerAuth: []
       parameters: 
@@ -290,7 +295,7 @@ paths:
       description: | 
         Delete the job.
 
-        **Authorization** Topcoder token with delete job scope is allowed
+        **Authorization** Every topcoder member can delete the job he/she created. bookingmanager can delete all jobs.
       security: 
         - bearerAuth: []
       parameters:
@@ -340,7 +345,7 @@ paths:
       description: |
         Update the job.
 
-        **Authorization** Topcoder token with update job scope is allowed
+        **Authorization** Every topcoder member can update the job he/she created. bookingmanager and connectmember can update all jobs.
       security:
         - bearerAuth: []
       parameters:
@@ -566,12 +571,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/JobCandidate'
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobCandidate'
+                    
           headers:
             X-Next-Page:
               schema:
@@ -975,12 +978,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ResourceBooking'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceBooking'
+                    
           headers:
             X-Next-Page:
               schema:
@@ -1271,6 +1272,44 @@ paths:
         - Teams
       description: |
         Search my teams. Teams is project in topcoder with type=='talent-as-a-service'
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: createdAt
+            enum: ['createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match']
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ['desc','asc']
+          description: The sort order. Not allowed when sortBy is `best match`.
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          description: filter by name, case-insensitive; support wildcard match.
+          example: '*taas*'
       security:
         - bearerAuth: []
       responses:
@@ -1282,6 +1321,35 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Team'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
         '400':
           description: Bad request
           content:
@@ -1479,6 +1547,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."
@@ -1557,6 +1629,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."
@@ -1654,6 +1730,10 @@ components:
           type: string
           enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: "The rate type of the job."
+        workload:
+          type: string
+          enum: ['full-time', 'fractional']
+          description: "The workload of the job."
         skills:
           type: array
           description: "The skills."

@@ -98,6 +98,11 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
+      workload: {
+        field: 'workload',
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       skills: {
         type: Sequelize.JSONB,
         allowNull: false

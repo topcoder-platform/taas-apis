@@ -59,7 +59,7 @@ async function deleteResourceBooking (req, res) {
 async function searchResourceBookings (req, res) {
   const result = await service.searchResourceBookings(req.query)
   helper.setResHeaders(req, res, result)
-  res.send({ result: result.result })
+  res.send(result.result)
 }
 
 module.exports = {

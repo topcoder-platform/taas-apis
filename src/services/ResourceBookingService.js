@@ -11,6 +11,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const JobCandidateService = require('./JobCandidateService')
 
 const ResourceBooking = models.ResourceBooking
 const esClient = helper.getESClient()
@@ -22,7 +23,7 @@ const esClient = helper.getESClient()
  * @returns {Object} the resourceBooking
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.isBookingManager) {
+  if (currentUser.isBookingManager || currentUser.isMachine) {
     return helper.clearObject(resourceBooking)
   } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
     return _.omit(helper.clearObject(resourceBooking), 'memberRate')
@@ -72,7 +73,7 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -111,7 +112,8 @@ createResourceBooking.schema = Joi.object().keys({
  */
 async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
-  if (!currentUser.isBookingManager) {
+  const isDiffStatus = resourceBooking.status !== data.status
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -120,8 +122,34 @@ async function updateResourceBooking (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  await resourceBooking.update(data)
+  const updatedResourceBooking = await resourceBooking.update(data)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data })
+  // When we are updating the status of ResourceBooking to `assigned`
+  // the corresponding JobCandidate record (with the same userId and jobId)
+  // should be updated with the status `selected`
+  if (isDiffStatus && data.status === 'assigned') {
+    const candidates = await models.JobCandidate.findAll({
+      where: {
+        jobId: updatedResourceBooking.jobId,
+        userId: updatedResourceBooking.userId,
+        status: {
+          [Op.not]: 'selected'
+        },
+        deletedAt: null
+      }
+    })
+    await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
+      currentUser,
+      candidate.id,
+      { status: 'selected' }
+    ).then(result => {
+      logger.debug({
+        component: 'ResourceBookingService',
+        context: 'updatedResourceBooking',
+        message: `id: ${result.id} candidate got selected.`
+      })
+    })))
+  }
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }
@@ -183,7 +211,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
  * @params {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 

@@ -590,7 +590,7 @@ const jobsRequestBody = [
 const taasTeamItem0ResponseBody = {
   id: 9050,
   name: 'sample',
-  weeklyCount: 29.7,
+  weeklyCost: 29.7,
   resources: [
     {
       id: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',
@@ -620,7 +620,7 @@ const taasTeamItem0ResponseBody = {
 const taasTeam9050ResponseBody = {
   id: 9050,
   name: 'sample',
-  weeklyCount: 29.7,
+  weeklyCost: 29.7,
   resources: [
     {
       id: '1b88e433-828b-4e0d-9fb5-ef75b9dcca6e',

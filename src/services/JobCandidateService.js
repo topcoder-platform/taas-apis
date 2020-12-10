@@ -82,16 +82,17 @@ createJobCandidate.schema = Joi.object().keys({
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
   const projectId = await JobCandidate.getProjectId(jobCandidate.dataValues.jobId)
-  if (projectId && !currentUser.isBookingManager) {
+  const userId = await helper.getUserId(currentUser.userId)
+  if (projectId && !currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(projectId, currentUser.jwtToken)
     if (!connect) {
-      if (jobCandidate.dataValues.userId !== await helper.getUserId(currentUser.userId)) {
+      if (jobCandidate.dataValues.userId !== userId) {
         throw new errors.ForbiddenError('You are not allowed to perform this action!')
       }
     }
   }
   data.updatedAt = new Date()
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+  data.updatedBy = userId
 
   await jobCandidate.update(data)
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, { id, ...data })
@@ -145,7 +146,7 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
  * @params {String} id the jobCandidate id
  */
 async function deleteJobCandidate (currentUser, id) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
