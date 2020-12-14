@@ -11,16 +11,13 @@ const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 
 /**
- * Function to get assigned resource booking
- * @param {String} projectId project id
+ * Function to get assigned resource bookings with specific projectIds
+ * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getAssignedResourceBooking (projectId) {
-  const criteria = { status: 'assigned' }
-  if (projectId) {
-    criteria.projectId = projectId
-  }
-  const { result } = await ResourceBookingService.searchResourceBookings(criteria)
+async function _getAssignedResourceBookingsByProjectIds (projectIds) {
+  const criteria = { status: 'assigned', projectIds }
+  const { result } = await ResourceBookingService.searchResourceBookings(criteria, { returnAll: true })
   return result
 }
 
@@ -88,9 +85,9 @@ searchTeams.schema = Joi.object().keys({
  */
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
-  // Get resourceBookings from taas api
-  const resourceBookings = await _getAssignedResourceBooking()
-  // Get jobs from taas api
+  // Get all assigned resourceBookings filtered by projectIds
+  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(projectIds)
+  // Get all jobs filtered by projectIds
   const jobs = await _getJobsByProjectIds(projectIds)
 
   // Get first week day and last week day

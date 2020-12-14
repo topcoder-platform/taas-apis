@@ -228,11 +228,33 @@ deleteResourceBooking.schema = Joi.object().keys({
 /**
  * List resourceBookings
  * @params {Object} criteria the search criteria
+ * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchResourceBookings (criteria) {
+async function searchResourceBookings (criteria, options = { returnAll: false }) {
+  if (criteria.projectIds) {
+    if ((typeof criteria.projectIds) === 'string') {
+      criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
+        const projectIdRawTrimed = projectIdRaw.trim()
+        const projectId = Number(projectIdRawTrimed)
+        if (_.isNaN(projectId)) {
+          throw new errors.BadRequestError(`projectId ${projectIdRawTrimed} is not a valid number`)
+        }
+        return projectId
+      })
+    }
+  }
   const page = criteria.page > 0 ? criteria.page : 1
-  const perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  let perPage
+  if (options.returnAll) {
+    // To simplify the logic we are use a very large number for perPage
+    // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
+    // the number is limited by `index.max_result_window`, its default value is 10000, see
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
+    perPage = 10000
+  } else {
+    perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  }
 
   if (!criteria.sortBy) {
     criteria.sortBy = 'id'
@@ -266,6 +288,14 @@ async function searchResourceBookings (criteria) {
         }
       })
     })
+    // if criteria contains projectIds, filter projectId with this value
+    if (criteria.projectIds) {
+      esQuery.body.query.bool.filter = [{
+        terms: {
+          projectId: criteria.projectIds
+        }
+      }]
+    }
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
@@ -290,6 +320,9 @@ async function searchResourceBookings (criteria) {
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+  if (criteria.projectIds) {
+    filter[Op.and].push({ projectId: criteria.projectIds })
+  }
   const resourceBookings = await ResourceBooking.findAll({
     where: filter,
     attributes: {
@@ -318,8 +351,13 @@ searchResourceBookings.schema = Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),
-    projectId: Joi.number().integer()
-  }).required()
+    projectId: Joi.number().integer(),
+    projectIds: Joi.alternatives(
+      Joi.string(),
+      Joi.array().items(Joi.number().integer())
+    )
+  }).required(),
+  options: Joi.object()
 }).required()
 
 module.exports = {
