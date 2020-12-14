@@ -54,6 +54,9 @@ getJobCandidate.schema = Joi.object().keys({
  * @returns {Object} the created jobCandidate
  */
 async function createJobCandidate (currentUser, jobCandidate) {
+  await helper.ensureJobById(jobCandidate.jobId) // ensure job exists
+  await helper.ensureUserById(jobCandidate.userId) // ensure user exists
+
   jobCandidate.id = uuid()
   jobCandidate.createdAt = new Date()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
@@ -127,6 +130,8 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
  * @returns {Object} the updated jobCandidate
  */
 async function fullyUpdateJobCandidate (currentUser, id, data) {
+  await helper.ensureJobById(data.jobId) // ensure job exists
+  await helper.ensureUserById(data.userId) // ensure user exists
   return updateJobCandidate(currentUser, id, data)
 }
 

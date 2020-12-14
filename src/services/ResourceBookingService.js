@@ -73,6 +73,11 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
+  if (resourceBooking.jobId) {
+    await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
+  }
+  await helper.ensureUserById(resourceBooking.userId) // ensure user exists
+
   if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
     if (!connect) {
@@ -186,6 +191,10 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the updated resourceBooking
  */
 async function fullyUpdateResourceBooking (currentUser, id, data) {
+  if (data.jobId) {
+    await helper.ensureJobById(data.jobId) // ensure job exists
+  }
+  await helper.ensureUserById(data.userId) // ensure user exists
   return updateResourceBooking(currentUser, id, data)
 }
 
