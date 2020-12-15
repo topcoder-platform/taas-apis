@@ -108,6 +108,12 @@ paths:
             type: integer
           description: The project id.
         - in: query
+          name: projectIds
+          required: false
+          schema:
+            type: string
+          description: The project ids, separated by commas.
+        - in: query
           name: externalId
           required: false
           schema:
