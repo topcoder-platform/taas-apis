@@ -5,11 +5,13 @@
 const querystring = require('querystring')
 const AWS = require('aws-sdk')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
 const request = require('superagent')
 const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
 const logger = require('./logger')
+const models = require('../models')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
 const localLogger = {
@@ -529,6 +531,40 @@ async function ensureUbhanUserId (currentUser) {
   }
 }
 
+/**
+ * Ensure job with specific id exists.
+ *
+ * @param {String} jobId the job id
+ * @returns {Object} the job data
+ */
+async function ensureJobById (jobId) {
+  return models.Job.findById(jobId)
+}
+
+/**
+ * Ensure user with specific id exists.
+ *
+ * @param {String} jobId the user id
+ * @returns {Object} the user data
+ */
+async function ensureUserById (userId) {
+  const token = await getM2Mtoken()
+  try {
+    const res = await request
+      .get(`${config.TC_API}/users/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'ensureUserById', message: `response body: ${JSON.stringify(res.body)}` })
+    return res.body
+  } catch (err) {
+    if (err.status === HttpStatus.NOT_FOUND) {
+      throw new errors.NotFoundError(`id: ${userId} "user" not found`)
+    }
+    throw err
+  }
+}
+
 module.exports = {
   checkIfExists,
   autoWrapExpress,
@@ -553,5 +589,7 @@ module.exports = {
   getMembers,
   getProjectById,
   getSkillById,
-  getUserSkill
+  getUserSkill,
+  ensureJobById,
+  ensureUserById
 }
