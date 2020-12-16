@@ -4089,7 +4089,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{token_connectUser}}",
+								"value": "Bearer {{token_bookingManager}}",
 								"type": "text"
 							}
 						],
@@ -4160,24 +4160,18 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{token_connectUser}}",
+								"value": "Bearer {{token_bookingManager}}",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/:projectId",
+							"raw": "{{URL}}/taas-teams/{{projectId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								":projectId"
-							],
-							"variable": [
-								{
-									"key": "projectId",
-									"value": "16705"
-								}
+								"{{projectId}}"
 							]
 						}
 					},
@@ -4195,19 +4189,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/:projectId",
+							"raw": "{{URL}}/taas-teams/{{projectId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								":projectId"
-							],
-							"variable": [
-								{
-									"key": "projectId",
-									"value": "16705"
-								}
+								"{{projectId}}"
 							]
 						}
 					},
@@ -4220,30 +4208,20 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{token_connectUser}}",
+								"value": "Bearer {{token_bookingManager}}",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/:projectId/jobs/:jobId",
+							"raw": "{{URL}}/taas-teams/{{projectId}}/jobs/{{jobId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								":projectId",
+								"{{projectId}}",
 								"jobs",
-								":jobId"
-							],
-							"variable": [
-								{
-									"key": "projectId",
-									"value": "16705"
-								},
-								{
-									"key": "jobId",
-									"value": "948a25a6-086f-4a96-aad5-9ccd2d3e87b2"
-								}
+								"{{jobId}}"
 							]
 						}
 					},
@@ -4261,25 +4239,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/taas-teams/:projectId/jobs/:jobId",
+							"raw": "{{URL}}/taas-teams/{{projectId}}/jobs/{{jobId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"taas-teams",
-								":projectId",
+								"{{projectId}}",
 								"jobs",
-								":jobId"
-							],
-							"variable": [
-								{
-									"key": "projectId",
-									"value": "16705"
-								},
-								{
-									"key": "jobId",
-									"value": "948a25a6-086f-4a96-aad5-9ccd2d3e87b2"
-								}
+								"{{jobId}}"
 							]
 						}
 					},
