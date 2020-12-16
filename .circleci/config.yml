@@ -46,30 +46,28 @@ jobs:
     environment:
       DEPLOY_ENV: "DEV"
       LOGICAL_ENV: "dev"
-      APPNAME: "taas-apis"    
+      APPNAME: "taas-apis"
     steps: *builddeploy_steps
 
   "build-prod":
     <<: *defaults
     environment:
       DEPLOY_ENV: "PROD"
-      LOGICAL_ENV: "prod"    
-      APPNAME: "taas-apis"  
+      LOGICAL_ENV: "prod"
+      APPNAME: "taas-apis"
     steps: *builddeploy_steps
 
 workflows:
   version: 2
   build:
     jobs:
-      # Development builds are executed on "develop" branch only. 
+      # Development builds are executed on "develop" branch only.
       - "build-dev":
           context : org-global
           filters:
             branches:
               only:
                 - dev
-                - feature/es-segregation
-                - feature/integration-test-fix
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.

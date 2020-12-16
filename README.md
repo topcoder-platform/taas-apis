@@ -28,6 +28,9 @@ The following parameters can be set in config files or in env variables:
 - `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
 - `AUTH0_PROXY_SERVER_URL`: Proxy Auth0 URL, used to get TC M2M token
 
+- `m2m.M2M_AUDIT_USER_ID`: default value is `00000000-0000-0000-0000-000000000000`
+- `m2m.M2M_AUDIT_HANDLE`: default value is `TopcoderService`
+
 - `DATABASE_URL`: PostgreSQL database url.
 - `DB_SCHEMA_NAME`: string - PostgreSQL database target schema
 - `PROJECT_API_URL`: the project service url

@@ -11,6 +11,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const JobCandidateService = require('./JobCandidateService')
 
 const ResourceBooking = models.ResourceBooking
 const esClient = helper.getESClient()
@@ -22,7 +23,7 @@ const esClient = helper.getESClient()
  * @returns {Object} the resourceBooking
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.isBookingManager) {
+  if (currentUser.isBookingManager || currentUser.isMachine) {
     return helper.clearObject(resourceBooking)
   } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
     return _.omit(helper.clearObject(resourceBooking), 'memberRate')
@@ -72,7 +73,12 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
-  if (!currentUser.isBookingManager) {
+  if (resourceBooking.jobId) {
+    await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
+  }
+  await helper.ensureUserById(resourceBooking.userId) // ensure user exists
+
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -111,7 +117,8 @@ createResourceBooking.schema = Joi.object().keys({
  */
 async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
-  if (!currentUser.isBookingManager) {
+  const isDiffStatus = resourceBooking.status !== data.status
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
     if (!connect) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -120,8 +127,34 @@ async function updateResourceBooking (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  await resourceBooking.update(data)
+  const updatedResourceBooking = await resourceBooking.update(data)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data })
+  // When we are updating the status of ResourceBooking to `assigned`
+  // the corresponding JobCandidate record (with the same userId and jobId)
+  // should be updated with the status `selected`
+  if (isDiffStatus && data.status === 'assigned') {
+    const candidates = await models.JobCandidate.findAll({
+      where: {
+        jobId: updatedResourceBooking.jobId,
+        userId: updatedResourceBooking.userId,
+        status: {
+          [Op.not]: 'selected'
+        },
+        deletedAt: null
+      }
+    })
+    await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
+      currentUser,
+      candidate.id,
+      { status: 'selected' }
+    ).then(result => {
+      logger.debug({
+        component: 'ResourceBookingService',
+        context: 'updatedResourceBooking',
+        message: `id: ${result.id} candidate got selected.`
+      })
+    })))
+  }
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }
@@ -158,6 +191,10 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the updated resourceBooking
  */
 async function fullyUpdateResourceBooking (currentUser, id, data) {
+  if (data.jobId) {
+    await helper.ensureJobById(data.jobId) // ensure job exists
+  }
+  await helper.ensureUserById(data.userId) // ensure user exists
   return updateResourceBooking(currentUser, id, data)
 }
 
@@ -183,7 +220,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
  * @params {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
-  if (!currentUser.isBookingManager) {
+  if (!currentUser.isBookingManager && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
@@ -200,11 +237,33 @@ deleteResourceBooking.schema = Joi.object().keys({
 /**
  * List resourceBookings
  * @params {Object} criteria the search criteria
+ * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchResourceBookings (criteria) {
+async function searchResourceBookings (criteria, options = { returnAll: false }) {
+  if (criteria.projectIds) {
+    if ((typeof criteria.projectIds) === 'string') {
+      criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
+        const projectIdRawTrimed = projectIdRaw.trim()
+        const projectId = Number(projectIdRawTrimed)
+        if (_.isNaN(projectId)) {
+          throw new errors.BadRequestError(`projectId ${projectIdRawTrimed} is not a valid number`)
+        }
+        return projectId
+      })
+    }
+  }
   const page = criteria.page > 0 ? criteria.page : 1
-  const perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  let perPage
+  if (options.returnAll) {
+    // To simplify the logic we are use a very large number for perPage
+    // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
+    // the number is limited by `index.max_result_window`, its default value is 10000, see
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
+    perPage = 10000
+  } else {
+    perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  }
 
   if (!criteria.sortBy) {
     criteria.sortBy = 'id'
@@ -238,6 +297,14 @@ async function searchResourceBookings (criteria) {
         }
       })
     })
+    // if criteria contains projectIds, filter projectId with this value
+    if (criteria.projectIds) {
+      esQuery.body.query.bool.filter = [{
+        terms: {
+          projectId: criteria.projectIds
+        }
+      }]
+    }
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
@@ -262,6 +329,9 @@ async function searchResourceBookings (criteria) {
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+  if (criteria.projectIds) {
+    filter[Op.and].push({ projectId: criteria.projectIds })
+  }
   const resourceBookings = await ResourceBooking.findAll({
     where: filter,
     attributes: {
@@ -290,8 +360,13 @@ searchResourceBookings.schema = Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),
-    projectId: Joi.number().integer()
-  }).required()
+    projectId: Joi.number().integer(),
+    projectIds: Joi.alternatives(
+      Joi.string(),
+      Joi.array().items(Joi.number().integer())
+    )
+  }).required(),
+  options: Joi.object()
 }).required()
 
 module.exports = {

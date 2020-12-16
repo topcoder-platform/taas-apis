@@ -5,11 +5,13 @@
 const querystring = require('querystring')
 const AWS = require('aws-sdk')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
 const request = require('superagent')
 const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
 const logger = require('./logger')
+const models = require('../models')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
 const localLogger = {
@@ -22,6 +24,11 @@ const m2mAuth = require('tc-core-library-js').auth.m2m
 
 // const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
 const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
+
+const topcoderM2M = m2mAuth({
+  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
+  ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL'])
+})
 
 let busApiClient
 
@@ -43,6 +50,38 @@ function getBusApiClient () {
 
 // ES Client mapping
 const esClients = {}
+
+/**
+ * Check if exists.
+ *
+ * @param {Array} source the array in which to search for the term
+ * @param {Array | String} term the term to search
+ */
+function checkIfExists (source, term) {
+  let terms
+
+  if (!_.isArray(source)) {
+    throw new Error('Source argument should be an array')
+  }
+
+  source = source.map(s => s.toLowerCase())
+
+  if (_.isString(term)) {
+    terms = term.toLowerCase().split(' ')
+  } else if (_.isArray(term)) {
+    terms = term.map(t => t.toLowerCase())
+  } else {
+    throw new Error('Term argument should be either a string or an array')
+  }
+
+  for (let i = 0; i < terms.length; i++) {
+    if (source.includes(terms[i])) {
+      return true
+    }
+  }
+
+  return false
+}
 
 /**
  * Wrap async function to standard express function
@@ -119,14 +158,6 @@ function setResHeaders (req, res, result) {
     }
     res.set('Link', link)
   }
-
-  // Allow browsers access pagination data in headers
-  let accessControlExposeHeaders = res.get('Access-Control-Expose-Headers') || ''
-  accessControlExposeHeaders += accessControlExposeHeaders ? ', ' : ''
-  // append new values, to not override values set by someone else
-  accessControlExposeHeaders += 'X-Page, X-Per-Page, X-Total, X-Total-Pages, X-Prev-Page, X-Next-Page'
-
-  res.set('Access-Control-Expose-Headers', accessControlExposeHeaders)
 }
 
 /**
@@ -200,6 +231,14 @@ function getESClient () {
  */
 const getM2Mtoken = async () => {
   return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+}
+
+/*
+ * Function to get M2M token to access topcoder resources(e.g. /v3/users)
+ * @returns {Promise}
+ */
+const getTopcoderM2MToken = async () => {
+  return await topcoderM2M.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
 /**
@@ -292,46 +331,48 @@ function isDocumentMissingException (err) {
 /**
  * Function to get projects
  * @param {String} token the user request token
+ * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getProjects (token) {
-/*  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+async function getProjects (token, criteria = {}) {
+  const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
-    .query({
-      memberOnly: true
-    })
+    .query(criteria)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.map(res.body, item => {
-    return _.pick(item, ['id', 'name'])
-  })*/
-  
-  const url = `${config.TC_API}/projects?type=talent-as-a-service`
-  let data = []
-  let page = 1
-  while (true) {
-    const res = await request
-      .get(url)
-      .query({
-        page,
-        memberOnly: true
-      })
-      .set('Authorization', token)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({ context: 'getProjects', message: `page ${page} - response body: ${JSON.stringify(res.body)}` })
-    data = [...data, ...res.body]
-    page += 1
-    if (!res.headers['x-next-page']) {
-      break
-    }
-  }
-  return _.map(data, item => {
+  const result = _.map(res.body, item => {
     return _.pick(item, ['id', 'name'])
   })
+  return {
+    total: Number(_.get(res.headers, 'x-total')),
+    page: Number(_.get(res.headers, 'x-page')),
+    perPage: Number(_.get(res.headers, 'x-per-page')),
+    result
+  }
+}
+
+/**
+ * Get topcoder user by id from /v3/users.
+ *
+ * @param {String} userId the legacy user id
+ * @returns {Object} the user
+ */
+async function getTopcoderUserById (userId) {
+  const token = await getTopcoderM2MToken()
+  const res = await request
+    .get(config.TOPCODER_USERS_API)
+    .query({ filter: `id=${userId}` })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getTopcoderUserById', message: `response body: ${JSON.stringify(res.body)}` })
+  const user = _.get(res.body, 'result.content[0]')
+  if (!user) {
+    throw new errors.NotFoundError(`userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`)
+  }
+  return user
 }
 
 /**
@@ -340,14 +381,54 @@ async function getProjects (token) {
  * @param {String} userId the user id
  * @returns the request result
  */
-async function getUserById (token, userId) {
+async function getUserById (token, userId, enrich) {
   const res = await request
-    .get(`${config.TC_API}/users/${userId}`)
+    .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+
+  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+
+  if (enrich) {
+    user.skills = (res.body.skills || []).map((skillObj) => _.pick(skillObj.skill, ['id', 'name']))
+  }
+
+  return user
+}
+
+/**
+ * Function to create user in ubhan
+ * @param {Object} data the user data
+ * @returns the request result
+ */
+async function createUbhanUser ({ handle, firstName, lastName }) {
+  const token = await getM2Mtoken()
+  const res = await request
+    .post(`${config.TC_API}/users`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send({ handle, firstName, lastName })
+  localLogger.debug({ context: 'createUbhanUser', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.pick(res.body, ['id'])
+}
+
+/**
+ * Function to create external profile for a ubhan user
+ * @param {String} userId the user id(with uuid format)
+ * @param {Object} data the profile data
+ */
+async function createUserExternalProfile (userId, { organizationId, externalId }) {
+  const token = await getM2Mtoken()
+  const res = await request
+    .post(`${config.TC_API}/users/${userId}/externalProfiles`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send({ organizationId, externalId: String(externalId) })
+  localLogger.debug({ context: 'createUserExternalProfile', message: `response body: ${JSON.stringify(res.body)}` })
 }
 
 /**
@@ -357,7 +438,7 @@ async function getUserById (token, userId) {
  * @returns the request result
  */
 async function getMembers (token, handles) {
- /* const handlesStr = _.map(handles, handle => {
+  const handlesStr = _.map(handles, handle => {
     return '%22' + handle.toLowerCase() + '%22'
   }).join(',')
   const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
@@ -368,32 +449,7 @@ async function getMembers (token, handles) {
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
-  return res.body */
-  
-    const handlesStr = _.map(handles, handle => {
-    return '%22' + handle.toLowerCase() + '%22'
-  }).join(',')
-  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
-
-  let data = []
-  let page = 1
-  while (true) {
-    const res = await request
-      .get(url)
-      .query({
-        page
-      })
-      .set('Authorization', token)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({ context: 'getMembers', message: `page ${page} - response body: ${JSON.stringify(res.body)}` })
-    data = [...data, ...res.body]
-    page += 1
-    if (!res.headers['x-next-page']) {
-      break
-    }
-  }
-  return data
+  return res.body
 }
 
 /**
@@ -451,13 +507,80 @@ async function getUserSkill (token, userId) {
   })
 }
 
+/**
+ * Encapsulate the getUserId function.
+ * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
+ *
+ * In the case the user does not exist in /v5/users but can be found in /v3/users
+ * Fetch the user info from /v3/users and create a new user in /v5/users.
+ *
+ * @params {Object} currentUser the user who perform this operation
+ * @returns {String} the ubhan user id
+ */
+async function ensureUbhanUserId (currentUser) {
+  try {
+    return await getUserId(currentUser.userId)
+  } catch (err) {
+    if (!(err instanceof errors.NotFoundError)) {
+      throw err
+    }
+    const topcoderUser = await getTopcoderUserById(currentUser.userId)
+    const user = await createUbhanUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
+    await createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
+    return user.id
+  }
+}
+
+/**
+ * Ensure job with specific id exists.
+ *
+ * @param {String} jobId the job id
+ * @returns {Object} the job data
+ */
+async function ensureJobById (jobId) {
+  return models.Job.findById(jobId)
+}
+
+/**
+ * Ensure user with specific id exists.
+ *
+ * @param {String} jobId the user id
+ * @returns {Object} the user data
+ */
+async function ensureUserById (userId) {
+  const token = await getM2Mtoken()
+  try {
+    const res = await request
+      .get(`${config.TC_API}/users/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'ensureUserById', message: `response body: ${JSON.stringify(res.body)}` })
+    return res.body
+  } catch (err) {
+    if (err.status === HttpStatus.NOT_FOUND) {
+      throw new errors.NotFoundError(`id: ${userId} "user" not found`)
+    }
+    throw err
+  }
+}
+
 module.exports = {
+  checkIfExists,
   autoWrapExpress,
   setResHeaders,
   clearObject,
   isConnectMember,
   getESClient,
-  getUserId,
+  getUserId: async (userId) => {
+    // check m2m user id
+    if (userId === config.m2m.M2M_AUDIT_USER_ID) {
+      return config.m2m.M2M_AUDIT_USER_ID
+    }
+    return ensureUbhanUserId({ userId })
+  },
+  getM2Mtoken,
+  getTopcoderM2MToken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,
@@ -466,5 +589,7 @@ module.exports = {
   getMembers,
   getProjectById,
   getSkillById,
-  getUserSkill
+  getUserSkill,
+  ensureJobById,
+  ensureUserById
 }
