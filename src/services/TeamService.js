@@ -145,6 +145,8 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
               if (!isSearch) {
                 user.jobId = rb.jobId
                 user.customerRate = rb.customerRate
+                user.startDate = rb.startDate
+                user.endDate = rb.endDate
               }
               return user
             })

@@ -2019,16 +2019,21 @@ components:
               skillMatched:
                 type: integer
                 description: The percentage of skill matched for that particular job he/she is assinged
-              job:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: The job id the member is assinged at
-                  name:
-                    type: string
-                    description: The job name the member is assinged at
+              jobId:
+                type: string
+                format: uuid
+                description: The job id the member is assinged at
+              startDate:
+                type: string
+                format: date-time
+                example: "2020-09-27T04:17:23.131Z"
+                description: "Resource start date."
+              endDate:
+                type: string
+                format: date-time
+                example: "2020-09-27T04:17:23.131Z"
+                description: "Resource end date."
+                 
         jobs: 
           type: array
           description: "The jobs which are opened"
