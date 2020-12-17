@@ -7,6 +7,7 @@ const Joi = require('joi')
 const dateFNS = require('date-fns')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
+const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 
@@ -262,8 +263,7 @@ async function getTeamJob (currentUser, id, jobId) {
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {
-    logger.debug({ component: 'TeamService', context: 'getTeamJob', message: `id ${jobId}: "Job" with Team id ${id} is not exist` })
-    return {}
+    throw new errors.NotFoundError(`id: ${jobId} "Job" with Team id ${id} doesn't exist`)
   }
   const result = {
     id: job.id,
