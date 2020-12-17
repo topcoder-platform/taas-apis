@@ -296,8 +296,13 @@ async function getTeamJob (currentUser, id, jobId) {
       for (const item of candidates) {
         item.resumeLink = null
         const candidate = _.find(job.candidates, { userId: item.id })
+        // TODO this logic should be vice-verse, we should loop trough candidates and populate users data if found,
+        //      not loop through users and populate candidates data if found
         if (candidate) {
           item.status = candidate.status
+          // return User id as `userId` and JobCandidate id as `id`
+          item.userId = item.id
+          item.id = candidate.id
         }
         const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
         if (findMember && findMember.photoURL) {

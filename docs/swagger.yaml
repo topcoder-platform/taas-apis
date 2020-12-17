@@ -2110,6 +2110,14 @@ components:
                - $ref: '#/components/schemas/User'
             type: object
             properties:
+              id:
+                type: string
+                format: uuid
+                description: "The job cadidate id."
+              userId:
+                type: string
+                format: uuid
+                description: "User id."
               resumeLink: 
                 type: string
                 format: url
