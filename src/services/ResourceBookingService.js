@@ -241,17 +241,17 @@ deleteResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchResourceBookings (criteria, options = { returnAll: false }) {
-  if (criteria.projectIds) {
-    if ((typeof criteria.projectIds) === 'string') {
-      criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
-        const projectIdRawTrimed = projectIdRaw.trim()
-        const projectId = Number(projectIdRawTrimed)
-        if (_.isNaN(projectId)) {
-          throw new errors.BadRequestError(`projectId ${projectIdRawTrimed} is not a valid number`)
-        }
-        return projectId
-      })
-    }
+  // `criteria`.projectIds` could be array of ids, or comma separated string of ids
+  // in case it's comma separated string of ids we have to convert it to an array of ids
+  if ((typeof criteria.projectIds) === 'string') {
+    criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
+      const projectIdRawTrimmed = projectIdRaw.trim()
+      const projectId = Number(projectIdRawTrimmed)
+      if (_.isNaN(projectId)) {
+        throw new errors.BadRequestError(`projectId ${projectIdRawTrimmed} is not a valid number`)
+      }
+      return projectId
+    })
   }
   const page = criteria.page > 0 ? criteria.page : 1
   let perPage
