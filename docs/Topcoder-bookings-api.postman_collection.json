@@ -4131,6 +4131,54 @@
 					"response": []
 				},
 				{
+					"name": "GET /taas-teams with booking manager",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams?perPage=10&page=1&name=*taas*&sortBy=lastActivityAt&sortOrder=desc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "*taas*",
+									"description": "case-insensitive; support wildcard match"
+								},
+								{
+									"key": "sortBy",
+									"value": "lastActivityAt",
+									"description": "allows: createdAt, updatedAt, lastActivityAt, id, status, name, type, best match"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"description": "allows: asc, desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "GET /taas-teams with m2m read",
 					"request": {
 						"method": "GET",
@@ -4172,6 +4220,36 @@
 							"path": [
 								"taas-teams",
 								"{{projectId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id with booking manager",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:projectId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":projectId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								}
 							]
 						}
 					},
@@ -4222,6 +4300,42 @@
 								"{{projectId}}",
 								"jobs",
 								"{{jobId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id/jobs/:jobId with booking manager",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:projectId/jobs/:jobId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":projectId",
+								"jobs",
+								":jobId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": "16705"
+								},
+								{
+									"key": "jobId",
+									"value": "948a25a6-086f-4a96-aad5-9ccd2d3e87b2"
+								}
 							]
 						}
 					},
