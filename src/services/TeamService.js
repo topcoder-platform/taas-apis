@@ -42,7 +42,7 @@ async function _getJobsByProjectIds (projectIds) {
  */
 async function searchTeams (currentUser, criteria) {
   if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getTopcoderM2MToken()
+    const m2mToken = await helper.getM2Mtoken()
     currentUser.jwtToken = `Bearer ${m2mToken}`
   }
   const sort = `${criteria.sortBy} ${criteria.sortOrder}`
@@ -198,7 +198,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
  */
 async function getTeam (currentUser, id) {
   if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getTopcoderM2MToken()
+    const m2mToken = await helper.getM2Mtoken()
     currentUser.jwtToken = `Bearer ${m2mToken}`
   }
   // Get users from /v5/projects
@@ -254,7 +254,7 @@ getTeam.schema = Joi.object().keys({
  */
 async function getTeamJob (currentUser, id, jobId) {
   if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getTopcoderM2MToken()
+    const m2mToken = await helper.getM2Mtoken()
     currentUser.jwtToken = `Bearer ${m2mToken}`
   }
   // Get jobs from taas api
