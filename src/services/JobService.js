@@ -54,10 +54,9 @@ async function _getJobCandidates (jobId) {
  * @returns {undefined}
  */
 async function _validateSkills (skills) {
-  const m2mToken = await helper.getM2Mtoken()
   const responses = await Promise.all(
     skills.map(
-      skill => helper.getSkillById(`Bearer ${m2mToken}`, skill)
+      skill => helper.getSkillById(skill)
         .then(() => {
           return { found: true }
         })

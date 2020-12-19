@@ -330,11 +330,18 @@ function isDocumentMissingException (err) {
 
 /**
  * Function to get projects
- * @param {String} token the user request token
+ * @param {Object} currentUser the user who perform this operation
  * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getProjects (token, criteria = {}) {
+async function getProjects (currentUser, criteria = {}) {
+  let token
+  if (currentUser.isBookingManager || currentUser.isMachine) {
+    const m2mToken = await getM2Mtoken()
+    token = `Bearer ${m2mToken}`
+  } else {
+    token = currentUser.jwtToken
+  }
   const url = `${config.TC_API}/projects?type=talent-as-a-service`
   const res = await request
     .get(url)
@@ -377,14 +384,14 @@ async function getTopcoderUserById (userId) {
 
 /**
  * Function to get users
- * @param {String} token the user request token
  * @param {String} userId the user id
  * @returns the request result
  */
-async function getUserById (token, userId, enrich) {
+async function getUserById (userId, enrich) {
+  const token = await getM2Mtoken()
   const res = await request
     .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
-    .set('Authorization', token)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
@@ -433,11 +440,11 @@ async function createUserExternalProfile (userId, { organizationId, externalId }
 
 /**
  * Function to get members
- * @param {String} token the user request token
  * @param {Array} handles the handle array
  * @returns the request result
  */
-async function getMembers (token, handles) {
+async function getMembers (handles) {
+  const token = await getM2Mtoken()
   const handlesStr = _.map(handles, handle => {
     return '%22' + handle.toLowerCase() + '%22'
   }).join(',')
@@ -445,7 +452,7 @@ async function getMembers (token, handles) {
 
   const res = await request
     .get(url)
-    .set('Authorization', token)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
@@ -454,31 +461,49 @@ async function getMembers (token, handles) {
 
 /**
  * Function to get project by id
- * @param {String} token the user request token
+ * @param {Object} currentUser the user who perform this operation
  * @param {Number} id project id
  * @returns the request result
  */
-async function getProjectById (token, id) {
+async function getProjectById (currentUser, id) {
+  let token
+  if (currentUser.isBookingManager || currentUser.isMachine) {
+    const m2mToken = await getM2Mtoken()
+    token = `Bearer ${m2mToken}`
+  } else {
+    token = currentUser.jwtToken
+  }
   const url = `${config.TC_API}/projects/${id}`
-  const res = await request
-    .get(url)
-    .set('Authorization', token)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.pick(res.body, ['id', 'name'])
+  try {
+    const res = await request
+      .get(url)
+      .set('Authorization', token)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
+    return _.pick(res.body, ['id', 'name'])
+  } catch (err) {
+    console.log(err)
+    if (err.status === HttpStatus.FORBIDDEN) {
+      throw new errors.UnauthorizedError(`You are not allowed to access the project with id ${id}`)
+    }
+    if (err.status === HttpStatus.NOT_FOUND) {
+      throw new errors.NotFoundError(`id: ${id} project not found`)
+    }
+    throw err
+  }
 }
 
 /**
  * Function to get skill by id
- * @param {String} token the user request token
  * @param {String} skillId the skill Id
  * @returns the request result
  */
-async function getSkillById (token, skillId) {
+async function getSkillById (skillId) {
+  const token = await getM2Mtoken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
-    .set('Authorization', token)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getSkillById', message: `response body: ${JSON.stringify(res.body)}` })
