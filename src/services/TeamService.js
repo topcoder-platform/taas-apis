@@ -28,7 +28,7 @@ async function _getAssignedResourceBookingsByProjectIds (projectIds) {
  * @returns the request result
  */
 async function _getJobsByProjectIds (projectIds) {
-  const { result } = await JobService.searchJobs({ projectIds })
+  const { result } = await JobService.searchJobs({ projectIds }, { returnAll: true })
   return result
 }
 
@@ -171,6 +171,10 @@ async function getTeamDetail (projects, isSearch = true) {
         // Count total positions
         res.totalPositions = 0
         for (const item of jobsTmp) {
+          // only sum numPositions of jobs whose status is NOT cancelled or closed
+          if (['cancelled', 'closed'].includes(item.status)) {
+            continue
+          }
           res.totalPositions += item.numPositions
         }
       } else {

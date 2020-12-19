@@ -260,11 +260,23 @@ deleteJob.schema = Joi.object().keys({
 /**
  * List jobs
  * @params {Object} criteria the search criteria
+ * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobs (criteria) {
+async function searchJobs (criteria, options = { returnAll: false }) {
   const page = criteria.page > 0 ? criteria.page : 1
-  const perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  let perPage
+  if (options.returnAll) {
+    // To simplify the logic we are use a very large number for perPage
+    // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
+    // the number is limited by `index.max_result_window`, its default value is 10000, see
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
+    //
+    // also see `ResourceBookingService.searchResourceBookings()`
+    perPage = 10000
+  } else {
+    perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  }
   if (!criteria.sortBy) {
     criteria.sortBy = 'id'
   }
@@ -428,7 +440,8 @@ searchJobs.schema = Joi.object().keys({
     workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single()
-  }).required()
+  }).required(),
+  options: Joi.object()
 }).required()
 
 module.exports = {
