@@ -39,14 +39,10 @@ async function _getJobsByProjectIds (projectIds) {
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchTeams (currentUser, criteria) {
-  if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
   const sort = `${criteria.sortBy} ${criteria.sortOrder}`
   // Get projects from /v5/projects with searching criteria
   const { total, page, perPage, result: projects } = await helper.getProjects(
-    currentUser.jwtToken,
+    currentUser,
     {
       page: criteria.page,
       perPage: criteria.perPage,
@@ -58,7 +54,7 @@ async function searchTeams (currentUser, criteria) {
     total,
     page,
     perPage,
-    result: await getTeamDetail(currentUser, projects)
+    result: await getTeamDetail(projects)
   }
 }
 
@@ -79,12 +75,11 @@ searchTeams.schema = Joi.object().keys({
 
 /**
  * Get team details
- * @param {Object} currentUser the user who perform this operation
  * @param {Object} projects the projects
  * @param {Object} isSearch the flag whether for search function
  * @returns {Object} the search result
  */
-async function getTeamDetail (currentUser, projects, isSearch = true) {
+async function getTeamDetail (projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get all assigned resourceBookings filtered by projectIds
   const resourceBookings = await _getAssignedResourceBookingsByProjectIds(projectIds)
@@ -140,7 +135,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
       const usersPromises = []
       _.map(rbs, (rb) => {
         usersPromises.push(
-          helper.getUserById(currentUser.jwtToken, rb.userId, true)
+          helper.getUserById(rb.userId, true)
             .then(user => {
               // If call function is not search, add jobId field
               if (!isSearch) {
@@ -159,7 +154,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
         const userHandles = _.map(userInfos, 'handle')
         // Get user photo from /v5/members
-        const members = await helper.getMembers(currentUser.jwtToken, userHandles)
+        const members = await helper.getMembers(userHandles)
 
         for (const item of res.resources) {
           const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
@@ -197,15 +192,8 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
  * @returns {Object} the team
  */
 async function getTeam (currentUser, id) {
-  if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
-  // Get users from /v5/projects
-  const project = await helper.getProjectById(currentUser.jwtToken, id)
-
-  const result = await getTeamDetail(currentUser, [project], false)
-
+  const project = await helper.getProjectById(currentUser, id)
+  const result = await getTeamDetail([project], false)
   const teamDetail = result[0]
 
   // add job skills for result
@@ -214,7 +202,7 @@ async function getTeam (currentUser, id) {
     for (const job of teamDetail.jobs) {
       if (job.skills) {
         const usersPromises = []
-        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(currentUser.jwtToken, skillId)) })
+        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(skillId)) })
         jobSkills = await Promise.all(usersPromises)
         job.skills = jobSkills
       }
@@ -253,12 +241,8 @@ getTeam.schema = Joi.object().keys({
  * @returns the team job
  */
 async function getTeamJob (currentUser, id, jobId) {
-  if (currentUser.isBookingManager || currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
-  // Get jobs from taas api
-  const jobs = await _getJobsByProjectIds([id])
+  const project = await helper.getProjectById(currentUser, id)
+  const jobs = await _getJobsByProjectIds([project.id])
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {
@@ -271,7 +255,7 @@ async function getTeamJob (currentUser, id, jobId) {
 
   if (job.skills) {
     result.skills = await Promise.all(
-      _.map(job.skills, (skillId) => helper.getSkillById(currentUser.jwtToken, skillId))
+      _.map(job.skills, (skillId) => helper.getSkillById(skillId))
     )
   }
 
@@ -279,13 +263,13 @@ async function getTeamJob (currentUser, id, jobId) {
 
   if (job && job.candidates && job.candidates.length > 0) {
     const usersPromises = []
-    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, candidate.userId, true)) })
+    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(candidate.userId, true)) })
     const candidates = await Promise.all(usersPromises)
 
     const userHandles = _.map(candidates, 'handle')
     if (userHandles && userHandles.length > 0) {
       // Get user photo from /v5/members
-      const members = await helper.getMembers(currentUser.jwtToken, userHandles)
+      const members = await helper.getMembers(userHandles)
 
       for (const item of candidates) {
         item.resumeLink = null
