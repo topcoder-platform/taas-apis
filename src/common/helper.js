@@ -483,7 +483,6 @@ async function getProjectById (currentUser, id) {
     localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
     return _.pick(res.body, ['id', 'name'])
   } catch (err) {
-    console.log(err)
     if (err.status === HttpStatus.FORBIDDEN) {
       throw new errors.UnauthorizedError(`You are not allowed to access the project with id ${id}`)
     }
