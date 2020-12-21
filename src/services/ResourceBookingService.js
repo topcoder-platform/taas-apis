@@ -23,13 +23,10 @@ const esClient = helper.getESClient()
  * @returns {Object} the resourceBooking
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.isBookingManager || currentUser.isMachine) {
+  if (currentUser.hasManagePermission || currentUser.isMachine) {
     return helper.clearObject(resourceBooking)
-  } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
-    return _.omit(helper.clearObject(resourceBooking), 'memberRate')
-  } else {
-    return _.omit(helper.clearObject(resourceBooking), 'customerRate')
   }
+  return _.omit(helper.clearObject(resourceBooking), 'memberRate')
 }
 
 /**
@@ -57,6 +54,12 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
   }
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
   const resourceBooking = await ResourceBooking.findById(id)
+
+  // check if user can access the project associated with the resourceBooking
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.getProjectById(currentUser, resourceBooking.projectId)
+  }
+
   return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
 }
 
@@ -73,17 +76,16 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+
   if (resourceBooking.jobId) {
     await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
   }
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
   resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
@@ -116,14 +118,13 @@ createResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the updated resourceBooking
  */
 async function updateResourceBooking (currentUser, id, data) {
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+
   const resourceBooking = await ResourceBooking.findById(id)
   const isDiffStatus = resourceBooking.status !== data.status
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
@@ -220,7 +221,8 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
  * @params {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
@@ -236,11 +238,21 @@ deleteResourceBooking.schema = Joi.object().keys({
 
 /**
  * List resourceBookings
+ * @param {Object} currentUser the user who perform this operation.
  * @params {Object} criteria the search criteria
  * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchResourceBookings (criteria, options = { returnAll: false }) {
+async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    // regular user can only search with filtering by "projectId"
+    if (!criteria.projectId) {
+      throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
+    }
+    // check if user can access the project
+    await helper.getProjectById(currentUser, criteria.projectId)
+  }
+
   // `criteria`.projectIds` could be array of ids, or comma separated string of ids
   // in case it's comma separated string of ids we have to convert it to an array of ids
   if ((typeof criteria.projectIds) === 'string') {
@@ -351,6 +363,7 @@ async function searchResourceBookings (criteria, options = { returnAll: false })
 }
 
 searchResourceBookings.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
