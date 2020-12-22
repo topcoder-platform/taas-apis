@@ -10,7 +10,7 @@ const JobCandidateService = require('../services/JobCandidateService')
 const ResourceBookingService = require('../services/ResourceBookingService')
 
 /**
- * Cancel all related resource bookings and reject all related candidates when a job is cancelled.
+ * Cancel all related resource bookings and all related candidates when a job is cancelled.
  *
  * @param {Object} payload the event payload
  * @returns {undefined}
@@ -28,7 +28,7 @@ async function cancelJob (payload) {
     where: {
       jobId: payload.id,
       status: {
-        [Op.not]: 'rejected'
+        [Op.not]: 'cancelled'
       },
       deletedAt: null
     }
@@ -46,12 +46,12 @@ async function cancelJob (payload) {
     ...candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
       helper.authUserAsM2M(),
       candidate.id,
-      { status: 'rejected' }
+      { status: 'cancelled' }
     ).then(result => {
       logger.info({
         component: 'JobEventHandler',
         context: 'cancelJob',
-        message: `id: ${result.id} candidate got rejected.`
+        message: `id: ${result.id} candidate got cancelled.`
       })
     })),
     ...resourceBookings.map(resource => ResourceBookingService.partiallyUpdateResourceBooking(
