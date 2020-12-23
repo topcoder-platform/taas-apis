@@ -494,6 +494,38 @@ async function getProjectById (currentUser, id) {
 }
 
 /**
+ * Function to search skills from v5/skills
+ * @param {Object} criteria the search criteria
+ * @returns the request result
+ */
+async function getSkills (criteria) {
+  const token = await getM2Mtoken()
+  try {
+    const res = await request
+      .get(`${config.TC_API}/skills`)
+      .query({
+        skillProviderId: config.TOPCODER_SKILL_PROVIDER_ID,
+        ...criteria
+      })
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getSkills', message: `response body: ${JSON.stringify(res.body)}` })
+    return {
+      total: Number(_.get(res.headers, 'x-total')),
+      page: Number(_.get(res.headers, 'x-page')),
+      perPage: Number(_.get(res.headers, 'x-per-page')),
+      result: res.body
+    }
+  } catch (err) {
+    if (err.status === HttpStatus.BAD_REQUEST) {
+      throw new errors.BadRequestError(err.response.body.message)
+    }
+    throw err
+  }
+}
+
+/**
  * Function to get skill by id
  * @param {String} skillId the skill Id
  * @returns the request result
@@ -612,6 +644,7 @@ module.exports = {
   getUserById,
   getMembers,
   getProjectById,
+  getSkills,
   getSkillById,
   getUserSkill,
   ensureJobById,

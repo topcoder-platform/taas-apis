@@ -21,6 +21,7 @@ module.exports = {
 
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
+  TOPCODER_SKILL_PROVIDER_ID: process.env.TOPCODER_SKILL_PROVIDER_ID,
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
 
