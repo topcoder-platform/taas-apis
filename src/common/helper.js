@@ -464,7 +464,7 @@ async function getProjectById (currentUser, id) {
     return _.pick(res.body, ['id', 'name'])
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
-      throw new errors.UnauthorizedError(`You are not allowed to access the project with id ${id}`)
+      throw new errors.ForbiddenError(`You are not allowed to access the project with id ${id}`)
     }
     if (err.status === HttpStatus.NOT_FOUND) {
       throw new errors.NotFoundError(`id: ${id} project not found`)

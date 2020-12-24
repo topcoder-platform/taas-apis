@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
@@ -15,6 +16,19 @@ const JobService = require('./JobService')
 
 const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
+
+/**
+ * Check whether user can access associated job of a candidate.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} jobId the job id
+ * @returns {undefined}
+ */
+async function _checkUserAccessAssociatedJob (currentUser, jobId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await JobService.getJob(currentUser, jobId)
+  }
+}
 
 /**
  * Get jobCandidate by id
@@ -30,11 +44,18 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
         index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
         id
       })
+
+      // check whether user can access the job associated with the jobCandidate
+      await _checkUserAccessAssociatedJob(currentUser, jobCandidate.body._source.jobId)
+
       const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
       return jobCandidateRecord
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
+      }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
       }
       logger.logFullError(err, { component: 'JobCandidateService', context: 'getJobCandidate' })
     }
@@ -42,10 +63,8 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
   const jobCandidate = await JobCandidate.findById(id)
 
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
-    // check whether user can access the job associated with the jobCandidate
-    await JobService.getJob(currentUser, jobCandidate.jobId)
-  }
+  // check whether user can access the job associated with the jobCandidate
+  await _checkUserAccessAssociatedJob(currentUser, jobCandidate.jobId)
 
   return helper.clearObject(jobCandidate.dataValues)
 }

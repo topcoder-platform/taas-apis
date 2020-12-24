@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
@@ -30,6 +31,19 @@ async function _getResourceBookingFilteringFields (currentUser, resourceBooking)
 }
 
 /**
+ * Check whether user can access associated project of a job.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} projectId the project id
+ * @returns {undefined}
+ */
+async function _checkUserAccessAssociatedProject (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.getProjectById(currentUser, projectId)
+  }
+}
+
+/**
  * Get resourceBooking by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the resourceBooking id
@@ -43,11 +57,18 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
         index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
         id
       })
+
+      // check if user can access the project associated with the resourceBooking
+      await _checkUserAccessAssociatedProject(currentUser, resourceBooking.body._source.projectId)
+
       const resourceBookingRecord = { id: resourceBooking.body._id, ...resourceBooking.body._source }
       return _getResourceBookingFilteringFields(currentUser, resourceBookingRecord)
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "ResourceBooking" not found`)
+      }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
       }
       logger.logFullError(err, { component: 'ResourceBookingService', context: 'getResourceBooking' })
     }
@@ -56,9 +77,7 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
   const resourceBooking = await ResourceBooking.findById(id)
 
   // check if user can access the project associated with the resourceBooking
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
-    await helper.getProjectById(currentUser, resourceBooking.projectId)
-  }
+  await _checkUserAccessAssociatedProject(currentUser, resourceBooking.projectId)
 
   return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
 }

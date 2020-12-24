@@ -75,6 +75,19 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Check whether user can access associated project of a job.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} projectId the project id
+ * @returns {undefined}
+ */
+async function _checkUserAccessAssociatedProject (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.getProjectById(currentUser, projectId)
+  }
+}
+
+/**
  * Get job by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the job id
@@ -88,6 +101,10 @@ async function getJob (currentUser, id, fromDb = false) {
         index: config.esConfig.ES_INDEX_JOB,
         id
       })
+
+      // check whether user can access the project associated with the job
+      await _checkUserAccessAssociatedProject(currentUser, job.body._source.projectId)
+
       const jobId = job.body._id
       const jobRecord = { id: jobId, ...job.body._source }
       const candidates = await _getJobCandidates(jobId)
@@ -99,16 +116,17 @@ async function getJob (currentUser, id, fromDb = false) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "Job" not found`)
       }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
+      }
       logger.logFullError(err, { component: 'JobService', context: 'getJob' })
     }
   }
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
 
-  // check if user can access the project
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
-    await helper.getProjectById(currentUser, job.projectId)
-  }
+  // check whether user can access the project associated with the job
+  await _checkUserAccessAssociatedProject(currentUser, job.projectId)
 
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
