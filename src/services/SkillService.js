@@ -10,7 +10,7 @@ const helper = require('../common/helper')
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchSkills (criteria) {
-  return helper.getSkills(criteria)
+  return helper.getTopcoderSkills(criteria)
 }
 
 searchSkills.schema = Joi.object().keys({
