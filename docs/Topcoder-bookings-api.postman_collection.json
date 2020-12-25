@@ -4366,6 +4366,45 @@
 						}
 					},
 					"response": []
+				},
+        {
+					"name": "GET /taas-teams/skills",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_member}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/skills?perPage=10&page=1&orderBy=name",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"skills"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "orderBy",
+									"value": "name",
+									"description": "possible values are defined by /v5/skills"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
