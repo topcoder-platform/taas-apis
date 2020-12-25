@@ -75,18 +75,36 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Check whether user can access associated project of a job.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} projectId the project id
+ * @returns {undefined}
+ */
+async function _checkUserAccessAssociatedProject (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.getProjectById(currentUser, projectId)
+  }
+}
+
+/**
  * Get job by id
+ * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the job id
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the job
  */
-async function getJob (id, fromDb = false) {
+async function getJob (currentUser, id, fromDb = false) {
   if (!fromDb) {
     try {
       const job = await esClient.get({
         index: config.esConfig.ES_INDEX_JOB,
         id
       })
+
+      // check whether user can access the project associated with the job
+      await _checkUserAccessAssociatedProject(currentUser, job.body._source.projectId)
+
       const jobId = job.body._id
       const jobRecord = { id: jobId, ...job.body._source }
       const candidates = await _getJobCandidates(jobId)
@@ -98,16 +116,24 @@ async function getJob (id, fromDb = false) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "Job" not found`)
       }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
+      }
       logger.logFullError(err, { component: 'JobService', context: 'getJob' })
     }
   }
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
+
+  // check whether user can access the project associated with the job
+  await _checkUserAccessAssociatedProject(currentUser, job.projectId)
+
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
 }
 
 getJob.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   id: Joi.string().guid().required(),
   fromDb: Joi.boolean()
 }).required()
@@ -119,6 +145,14 @@ getJob.schema = Joi.object().keys({
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
+  // check if user can access the project
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    if (currentUser.isConnectManager) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    }
+    await helper.getProjectById(currentUser, job.projectId)
+  }
+
   await _validateSkills(job.skills)
   job.id = uuid()
   job.createdAt = new Date()
@@ -159,12 +193,15 @@ async function updateJob (currentUser, id, data) {
   }
   let job = await Job.findById(id)
   const ubhanUserId = await helper.getUserId(currentUser.userId)
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)
-    if (!connect) {
-      if (ubhanUserId !== job.createdBy) {
-        throw new errors.ForbiddenError('You are not allowed to perform this action!')
-      }
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    if (currentUser.isConnectManager) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    }
+    // Check whether user can update the job.
+    // Note that there is no need to check if user is member of the project associated with the job here
+    // because user who created the job must be the member of the project associated with the job
+    if (ubhanUserId !== job.createdBy) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
 
@@ -235,19 +272,16 @@ fullyUpdateJob.schema = Joi.object().keys({
 }).required()
 
 /**
- * Delete job by id. Normal user can only delete the job he/she created.
+ * Delete job by id.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
 async function deleteJob (currentUser, id) {
-  const job = await Job.findById(id)
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const ubhanUserId = await helper.getUserId(currentUser.userId)
-    if (ubhanUserId !== job.createdBy) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
+  const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
@@ -259,11 +293,21 @@ deleteJob.schema = Joi.object().keys({
 
 /**
  * List jobs
+ * @param {Object} currentUser the user who perform this operation.
  * @params {Object} criteria the search criteria
  * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobs (criteria, options = { returnAll: false }) {
+async function searchJobs (currentUser, criteria, options = { returnAll: false }) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    // regular user can only search with filtering by "projectId"
+    if (!criteria.projectId) {
+      throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
+    }
+    // check if user can access the project
+    await helper.getProjectById(currentUser, criteria.projectId)
+  }
+
   const page = criteria.page > 0 ? criteria.page : 1
   let perPage
   if (options.returnAll) {
@@ -424,6 +468,7 @@ async function searchJobs (criteria, options = { returnAll: false }) {
 }
 
 searchJobs.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),

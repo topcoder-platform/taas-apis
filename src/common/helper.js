@@ -176,26 +176,6 @@ function clearObject (obj) {
 }
 
 /**
- * Check whether connect member or not
- * @param {Number} projectId the project id
- * @param {String} jwtToken the jwt token
- * @param {Boolean}
- */
-async function isConnectMember (projectId, jwtToken) {
-  const url = `${config.PROJECT_API_URL}/v5/projects/${projectId}`
-  try {
-    await request
-      .get(url)
-      .set('Authorization', jwtToken)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-  } catch (err) {
-    return false
-  }
-  return true
-}
-
-/**
  * Get ES Client
  * @return {Object} Elastic Host Client Instance
  */
@@ -336,7 +316,7 @@ function isDocumentMissingException (err) {
  */
 async function getProjects (currentUser, criteria = {}) {
   let token
-  if (currentUser.isBookingManager || currentUser.isMachine) {
+  if (currentUser.hasManagePermission || currentUser.isMachine) {
     const m2mToken = await getM2Mtoken()
     token = `Bearer ${m2mToken}`
   } else {
@@ -467,7 +447,7 @@ async function getMembers (handles) {
  */
 async function getProjectById (currentUser, id) {
   let token
-  if (currentUser.isBookingManager || currentUser.isMachine) {
+  if (currentUser.hasManagePermission || currentUser.isMachine) {
     const m2mToken = await getM2Mtoken()
     token = `Bearer ${m2mToken}`
   } else {
@@ -484,7 +464,7 @@ async function getProjectById (currentUser, id) {
     return _.pick(res.body, ['id', 'name'])
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
-      throw new errors.UnauthorizedError(`You are not allowed to access the project with id ${id}`)
+      throw new errors.ForbiddenError(`You are not allowed to access the project with id ${id}`)
     }
     if (err.status === HttpStatus.NOT_FOUND) {
       throw new errors.NotFoundError(`id: ${id} project not found`)
@@ -594,7 +574,6 @@ module.exports = {
   autoWrapExpress,
   setResHeaders,
   clearObject,
-  isConnectMember,
   getESClient,
   getUserId: async (userId) => {
     // check m2m user id
