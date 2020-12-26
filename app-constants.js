@@ -3,8 +3,15 @@
  */
 
 const UserRoles = {
-  BookingManager: 'bookingmanager'
+  BookingManager: 'bookingmanager',
+  Administrator: 'administrator',
+  ConnectManager: 'Connect Manager'
 }
+
+const FullManagePermissionRoles = [
+  UserRoles.BookingManager,
+  UserRoles.Administrator
+]
 
 const Scopes = {
   // job
@@ -31,5 +38,6 @@ const Scopes = {
 
 module.exports = {
   UserRoles,
+  FullManagePermissionRoles,
   Scopes
 }

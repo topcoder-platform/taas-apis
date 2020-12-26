@@ -4366,6 +4366,45 @@
 						}
 					},
 					"response": []
+				},
+        {
+					"name": "GET /taas-teams/skills",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_member}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/skills?perPage=10&page=1&orderBy=name",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"skills"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "orderBy",
+									"value": "name",
+									"description": "possible values are defined by /v5/skills"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -7076,6 +7115,2581 @@
 								}
 							},
 							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Test Permission Rules",
+			"item": [
+				{
+					"name": "Request with Administrator Role",
+					"item": [
+						{
+							"name": "Jobs",
+							"item": [
+								{
+									"name": "✔ create job with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "30445900-0393-477d-900a-c3b5f43006ed",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_id_created_by_administrator\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search jobs with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "3",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "projectId",
+													"value": "21",
+													"disabled": true
+												},
+												{
+													"key": "externalId",
+													"value": "1212",
+													"disabled": true
+												},
+												{
+													"key": "description",
+													"value": "Dummy",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "resourceType",
+													"value": "Dummy Resource Type",
+													"disabled": true
+												},
+												{
+													"key": "skill",
+													"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "workload",
+													"value": "full-time",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put job with administrator",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch job with administrator",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ delete job with administrator",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Job Candidates",
+							"item": [
+								{
+									"name": "✔ create job candidate with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "802acbec-5c9d-4fa5-925f-76ebd2cc3476",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_candidate_id_created_by_administrator\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job candidate with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search job candidates with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "jobId",
+													"value": "46225f4c-c2a3-4603-a141-0277e96fabfa",
+													"disabled": true
+												},
+												{
+													"key": "userId",
+													"value": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "shortlist",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put job candidate with administrator",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"status\": \"selected\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch job candidate with administrator",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ delete job candidate with administrator",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Resource Bookings",
+							"item": [
+								{
+									"name": "✔ create resource booking with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "75f5abd2-9751-4d24-9252-e0cd70f6157b",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"resource_bookings_id_created_by_administrator\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get resource booking with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_bookings_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_bookings_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search resource bookings with administrator",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "projectIds",
+													"value": "111, 16705",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put resource booking with administrator",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_bookings_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_bookings_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch resource booking with administrator",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_bookings_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_bookings_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ delete resource booking with administrator",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_bookings_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_bookings_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Request with Topcoder User Role",
+					"item": [
+						{
+							"name": "Before Test",
+							"item": [
+								{
+									"name": "[STUB] refresh the jwt token for user tester1234",
+									"request": {
+										"method": "LOCK",
+										"header": [],
+										"url": {
+											"raw": ""
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Jobs",
+							"item": [
+								{
+									"name": "✔ create job with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "368f7f55-b18f-4f62-ad6c-a162fdbed90d",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_id_created_by_member\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member_tester1234}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job with member",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search jobs with member filtering by \"projectId\"",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs?projectId={{project_id_16718}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "3",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "projectId",
+													"value": "{{project_id_16718}}"
+												},
+												{
+													"key": "externalId",
+													"value": "1212",
+													"disabled": true
+												},
+												{
+													"key": "description",
+													"value": "Dummy",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "resourceType",
+													"value": "Dummy Resource Type",
+													"disabled": true
+												},
+												{
+													"key": "skill",
+													"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "workload",
+													"value": "full-time",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put job with member",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch job with member",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete job with member",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_by_member}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Job Candidates",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job candidate",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "6f84340d-c8dd-49f9-bee9-660b3e555296",
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_candidate_id_created_for_member\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobCandidates",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobCandidates"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "✘ create job candidate with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "f25317af-4933-4c93-b02b-cae7feddac50",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_candidate_id_created_for_member\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job candidate with member",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search job candidates with member filtering  by \"jobId\"",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates?jobId={{job_id_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "jobId",
+													"value": "{{job_id_created_by_member}}"
+												},
+												{
+													"key": "userId",
+													"value": "fe38eed1-af73-41fd-85a2-ac4da1ff09a3",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "shortlist",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put job candidate with member",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch job candidate with member",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete job candidate with member",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Resource Bookings",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create resource booking",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "dbf53485-021e-49d5-b877-4b8d970a0331",
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"resource_booking_id_created_for_member\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/resourceBookings",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"resourceBookings"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "✘ create resource booking with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "9754578e-91dd-437d-b5a2-cdb5668e14e4",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"resource_booking_id_created_for_member\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get resource booking with member",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search resource bookings with member filtering  by \"projectId\"",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings?projectId={{project_id_16718}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "projectIds",
+													"value": "111, 16705",
+													"disabled": true
+												},
+												{
+													"key": "projectId",
+													"value": "{{project_id_16718}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put resource booking with member",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch resource booking with member",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete resource booking with member",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Request with Connect Manager Role",
+					"item": [
+						{
+							"name": "Before Test",
+							"item": [
+								{
+									"name": "[STUB] refresh the jwt token for connect manager",
+									"request": {
+										"method": "LOCK",
+										"header": [],
+										"url": {
+											"raw": ""
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Jobs",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "faaf5dc1-9869-4615-992c-3cace41f65e8",
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_for_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "✘ create job with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ab2fa9b2-71fc-4cda-b72d-60cf2d99525d",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_id_created_for_connect_manager\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connectUser}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search jobs with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobs",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "3",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "projectId",
+													"value": "21",
+													"disabled": true
+												},
+												{
+													"key": "externalId",
+													"value": "1212",
+													"disabled": true
+												},
+												{
+													"key": "description",
+													"value": "Dummy",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "resourceType",
+													"value": "Dummy Resource Type",
+													"disabled": true
+												},
+												{
+													"key": "skill",
+													"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "workload",
+													"value": "full-time",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put job with connect manager",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch job with connect manager",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete job with connect manager",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobs",
+												"{{job_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Job Candidates",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job candidate",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "5ce6dd7a-39aa-4910-aba1-37f02559d293",
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_candidate_id_created_for_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobCandidates",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobCandidates"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "✘ create job candidate with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "74e63fe5-8d71-4791-a722-5d7347e28f83",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"job_candidate_id_created_for_connect_manager\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get job candidate with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search job candidates with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "asc",
+													"disabled": true
+												},
+												{
+													"key": "jobId",
+													"value": "46225f4c-c2a3-4603-a141-0277e96fabfa",
+													"disabled": true
+												},
+												{
+													"key": "userId",
+													"value": "fe38eed1-af73-41fd-85a2-ac4da1ff09a3",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "shortlist",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put job candidate with connect manager",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch job candidate with connect manager",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete job candidate with connect manager",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Resource Bookings",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create resource booking",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "513617f1-b4ba-4041-9aaf-fd99f883939b",
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"resource_booking_id_created_for_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/resourceBookings",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"resourceBookings"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"protocolProfileBehavior": {},
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "✘ create resource booking with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "be4bde84-1e50-4bb4-a99c-4d03ce055023",
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"resource_booking_id_created_for_connect_manager\",data.id);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get resource booking with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search resource bookings with connect manager",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/resourceBookings",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "id",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "startDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "endDate",
+													"value": "2020-09-27T04:17:23.131Z",
+													"disabled": true
+												},
+												{
+													"key": "rateType",
+													"value": "hourly",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "sourcing",
+													"disabled": true
+												},
+												{
+													"key": "projectIds",
+													"value": "111, 16705",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put resource booking with connect manager",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch resource booking with connect manager",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete resource booking with connect manager",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/resourceBookings/{{resource_booking_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"resourceBookings",
+												"{{resource_booking_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
 						}
 					],
 					"protocolProfileBehavior": {},
