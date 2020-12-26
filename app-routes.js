@@ -43,7 +43,8 @@ module.exports = (app) => {
             if (!req.authUser.scopes || !helper.checkIfExists(def.scopes, req.authUser.scopes)) {
               next(new errors.ForbiddenError('You are not allowed to perform this action!'))
             } else {
-              req.authUser = helper.authUserAsM2M()
+              req.authUser.userId = config.m2m.M2M_AUDIT_USER_ID
+              req.authUser.handle = config.m2m.M2M_AUDIT_HANDLE
               next()
             }
           } else {

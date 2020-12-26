@@ -47,7 +47,7 @@ async function cancelJob (payload) {
   })
   await Promise.all([
     ...candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
-      helper.authUserAsM2M(),
+      helper.getAuditM2Muser(),
       candidate.id,
       { status: 'cancelled' }
     ).then(result => {
@@ -58,7 +58,7 @@ async function cancelJob (payload) {
       })
     })),
     ...resourceBookings.map(resource => ResourceBookingService.partiallyUpdateResourceBooking(
-      helper.authUserAsM2M(),
+      helper.getAuditM2Muser(),
       resource.id,
       { status: 'cancelled' }
     ).then(result => {

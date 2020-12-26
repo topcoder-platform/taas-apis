@@ -596,7 +596,7 @@ async function ensureUserById (userId) {
  *
  * @returns {Object} the M2M auth user
  */
-function authUserAsM2M () {
+function getAuditM2Muser () {
   return { isMachine: true, userId: config.m2m.M2M_AUDIT_USER_ID, handle: config.m2m.M2M_AUDIT_HANDLE }
 }
 
@@ -627,5 +627,5 @@ module.exports = {
   getUserSkill,
   ensureJobById,
   ensureUserById,
-  authUserAsM2M
+  getAuditM2Muser
 }

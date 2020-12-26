@@ -30,7 +30,7 @@ async function selectJobCandidate (jobId, userId) {
     }
   })
   await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
-    helper.authUserAsM2M(),
+    helper.getAuditM2Muser(),
     candidate.id,
     { status: 'selected' }
   ).then(result => {
@@ -69,7 +69,7 @@ async function assignJob (job) {
     message: `the number of assigned resource bookings is ${resourceBookings.length} - the numPositions of the job is ${job.numPositions}`
   })
   if (job.numPositions === resourceBookings.length) {
-    await JobService.partiallyUpdateJob(helper.authUserAsM2M(), job.id, { status: 'assigned' })
+    await JobService.partiallyUpdateJob(helper.getAuditM2Muser(), job.id, { status: 'assigned' })
     logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job with projectId ${job.projectId} is assigned` })
   }
 }
