@@ -11,7 +11,7 @@ const helper = require('../common/helper')
  * @param res the response
  */
 async function getJobCandidate (req, res) {
-  res.send(await service.getJobCandidate(req.authUser, req.params.id, req.query.fromDb))
+  res.send(await service.getJobCandidate(req.params.id, req.query.fromDb))
 }
 
 /**
@@ -57,7 +57,7 @@ async function deleteJobCandidate (req, res) {
  * @param res the response
  */
 async function searchJobCandidates (req, res) {
-  const result = await service.searchJobCandidates(req.authUser, req.query)
+  const result = await service.searchJobCandidates(req.query)
   helper.setResHeaders(req, res, result)
   res.send(result.result)
 }

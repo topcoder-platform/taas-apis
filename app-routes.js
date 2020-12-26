@@ -49,12 +49,8 @@ module.exports = (app) => {
             }
           } else {
             req.authUser.jwtToken = req.headers.authorization
-            // check if user has full manage permission
-            if (_.intersection(req.authUser.roles, constants.FullManagePermissionRoles).length) {
-              req.authUser.hasManagePermission = true
-            }
-            if (_.includes(req.authUser.roles, constants.UserRoles.ConnectManager)) {
-              req.authUser.isConnectManager = true
+            if (_.includes(req.authUser.roles, constants.UserRoles.BookingManager)) {
+              req.authUser.isBookingManager = true
             }
             next()
           }

@@ -13,24 +13,22 @@ const ResourceBookingService = require('./ResourceBookingService')
 
 /**
  * Function to get assigned resource bookings with specific projectIds
- * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getAssignedResourceBookingsByProjectIds (currentUser, projectIds) {
+async function _getAssignedResourceBookingsByProjectIds (projectIds) {
   const criteria = { status: 'assigned', projectIds }
-  const { result } = await ResourceBookingService.searchResourceBookings(currentUser, criteria, { returnAll: true })
+  const { result } = await ResourceBookingService.searchResourceBookings(criteria, { returnAll: true })
   return result
 }
 
 /**
  * Function to get jobs by projectIds
- * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getJobsByProjectIds (currentUser, projectIds) {
-  const { result } = await JobService.searchJobs(currentUser, { projectIds }, { returnAll: true })
+async function _getJobsByProjectIds (projectIds) {
+  const { result } = await JobService.searchJobs({ projectIds }, { returnAll: true })
   return result
 }
 
@@ -56,7 +54,7 @@ async function searchTeams (currentUser, criteria) {
     total,
     page,
     perPage,
-    result: await getTeamDetail(currentUser, projects)
+    result: await getTeamDetail(projects)
   }
 }
 
@@ -77,17 +75,16 @@ searchTeams.schema = Joi.object().keys({
 
 /**
  * Get team details
- * @param {Object} currentUser the user who perform this operation
  * @param {Object} projects the projects
  * @param {Object} isSearch the flag whether for search function
  * @returns {Object} the search result
  */
-async function getTeamDetail (currentUser, projects, isSearch = true) {
+async function getTeamDetail (projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get all assigned resourceBookings filtered by projectIds
-  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(currentUser, projectIds)
+  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(projectIds)
   // Get all jobs filtered by projectIds
-  const jobs = await _getJobsByProjectIds(currentUser, projectIds)
+  const jobs = await _getJobsByProjectIds(projectIds)
 
   // Get first week day and last week day
   const curr = new Date()
@@ -200,7 +197,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
  */
 async function getTeam (currentUser, id) {
   const project = await helper.getProjectById(currentUser, id)
-  const result = await getTeamDetail(currentUser, [project], false)
+  const result = await getTeamDetail([project], false)
   const teamDetail = result[0]
 
   // add job skills for result
@@ -249,7 +246,7 @@ getTeam.schema = Joi.object().keys({
  */
 async function getTeamJob (currentUser, id, jobId) {
   const project = await helper.getProjectById(currentUser, id)
-  const jobs = await _getJobsByProjectIds(currentUser, [project.id])
+  const jobs = await _getJobsByProjectIds([project.id])
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {

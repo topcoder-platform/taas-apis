@@ -33,6 +33,15 @@ module.exports = (sequelize) => {
       }
       return jobCandidate
     }
+
+    static async getProjectId (jobId) {
+      try {
+        const job = await JobCandidate._models.Job.findById(jobId)
+        return job.dataValues.projectId
+      } catch (error) {
+        return null
+      }
+    }
   }
   JobCandidate.init(
     {
