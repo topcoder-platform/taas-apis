@@ -14,22 +14,15 @@ const JobCandidateService = require('../services/JobCandidateService')
  * the corresponding JobCandidate record (with the same userId and jobId)
  * should be updated with status `selected`
  *
- * @param {Object} payload the event payload
+ * @param {String} jobId the job id
+ * @param {String} userId the user id
  * @returns {undefined}
  */
-async function selectJobCandidate (payload) {
-  if (payload.status !== 'assigned') {
-    logger.info({
-      component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
-      message: `not interested resource booking - status: ${payload.status}`
-    })
-    return
-  }
+async function selectJobCandidate (jobId, userId) {
   const candidates = await models.JobCandidate.findAll({
     where: {
-      jobId: payload.jobId,
-      userId: payload.userId,
+      jobId,
+      userId,
       status: {
         [Op.not]: 'selected'
       },
@@ -52,29 +45,15 @@ async function selectJobCandidate (payload) {
 /**
  * Update the status of the Job to assigned when it positions requirement is fullfilled.
  *
- * @param {Object} payload the event payload
+ * @param {Object} job the job data
  * @returns {undefined}
  */
-async function assignJob (payload) {
-  if (payload.status !== 'assigned') {
-    logger.info({
-      component: 'ResourceBookingEventHandler',
-      context: 'assignJob',
-      message: `not interested resource booking - status: ${payload.status}`
-    })
-    return
-  }
-  const job = await models.Job.findOne({
-    where: {
-      projectId: payload.projectId,
-      deletedAt: null
-    }
-  })
+async function assignJob (job) {
   if (job.status === 'assigned') {
     logger.info({
       component: 'ResourceBookingEventHandler',
       context: 'assignJob',
-      message: `job with projectId ${payload.projectId} is already assigned`
+      message: `job with projectId ${job.projectId} is already assigned`
     })
     return
   }
@@ -91,7 +70,7 @@ async function assignJob (payload) {
   })
   if (job.numPositions === resourceBookings.length) {
     await JobService.partiallyUpdateJob(helper.authUserAsM2M(), job.id, { status: 'assigned' })
-    logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job with projectId ${payload.projectId} is assigned` })
+    logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job with projectId ${job.projectId} is assigned` })
   }
 }
 
@@ -102,8 +81,23 @@ async function assignJob (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  await selectJobCandidate(payload)
-  await assignJob(payload)
+  if (payload.status !== 'assigned') {
+    logger.info({
+      component: 'ResourceBookingEventHandler',
+      context: 'selectJobCandidate',
+      message: `not interested resource booking - status: ${payload.status}`
+    })
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.id)
+  const job = await models.Job.findOne({
+    where: {
+      projectId: resourceBooking.projectId,
+      deletedAt: null
+    }
+  })
+  await selectJobCandidate(job.id, resourceBooking.userId)
+  await assignJob(job)
 }
 
 module.exports = {

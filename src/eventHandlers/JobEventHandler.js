@@ -24,9 +24,12 @@ async function cancelJob (payload) {
     })
     return
   }
+  // pull data from db instead of directly extract data from the payload
+  // since the payload may not contain all fields when it is from partically update operation.
+  const job = await models.Job.findById(payload.id)
   const candidates = await models.JobCandidate.findAll({
     where: {
-      jobId: payload.id,
+      jobId: job.id,
       status: {
         [Op.not]: 'cancelled'
       },
@@ -35,7 +38,7 @@ async function cancelJob (payload) {
   })
   const resourceBookings = await models.ResourceBooking.findAll({
     where: {
-      projectId: payload.projectId,
+      projectId: job.projectId,
       status: {
         [Op.not]: 'cancelled'
       },
