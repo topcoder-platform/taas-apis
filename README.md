@@ -36,6 +36,7 @@ The following parameters can be set in config files or in env variables:
 - `PROJECT_API_URL`: the project service url
 - `TC_API`: the Topcoder v5 url
 - `ORG_ID`: the organization id
+- `TOPCODER_SKILL_PROVIDER_ID`: the referenced skill provider id
 
 - `esConfig.HOST`: the elasticsearch host
 - `esConfig.ES_INDEX_JOB`: the job index

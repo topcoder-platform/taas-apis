@@ -13,22 +13,24 @@ const ResourceBookingService = require('./ResourceBookingService')
 
 /**
  * Function to get assigned resource bookings with specific projectIds
+ * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getAssignedResourceBookingsByProjectIds (projectIds) {
+async function _getAssignedResourceBookingsByProjectIds (currentUser, projectIds) {
   const criteria = { status: 'assigned', projectIds }
-  const { result } = await ResourceBookingService.searchResourceBookings(criteria, { returnAll: true })
+  const { result } = await ResourceBookingService.searchResourceBookings(currentUser, criteria, { returnAll: true })
   return result
 }
 
 /**
  * Function to get jobs by projectIds
+ * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getJobsByProjectIds (projectIds) {
-  const { result } = await JobService.searchJobs({ projectIds }, { returnAll: true })
+async function _getJobsByProjectIds (currentUser, projectIds) {
+  const { result } = await JobService.searchJobs(currentUser, { projectIds }, { returnAll: true })
   return result
 }
 
@@ -54,7 +56,7 @@ async function searchTeams (currentUser, criteria) {
     total,
     page,
     perPage,
-    result: await getTeamDetail(projects)
+    result: await getTeamDetail(currentUser, projects)
   }
 }
 
@@ -75,16 +77,17 @@ searchTeams.schema = Joi.object().keys({
 
 /**
  * Get team details
+ * @param {Object} currentUser the user who perform this operation
  * @param {Object} projects the projects
  * @param {Object} isSearch the flag whether for search function
  * @returns {Object} the search result
  */
-async function getTeamDetail (projects, isSearch = true) {
+async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get all assigned resourceBookings filtered by projectIds
-  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(projectIds)
+  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(currentUser, projectIds)
   // Get all jobs filtered by projectIds
-  const jobs = await _getJobsByProjectIds(projectIds)
+  const jobs = await _getJobsByProjectIds(currentUser, projectIds)
 
   // Get first week day and last week day
   const curr = new Date()
@@ -197,7 +200,7 @@ async function getTeamDetail (projects, isSearch = true) {
  */
 async function getTeam (currentUser, id) {
   const project = await helper.getProjectById(currentUser, id)
-  const result = await getTeamDetail([project], false)
+  const result = await getTeamDetail(currentUser, [project], false)
   const teamDetail = result[0]
 
   // add job skills for result
@@ -209,22 +212,6 @@ async function getTeam (currentUser, id) {
         _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(skillId)) })
         jobSkills = await Promise.all(usersPromises)
         job.skills = jobSkills
-      }
-    }
-  }
-
-  // add resources skills for result
-  if (teamDetail && teamDetail.resources) {
-    for (const user of teamDetail.resources) {
-      user.skillMatched = 0
-      if (user.skills && user.skills.length > 0) {
-        for (const jobSkill of jobSkills) {
-          if (_.find(user.skills, userSkill => {
-            return userSkill.id === jobSkill.id
-          })) {
-            user.skillMatched += 1
-          }
-        }
       }
     }
   }
@@ -246,7 +233,7 @@ getTeam.schema = Joi.object().keys({
  */
 async function getTeamJob (currentUser, id, jobId) {
   const project = await helper.getProjectById(currentUser, id)
-  const jobs = await _getJobsByProjectIds([project.id])
+  const jobs = await _getJobsByProjectIds(currentUser, [project.id])
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {
@@ -262,8 +249,6 @@ async function getTeamJob (currentUser, id, jobId) {
       _.map(job.skills, (skillId) => helper.getSkillById(skillId))
     )
   }
-
-  const jobSkills = job.skills
 
   if (job && job.candidates && job.candidates.length > 0) {
     const usersPromises = []
@@ -289,17 +274,6 @@ async function getTeamJob (currentUser, id, jobId) {
         const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
         if (findMember && findMember.photoURL) {
           item.photo_url = findMember.photoURL
-        }
-
-        item.skillMatched = 0
-        if (item.skills && item.skills.length > 0) {
-          for (const jobSkillId of jobSkills) {
-            if (_.find(item.skills, userSkill => {
-              return userSkill.id === jobSkillId
-            })) {
-              item.skillMatched += 1
-            }
-          }
         }
       }
     }
