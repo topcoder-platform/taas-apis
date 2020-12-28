@@ -2112,9 +2112,6 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/Skill'
-              skillMatched:
-                type: integer
-                description: The percentage of skill matched for that particular job he/she is assinged
               jobId:
                 type: string
                 format: uuid
@@ -2262,9 +2259,6 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Skill'
-              skillMatched:
-                type: integer
-                description: The percentage of skill matched for that particular job he/she is assinged
     Error:
       required:
         - message

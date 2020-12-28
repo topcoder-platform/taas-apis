@@ -216,22 +216,6 @@ async function getTeam (currentUser, id) {
     }
   }
 
-  // add resources skills for result
-  if (teamDetail && teamDetail.resources) {
-    for (const user of teamDetail.resources) {
-      user.skillMatched = 0
-      if (user.skills && user.skills.length > 0) {
-        for (const jobSkill of jobSkills) {
-          if (_.find(user.skills, userSkill => {
-            return userSkill.id === jobSkill.id
-          })) {
-            user.skillMatched += 1
-          }
-        }
-      }
-    }
-  }
-
   return teamDetail
 }
 
@@ -266,8 +250,6 @@ async function getTeamJob (currentUser, id, jobId) {
     )
   }
 
-  const jobSkills = job.skills
-
   if (job && job.candidates && job.candidates.length > 0) {
     const usersPromises = []
     _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(candidate.userId, true)) })
@@ -292,17 +274,6 @@ async function getTeamJob (currentUser, id, jobId) {
         const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
         if (findMember && findMember.photoURL) {
           item.photo_url = findMember.photoURL
-        }
-
-        item.skillMatched = 0
-        if (item.skills && item.skills.length > 0) {
-          for (const jobSkillId of jobSkills) {
-            if (_.find(item.skills, userSkill => {
-              return userSkill.id === jobSkillId
-            })) {
-              item.skillMatched += 1
-            }
-          }
         }
       }
     }
