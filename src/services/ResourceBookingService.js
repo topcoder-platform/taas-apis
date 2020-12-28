@@ -121,10 +121,10 @@ createResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
-    memberRate: Joi.number().required(),
-    customerRate: Joi.number().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
+    memberRate: Joi.number(),
+    customerRate: Joi.number(),
     rateType: Joi.rateType().required()
   }).required()
 }).required()
@@ -225,10 +225,10 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
-    memberRate: Joi.number().required(),
-    customerRate: Joi.number().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
+    memberRate: Joi.number(),
+    customerRate: Joi.number(),
     rateType: Joi.rateType().required(),
     status: Joi.jobStatus().required()
   }).required()

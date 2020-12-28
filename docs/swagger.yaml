@@ -1861,10 +1861,6 @@ components:
         - projectId
         - userId
         - status
-        - startDate
-        - endDate
-        - memberRate
-        - customerRate
         - rateType
         - createdAt
         - createdBy
@@ -1935,10 +1931,6 @@ components:
         - projectId
         - userId
         - status
-        - startDate
-        - endDate
-        - memberRate
-        - customerRate
         - rateType
       properties:
         projectId:
