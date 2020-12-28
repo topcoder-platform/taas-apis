@@ -12,6 +12,7 @@ const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
 const logger = require('./logger')
 const models = require('../models')
+const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
 const localLogger = {
@@ -313,6 +314,7 @@ async function postEvent (topic, payload) {
     payload
   }
   await client.postEvent(message)
+  await eventDispatcher.handleEvent(topic, payload)
 }
 
 /**
@@ -589,6 +591,15 @@ async function ensureUserById (userId) {
   }
 }
 
+/**
+ * Generate M2M auth user.
+ *
+ * @returns {Object} the M2M auth user
+ */
+function getAuditM2Muser () {
+  return { isMachine: true, userId: config.m2m.M2M_AUDIT_USER_ID, handle: config.m2m.M2M_AUDIT_HANDLE }
+}
+
 module.exports = {
   checkIfExists,
   autoWrapExpress,
@@ -615,5 +626,6 @@ module.exports = {
   getSkillById,
   getUserSkill,
   ensureJobById,
-  ensureUserById
+  ensureUserById,
+  getAuditM2Muser
 }
