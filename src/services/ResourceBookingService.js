@@ -265,7 +265,7 @@ deleteResourceBooking.schema = Joi.object().keys({
 async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
     // regular user can only search with filtering by "projectId"
-    if (!criteria.projectId) {
+    if (!options.returnAll && !criteria.projectId) {
       throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
     }
     // check if user can access the project
