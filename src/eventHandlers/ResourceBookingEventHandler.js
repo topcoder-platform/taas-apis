@@ -84,20 +84,22 @@ async function processUpdate (payload) {
   if (payload.status !== 'assigned') {
     logger.info({
       component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
+      context: 'processUpdate',
       message: `not interested resource booking - status: ${payload.status}`
     })
     return
   }
   const resourceBooking = await models.ResourceBooking.findById(payload.id)
-  const job = await models.Job.findOne({
+  const jobs = await models.Job.findAll({
     where: {
       projectId: resourceBooking.projectId,
       deletedAt: null
     }
   })
-  await selectJobCandidate(job.id, resourceBooking.userId)
-  await assignJob(job)
+  for (const job of jobs) {
+    await selectJobCandidate(job.id, resourceBooking.userId)
+    await assignJob(job)
+  }
 }
 
 module.exports = {
