@@ -38,7 +38,7 @@ async function _getResourceBookingFilteringFields (currentUser, resourceBooking)
  * @returns {undefined}
  */
 async function _checkUserAccessAssociatedProject (currentUser, projectId) {
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await helper.getProjectById(currentUser, projectId)
   }
 }

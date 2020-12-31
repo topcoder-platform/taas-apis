@@ -82,7 +82,7 @@ async function _validateSkills (skills) {
  * @returns {undefined}
  */
 async function _checkUserAccessAssociatedProject (currentUser, projectId) {
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await helper.getProjectById(currentUser, projectId)
   }
 }
@@ -145,13 +145,8 @@ getJob.schema = Joi.object().keys({
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
-  // check if user can access the project
-  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    if (currentUser.isConnectManager) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-    await helper.getProjectById(currentUser, job.projectId)
-  }
+  // check whether user can access the project associated with the job
+  await _checkUserAccessAssociatedProject(currentUser, job.projectId)
 
   await _validateSkills(job.skills)
   job.id = uuid()
@@ -194,9 +189,6 @@ async function updateJob (currentUser, id, data) {
   let job = await Job.findById(id)
   const ubhanUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    if (currentUser.isConnectManager) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
     // Check whether user can update the job.
     // Note that there is no need to check if user is member of the project associated with the job here
     // because user who created the job must be the member of the project associated with the job

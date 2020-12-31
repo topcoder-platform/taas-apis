@@ -25,7 +25,7 @@ const esClient = helper.getESClient()
  * @returns {undefined}
  */
 async function _checkUserAccessAssociatedJob (currentUser, jobId) {
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await JobService.getJob(currentUser, jobId)
   }
 }
@@ -118,17 +118,9 @@ async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
 
   const userId = await helper.getUserId(currentUser.userId)
-  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    if (currentUser.isConnectManager) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-    // check whether user can access the job associated with the jobCandidate
-    await JobService.getJob(currentUser, jobCandidate.dataValues.jobId)
-    // check whether user are allowed to update the candidate
-    if (jobCandidate.dataValues.userId !== userId) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
+  // check whether user can access the job associated with the jobCandidate
+  await _checkUserAccessAssociatedJob(currentUser, jobCandidate.dataValues.jobId)
+
   data.updatedAt = new Date()
   data.updatedBy = userId
 

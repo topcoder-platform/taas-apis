@@ -8237,7 +8237,7 @@
 												"id": "f25317af-4933-4c93-b02b-cae7feddac50",
 												"exec": [
 													"var data = JSON.parse(responseBody);\r",
-													"postman.setEnvironmentVariable(\"job_candidate_id_created_for_member\",data.id);"
+													"postman.setEnvironmentVariable(\"job_candidate_id_created_by_member\",data.id);"
 												],
 												"type": "text/javascript"
 											}
@@ -8523,7 +8523,7 @@
 												"id": "9754578e-91dd-437d-b5a2-cdb5668e14e4",
 												"exec": [
 													"var data = JSON.parse(responseBody);\r",
-													"postman.setEnvironmentVariable(\"resource_booking_id_created_for_member\",data.id);"
+													"postman.setEnvironmentVariable(\"resource_booking_id_created_by_member\",data.id);"
 												],
 												"type": "text/javascript"
 											}
@@ -8789,67 +8789,15 @@
 							"name": "Jobs",
 							"item": [
 								{
-									"name": "Before Test",
-									"item": [
-										{
-											"name": "create job",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"id": "faaf5dc1-9869-4615-992c-3cace41f65e8",
-														"exec": [
-															"var data = JSON.parse(responseBody);\r",
-															"postman.setEnvironmentVariable(\"job_id_created_for_connect_manager\",data.id);"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "POST",
-												"header": [
-													{
-														"key": "Authorization",
-														"value": "Bearer {{token_administrator}}",
-														"type": "text"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{URL}}/jobs",
-													"host": [
-														"{{URL}}"
-													],
-													"path": [
-														"jobs"
-													]
-												}
-											},
-											"response": []
-										}
-									],
-									"protocolProfileBehavior": {},
-									"_postman_isSubFolder": true
-								},
-								{
-									"name": "✘ create job with connect manager",
+									"name": "✔ create job with connect manager",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
-												"id": "ab2fa9b2-71fc-4cda-b72d-60cf2d99525d",
+												"id": "0a6a3140-f1fb-434f-8dbf-37ed64b7573d",
 												"exec": [
 													"var data = JSON.parse(responseBody);\r",
-													"postman.setEnvironmentVariable(\"job_id_created_for_connect_manager\",data.id);"
+													"postman.setEnvironmentVariable(\"job_id_created_by_connect_manager\",data.id);"
 												],
 												"type": "text/javascript"
 											}
@@ -8897,13 +8845,13 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"raw": "{{URL}}/jobs/{{job_id_created_by_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
 												"jobs",
-												"{{job_id_created_for_connect_manager}}"
+												"{{job_id_created_by_connect_manager}}"
 											]
 										}
 									},
@@ -9005,7 +8953,7 @@
 									"response": []
 								},
 								{
-									"name": "✘ put job with connect manager",
+									"name": "✔ put job with connect manager",
 									"request": {
 										"method": "PUT",
 										"header": [
@@ -9025,20 +8973,20 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"raw": "{{URL}}/jobs/{{job_id_created_by_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
 												"jobs",
-												"{{job_id_created_for_connect_manager}}"
+												"{{job_id_created_by_connect_manager}}"
 											]
 										}
 									},
 									"response": []
 								},
 								{
-									"name": "✘ patch job with connect manager",
+									"name": "✔ patch job with connect manager",
 									"request": {
 										"method": "PATCH",
 										"header": [
@@ -9058,13 +9006,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"raw": "{{URL}}/jobs/{{job_id_created_by_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
 												"jobs",
-												"{{job_id_created_for_connect_manager}}"
+												"{{job_id_created_by_connect_manager}}"
 											]
 										}
 									},
@@ -9091,13 +9039,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/jobs/{{job_id_created_for_connect_manager}}",
+											"raw": "{{URL}}/jobs/{{job_id_created_by_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
 												"jobs",
-												"{{job_id_created_for_connect_manager}}"
+												"{{job_id_created_by_connect_manager}}"
 											]
 										}
 									},
@@ -9119,7 +9067,7 @@
 												{
 													"listen": "test",
 													"script": {
-														"id": "5ce6dd7a-39aa-4910-aba1-37f02559d293",
+														"id": "8bb2aa84-0052-42f1-b4c6-2cac7a87e54b",
 														"exec": [
 															"var data = JSON.parse(responseBody);\r",
 															"postman.setEnvironmentVariable(\"job_candidate_id_created_for_connect_manager\",data.id);"
@@ -9139,7 +9087,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -9168,10 +9116,10 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "74e63fe5-8d71-4791-a722-5d7347e28f83",
+												"id": "62dadb99-c6cb-418f-9a17-347d3d92edb0",
 												"exec": [
 													"var data = JSON.parse(responseBody);\r",
-													"postman.setEnvironmentVariable(\"job_candidate_id_created_for_connect_manager\",data.id);"
+													"postman.setEnvironmentVariable(\"job_candidate_id_created_by_connect_manager\",data.id);"
 												],
 												"type": "text/javascript"
 											}
@@ -9292,7 +9240,7 @@
 									"response": []
 								},
 								{
-									"name": "✘ put job candidate with connect manager",
+									"name": "✔ put job candidate with connect manager",
 									"request": {
 										"method": "PUT",
 										"header": [
@@ -9325,7 +9273,7 @@
 									"response": []
 								},
 								{
-									"name": "✘ patch job candidate with connect manager",
+									"name": "✔ patch job candidate with connect manager",
 									"request": {
 										"method": "PATCH",
 										"header": [
@@ -9406,7 +9354,7 @@
 												{
 													"listen": "test",
 													"script": {
-														"id": "513617f1-b4ba-4041-9aaf-fd99f883939b",
+														"id": "65b3ece2-3411-4ff7-9432-3ba49e9143bd",
 														"exec": [
 															"var data = JSON.parse(responseBody);\r",
 															"postman.setEnvironmentVariable(\"resource_booking_id_created_for_connect_manager\",data.id);"
@@ -9426,7 +9374,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -9455,10 +9403,10 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "be4bde84-1e50-4bb4-a99c-4d03ce055023",
+												"id": "bc33d0bb-8e0b-46e5-ac74-f1016881c156",
 												"exec": [
 													"var data = JSON.parse(responseBody);\r",
-													"postman.setEnvironmentVariable(\"resource_booking_id_created_for_connect_manager\",data.id);"
+													"postman.setEnvironmentVariable(\"resource_booking_id_created_by_connect_manager\",data.id);"
 												],
 												"type": "text/javascript"
 											}
