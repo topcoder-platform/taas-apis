@@ -192,6 +192,7 @@ async function updateJob (currentUser, id, data) {
     await _validateSkills(data.skills)
   }
   let job = await Job.findById(id)
+  const oldValue = job.toJSON()
   const ubhanUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     if (currentUser.isConnectManager) {
@@ -209,7 +210,7 @@ async function updateJob (currentUser, id, data) {
   data.updatedBy = ubhanUserId
 
   await job.update(data)
-  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data })
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)

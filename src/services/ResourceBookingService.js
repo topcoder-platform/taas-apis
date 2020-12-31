@@ -142,14 +142,13 @@ async function updateResourceBooking (currentUser, id, data) {
   }
 
   const resourceBooking = await ResourceBooking.findById(id)
-  const isDiffStatus = resourceBooking.status !== data.status
+  const oldValue = resourceBooking.toJSON()
 
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
   await resourceBooking.update(data)
-  const eventPayload = { id, ...(isDiffStatus ? data : _.omit(data, ['status'])) } // send data with status only if status is changed
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, eventPayload)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }

@@ -282,8 +282,9 @@ async function getUserId (userId) {
  * Send Kafka event message
  * @params {String} topic the topic name
  * @params {Object} payload the payload
+ * @params {Object} options the extra options to control the function
  */
-async function postEvent (topic, payload) {
+async function postEvent (topic, payload, options = {}) {
   logger.debug({ component: 'helper', context: 'postEvent', message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(payload)}` })
   const client = getBusApiClient()
   const message = {
@@ -294,7 +295,7 @@ async function postEvent (topic, payload) {
     payload
   }
   await client.postEvent(message)
-  await eventDispatcher.handleEvent(topic, payload)
+  await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
 
 /**

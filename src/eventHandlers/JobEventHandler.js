@@ -16,17 +16,25 @@ const ResourceBookingService = require('../services/ResourceBookingService')
  * @returns {undefined}
  */
 async function cancelJob (payload) {
-  if (payload.status !== 'cancelled') {
+  if (payload.value.status === payload.options.oldValue.status) {
+    logger.debug({
+      component: 'JobEventHandler',
+      context: 'cancelJob',
+      message: 'status not changed'
+    })
+    return
+  }
+  if (payload.value.status !== 'cancelled') {
     logger.info({
       component: 'JobEventHandler',
       context: 'cancelJob',
-      message: `not interested job - status: ${payload.status}`
+      message: `not interested job - status: ${payload.value.status}`
     })
     return
   }
   // pull data from db instead of directly extract data from the payload
   // since the payload may not contain all fields when it is from partically update operation.
-  const job = await models.Job.findById(payload.id)
+  const job = await models.Job.findById(payload.value.id)
   const candidates = await models.JobCandidate.findAll({
     where: {
       jobId: job.id,

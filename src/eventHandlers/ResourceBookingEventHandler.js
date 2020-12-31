@@ -81,15 +81,23 @@ async function assignJob (job) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  if (payload.status !== 'assigned') {
-    logger.info({
+  if (payload.value.status === payload.options.oldValue.status) {
+    logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'processUpdate',
-      message: `not interested resource booking - status: ${payload.status}`
+      message: 'status not changed'
     })
     return
   }
-  const resourceBooking = await models.ResourceBooking.findById(payload.id)
+  if (payload.value.status !== 'assigned') {
+    logger.info({
+      component: 'ResourceBookingEventHandler',
+      context: 'processUpdate',
+      message: `not interested resource booking - status: ${payload.value.status}`
+    })
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
   const jobs = await models.Job.findAll({
     where: {
       projectId: resourceBooking.projectId,
