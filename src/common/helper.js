@@ -603,6 +603,29 @@ async function ensureUserById (userId) {
   }
 }
 
+/**
+ * Function to check whether a user is a member of a project
+ * by first retrieving the project detail via /v5/projects/:projectId and
+ * then checking whether the user was included in the `members` property of the project detail object.
+ *
+ * @param {Object} userId the id of the user
+ * @param {Number} projectId project id
+ * @returns the result
+ */
+async function checkIsMemberOfProject (userId, projectId) {
+  const m2mToken = await getM2Mtoken()
+  const res = await request
+    .get(`${config.TC_API}/projects/${projectId}`)
+    .set('Authorization', `Bearer ${m2mToken}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  const memberIdList = _.map(res.body.members, 'userId')
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${memberIdList}` })
+  if (!memberIdList.includes(userId)) {
+    throw new errors.UnauthorizedError(`userId: ${userId} the user is not a member of project ${projectId}`)
+  }
+}
+
 module.exports = {
   checkIfExists,
   autoWrapExpress,
@@ -629,5 +652,6 @@ module.exports = {
   getSkillById,
   getUserSkill,
   ensureJobById,
-  ensureUserById
+  ensureUserById,
+  checkIsMemberOfProject
 }

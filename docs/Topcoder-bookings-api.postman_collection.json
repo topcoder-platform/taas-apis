@@ -7887,10 +7887,10 @@
 					"name": "Request with Topcoder User Role",
 					"item": [
 						{
-							"name": "Before Test",
+							"name": "README",
 							"item": [
 								{
-									"name": "[STUB] refresh the jwt token for user tester1234",
+									"name": "[STUB] all operations cause 403 error if user is not member of project",
 									"request": {
 										"method": "LOCK",
 										"header": [],
@@ -7900,9 +7900,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "Jobs",
@@ -8768,10 +8766,10 @@
 					"name": "Request with Connect Manager Role",
 					"item": [
 						{
-							"name": "Before Test",
+							"name": "README",
 							"item": [
 								{
-									"name": "[STUB] refresh the jwt token for connect manager",
+									"name": "[STUB] all operations except get/search cause 403 error if manager is not member of project",
 									"request": {
 										"method": "LOCK",
 										"header": [],
@@ -8781,9 +8779,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "Jobs",
@@ -8808,13 +8804,13 @@
 										"header": [
 											{
 												"key": "Authorization",
-												"value": "Bearer {{token_connectUser}}",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
 												"type": "text"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}\r\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8841,7 +8837,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -8865,7 +8861,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -8960,12 +8956,12 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"fractional\",\r\n  \"skills\": [\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"status\": \"sourcing\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8993,7 +8989,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
@@ -9026,7 +9022,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
@@ -9131,12 +9127,12 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -9163,7 +9159,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -9187,7 +9183,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -9247,12 +9243,12 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -9280,7 +9276,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
@@ -9313,7 +9309,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
@@ -9374,7 +9370,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -9418,12 +9414,12 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -9450,7 +9446,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -9474,7 +9470,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"url": {
@@ -9544,12 +9540,12 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -9577,7 +9573,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {
@@ -9610,7 +9606,7 @@
 											{
 												"key": "Authorization",
 												"type": "text",
-												"value": "Bearer {{token_connectUser}}"
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
 											}
 										],
 										"body": {

@@ -75,15 +75,15 @@ async function _validateSkills (skills) {
 }
 
 /**
- * Check whether user can access associated project of a job.
+ * Check user permission for getting job.
  *
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} projectId the project id
  * @returns {undefined}
  */
-async function _checkUserAccessAssociatedProject (currentUser, projectId) {
-  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    await helper.getProjectById(currentUser, projectId)
+async function _checkUserPermissionForGetJob (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
 }
 
@@ -102,8 +102,7 @@ async function getJob (currentUser, id, fromDb = false) {
         id
       })
 
-      // check whether user can access the project associated with the job
-      await _checkUserAccessAssociatedProject(currentUser, job.body._source.projectId)
+      await _checkUserPermissionForGetJob(currentUser, job.body._source.projectId) // check user permission
 
       const jobId = job.body._id
       const jobRecord = { id: jobId, ...job.body._source }
@@ -125,8 +124,7 @@ async function getJob (currentUser, id, fromDb = false) {
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
 
-  // check whether user can access the project associated with the job
-  await _checkUserAccessAssociatedProject(currentUser, job.projectId)
+  await _checkUserPermissionForGetJob(currentUser, job.projectId) // check user permission
 
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
@@ -145,8 +143,10 @@ getJob.schema = Joi.object().keys({
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
-  // check whether user can access the project associated with the job
-  await _checkUserAccessAssociatedProject(currentUser, job.projectId)
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+  }
 
   await _validateSkills(job.skills)
   job.id = uuid()
@@ -269,6 +269,7 @@ fullyUpdateJob.schema = Joi.object().keys({
  * @params {String} id the job id
  */
 async function deleteJob (currentUser, id) {
+  // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
@@ -291,13 +292,12 @@ deleteJob.schema = Joi.object().keys({
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchJobs (currentUser, criteria, options = { returnAll: false }) {
+  // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
-    // regular user can only search with filtering by "projectId"
-    if (!criteria.projectId) {
+    if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
       throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
     }
-    // check if user can access the project
-    await helper.getProjectById(currentUser, criteria.projectId)
+    await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
   }
 
   const page = criteria.page > 0 ? criteria.page : 1
