@@ -25,7 +25,7 @@ async function cancelJob (payload) {
     return
   }
   if (payload.value.status !== 'cancelled') {
-    logger.info({
+    logger.debug({
       component: 'JobEventHandler',
       context: 'cancelJob',
       message: `not interested job - status: ${payload.value.status}`

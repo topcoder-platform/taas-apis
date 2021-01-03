@@ -45,12 +45,13 @@ async function selectJobCandidate (jobId, userId) {
 /**
  * Update the status of the Job to assigned when it positions requirement is fullfilled.
  *
- * @param {Object} job the job data
+ * @param {String} jobId the job id
  * @returns {undefined}
  */
-async function assignJob (job) {
+async function assignJob (jobId) {
+  const job = await models.Job.findById(jobId)
   if (job.status === 'assigned') {
-    logger.info({
+    logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'assignJob',
       message: `job with projectId ${job.projectId} is already assigned`
@@ -59,6 +60,7 @@ async function assignJob (job) {
   }
   const resourceBookings = await models.ResourceBooking.findAll({
     where: {
+      jobId: job.id,
       status: 'assigned',
       deletedAt: null
     }
@@ -70,7 +72,7 @@ async function assignJob (job) {
   })
   if (job.numPositions === resourceBookings.length) {
     await JobService.partiallyUpdateJob(helper.getAuditM2Muser(), job.id, { status: 'assigned' })
-    logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job with projectId ${job.projectId} is assigned` })
+    logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job ${job.id} is assigned` })
   }
 }
 
@@ -90,7 +92,7 @@ async function processUpdate (payload) {
     return
   }
   if (payload.value.status !== 'assigned') {
-    logger.info({
+    logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'processUpdate',
       message: `not interested resource booking - status: ${payload.value.status}`
@@ -98,16 +100,16 @@ async function processUpdate (payload) {
     return
   }
   const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
-  const jobs = await models.Job.findAll({
-    where: {
-      projectId: resourceBooking.projectId,
-      deletedAt: null
-    }
-  })
-  for (const job of jobs) {
-    await selectJobCandidate(job.id, resourceBooking.userId)
-    await assignJob(job)
+  if (!resourceBooking.jobId) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'processUpdate',
+      message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
+    })
+    return
   }
+  await selectJobCandidate(resourceBooking.jobId, resourceBooking.userId)
+  await assignJob(resourceBooking.jobId)
 }
 
 module.exports = {

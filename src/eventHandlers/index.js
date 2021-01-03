@@ -22,9 +22,10 @@ const TopicOperationMapping = {
  */
 async function handleEvent (topic, payload) {
   if (!TopicOperationMapping[topic]) {
-    logger.info({ component: 'eventHanders', context: 'handleEvent', message: `not interested event - topic: ${topic}` })
+    logger.debug({ component: 'eventHanders', context: 'handleEvent', message: `not interested event - topic: ${topic}` })
     return
   }
+  logger.info({ component: 'eventHanders', context: 'handleEvent', message: `event handling - topic: ${topic}` })
   logger.debug({ component: 'eventHanders', context: 'handleEvent', message: `handling event - topic: ${topic} - payload: ${JSON.stringify(payload)}` })
   try {
     await TopicOperationMapping[topic](payload)
@@ -33,7 +34,7 @@ async function handleEvent (topic, payload) {
     // throw error so that it can be handled by the app
     throw err
   }
-  logger.info({ component: 'eventHanders', context: 'handleEvent', message: 'event successfully handled' })
+  logger.info({ component: 'eventHanders', context: 'handleEvent', message: `event successfully handled - topic: ${topic}` })
 }
 
 /**
