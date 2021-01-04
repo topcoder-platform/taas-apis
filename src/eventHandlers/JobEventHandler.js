@@ -46,7 +46,7 @@ async function cancelJob (payload) {
   })
   const resourceBookings = await models.ResourceBooking.findAll({
     where: {
-      projectId: job.projectId,
+      jobId: job.id,
       status: {
         [Op.not]: 'cancelled'
       },
