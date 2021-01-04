@@ -31,15 +31,15 @@ async function _getResourceBookingFilteringFields (currentUser, resourceBooking)
 }
 
 /**
- * Check whether user can access associated project of a job.
+ * Check user permission for getting resource booking.
  *
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} projectId the project id
  * @returns {undefined}
  */
-async function _checkUserAccessAssociatedProject (currentUser, projectId) {
+async function _checkUserPermissionForGetResourceBooking (currentUser, projectId) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
-    await helper.getProjectById(currentUser, projectId)
+    await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
 }
 
@@ -58,8 +58,7 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
         id
       })
 
-      // check if user can access the project associated with the resourceBooking
-      await _checkUserAccessAssociatedProject(currentUser, resourceBooking.body._source.projectId)
+      await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
 
       const resourceBookingRecord = { id: resourceBooking.body._id, ...resourceBooking.body._source }
       return _getResourceBookingFilteringFields(currentUser, resourceBookingRecord)
@@ -76,8 +75,7 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
   const resourceBooking = await ResourceBooking.findById(id)
 
-  // check if user can access the project associated with the resourceBooking
-  await _checkUserAccessAssociatedProject(currentUser, resourceBooking.projectId)
+  await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.projectId) // check user permission
 
   return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
 }
@@ -263,13 +261,12 @@ deleteResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
+  // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
-    // regular user can only search with filtering by "projectId"
-    if (!criteria.projectId) {
+    if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
       throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
     }
-    // check if user can access the project
-    await helper.getProjectById(currentUser, criteria.projectId)
+    await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
   }
 
   // `criteria`.projectIds` could be array of ids, or comma separated string of ids
