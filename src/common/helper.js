@@ -317,7 +317,7 @@ function isDocumentMissingException (err) {
 async function getProjects (currentUser, criteria = {}) {
   let token
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2Mtoken()
+    const m2mToken = await getTopcoderM2MToken()
     token = `Bearer ${m2mToken}`
   } else {
     token = currentUser.jwtToken
