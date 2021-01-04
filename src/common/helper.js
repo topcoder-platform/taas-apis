@@ -12,6 +12,7 @@ const elasticsearch = require('@elastic/elasticsearch')
 const errors = require('../common/errors')
 const logger = require('./logger')
 const models = require('../models')
+const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
 const localLogger = {
@@ -281,8 +282,9 @@ async function getUserId (userId) {
  * Send Kafka event message
  * @params {String} topic the topic name
  * @params {Object} payload the payload
+ * @params {Object} options the extra options to control the function
  */
-async function postEvent (topic, payload) {
+async function postEvent (topic, payload, options = {}) {
   logger.debug({ component: 'helper', context: 'postEvent', message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(payload)}` })
   const client = getBusApiClient()
   const message = {
@@ -293,6 +295,7 @@ async function postEvent (topic, payload) {
     payload
   }
   await client.postEvent(message)
+  await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
 
 /**
@@ -604,6 +607,15 @@ async function ensureUserById (userId) {
 }
 
 /**
+ * Generate M2M auth user.
+ *
+ * @returns {Object} the M2M auth user
+ */
+function getAuditM2Muser () {
+  return { isMachine: true, userId: config.m2m.M2M_AUDIT_USER_ID, handle: config.m2m.M2M_AUDIT_HANDLE }
+}
+
+/**
  * Function to check whether a user is a member of a project
  * by first retrieving the project detail via /v5/projects/:projectId and
  * then checking whether the user was included in the `members` property of the project detail object.
@@ -653,5 +665,6 @@ module.exports = {
   getUserSkill,
   ensureJobById,
   ensureUserById,
+  getAuditM2Muser,
   checkIsMemberOfProject
 }

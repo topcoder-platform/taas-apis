@@ -575,8 +575,8 @@ paths:
           required: false
           schema:
             type: string
-            enum: ['open', 'selected', 'shortlist', 'rejected']
-          description: The user id.
+            enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+          description: The job candidate status.
       responses:
         '200':
           description: OK
@@ -1776,8 +1776,8 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected']
-          description: "The job status."
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+          description: "The job candidate status."
         createdAt:
           type: string
           format: date-time
@@ -1812,7 +1812,7 @@ components:
       properties:
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected']
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
     JobPatchRequestBody:
       properties:
         status:
@@ -2253,8 +2253,8 @@ components:
                 description: 'The link for the resume that can be downloaded'
               status:
                 type: string
-                enum: ['open', 'selected', 'shortlist', 'rejected']
-                description: "The job status."
+                enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+                description: "The job candidate status."
               skills: 
                   type: array
                   items:

@@ -10,6 +10,7 @@ const cors = require('cors')
 const HttpStatus = require('http-status-codes')
 const interceptor = require('express-interceptor')
 const logger = require('./src/common/logger')
+const eventHandlers = require('./src/eventHandlers')
 
 // setup express app
 const app = express()
@@ -91,6 +92,7 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(app.get('port'), () => {
   logger.info({ component: 'app', message: `Express server listening on port ${app.get('port')}` })
+  eventHandlers.init()
 })
 
 if (process.env.NODE_ENV === 'test') {
