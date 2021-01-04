@@ -320,7 +320,7 @@ function isDocumentMissingException (err) {
 async function getProjects (currentUser, criteria = {}) {
   let token
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2Mtoken()
+    const m2mToken = await getTopcoderM2MToken()
     token = `Bearer ${m2mToken}`
   } else {
     token = currentUser.jwtToken
@@ -615,6 +615,29 @@ function getAuditM2Muser () {
   return { isMachine: true, userId: config.m2m.M2M_AUDIT_USER_ID, handle: config.m2m.M2M_AUDIT_HANDLE }
 }
 
+/**
+ * Function to check whether a user is a member of a project
+ * by first retrieving the project detail via /v5/projects/:projectId and
+ * then checking whether the user was included in the `members` property of the project detail object.
+ *
+ * @param {Object} userId the id of the user
+ * @param {Number} projectId project id
+ * @returns the result
+ */
+async function checkIsMemberOfProject (userId, projectId) {
+  const m2mToken = await getM2Mtoken()
+  const res = await request
+    .get(`${config.TC_API}/projects/${projectId}`)
+    .set('Authorization', `Bearer ${m2mToken}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  const memberIdList = _.map(res.body.members, 'userId')
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${memberIdList}` })
+  if (!memberIdList.includes(userId)) {
+    throw new errors.UnauthorizedError(`userId: ${userId} the user is not a member of project ${projectId}`)
+  }
+}
+
 module.exports = {
   checkIfExists,
   autoWrapExpress,
@@ -642,5 +665,6 @@ module.exports = {
   getUserSkill,
   ensureJobById,
   ensureUserById,
-  getAuditM2Muser
+  getAuditM2Muser,
+  checkIsMemberOfProject
 }
