@@ -14,15 +14,39 @@ const JobCandidateService = require('../services/JobCandidateService')
  * the corresponding JobCandidate record (with the same userId and jobId)
  * should be updated with status `selected`
  *
- * @param {String} jobId the job id
- * @param {String} userId the user id
+ * @param {Object} payload the event payload
  * @returns {undefined}
  */
-async function selectJobCandidate (jobId, userId) {
+async function selectJobCandidate (payload) {
+  if (payload.value.status === payload.options.oldValue.status) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'selectJobCandidate',
+      message: 'status not changed'
+    })
+    return
+  }
+  if (payload.value.status !== 'assigned') {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'selectJobCandidate',
+      message: `not interested resource booking - status: ${payload.value.status}`
+    })
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
+  if (!resourceBooking.jobId) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'selectJobCandidate',
+      message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
+    })
+    return
+  }
   const candidates = await models.JobCandidate.findAll({
     where: {
-      jobId,
-      userId,
+      jobId: resourceBooking.jobId,
+      userId: resourceBooking.userId,
       status: {
         [Op.not]: 'selected'
       },
@@ -45,11 +69,36 @@ async function selectJobCandidate (jobId, userId) {
 /**
  * Update the status of the Job to assigned when it positions requirement is fullfilled.
  *
- * @param {String} jobId the job id
+ * @param {Object} payload the event payload
  * @returns {undefined}
  */
-async function assignJob (jobId) {
-  const job = await models.Job.findById(jobId)
+async function assignJob (payload) {
+  if (payload.value.status === payload.options.oldValue.status) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'assignJob',
+      message: 'status not changed'
+    })
+    return
+  }
+  if (payload.value.status !== 'assigned') {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'assignJob',
+      message: `not interested resource booking - status: ${payload.value.status}`
+    })
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
+  if (!resourceBooking.jobId) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'assignJob',
+      message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
+    })
+    return
+  }
+  const job = await models.Job.findById(resourceBooking.jobId)
   if (job.status === 'assigned') {
     logger.debug({
       component: 'ResourceBookingEventHandler',
@@ -83,33 +132,8 @@ async function assignJob (jobId) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  if (payload.value.status === payload.options.oldValue.status) {
-    logger.debug({
-      component: 'ResourceBookingEventHandler',
-      context: 'processUpdate',
-      message: 'status not changed'
-    })
-    return
-  }
-  if (payload.value.status !== 'assigned') {
-    logger.debug({
-      component: 'ResourceBookingEventHandler',
-      context: 'processUpdate',
-      message: `not interested resource booking - status: ${payload.value.status}`
-    })
-    return
-  }
-  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
-  if (!resourceBooking.jobId) {
-    logger.debug({
-      component: 'ResourceBookingEventHandler',
-      context: 'processUpdate',
-      message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
-    })
-    return
-  }
-  await selectJobCandidate(resourceBooking.jobId, resourceBooking.userId)
-  await assignJob(resourceBooking.jobId)
+  await selectJobCandidate(payload)
+  await assignJob(payload)
 }
 
 module.exports = {
