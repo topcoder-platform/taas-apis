@@ -213,7 +213,7 @@ const getM2MToken = async () => {
 }
 
 /*
- * Function to get M2M token for U-Bhan
+ * Function to get M2M token for U-Bahn
  * @returns {Promise}
  */
 const getM2MUbahnToken = async () => {
@@ -387,7 +387,7 @@ async function getUserById (userId, enrich) {
 }
 
 /**
- * Function to create user in ubhan
+ * Function to create user in ubahn
  * @param {Object} data the user data
  * @returns the request result
  */
@@ -404,7 +404,7 @@ async function createUbahnUser ({ handle, firstName, lastName }) {
 }
 
 /**
- * Function to create external profile for a ubhan user
+ * Function to create external profile for a ubahn user
  * @param {String} userId the user id(with uuid format)
  * @param {Object} data the profile data
  */
@@ -554,7 +554,7 @@ async function getUserSkill (token, userId) {
  * Fetch the user info from /v3/users and create a new user in /v5/users.
  *
  * @params {Object} currentUser the user who perform this operation
- * @returns {String} the ubhan user id
+ * @returns {String} the ubahn user id
  */
 async function ensureUbahnUserId (currentUser) {
   try {
