@@ -391,7 +391,7 @@ async function getUserById (userId, enrich) {
  * @param {Object} data the user data
  * @returns the request result
  */
-async function createUbhanUser ({ handle, firstName, lastName }) {
+async function createUbahnUser ({ handle, firstName, lastName }) {
   const token = await getM2MUbahnToken()
   const res = await request
     .post(`${config.TC_API}/users`)
@@ -399,7 +399,7 @@ async function createUbhanUser ({ handle, firstName, lastName }) {
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send({ handle, firstName, lastName })
-  localLogger.debug({ context: 'createUbhanUser', message: `response body: ${JSON.stringify(res.body)}` })
+  localLogger.debug({ context: 'createUbahnUser', message: `response body: ${JSON.stringify(res.body)}` })
   return _.pick(res.body, ['id'])
 }
 
@@ -556,7 +556,7 @@ async function getUserSkill (token, userId) {
  * @params {Object} currentUser the user who perform this operation
  * @returns {String} the ubhan user id
  */
-async function ensureUbhanUserId (currentUser) {
+async function ensureUbahnUserId (currentUser) {
   try {
     return await getUserId(currentUser.userId)
   } catch (err) {
@@ -564,7 +564,7 @@ async function ensureUbhanUserId (currentUser) {
       throw err
     }
     const topcoderUser = await getTopcoderUserById(currentUser.userId)
-    const user = await createUbhanUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
+    const user = await createUbahnUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
     await createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
     return user.id
   }
@@ -647,7 +647,7 @@ module.exports = {
     if (userId === config.m2m.M2M_AUDIT_USER_ID) {
       return config.m2m.M2M_AUDIT_USER_ID
     }
-    return ensureUbhanUserId({ userId })
+    return ensureUbahnUserId({ userId })
   },
   getM2MToken,
   getM2MUbahnToken,
