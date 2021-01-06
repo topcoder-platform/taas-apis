@@ -23,13 +23,13 @@ AWS.config.region = config.esConfig.AWS_REGION
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
 
-// const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_PROXY_SERVER_URL']))
 const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
 
-const topcoderM2M = m2mAuth({
-  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
+const m2mForUbahn = m2mAuth({
+  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_UBAHN,
   ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL'])
-})
+}
+)
 
 let busApiClient
 
@@ -42,10 +42,8 @@ function getBusApiClient () {
   if (busApiClient) {
     return busApiClient
   }
-  busApiClient = busApi({
-    AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_FOR_BUS_API,
-    ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'BUSAPI_URL', 'KAFKA_ERROR_TOPIC', 'AUTH0_PROXY_SERVER_URL'])
-  })
+  busApiClient = busApi(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'BUSAPI_URL', 'KAFKA_ERROR_TOPIC', 'AUTH0_PROXY_SERVER_URL'])
+  )
   return busApiClient
 }
 
@@ -210,16 +208,16 @@ function getESClient () {
  * Function to get M2M token
  * @returns {Promise}
  */
-const getM2Mtoken = async () => {
+const getM2MToken = async () => {
   return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
 /*
- * Function to get M2M token to access topcoder resources(e.g. /v3/users)
+ * Function to get M2M token for U-Bahn
  * @returns {Promise}
  */
-const getTopcoderM2MToken = async () => {
-  return await topcoderM2M.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+const getM2MUbahnToken = async () => {
+  return await m2mForUbahn.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
 /**
@@ -247,7 +245,7 @@ function encodeQueryString (queryObj, nesting = '') {
  * @returns {String} user id.
  */
 async function getUserIds (userId) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   const q = {
     enrich: true,
     externalProfile: {
@@ -320,7 +318,7 @@ function isDocumentMissingException (err) {
 async function getProjects (currentUser, criteria = {}) {
   let token
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2Mtoken()
+    const m2mToken = await getM2MToken()
     token = `Bearer ${m2mToken}`
   } else {
     token = currentUser.jwtToken
@@ -351,7 +349,7 @@ async function getProjects (currentUser, criteria = {}) {
  * @returns {Object} the user
  */
 async function getTopcoderUserById (userId) {
-  const token = await getTopcoderM2MToken()
+  const token = await getM2MToken()
   const res = await request
     .get(config.TOPCODER_USERS_API)
     .query({ filter: `id=${userId}` })
@@ -371,7 +369,7 @@ async function getTopcoderUserById (userId) {
  * @returns the request result
  */
 async function getUserById (userId, enrich) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
     .set('Authorization', `Bearer ${token}`)
@@ -389,29 +387,29 @@ async function getUserById (userId, enrich) {
 }
 
 /**
- * Function to create user in ubhan
+ * Function to create user in ubahn
  * @param {Object} data the user data
  * @returns the request result
  */
-async function createUbhanUser ({ handle, firstName, lastName }) {
-  const token = await getM2Mtoken()
+async function createUbahnUser ({ handle, firstName, lastName }) {
+  const token = await getM2MUbahnToken()
   const res = await request
     .post(`${config.TC_API}/users`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send({ handle, firstName, lastName })
-  localLogger.debug({ context: 'createUbhanUser', message: `response body: ${JSON.stringify(res.body)}` })
+  localLogger.debug({ context: 'createUbahnUser', message: `response body: ${JSON.stringify(res.body)}` })
   return _.pick(res.body, ['id'])
 }
 
 /**
- * Function to create external profile for a ubhan user
+ * Function to create external profile for a ubahn user
  * @param {String} userId the user id(with uuid format)
  * @param {Object} data the profile data
  */
 async function createUserExternalProfile (userId, { organizationId, externalId }) {
-  const token = await getM2Mtoken()
+  const token = await getM2MUbahnToken()
   const res = await request
     .post(`${config.TC_API}/users/${userId}/externalProfiles`)
     .set('Authorization', `Bearer ${token}`)
@@ -427,7 +425,7 @@ async function createUserExternalProfile (userId, { organizationId, externalId }
  * @returns the request result
  */
 async function getMembers (handles) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   const handlesStr = _.map(handles, handle => {
     return '%22' + handle.toLowerCase() + '%22'
   }).join(',')
@@ -451,7 +449,7 @@ async function getMembers (handles) {
 async function getProjectById (currentUser, id) {
   let token
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2Mtoken()
+    const m2mToken = await getM2MToken()
     token = `Bearer ${m2mToken}`
   } else {
     token = currentUser.jwtToken
@@ -484,7 +482,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -516,7 +514,7 @@ async function getTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
@@ -556,9 +554,9 @@ async function getUserSkill (token, userId) {
  * Fetch the user info from /v3/users and create a new user in /v5/users.
  *
  * @params {Object} currentUser the user who perform this operation
- * @returns {String} the ubhan user id
+ * @returns {String} the ubahn user id
  */
-async function ensureUbhanUserId (currentUser) {
+async function ensureUbahnUserId (currentUser) {
   try {
     return await getUserId(currentUser.userId)
   } catch (err) {
@@ -566,7 +564,7 @@ async function ensureUbhanUserId (currentUser) {
       throw err
     }
     const topcoderUser = await getTopcoderUserById(currentUser.userId)
-    const user = await createUbhanUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
+    const user = await createUbahnUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
     await createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
     return user.id
   }
@@ -589,7 +587,7 @@ async function ensureJobById (jobId) {
  * @returns {Object} the user data
  */
 async function ensureUserById (userId) {
-  const token = await getM2Mtoken()
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/users/${userId}`)
@@ -625,7 +623,7 @@ function getAuditM2Muser () {
  * @returns the result
  */
 async function checkIsMemberOfProject (userId, projectId) {
-  const m2mToken = await getM2Mtoken()
+  const m2mToken = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/projects/${projectId}`)
     .set('Authorization', `Bearer ${m2mToken}`)
@@ -649,10 +647,10 @@ module.exports = {
     if (userId === config.m2m.M2M_AUDIT_USER_ID) {
       return config.m2m.M2M_AUDIT_USER_ID
     }
-    return ensureUbhanUserId({ userId })
+    return ensureUbahnUserId({ userId })
   },
-  getM2Mtoken,
-  getTopcoderM2MToken,
+  getM2MToken,
+  getM2MUbahnToken,
   postEvent,
   getBusApiClient,
   isDocumentMissingException,

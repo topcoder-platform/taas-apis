@@ -188,18 +188,18 @@ async function updateJob (currentUser, id, data) {
   }
   let job = await Job.findById(id)
   const oldValue = job.toJSON()
-  const ubhanUserId = await helper.getUserId(currentUser.userId)
+  const ubahnUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     // Check whether user can update the job.
     // Note that there is no need to check if user is member of the project associated with the job here
     // because user who created the job must be the member of the project associated with the job
-    if (ubhanUserId !== job.createdBy) {
+    if (ubahnUserId !== job.createdBy) {
       throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
 
   data.updatedAt = new Date()
-  data.updatedBy = ubhanUserId
+  data.updatedBy = ubahnUserId
 
   await job.update(data)
   await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })

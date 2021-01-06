@@ -22,7 +22,7 @@ The following parameters can be set in config files or in env variables:
 
 - `AUTH0_URL`: Auth0 URL, used to get TC M2M token
 - `AUTH0_AUDIENCE`: Auth0 audience, used to get TC M2M token
-- `AUTH0_AUDIENCE_FOR_BUS_API`: Auth0 audience, used to get TC M2M token to be used in bus api client
+- `AUTH0_AUDIENCE_UBAHN`: Auth0 audience for U-Bahn
 - `TOKEN_CACHE_TIME`: Auth0 token cache time, used to get TC M2M token
 - `AUTH0_CLIENT_ID`: Auth0 client id, used to get TC M2M token
 - `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
