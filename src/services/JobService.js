@@ -165,6 +165,7 @@ createJob.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     externalId: Joi.string().required(),
     description: Joi.string().required(),
+    title: Joi.title().required(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
     numPositions: Joi.number().integer().min(1).required(),
@@ -225,6 +226,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
   data: Joi.object().keys({
     status: Joi.jobStatus(),
     description: Joi.string(),
+    title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1),
@@ -253,6 +255,7 @@ fullyUpdateJob.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     externalId: Joi.string().required(),
     description: Joi.string().required(),
+    title: Joi.title().required(),
     startDate: Joi.date().required(),
     endDate: Joi.date().required(),
     numPositions: Joi.number().integer().min(1).required(),
@@ -350,7 +353,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'status'
     ]), (value, key) => {
       let must
-      if (key === 'description') {
+      if (key === 'description' || key === 'title') {
         must = {
           match: {
             [key]: {
@@ -426,6 +429,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.description}%`
     }
   }
+  if (criteria.title) {
+    filter.title = {
+      [Op.like]: `%${criteria.title}%`
+    }
+  }
   if (criteria.skills) {
     filter.skills = {
       [Op.contains]: [criteria.skills]
@@ -470,6 +478,7 @@ searchJobs.schema = Joi.object().keys({
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
     description: Joi.string(),
+    title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     resourceType: Joi.string(),

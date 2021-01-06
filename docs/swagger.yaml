@@ -126,6 +126,13 @@ paths:
             type: string
           description: The description.
         - in: query
+          name: title
+          required: false
+          schema:
+            type: string
+            maxLength: 64
+          description: The title.
+        - in: query
           name: startDate
           required: false
           schema:
@@ -1639,6 +1646,11 @@ components:
           type: string
           example: "Dummy Description"
           description: "The description."
+        title:
+          type: string
+          example: "Dummy title"
+          description: "The title."
+          maxLength: 64
         startDate:
           type: string
           format: date-time
@@ -1721,6 +1733,11 @@ components:
           type: string
           example: "Dummy Description"
           description: "The description."
+        title:
+          type: string
+          example: "Dummy title"
+          description: "The title."
+          maxLength: 64
         startDate:
           type: string
           format: date-time
