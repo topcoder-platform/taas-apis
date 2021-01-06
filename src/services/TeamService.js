@@ -146,7 +146,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
               const resource = {
                 id: rb.id,
                 userId: user.id,
-                ..._.pick(user, ['handle', 'firstName', 'lastName'])
+                ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
               }
               // If call function is not search, add jobId field
               if (!isSearch) {
