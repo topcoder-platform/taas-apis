@@ -61,23 +61,19 @@ module.exports = (sequelize) => {
       },
       startDate: {
         field: 'start_date',
-        type: Sequelize.DATE,
-        allowNull: false
+        type: Sequelize.DATE
       },
       endDate: {
         field: 'end_date',
-        type: Sequelize.DATE,
-        allowNull: false
+        type: Sequelize.DATE
       },
       memberRate: {
         field: 'member_rate',
-        type: Sequelize.FLOAT,
-        allowNull: false
+        type: Sequelize.FLOAT
       },
       customerRate: {
         field: 'customer_rate',
-        type: Sequelize.FLOAT,
-        allowNull: false
+        type: Sequelize.FLOAT
       },
       rateType: {
         field: 'rate_type',

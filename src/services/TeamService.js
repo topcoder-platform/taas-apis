@@ -125,6 +125,10 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
       // Count weekly rate
       for (const item of rbs) {
+        // ignore any resourceBooking that has customerRate missed
+        if (!item.customerRate) {
+          continue
+        }
         const startDate = new Date(item.startDate)
         const endDate = new Date(item.endDate)
 

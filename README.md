@@ -67,6 +67,19 @@ The following parameters can be set in config files or in env variables:
 - Modify `DATABASE_URL` under `config/default.js` to meet your environment.
 - Run `npm run init-db` to create table(run `npm run init-db force` to force creating table)
 
+## DB Migration
+- `npm run migrate`: run any migration files which haven't run yet.
+- `npm run migrate:undo`: revert most recent migration.
+
+Configuration for migration is at `./config/config.json`.
+
+The following parameters can be set in the config file or via env variables:
+
+- `username`: set via env `DB_USERNAME`; datebase username
+- `password`: set via env `DB_PASSWORD`; datebase password
+- `database`: set via env `DB_NAME`; datebase name
+- `host`: set via env `DB_HOST`; datebase host name
+
 ## ElasticSearch Setup
 - Go to https://www.elastic.co/downloads/ download and install the elasticsearch.
 - Modify `esConfig` under `config/default.js` to meet your environment.
