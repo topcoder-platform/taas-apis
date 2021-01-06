@@ -350,6 +350,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'skill',
       'rateType',
       'workload',
+      'title',
       'status'
     ]), (value, key) => {
       let must
