@@ -1620,6 +1620,7 @@ components:
         - projectId
         - externalId
         - description
+        - title
         - startDate
         - endDate
         - numPositions
@@ -1714,6 +1715,7 @@ components:
         - projectId
         - externalId
         - description
+        - title
         - startDate
         - endDate
         - numPositions
