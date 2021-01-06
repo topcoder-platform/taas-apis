@@ -139,27 +139,29 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       }
 
-      const usersPromises = []
-      _.map(rbs, (rb) => {
-        usersPromises.push(
-          helper.getUserById(rb.userId, true)
+      const resourceInfos = await Promise.all(
+        _.map(rbs, (rb) => {
+          return helper.getUserById(rb.userId, true)
             .then(user => {
+              const resource = {
+                id: rb.id,
+                userId: user.id,
+                ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
+              }
               // If call function is not search, add jobId field
               if (!isSearch) {
-                user.jobId = rb.jobId
-                user.customerRate = rb.customerRate
-                user.startDate = rb.startDate
-                user.endDate = rb.endDate
+                resource.jobId = rb.jobId
+                resource.customerRate = rb.customerRate
+                resource.startDate = rb.startDate
+                resource.endDate = rb.endDate
               }
-              return user
+              return resource
             })
-        )
-      })
-      const userInfos = await Promise.all(usersPromises)
-      if (userInfos && userInfos.length > 0) {
-        res.resources = userInfos
+        }))
+      if (resourceInfos && resourceInfos.length > 0) {
+        res.resources = resourceInfos
 
-        const userHandles = _.map(userInfos, 'handle')
+        const userHandles = _.map(resourceInfos, 'handle')
         // Get user photo from /v5/members
         const members = await helper.getMembers(userHandles)
 

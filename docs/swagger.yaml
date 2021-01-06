@@ -2038,10 +2038,37 @@ components:
           type: array
           description: "The rosources that are assigned"
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/ResourceUserInfo'
     User:
       properties:
         id:
+          type: string
+          format: uuid
+          description: "The user id."
+        handle:
+          type: string
+          example: "Tony"
+          description: "The project id."
+        photo_url:
+          type: string
+          format: url
+          example: "https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg"
+          description: "The user avatar."
+        firstName:
+                type: string
+                example: 'Tony'
+                description: 'The first name of user'
+        lastName:
+          type: string
+          example: 'J'
+          description: 'The last name of user'
+    ResourceUserInfo:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The resource booking id."
+        userId:
           type: string
           format: uuid
           description: "The user id."
@@ -2092,7 +2119,7 @@ components:
           description: "The rosources that are assigned"
           items:
             allOf: 
-             - $ref: '#/components/schemas/User'
+             - $ref: '#/components/schemas/ResourceUserInfo'
             type: object
             properties:
               customerRate:
