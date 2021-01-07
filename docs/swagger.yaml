@@ -584,6 +584,12 @@ paths:
             type: string
             enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
           description: The job candidate status.
+        - in: query
+          name: externalId
+          required: false
+          schema:
+            type: string
+          description: The external id.
       responses:
         '200':
           description: OK
@@ -1797,6 +1803,14 @@ components:
           type: string
           enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
           description: "The job candidate status."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
         createdAt:
           type: string
           format: date-time
@@ -1827,11 +1841,27 @@ components:
           format: uuid
           example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The user id."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
     JobCandidatePatchRequestBody:
       properties:
         status:
           type: string
           enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
     JobPatchRequestBody:
       properties:
         status:
