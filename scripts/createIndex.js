@@ -18,6 +18,7 @@ async function createIndex () {
             projectId: { type: 'integer' },
             externalId: { type: 'keyword' },
             description: { type: 'text' },
+            title: { type: 'text' },
             startDate: { type: 'date' },
             endDate: { type: 'date' },
             numPositions: { type: 'integer' },
