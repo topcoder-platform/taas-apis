@@ -2223,10 +2223,10 @@ components:
           type: string
           format: uuid
           description: "The job id."
-        description:
+        title:
           type: string
-          example: "Dummy Description"
-          description: "The description."
+          example: "Dummy title"
+          description: "The job title."
         startDate:
           type: string
           format: date-time
@@ -2266,10 +2266,10 @@ components:
           type: string
           format: uuid
           description: "The job id."
-        description:
+        title:
           type: string
-          example: "Dummy Description"
-          description: "The description."
+          example: "Dummy title"
+          description: "The job title."
         candidates:
           type: array
           items:

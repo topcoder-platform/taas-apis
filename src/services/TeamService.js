@@ -188,7 +188,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       } else {
         res.jobs = _.map(jobsTmp, job => {
-          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status'])
+          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
         })
       }
     }
@@ -247,7 +247,7 @@ async function getTeamJob (currentUser, id, jobId) {
   }
   const result = {
     id: job.id,
-    description: job.description
+    title: job.title
   }
 
   if (job.skills) {
