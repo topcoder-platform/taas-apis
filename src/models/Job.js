@@ -66,12 +66,10 @@ module.exports = (sequelize) => {
       },
       externalId: {
         field: 'external_id',
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       title: {
         type: Sequelize.STRING,
@@ -79,13 +77,11 @@ module.exports = (sequelize) => {
       },
       startDate: {
         field: 'start_date',
-        type: Sequelize.DATE,
-        allowNull: false
+        type: Sequelize.DATE
       },
       endDate: {
         field: 'end_date',
-        type: Sequelize.DATE,
-        allowNull: false
+        type: Sequelize.DATE
       },
       numPositions: {
         field: 'num_positions',
@@ -94,18 +90,15 @@ module.exports = (sequelize) => {
       },
       resourceType: {
         field: 'resource_type',
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       rateType: {
         field: 'rate_type',
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       workload: {
         field: 'workload',
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       skills: {
         type: Sequelize.JSONB,

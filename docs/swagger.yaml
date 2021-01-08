@@ -1624,14 +1624,8 @@ components:
       required:
         - id
         - projectId
-        - externalId
-        - description
         - title
-        - startDate
-        - endDate
         - numPositions
-        - resourceType
-        - rateType
         - skills
         - status
         - createdAt
@@ -1719,14 +1713,8 @@ components:
     JobRequestBody:
       required:
         - projectId
-        - externalId
-        - description
         - title
-        - startDate
-        - endDate
         - numPositions
-        - resourceType
-        - rateType
         - skills
       properties:
         projectId:
