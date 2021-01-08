@@ -103,7 +103,9 @@ createJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidate: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
-    userId: Joi.string().uuid().required()
+    userId: Joi.string().uuid().required(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -148,7 +150,9 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -171,7 +175,9 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
   data: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -236,7 +242,7 @@ async function searchJobCandidates (currentUser, criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+    _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -266,7 +272,7 @@ async function searchJobCandidates (currentUser, criteria) {
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+  _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   const jobCandidates = await JobCandidate.findAll({
@@ -296,7 +302,8 @@ searchJobCandidates.schema = Joi.object().keys({
     sortOrder: Joi.string().valid('desc', 'asc'),
     jobId: Joi.string().uuid(),
     userId: Joi.string().uuid(),
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string()
   }).required()
 }).required()
 

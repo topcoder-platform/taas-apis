@@ -56,6 +56,13 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
+      externalId: {
+        field: 'external_id',
+        type: Sequelize.STRING
+      },
+      resume: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         field: 'created_at',
         type: Sequelize.DATE,
