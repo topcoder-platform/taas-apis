@@ -163,15 +163,15 @@ createJob.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   job: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string().required(),
-    description: Joi.string().required(),
+    externalId: Joi.string(),
+    description: Joi.string(),
     title: Joi.title().required(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string().required(),
+    resourceType: Joi.string(),
     rateType: Joi.rateType(),
-    workload: Joi.workload().default('full-time'),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
@@ -253,15 +253,15 @@ fullyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string().required(),
-    description: Joi.string().required(),
+    externalId: Joi.string(),
+    description: Joi.string(),
     title: Joi.title().required(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string().required(),
-    rateType: Joi.rateType().required(),
-    workload: Joi.workload().required(),
+    resourceType: Joi.string(),
+    rateType: Joi.rateType(),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus()
   }).required()
