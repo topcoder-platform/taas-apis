@@ -2298,12 +2298,12 @@ components:
               id:
                 type: string
                 format: uuid
-                description: "The job cadidate id."
+                description: "The job candidate id."
               userId:
                 type: string
                 format: uuid
                 description: "User id."
-              resumeLink: 
+              resume: 
                 type: string
                 format: url
                 description: 'The link for the resume that can be downloaded'
