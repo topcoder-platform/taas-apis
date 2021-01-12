@@ -22,7 +22,7 @@ The following parameters can be set in config files or in env variables:
 
 - `AUTH0_URL`: Auth0 URL, used to get TC M2M token
 - `AUTH0_AUDIENCE`: Auth0 audience, used to get TC M2M token
-- `AUTH0_AUDIENCE_FOR_BUS_API`: Auth0 audience, used to get TC M2M token to be used in bus api client
+- `AUTH0_AUDIENCE_UBAHN`: Auth0 audience for U-Bahn
 - `TOKEN_CACHE_TIME`: Auth0 token cache time, used to get TC M2M token
 - `AUTH0_CLIENT_ID`: Auth0 client id, used to get TC M2M token
 - `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
@@ -36,6 +36,7 @@ The following parameters can be set in config files or in env variables:
 - `PROJECT_API_URL`: the project service url
 - `TC_API`: the Topcoder v5 url
 - `ORG_ID`: the organization id
+- `TOPCODER_SKILL_PROVIDER_ID`: the referenced skill provider id
 
 - `esConfig.HOST`: the elasticsearch host
 - `esConfig.ES_INDEX_JOB`: the job index
@@ -65,6 +66,19 @@ The following parameters can be set in config files or in env variables:
 - Go to https://www.postgresql.org/ download and install the PostgreSQL.
 - Modify `DATABASE_URL` under `config/default.js` to meet your environment.
 - Run `npm run init-db` to create table(run `npm run init-db force` to force creating table)
+
+## DB Migration
+- `npm run migrate`: run any migration files which haven't run yet.
+- `npm run migrate:undo`: revert most recent migration.
+
+Configuration for migration is at `./config/config.json`.
+
+The following parameters can be set in the config file or via env variables:
+
+- `username`: set via env `DB_USERNAME`; datebase username
+- `password`: set via env `DB_PASSWORD`; datebase password
+- `database`: set via env `DB_NAME`; datebase name
+- `host`: set via env `DB_HOST`; datebase host name
 
 ## ElasticSearch Setup
 - Go to https://www.elastic.co/downloads/ download and install the elasticsearch.

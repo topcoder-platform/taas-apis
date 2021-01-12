@@ -126,6 +126,13 @@ paths:
             type: string
           description: The description.
         - in: query
+          name: title
+          required: false
+          schema:
+            type: string
+            maxLength: 64
+          description: The title.
+        - in: query
           name: startDate
           required: false
           schema:
@@ -575,8 +582,14 @@ paths:
           required: false
           schema:
             type: string
-            enum: ['open', 'selected', 'shortlist', 'rejected']
-          description: The user id.
+            enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+          description: The job candidate status.
+        - in: query
+          name: externalId
+          required: false
+          schema:
+            type: string
+          description: The external id.
       responses:
         '200':
           description: OK
@@ -1479,6 +1492,102 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /taas-teams/skills:
+    get:
+      tags:
+        - Teams
+      description: |
+        Serves as a proxy endpoint for /v5/skills, allowing to be accessed by any topcoder user.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - name: orderBy
+          in: query
+          schema:
+            type: string
+          description: "Specify by which field to sort by. Sorts in ascending order only"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UbahnSkill'
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           description: Internal Server Error
           content:
@@ -1515,13 +1624,8 @@ components:
       required:
         - id
         - projectId
-        - externalId
-        - description
-        - startDate
-        - endDate
+        - title
         - numPositions
-        - resourceType
-        - rateType
         - skills
         - status
         - createdAt
@@ -1543,6 +1647,11 @@ components:
           type: string
           example: "Dummy Description"
           description: "The description."
+        title:
+          type: string
+          example: "Dummy title"
+          description: "The title."
+          maxLength: 64
         startDate:
           type: string
           format: date-time
@@ -1604,13 +1713,8 @@ components:
     JobRequestBody:
       required:
         - projectId
-        - externalId
-        - description
-        - startDate
-        - endDate
+        - title
         - numPositions
-        - resourceType
-        - rateType
         - skills
       properties:
         projectId:
@@ -1625,6 +1729,11 @@ components:
           type: string
           example: "Dummy Description"
           description: "The description."
+        title:
+          type: string
+          example: "Dummy title"
+          description: "The title."
+          maxLength: 64
         startDate:
           type: string
           format: date-time
@@ -1680,8 +1789,16 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected']
-          description: "The job status."
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+          description: "The job candidate status."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
         createdAt:
           type: string
           format: date-time
@@ -1712,11 +1829,27 @@ components:
           format: uuid
           example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The user id."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
     JobCandidatePatchRequestBody:
       properties:
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected']
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
     JobPatchRequestBody:
       properties:
         status:
@@ -1765,10 +1898,6 @@ components:
         - projectId
         - userId
         - status
-        - startDate
-        - endDate
-        - memberRate
-        - customerRate
         - rateType
         - createdAt
         - createdBy
@@ -1839,10 +1968,6 @@ components:
         - projectId
         - userId
         - status
-        - startDate
-        - endDate
-        - memberRate
-        - customerRate
         - rateType
       properties:
         projectId:
@@ -1950,10 +2075,37 @@ components:
           type: array
           description: "The rosources that are assigned"
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/ResourceUserInfo'
     User:
       properties:
         id:
+          type: string
+          format: uuid
+          description: "The user id."
+        handle:
+          type: string
+          example: "Tony"
+          description: "The project id."
+        photo_url:
+          type: string
+          format: url
+          example: "https://topcoder-dev-media.s3.amazonaws.com/member/profile/TonyJ-1604301092491.jpeg"
+          description: "The user avatar."
+        firstName:
+                type: string
+                example: 'Tony'
+                description: 'The first name of user'
+        lastName:
+          type: string
+          example: 'J'
+          description: 'The last name of user'
+    ResourceUserInfo:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The resource booking id."
+        userId:
           type: string
           format: uuid
           description: "The user id."
@@ -2004,7 +2156,7 @@ components:
           description: "The rosources that are assigned"
           items:
             allOf: 
-             - $ref: '#/components/schemas/User'
+             - $ref: '#/components/schemas/ResourceUserInfo'
             type: object
             properties:
               customerRate:
@@ -2016,19 +2168,21 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/Skill'
-              skillMatched:
-                type: integer
-                description: The percentage of skill matched for that particular job he/she is assinged
-              job:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: The job id the member is assinged at
-                  name:
-                    type: string
-                    description: The job name the member is assinged at
+              jobId:
+                type: string
+                format: uuid
+                description: The job id the member is assinged at
+              startDate:
+                type: string
+                format: date-time
+                example: "2020-09-27T04:17:23.131Z"
+                description: "Resource start date."
+              endDate:
+                type: string
+                format: date-time
+                example: "2020-09-27T04:17:23.131Z"
+                description: "Resource end date."
+                 
         jobs: 
           type: array
           description: "The jobs which are opened"
@@ -2045,16 +2199,52 @@ components:
           type: string
           example: 'React'
           description: The skill name.
+    UbahnSkill:
+      type: object
+      properties:
+        id:
+          type: "string"
+          format: "UUID"
+          description: "The skill id"
+        skillProviderId:
+          type: "string"
+          format: "UUID"
+          description: "The referenced skill provider id"
+        name:
+          type: "string"
+          description: "The name of the skill"
+        externalId:
+          type: "string"
+          description: "The external id for the skill"
+        uri:
+          type: "string"
+          description: "The uri for the skill"
+        created:
+          type: "string"
+          format: "date-time"
+          description: "When the entity was created."
+        updated:
+          type: "string"
+          format: "date-time"
+          description: "When the entity was updated."
+        createdBy:
+          type: "string"
+          format: "UUID"
+          description: "Creator of the entity."
+        updatedBy:
+          type: "string"
+          format: "UUID"
+          description: "User that last updated the entity."
     JobForTeam:
       properties:
         id:
           type: string
           format: uuid
           description: "The job id."
-        description:
+        title:
           type: string
-          example: "Dummy Description"
-          description: "The description."
+          example: "Dummy title"
+          description: "The job title."
         startDate:
           type: string
           format: date-time
@@ -2094,10 +2284,10 @@ components:
           type: string
           format: uuid
           description: "The job id."
-        description:
+        title:
           type: string
-          example: "Dummy Description"
-          description: "The description."
+          example: "Dummy title"
+          description: "The job title."
         candidates:
           type: array
           items:
@@ -2105,21 +2295,26 @@ components:
                - $ref: '#/components/schemas/User'
             type: object
             properties:
-              resumeLink: 
+              id:
+                type: string
+                format: uuid
+                description: "The job candidate id."
+              userId:
+                type: string
+                format: uuid
+                description: "User id."
+              resume: 
                 type: string
                 format: url
                 description: 'The link for the resume that can be downloaded'
               status:
                 type: string
-                enum: ['open', 'selected', 'shortlist', 'rejected']
-                description: "The job status."
+                enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+                description: "The job candidate status."
               skills: 
                   type: array
                   items:
                     $ref: '#/components/schemas/Skill'
-              skillMatched:
-                type: integer
-                description: The percentage of skill matched for that particular job he/she is assinged
     Error:
       required:
         - message

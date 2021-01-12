@@ -33,15 +33,6 @@ module.exports = (sequelize) => {
       }
       return jobCandidate
     }
-
-    static async getProjectId (jobId) {
-      try {
-        const job = await JobCandidate._models.Job.findById(jobId)
-        return job.dataValues.projectId
-      } catch (error) {
-        return null
-      }
-    }
   }
   JobCandidate.init(
     {
@@ -64,6 +55,13 @@ module.exports = (sequelize) => {
       status: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      externalId: {
+        field: 'external_id',
+        type: Sequelize.STRING
+      },
+      resume: {
+        type: Sequelize.STRING
       },
       createdAt: {
         field: 'created_at',

@@ -54,10 +54,9 @@ async function _getJobCandidates (jobId) {
  * @returns {undefined}
  */
 async function _validateSkills (skills) {
-  const m2mToken = await helper.getM2Mtoken()
   const responses = await Promise.all(
     skills.map(
-      skill => helper.getSkillById(`Bearer ${m2mToken}`, skill)
+      skill => helper.getSkillById(skill)
         .then(() => {
           return { found: true }
         })
@@ -76,18 +75,35 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Check user permission for getting job.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} projectId the project id
+ * @returns {undefined}
+ */
+async function _checkUserPermissionForGetJob (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.checkIsMemberOfProject(currentUser.userId, projectId)
+  }
+}
+
+/**
  * Get job by id
+ * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the job id
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the job
  */
-async function getJob (id, fromDb = false) {
+async function getJob (currentUser, id, fromDb = false) {
   if (!fromDb) {
     try {
       const job = await esClient.get({
         index: config.esConfig.ES_INDEX_JOB,
         id
       })
+
+      await _checkUserPermissionForGetJob(currentUser, job.body._source.projectId) // check user permission
+
       const jobId = job.body._id
       const jobRecord = { id: jobId, ...job.body._source }
       const candidates = await _getJobCandidates(jobId)
@@ -99,16 +115,23 @@ async function getJob (id, fromDb = false) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "Job" not found`)
       }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
+      }
       logger.logFullError(err, { component: 'JobService', context: 'getJob' })
     }
   }
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
+
+  await _checkUserPermissionForGetJob(currentUser, job.projectId) // check user permission
+
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
 }
 
 getJob.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   id: Joi.string().guid().required(),
   fromDb: Joi.boolean()
 }).required()
@@ -120,6 +143,11 @@ getJob.schema = Joi.object().keys({
  * @returns {Object} the created job
  */
 async function createJob (currentUser, job) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+  }
+
   await _validateSkills(job.skills)
   job.id = uuid()
   job.createdAt = new Date()
@@ -135,14 +163,15 @@ createJob.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   job: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string().required(),
-    description: Joi.string().required(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    externalId: Joi.string(),
+    description: Joi.string(),
+    title: Joi.title().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string().required(),
+    resourceType: Joi.string(),
     rateType: Joi.rateType(),
-    workload: Joi.workload().default('full-time'),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
@@ -159,21 +188,22 @@ async function updateJob (currentUser, id, data) {
     await _validateSkills(data.skills)
   }
   let job = await Job.findById(id)
-  const ubhanUserId = await helper.getUserId(currentUser.userId)
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(job.dataValues.projectId, currentUser.jwtToken)
-    if (!connect) {
-      if (ubhanUserId !== job.createdBy) {
-        throw new errors.ForbiddenError('You are not allowed to perform this action!')
-      }
+  const oldValue = job.toJSON()
+  const ubahnUserId = await helper.getUserId(currentUser.userId)
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    // Check whether user can update the job.
+    // Note that there is no need to check if user is member of the project associated with the job here
+    // because user who created the job must be the member of the project associated with the job
+    if (ubahnUserId !== job.createdBy) {
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
     }
   }
 
   data.updatedAt = new Date()
-  data.updatedBy = ubhanUserId
+  data.updatedBy = ubahnUserId
 
   await job.update(data)
-  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data })
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
   return helper.clearObject(job.dataValues)
@@ -196,6 +226,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
   data: Joi.object().keys({
     status: Joi.jobStatus(),
     description: Joi.string(),
+    title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1),
@@ -222,33 +253,32 @@ fullyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string().required(),
-    description: Joi.string().required(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    externalId: Joi.string(),
+    description: Joi.string(),
+    title: Joi.title().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string().required(),
-    rateType: Joi.rateType().required(),
-    workload: Joi.workload().required(),
+    resourceType: Joi.string(),
+    rateType: Joi.rateType(),
+    workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus()
   }).required()
 }).required()
 
 /**
- * Delete job by id. Normal user can only delete the job he/she created.
+ * Delete job by id.
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
 async function deleteJob (currentUser, id) {
-  const job = await Job.findById(id)
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const ubhanUserId = await helper.getUserId(currentUser.userId)
-    if (ubhanUserId !== job.createdBy) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
+  const job = await Job.findById(id)
   await job.update({ deletedAt: new Date() })
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
@@ -260,12 +290,33 @@ deleteJob.schema = Joi.object().keys({
 
 /**
  * List jobs
+ * @param {Object} currentUser the user who perform this operation.
  * @params {Object} criteria the search criteria
+ * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobs (criteria) {
+async function searchJobs (currentUser, criteria, options = { returnAll: false }) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
+    if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
+      throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
+    }
+    await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
+  }
+
   const page = criteria.page > 0 ? criteria.page : 1
-  const perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  let perPage
+  if (options.returnAll) {
+    // To simplify the logic we are use a very large number for perPage
+    // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
+    // the number is limited by `index.max_result_window`, its default value is 10000, see
+    // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
+    //
+    // also see `ResourceBookingService.searchResourceBookings()`
+    perPage = 10000
+  } else {
+    perPage = criteria.perPage > 0 ? criteria.perPage : 20
+  }
   if (!criteria.sortBy) {
     criteria.sortBy = 'id'
   }
@@ -299,10 +350,11 @@ async function searchJobs (criteria) {
       'skill',
       'rateType',
       'workload',
+      'title',
       'status'
     ]), (value, key) => {
       let must
-      if (key === 'description') {
+      if (key === 'description' || key === 'title') {
         must = {
           match: {
             [key]: {
@@ -378,6 +430,11 @@ async function searchJobs (criteria) {
       [Op.like]: `%${criteria.description}%`
     }
   }
+  if (criteria.title) {
+    filter.title = {
+      [Op.like]: `%${criteria.title}%`
+    }
+  }
   if (criteria.skills) {
     filter.skills = {
       [Op.contains]: [criteria.skills]
@@ -413,6 +470,7 @@ async function searchJobs (criteria) {
 }
 
 searchJobs.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
@@ -421,6 +479,7 @@ searchJobs.schema = Joi.object().keys({
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
     description: Joi.string(),
+    title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     resourceType: Joi.string(),
@@ -429,7 +488,8 @@ searchJobs.schema = Joi.object().keys({
     workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single()
-  }).required()
+  }).required(),
+  options: Joi.object()
 }).required()
 
 module.exports = {

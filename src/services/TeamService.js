@@ -7,27 +7,30 @@ const Joi = require('joi')
 const dateFNS = require('date-fns')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
+const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 
 /**
  * Function to get assigned resource bookings with specific projectIds
+ * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getAssignedResourceBookingsByProjectIds (projectIds) {
+async function _getAssignedResourceBookingsByProjectIds (currentUser, projectIds) {
   const criteria = { status: 'assigned', projectIds }
-  const { result } = await ResourceBookingService.searchResourceBookings(criteria, { returnAll: true })
+  const { result } = await ResourceBookingService.searchResourceBookings(currentUser, criteria, { returnAll: true })
   return result
 }
 
 /**
  * Function to get jobs by projectIds
+ * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getJobsByProjectIds (projectIds) {
-  const { result } = await JobService.searchJobs({ projectIds })
+async function _getJobsByProjectIds (currentUser, projectIds) {
+  const { result } = await JobService.searchJobs(currentUser, { projectIds }, { returnAll: true })
   return result
 }
 
@@ -38,14 +41,10 @@ async function _getJobsByProjectIds (projectIds) {
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchTeams (currentUser, criteria) {
-  if (currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
   const sort = `${criteria.sortBy} ${criteria.sortOrder}`
   // Get projects from /v5/projects with searching criteria
   const { total, page, perPage, result: projects } = await helper.getProjects(
-    currentUser.jwtToken,
+    currentUser,
     {
       page: criteria.page,
       perPage: criteria.perPage,
@@ -86,9 +85,9 @@ searchTeams.schema = Joi.object().keys({
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get all assigned resourceBookings filtered by projectIds
-  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(projectIds)
+  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(currentUser, projectIds)
   // Get all jobs filtered by projectIds
-  const jobs = await _getJobsByProjectIds(projectIds)
+  const jobs = await _getJobsByProjectIds(currentUser, projectIds)
 
   // Get first week day and last week day
   const curr = new Date()
@@ -126,6 +125,10 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
       // Count weekly rate
       for (const item of rbs) {
+        // ignore any resourceBooking that has customerRate missed
+        if (!item.customerRate) {
+          continue
+        }
         const startDate = new Date(item.startDate)
         const endDate = new Date(item.endDate)
 
@@ -136,27 +139,31 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       }
 
-      const usersPromises = []
-      _.map(rbs, (rb) => {
-        usersPromises.push(
-          helper.getUserById(currentUser.jwtToken, rb.userId, true)
+      const resourceInfos = await Promise.all(
+        _.map(rbs, (rb) => {
+          return helper.getUserById(rb.userId, true)
             .then(user => {
+              const resource = {
+                id: rb.id,
+                userId: user.id,
+                ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
+              }
               // If call function is not search, add jobId field
               if (!isSearch) {
-                user.jobId = rb.jobId
-                user.customerRate = rb.customerRate
+                resource.jobId = rb.jobId
+                resource.customerRate = rb.customerRate
+                resource.startDate = rb.startDate
+                resource.endDate = rb.endDate
               }
-              return user
+              return resource
             })
-        )
-      })
-      const userInfos = await Promise.all(usersPromises)
-      if (userInfos && userInfos.length > 0) {
-        res.resources = userInfos
+        }))
+      if (resourceInfos && resourceInfos.length > 0) {
+        res.resources = resourceInfos
 
-        const userHandles = _.map(userInfos, 'handle')
+        const userHandles = _.map(resourceInfos, 'handle')
         // Get user photo from /v5/members
-        const members = await helper.getMembers(currentUser.jwtToken, userHandles)
+        const members = await helper.getMembers(userHandles)
 
         for (const item of res.resources) {
           const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
@@ -173,11 +180,15 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         // Count total positions
         res.totalPositions = 0
         for (const item of jobsTmp) {
+          // only sum numPositions of jobs whose status is NOT cancelled or closed
+          if (['cancelled', 'closed'].includes(item.status)) {
+            continue
+          }
           res.totalPositions += item.numPositions
         }
       } else {
         res.jobs = _.map(jobsTmp, job => {
-          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status'])
+          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
         })
       }
     }
@@ -194,15 +205,8 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
  * @returns {Object} the team
  */
 async function getTeam (currentUser, id) {
-  if (currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
-  // Get users from /v5/projects
-  const project = await helper.getProjectById(currentUser.jwtToken, id)
-
+  const project = await helper.getProjectById(currentUser, id)
   const result = await getTeamDetail(currentUser, [project], false)
-
   const teamDetail = result[0]
 
   // add job skills for result
@@ -211,25 +215,9 @@ async function getTeam (currentUser, id) {
     for (const job of teamDetail.jobs) {
       if (job.skills) {
         const usersPromises = []
-        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(currentUser.jwtToken, skillId)) })
+        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(skillId)) })
         jobSkills = await Promise.all(usersPromises)
         job.skills = jobSkills
-      }
-    }
-  }
-
-  // add resources skills for result
-  if (teamDetail && teamDetail.resources) {
-    for (const user of teamDetail.resources) {
-      user.skillMatched = 0
-      if (user.skills && user.skills.length > 0) {
-        for (const jobSkill of jobSkills) {
-          if (_.find(user.skills, userSkill => {
-            return userSkill.id === jobSkill.id
-          })) {
-            user.skillMatched += 1
-          }
-        }
       }
     }
   }
@@ -250,67 +238,48 @@ getTeam.schema = Joi.object().keys({
  * @returns the team job
  */
 async function getTeamJob (currentUser, id, jobId) {
-  if (currentUser.isMachine) {
-    const m2mToken = await helper.getM2Mtoken()
-    currentUser.jwtToken = `Bearer ${m2mToken}`
-  }
-  // Get jobs from taas api
-  const jobs = await _getJobsByProjectIds([id])
+  const project = await helper.getProjectById(currentUser, id)
+  const jobs = await _getJobsByProjectIds(currentUser, [project.id])
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {
-    logger.debug({ component: 'TeamService', context: 'getTeamJob', message: `id ${jobId}: "Job" with Team id ${id} is not exist` })
-    return {}
+    throw new errors.NotFoundError(`id: ${jobId} "Job" with Team id ${id} doesn't exist`)
   }
   const result = {
     id: job.id,
-    description: job.description
+    title: job.title
   }
 
   if (job.skills) {
     result.skills = await Promise.all(
-      _.map(job.skills, (skillId) => helper.getSkillById(currentUser.jwtToken, skillId))
+      _.map(job.skills, (skillId) => helper.getSkillById(skillId))
     )
   }
 
-  const jobSkills = job.skills
-
   if (job && job.candidates && job.candidates.length > 0) {
     const usersPromises = []
-    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(currentUser.jwtToken, candidate.userId, true)) })
+    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(candidate.userId, true)) })
     const candidates = await Promise.all(usersPromises)
 
     const userHandles = _.map(candidates, 'handle')
     if (userHandles && userHandles.length > 0) {
       // Get user photo from /v5/members
-      let members
-      if (currentUser.isMachine) {
-        const m2mToken = await helper.getTopcoderM2MToken()
-        members = await helper.getMembers(`Bearer ${m2mToken}`, userHandles)
-      } else {
-        members = await helper.getMembers(currentUser.jwtToken, userHandles)
-      }
+      const members = await helper.getMembers(userHandles)
 
       for (const item of candidates) {
-        item.resumeLink = null
         const candidate = _.find(job.candidates, { userId: item.id })
+        // TODO this logic should be vice-verse, we should loop trough candidates and populate users data if found,
+        //      not loop through users and populate candidates data if found
         if (candidate) {
+          item.resume = candidate.resume
           item.status = candidate.status
+          // return User id as `userId` and JobCandidate id as `id`
+          item.userId = item.id
+          item.id = candidate.id
         }
         const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
         if (findMember && findMember.photoURL) {
           item.photo_url = findMember.photoURL
-        }
-
-        item.skillMatched = 0
-        if (item.skills && item.skills.length > 0) {
-          for (const jobSkillId of jobSkills) {
-            if (_.find(item.skills, userSkill => {
-              return userSkill.id === jobSkillId
-            })) {
-              item.skillMatched += 1
-            }
-          }
         }
       }
     }

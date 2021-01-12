@@ -8,7 +8,7 @@ module.exports = {
   VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/", "https://auth.topcoder-dev.com/"]',
   AUTH0_URL: process.env.AUTH0_URL,
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
-  AUTH0_AUDIENCE_FOR_BUS_API: process.env.AUTH0_AUDIENCE_FOR_BUS_API,
+  AUTH0_AUDIENCE_UBAHN: process.env.AUTH0_AUDIENCE_UBAHN,
   TOKEN_CACHE_TIME: process.env.TOKEN_CACHE_TIME,
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
@@ -21,6 +21,7 @@ module.exports = {
 
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
+  TOPCODER_SKILL_PROVIDER_ID: process.env.TOPCODER_SKILL_PROVIDER_ID || '9cc0795a-6e12-4c84-9744-15858dba1861',
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
 

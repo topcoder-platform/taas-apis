@@ -57,7 +57,7 @@ async function deleteResourceBooking (req, res) {
  * @param res the response
  */
 async function searchResourceBookings (req, res) {
-  const result = await service.searchResourceBookings(req.query)
+  const result = await service.searchResourceBookings(req.authUser, req.query)
   helper.setResHeaders(req, res, result)
   res.send(result.result)
 }

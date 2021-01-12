@@ -5,13 +5,13 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const JobCandidateService = require('./JobCandidateService')
 
 const ResourceBooking = models.ResourceBooking
 const esClient = helper.getESClient()
@@ -23,12 +23,22 @@ const esClient = helper.getESClient()
  * @returns {Object} the resourceBooking
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.isBookingManager || currentUser.isMachine) {
+  if (currentUser.hasManagePermission || currentUser.isMachine) {
     return helper.clearObject(resourceBooking)
-  } else if (await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)) {
-    return _.omit(helper.clearObject(resourceBooking), 'memberRate')
-  } else {
-    return _.omit(helper.clearObject(resourceBooking), 'customerRate')
+  }
+  return _.omit(helper.clearObject(resourceBooking), 'memberRate')
+}
+
+/**
+ * Check user permission for getting resource booking.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} projectId the project id
+ * @returns {undefined}
+ */
+async function _checkUserPermissionForGetResourceBooking (currentUser, projectId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
 }
 
@@ -46,17 +56,26 @@ async function getResourceBooking (currentUser, id, fromDb = false) {
         index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
         id
       })
+
+      await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
+
       const resourceBookingRecord = { id: resourceBooking.body._id, ...resourceBooking.body._source }
       return _getResourceBookingFilteringFields(currentUser, resourceBookingRecord)
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "ResourceBooking" not found`)
       }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
+      }
       logger.logFullError(err, { component: 'ResourceBookingService', context: 'getResourceBooking' })
     }
   }
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
   const resourceBooking = await ResourceBooking.findById(id)
+
+  await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.projectId) // check user permission
+
   return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
 }
 
@@ -73,17 +92,16 @@ getResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the created resourceBooking
  */
 async function createResourceBooking (currentUser, resourceBooking) {
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+
   if (resourceBooking.jobId) {
     await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
   }
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(resourceBooking.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
-  }
   resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
@@ -100,10 +118,10 @@ createResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
-    memberRate: Joi.number().required(),
-    customerRate: Joi.number().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
+    memberRate: Joi.number(),
+    customerRate: Joi.number(),
     rateType: Joi.rateType().required()
   }).required()
 }).required()
@@ -116,45 +134,19 @@ createResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the updated resourceBooking
  */
 async function updateResourceBooking (currentUser, id, data) {
-  const resourceBooking = await ResourceBooking.findById(id)
-  const isDiffStatus = resourceBooking.status !== data.status
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(resourceBooking.dataValues.projectId, currentUser.jwtToken)
-    if (!connect) {
-      throw new errors.ForbiddenError('You are not allowed to perform this action!')
-    }
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
+
+  const resourceBooking = await ResourceBooking.findById(id)
+  const oldValue = resourceBooking.toJSON()
+
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  const updatedResourceBooking = await resourceBooking.update(data)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data })
-  // When we are updating the status of ResourceBooking to `assigned`
-  // the corresponding JobCandidate record (with the same userId and jobId)
-  // should be updated with the status `selected`
-  if (isDiffStatus && data.status === 'assigned') {
-    const candidates = await models.JobCandidate.findAll({
-      where: {
-        jobId: updatedResourceBooking.jobId,
-        userId: updatedResourceBooking.userId,
-        status: {
-          [Op.not]: 'selected'
-        },
-        deletedAt: null
-      }
-    })
-    await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
-      currentUser,
-      candidate.id,
-      { status: 'selected' }
-    ).then(result => {
-      logger.debug({
-        component: 'ResourceBookingService',
-        context: 'updatedResourceBooking',
-        message: `id: ${result.id} candidate got selected.`
-      })
-    })))
-  }
+  await resourceBooking.update(data)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
   const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
   return result
 }
@@ -205,10 +197,10 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
-    memberRate: Joi.number().required(),
-    customerRate: Joi.number().required(),
+    startDate: Joi.date(),
+    endDate: Joi.date(),
+    memberRate: Joi.number(),
+    customerRate: Joi.number(),
     rateType: Joi.rateType().required(),
     status: Joi.jobStatus().required()
   }).required()
@@ -220,7 +212,8 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
  * @params {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
+  // check permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
@@ -236,22 +229,31 @@ deleteResourceBooking.schema = Joi.object().keys({
 
 /**
  * List resourceBookings
+ * @param {Object} currentUser the user who perform this operation.
  * @params {Object} criteria the search criteria
  * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchResourceBookings (criteria, options = { returnAll: false }) {
-  if (criteria.projectIds) {
-    if ((typeof criteria.projectIds) === 'string') {
-      criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
-        const projectIdRawTrimed = projectIdRaw.trim()
-        const projectId = Number(projectIdRawTrimed)
-        if (_.isNaN(projectId)) {
-          throw new errors.BadRequestError(`projectId ${projectIdRawTrimed} is not a valid number`)
-        }
-        return projectId
-      })
+async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
+    if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
+      throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
     }
+    await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
+  }
+
+  // `criteria`.projectIds` could be array of ids, or comma separated string of ids
+  // in case it's comma separated string of ids we have to convert it to an array of ids
+  if ((typeof criteria.projectIds) === 'string') {
+    criteria.projectIds = criteria.projectIds.trim().split(',').map(projectIdRaw => {
+      const projectIdRawTrimmed = projectIdRaw.trim()
+      const projectId = Number(projectIdRawTrimmed)
+      if (_.isNaN(projectId)) {
+        throw new errors.BadRequestError(`projectId ${projectIdRawTrimmed} is not a valid number`)
+      }
+      return projectId
+    })
   }
   const page = criteria.page > 0 ? criteria.page : 1
   let perPage
@@ -351,6 +353,7 @@ async function searchResourceBookings (criteria, options = { returnAll: false })
 }
 
 searchResourceBookings.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),

@@ -5,44 +5,71 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const JobService = require('./JobService')
 
 const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
 
 /**
+ * Check user permission for getting job candidate.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} jobId the job id
+ * @returns {undefined}
+ */
+async function _checkUserPermissionForGetJobCandidate (currentUser, jobId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    const job = await models.Job.findById(jobId)
+    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+  }
+}
+
+/**
  * Get jobCandidate by id
+ * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the jobCandidate id
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the jobCandidate
  */
-async function getJobCandidate (id, fromDb = false) {
+async function getJobCandidate (currentUser, id, fromDb = false) {
   if (!fromDb) {
     try {
       const jobCandidate = await esClient.get({
         index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
         id
       })
+
+      await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.body._source.jobId) // check user permisson
+
       const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
       return jobCandidateRecord
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
       }
+      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+        throw err
+      }
       logger.logFullError(err, { component: 'JobCandidateService', context: 'getJobCandidate' })
     }
   }
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
   const jobCandidate = await JobCandidate.findById(id)
+
+  await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.jobId) // check user permission
+
   return helper.clearObject(jobCandidate.dataValues)
 }
 
 getJobCandidate.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   id: Joi.string().guid().required(),
   fromDb: Joi.boolean()
 }).required()
@@ -54,6 +81,11 @@ getJobCandidate.schema = Joi.object().keys({
  * @returns {Object} the created jobCandidate
  */
 async function createJobCandidate (currentUser, jobCandidate) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+
   await helper.ensureJobById(jobCandidate.jobId) // ensure job exists
   await helper.ensureUserById(jobCandidate.userId) // ensure user exists
 
@@ -71,7 +103,9 @@ createJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidate: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
-    userId: Joi.string().uuid().required()
+    userId: Joi.string().uuid().required(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -84,16 +118,14 @@ createJobCandidate.schema = Joi.object().keys({
  */
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
-  const projectId = await JobCandidate.getProjectId(jobCandidate.dataValues.jobId)
   const userId = await helper.getUserId(currentUser.userId)
-  if (projectId && !currentUser.isBookingManager && !currentUser.isMachine) {
-    const connect = await helper.isConnectMember(projectId, currentUser.jwtToken)
-    if (!connect) {
-      if (jobCandidate.dataValues.userId !== userId) {
-        throw new errors.ForbiddenError('You are not allowed to perform this action!')
-      }
-    }
+
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    const job = await models.Job.findById(jobCandidate.jobId)
+    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
+
   data.updatedAt = new Date()
   data.updatedBy = userId
 
@@ -118,7 +150,9 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -141,7 +175,9 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
   data: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string(),
+    resume: Joi.string().uri()
   }).required()
 }).required()
 
@@ -151,7 +187,8 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
  * @params {String} id the jobCandidate id
  */
 async function deleteJobCandidate (currentUser, id) {
-  if (!currentUser.isBookingManager && !currentUser.isMachine) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
@@ -167,10 +204,19 @@ deleteJobCandidate.schema = Joi.object().keys({
 
 /**
  * List resourceBookings
+ * @param {Object} currentUser the user who perform this operation.
  * @params {Object} criteria the search criteria
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobCandidates (criteria) {
+async function searchJobCandidates (currentUser, criteria) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
+    if (!criteria.jobId) { // regular user can only search with filtering by "jobId"
+      throw new errors.ForbiddenError('Not allowed without filtering by "jobId"')
+    }
+    await JobService.getJob(currentUser, criteria.jobId) // check whether user can access the job associated with the jobCandidate
+  }
+
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
   if (!criteria.sortBy) {
@@ -196,7 +242,7 @@ async function searchJobCandidates (criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+    _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -226,7 +272,7 @@ async function searchJobCandidates (criteria) {
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['jobId', 'userId', 'status']), (value, key) => {
+  _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   const jobCandidates = await JobCandidate.findAll({
@@ -248,6 +294,7 @@ async function searchJobCandidates (criteria) {
 }
 
 searchJobCandidates.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
@@ -255,7 +302,8 @@ searchJobCandidates.schema = Joi.object().keys({
     sortOrder: Joi.string().valid('desc', 'asc'),
     jobId: Joi.string().uuid(),
     userId: Joi.string().uuid(),
-    status: Joi.jobCandidateStatus()
+    status: Joi.jobCandidateStatus(),
+    externalId: Joi.string()
   }).required()
 }).required()
 
