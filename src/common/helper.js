@@ -245,7 +245,7 @@ function encodeQueryString (queryObj, nesting = '') {
  * @returns {String} user id.
  */
 async function getUserIds (userId) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   const q = {
     enrich: true,
     externalProfile: {
@@ -369,7 +369,7 @@ async function getTopcoderUserById (userId) {
  * @returns the request result
  */
 async function getUserById (userId, enrich) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   const res = await request
     .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
     .set('Authorization', `Bearer ${token}`)
@@ -482,7 +482,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -514,7 +514,7 @@ async function getTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
@@ -522,28 +522,6 @@ async function getSkillById (skillId) {
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getSkillById', message: `response body: ${JSON.stringify(res.body)}` })
   return _.pick(res.body, ['id', 'name'])
-}
-
-/**
- * Function to get user skills
- * @param {String} token the user request token
- * @param {String} userId user id
- * @returns the request result
- */
-async function getUserSkill (token, userId) {
-  const url = `${config.TC_API}/users/${userId}/skills`
-  const res = await request
-    .get(url)
-    .set('Authorization', token)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getUserSkill', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.map(res.body, item => {
-    return {
-      id: item.id,
-      name: item.skill.name
-    }
-  })
 }
 
 /**
@@ -587,7 +565,7 @@ async function ensureJobById (jobId) {
  * @returns {Object} the user data
  */
 async function ensureUserById (userId) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   try {
     const res = await request
       .get(`${config.TC_API}/users/${userId}`)
@@ -660,7 +638,6 @@ module.exports = {
   getProjectById,
   getTopcoderSkills,
   getSkillById,
-  getUserSkill,
   ensureJobById,
   ensureUserById,
   getAuditM2Muser,
