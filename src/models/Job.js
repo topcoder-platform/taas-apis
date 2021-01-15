@@ -66,13 +66,13 @@ module.exports = (sequelize) => {
       },
       externalId: {
         field: 'external_id',
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT, // technically unlimited length
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(128),
         allowNull: false
       },
       startDate: {
@@ -90,22 +90,22 @@ module.exports = (sequelize) => {
       },
       resourceType: {
         field: 'resource_type',
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       rateType: {
         field: 'rate_type',
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       workload: {
         field: 'workload',
-        type: Sequelize.STRING
+        type: Sequelize.STRING(45)
       },
       skills: {
         type: Sequelize.JSONB,
         allowNull: false
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       createdAt: {
