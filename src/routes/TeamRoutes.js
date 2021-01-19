@@ -20,14 +20,6 @@ module.exports = {
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
-  '/taas-teams/users/:handle': {
-    get: {
-      controller: 'SkillController',
-      method: 'getUserByHandle',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_TAAS_TEAM]
-    }
-  },
   '/taas-teams/:id': {
     get: {
       controller: 'TeamController',

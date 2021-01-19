@@ -441,26 +441,6 @@ async function getMembers (handles) {
 }
 
 /**
- * Get Topcoder Member by handle
- *
- * @param {String} handle user handle
- *
- * @returns the request result
- */
-async function getMemberByHandle (handle) {
-  const token = await getM2MToken()
-  const url = `${config.TC_API}/members/${handle}`
-
-  const res = await request
-    .get(url)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getMemberByHandle', message: `handle: "${handle}", response body: ${JSON.stringify(res.body)}` })
-  return res.body
-}
-
-/**
  * Function to get project by id
  * @param {Object} currentUser the user who perform this operation
  * @param {Number} id project id
@@ -661,6 +641,5 @@ module.exports = {
   ensureJobById,
   ensureUserById,
   getAuditM2Muser,
-  checkIsMemberOfProject,
-  getMemberByHandle
+  checkIsMemberOfProject
 }

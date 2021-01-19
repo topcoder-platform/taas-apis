@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0c096a43-08c8-4152-83ca-1d544f92cad4",
+		"_postman_id": "b1144d77-699c-47be-864e-fbe99e7f5c14",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -4426,37 +4426,6 @@
 									"key": "orderBy",
 									"value": "name",
 									"description": "possible values are defined by /v5/skills"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET /taas-teams/users/:handle",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token_member}}"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/taas-teams/users/:handle",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"taas-teams",
-								"users",
-								":handle"
-							],
-							"variable": [
-								{
-									"key": "handle",
-									"value": "pshah_customer"
 								}
 							]
 						}
