@@ -9,7 +9,7 @@ Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')
 Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected', 'cancelled')
-Joi.title = () => Joi.string().max(64)
+Joi.title = () => Joi.string().max(128)
 
 function buildServices (dir) {
   const files = fs.readdirSync(dir)

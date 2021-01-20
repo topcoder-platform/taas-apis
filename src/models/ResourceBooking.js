@@ -56,7 +56,7 @@ module.exports = (sequelize) => {
         type: Sequelize.UUID
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       startDate: {
@@ -77,7 +77,7 @@ module.exports = (sequelize) => {
       },
       rateType: {
         field: 'rate_type',
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       createdAt: {

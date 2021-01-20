@@ -53,15 +53,15 @@ module.exports = (sequelize) => {
         allowNull: false
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       externalId: {
         field: 'external_id',
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       resume: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(2048)
       },
       createdAt: {
         field: 'created_at',
