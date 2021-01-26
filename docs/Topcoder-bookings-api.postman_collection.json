@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b1144d77-699c-47be-864e-fbe99e7f5c14",
+		"_postman_id": "97c7ea84-08b5-44ce-ba09-34bbbb140024",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -5762,7 +5762,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -5827,7 +5827,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -5892,7 +5892,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -5957,7 +5957,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -6022,7 +6022,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -6087,7 +6087,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -6152,7 +6152,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"
@@ -6230,7 +6230,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId18}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2000-07-27T04:17:23.131Z\",\r\n  \"endDate\": \"2000-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 3000,\r\n  \"customerRate\": 3500,\r\n  \"rateType\": \"weekly\"\r\n}",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId18}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2000-07-27T04:17:23.131Z\",\r\n  \"endDate\": \"2000-09-21T04:17:23.131Z\",\r\n  \"memberRate\": 3000,\r\n  \"customerRate\": 3500,\r\n  \"rateType\": \"weekly\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6279,7 +6279,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId19}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2022-07-27T04:17:23.131Z\",\r\n  \"endDate\": \"2022-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 1700,\r\n  \"customerRate\": 1900,\r\n  \"rateType\": \"weekly\"\r\n}",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"{{demoUserId19}}\",\r\n  \"jobId\": \"{{demoJobId3}}\",\r\n  \"startDate\": \"2022-07-27T04:17:23.131Z\",\r\n  \"endDate\": \"2022-09-21T04:17:23.131Z\",\r\n  \"memberRate\": 1700,\r\n  \"customerRate\": 1900,\r\n  \"rateType\": \"weekly\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6324,7 +6324,7 @@
 											"startDate.setDate(startDate.getDate() - 3);",
 											"",
 											"const endDate = new Date()",
-											"endDate.setDate(endDate.getDate() + 3);",
+											"endDate.setDate(endDate.getDate() + 4);",
 											"",
 											"postman.setEnvironmentVariable(\"resourceStartDate\", startDate.toUTCString());",
 											"postman.setEnvironmentVariable(\"resourceEndDate\", endDate.toUTCString());"

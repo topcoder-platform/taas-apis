@@ -649,7 +649,7 @@ function calculateDuration ({ startDate, endDate, duration }) {
       throw new errors.BadRequestError('end date must be one or multiple weeks ahead of start date')
     }
     if (duration && actualDuration !== duration) {
-      throw new errors.BadRequestError('duration not match with the actual duration bwteen startDate and endDate')
+      throw new errors.BadRequestError('duration does not match the actual duration in weeks between startDate and endDate')
     }
     return { startDate, endDate, duration: actualDuration }
   }
