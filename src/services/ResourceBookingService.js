@@ -105,7 +105,6 @@ async function createResourceBooking (currentUser, resourceBooking) {
   resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
-  resourceBooking.status = 'sourcing'
 
   const created = await ResourceBooking.create(resourceBooking)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, resourceBooking)
@@ -115,6 +114,7 @@ async function createResourceBooking (currentUser, resourceBooking) {
 createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),

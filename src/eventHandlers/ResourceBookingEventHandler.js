@@ -3,6 +3,7 @@
  */
 
 const { Op } = require('sequelize')
+const _ = require('lodash')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -18,7 +19,7 @@ const JobCandidateService = require('../services/JobCandidateService')
  * @returns {undefined}
  */
 async function selectJobCandidate (payload) {
-  if (payload.value.status === payload.options.oldValue.status) {
+  if (_.get(payload, 'options.oldValue') && payload.value.status === payload.options.oldValue.status) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'selectJobCandidate',
@@ -73,7 +74,7 @@ async function selectJobCandidate (payload) {
  * @returns {undefined}
  */
 async function assignJob (payload) {
-  if (payload.value.status === payload.options.oldValue.status) {
+  if (_.get(payload, 'options.oldValue') && payload.value.status === payload.options.oldValue.status) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'assignJob',
@@ -126,6 +127,17 @@ async function assignJob (payload) {
 }
 
 /**
+ * Process resource booking create event.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function processCreate (payload) {
+  await selectJobCandidate(payload)
+  await assignJob(payload)
+}
+
+/**
  * Process resource booking update event.
  *
  * @param {Object} payload the event payload
@@ -137,5 +149,6 @@ async function processUpdate (payload) {
 }
 
 module.exports = {
+  processCreate,
   processUpdate
 }

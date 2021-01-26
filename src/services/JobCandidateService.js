@@ -92,7 +92,6 @@ async function createJobCandidate (currentUser, jobCandidate) {
   jobCandidate.id = uuid()
   jobCandidate.createdAt = new Date()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
-  jobCandidate.status = 'open'
 
   const created = await JobCandidate.create(jobCandidate)
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, jobCandidate)
@@ -102,6 +101,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
 createJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidate: Joi.object().keys({
+    status: Joi.jobCandidateStatus().default('open'),
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
     externalId: Joi.string(),
