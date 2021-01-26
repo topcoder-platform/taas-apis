@@ -149,6 +149,10 @@ async function createJob (currentUser, job) {
   }
 
   await _validateSkills(job.skills)
+
+  // create startDate, endDate and/or duration
+  Object.assign(job, helper.calculateDuration(_.pick(job, ['startDate', 'endDate', 'duration'])))
+
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
@@ -168,6 +172,7 @@ createJob.schema = Joi.object().keys({
     title: Joi.title().required(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string(),
     rateType: Joi.rateType(),
@@ -189,6 +194,13 @@ async function updateJob (currentUser, id, data) {
   }
   let job = await Job.findById(id)
   const oldValue = job.toJSON()
+
+  // update startDate, endDate and/or duration
+  Object.assign(data, helper.updateDuration(
+    _.pick(job, ['startDate', 'endDate', 'duration']),
+    _.pick(data, ['startDate', 'endDate', 'duration'])
+  ))
+
   const ubahnUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     // Check whether user can update the job.
@@ -229,6 +241,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
     title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     numPositions: Joi.number().integer().min(1),
     resourceType: Joi.string(),
     rateType: Joi.rateType(),
@@ -258,6 +271,7 @@ fullyUpdateJob.schema = Joi.object().keys({
     title: Joi.title().required(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string(),
     rateType: Joi.rateType(),

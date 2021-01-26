@@ -57,6 +57,9 @@
   "standard": {
     "env": [
       "mocha"
+    ],
+    "ignore": [
+      "docs/swagger-ui/"
     ]
   },
   "nyc": {

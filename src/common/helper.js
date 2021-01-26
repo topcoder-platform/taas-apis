@@ -4,6 +4,7 @@
 
 const querystring = require('querystring')
 const AWS = require('aws-sdk')
+const dateFNS = require('date-fns')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
@@ -614,6 +615,88 @@ async function checkIsMemberOfProject (userId, projectId) {
   }
 }
 
+/**
+ * Do calculation between startDate, endDate and duration.
+ * Logic of the calculation is:
+ *  - start + duration => calculate end
+ *  - end + duration => calculate start
+ *  - start + end => calculate duration
+ *  - start + end + duration => check if (end - start = duration)
+ *
+ * @param {Object} startDate the start date - endDate the end date - duration the duration
+ * @returns {Object} the object containing startDate, endDate and duration
+ */
+function calculateDuration ({ startDate, endDate, duration }) {
+  localLogger.debug({ context: 'calculateDuration', message: `startDate: ${startDate}, endDate: ${endDate}, duration: ${duration}` })
+  if (startDate && !endDate && duration) {
+    return {
+      startDate,
+      endDate: dateFNS.addWeeks(new Date(startDate), duration),
+      duration
+    }
+  }
+  if (!startDate && endDate && duration) {
+    return {
+      startDate: dateFNS.subWeeks(new Date(endDate), duration),
+      endDate,
+      duration
+    }
+  }
+  if (startDate && endDate) {
+    const diffDate = new Date(new Date(endDate).getTime() - new Date(startDate).getTime())
+    const actualDuration = diffDate.getTime() / (7 * 24 * 60 * 60 * 1000) // divided by one week
+    if (!Number.isInteger(actualDuration) || actualDuration < 1) {
+      throw new errors.BadRequestError('end date must be one or multiple weeks ahead of start date')
+    }
+    if (duration && actualDuration !== duration) {
+      throw new errors.BadRequestError('duration not match with the actual duration bwteen startDate and endDate')
+    }
+    return { startDate, endDate, duration: actualDuration }
+  }
+  return {}
+}
+
+/**
+ * Update original duration object(i.e. the startDate, endDate and duration fields) from a new one.
+ * There are two cases to be considered:
+ *
+ *  - When there is only one of the startDate, endDate and duration fields is to be updated,
+ *    then try to re-calculate the duration object with the field.
+ *
+ *  - When there are more than one of the startDate, endDate and duration fields are to be updated,
+ *    then drop the original duration object and use the new one calculated from the fields.
+ *
+ * @param {Object} original the original duration object
+ * @param {Object} data the new duration object
+ * @returns {Object} the updated duration object
+ */
+function updateDuration (original, data) {
+  const modifiedFields = _.reduce(['startDate', 'endDate', 'duration'], (result, field) => {
+    if (data[field] && !_.isEqual(data[field], original[field])) {
+      result.push(field)
+    }
+    return result
+  }, [])
+  if (!modifiedFields.length) {
+    return {}
+  }
+  localLogger.debug({ context: 'updateDuration', message: `modified fields: ${modifiedFields}` })
+  const fieldsCount = Object.keys(data).length
+  if (fieldsCount === 1) {
+    return calculateDuration(_.reduce(['startDate', 'endDate', 'duration'], (result, field) => {
+      if (modifiedFields[0] === field) {
+        result[field] = data[field]
+        return result
+      }
+      result[field] = original[field]
+      return result
+    }, {}))
+  }
+  if (fieldsCount > 1) {
+    return calculateDuration(data)
+  }
+}
+
 module.exports = {
   checkIfExists,
   autoWrapExpress,
@@ -641,5 +724,7 @@ module.exports = {
   ensureJobById,
   ensureUserById,
   getAuditM2Muser,
-  checkIsMemberOfProject
+  checkIsMemberOfProject,
+  calculateDuration,
+  updateDuration
 }

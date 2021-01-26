@@ -102,6 +102,9 @@ async function createResourceBooking (currentUser, resourceBooking) {
   }
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
+  // create startDate, endDate and/or duration
+  Object.assign(resourceBooking, helper.calculateDuration(_.pick(resourceBooking, ['startDate', 'endDate', 'duration'])))
+
   resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
@@ -120,6 +123,7 @@ createResourceBooking.schema = Joi.object().keys({
     jobId: Joi.string().uuid(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     memberRate: Joi.number(),
     customerRate: Joi.number(),
     rateType: Joi.rateType().required()
@@ -141,6 +145,12 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
+
+  // update startDate, endDate and/or duration
+  Object.assign(data, helper.updateDuration(
+    _.pick(resourceBooking, ['startDate', 'endDate', 'duration']),
+    _.pick(data, ['startDate', 'endDate', 'duration'])
+  ))
 
   data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
@@ -169,6 +179,7 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
     status: Joi.jobStatus(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     memberRate: Joi.number(),
     customerRate: Joi.number(),
     rateType: Joi.rateType()
@@ -199,6 +210,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     jobId: Joi.string().uuid(),
     startDate: Joi.date(),
     endDate: Joi.date(),
+    duration: Joi.number().integer().min(1),
     memberRate: Joi.number(),
     customerRate: Joi.number(),
     rateType: Joi.rateType().required(),

@@ -69,7 +69,7 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255)
       },
       description: {
-        type: Sequelize.TEXT, // technically unlimited length
+        type: Sequelize.TEXT // technically unlimited length
       },
       title: {
         type: Sequelize.STRING(128),
@@ -82,6 +82,10 @@ module.exports = (sequelize) => {
       endDate: {
         field: 'end_date',
         type: Sequelize.DATE
+      },
+      duration: {
+        field: 'duration',
+        type: Sequelize.INTEGER
       },
       numPositions: {
         field: 'num_positions',
