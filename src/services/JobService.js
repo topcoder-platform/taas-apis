@@ -225,6 +225,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
+    externalId: Joi.string(),
     description: Joi.string(),
     title: Joi.title(),
     startDate: Joi.date(),
