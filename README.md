@@ -5,67 +5,10 @@
 - nodejs https://nodejs.org/en/ (v12+)
 - PostgreSQL
 - ElasticSearch (7.x)
-- Docker
+- Zookeeper
+- Kafka
+- Docker(version 20.10 and above)
 - Docker-Compose
-
-## Configuration
-
-Configuration for the application is at `config/default.js`.
-
-The following parameters can be set in config files or in env variables:
-
-- `LOG_LEVEL`: the log level, default is 'debug'
-- `PORT`: the server port, default is 3000
-- `BASE_PATH`: the server api base path
-- `AUTH_SECRET`: The authorization secret used during token verification.
-- `VALID_ISSUERS`: The valid issuer of tokens, a json array contains valid issuer.
-
-- `AUTH0_URL`: Auth0 URL, used to get TC M2M token
-- `AUTH0_AUDIENCE`: Auth0 audience, used to get TC M2M token
-- `AUTH0_AUDIENCE_UBAHN`: Auth0 audience for U-Bahn
-- `TOKEN_CACHE_TIME`: Auth0 token cache time, used to get TC M2M token
-- `AUTH0_CLIENT_ID`: Auth0 client id, used to get TC M2M token
-- `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
-- `AUTH0_PROXY_SERVER_URL`: Proxy Auth0 URL, used to get TC M2M token
-
-- `m2m.M2M_AUDIT_USER_ID`: default value is `00000000-0000-0000-0000-000000000000`
-- `m2m.M2M_AUDIT_HANDLE`: default value is `TopcoderService`
-
-- `DATABASE_URL`: PostgreSQL database url.
-- `DB_SCHEMA_NAME`: string - PostgreSQL database target schema
-- `PROJECT_API_URL`: the project service url
-- `TC_API`: the Topcoder v5 url
-- `ORG_ID`: the organization id
-- `TOPCODER_SKILL_PROVIDER_ID`: the referenced skill provider id
-
-- `esConfig.HOST`: the elasticsearch host
-- `esConfig.ES_INDEX_JOB`: the job index
-- `esConfig.ES_INDEX_JOB_CANDIDATE`: the job candidate index
-- `esConfig.ES_INDEX_RESOURCE_BOOKING`: the resource booking index
-- `esConfig.AWS_REGION`: The Amazon region to use when using AWS Elasticsearch service
-- `esConfig.ELASTICCLOUD.id`: The elastic cloud id, if your elasticsearch instance is hosted on elastic cloud. DO NOT provide a value for ES_HOST if you are using this
-- `esConfig.ELASTICCLOUD.username`: The elastic cloud username for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
-- `esConfig.ELASTICCLOUD.password`: The elastic cloud password for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
-
-- `BUSAPI_URL`: Topcoder Bus API URL
-- `KAFKA_ERROR_TOPIC`: The error topic at which bus api will publish any errors
-- `KAFKA_MESSAGE_ORIGINATOR`: The originator value for the kafka messages
-
-- `TAAS_JOB_CREATE_TOPIC`: the create job entity Kafka message topic
-- `TAAS_JOB_UPDATE_TOPIC`: the update job entity Kafka message topic
-- `TAAS_JOB_DELETE_TOPIC`: the delete job entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_CREATE_TOPIC`: the create job candidate entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_UPDATE_TOPIC`: the update job candidate entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_DELETE_TOPIC`: the delete job candidate entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_CREATE_TOPIC`: the create resource booking entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_UPDATE_TOPIC`: the update resource booking entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_DELETE_TOPIC`: the delete resource booking entity Kafka message topic
-
-
-## PostgreSQL Database Setup
-- Go to https://www.postgresql.org/ download and install the PostgreSQL.
-- Modify `DATABASE_URL` under `config/default.js` to meet your environment.
-- Run `npm run init-db` to create table(run `npm run init-db force` to force creating table)
 
 ## DB Migration
 - `npm run migrate`: run any migration files which haven't run yet.
@@ -80,27 +23,186 @@ The following parameters can be set in the config file or via env variables:
 - `database`: set via env `DB_NAME`; datebase name
 - `host`: set via env `DB_HOST`; datebase host name
 
-## ElasticSearch Setup
-- Go to https://www.elastic.co/downloads/ download and install the elasticsearch.
-- Modify `esConfig` under `config/default.js` to meet your environment.
-- Run `npm run create-index` to create ES index.
-- Run `npm run delete-index` to delete ES index.
+### Steps to run locally
+1. 📦 Install npm dependencies
 
-## Local Deployment
+   ```bash
+   npm install
+   ```
 
-- Install dependencies `npm install`
-- Run lint `npm run lint`
-- Run lint fix `npm run lint:fix`
-- Clear and init db `npm run init-db force`
-- Clear and create es index
+2. ⚙ Local config
+
+    1. In the root directory create `.env` file with the next environment variables. Values for **Auth0 config** should be shared with you on the forum.<br>
+       ```bash
+       # Auth0 config
+       AUTH0_URL=
+       AUTH0_AUDIENCE=
+       AUTH0_AUDIENCE_UBAHN=
+       AUTH0_CLIENT_ID=
+       AUTH0_CLIENT_SECRET=
+       AUTH0_PROXY_SERVER_URL=
+
+       # Locally deployed services (via docker-compose)
+       ES_HOST=http://dockerhost:9200
+       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
+       BUSAPI_URL=http://dockerhost:8002/v5
+       ```
+
+       - Values from this file would be automatically used by many `npm` commands.
+       - ⚠️ Never commit this file or its copy to the repository!
+
+    1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
+       ```
+       127.0.0.1       dockerhost
+       ```
+
+       Alternatively, you may update `.env` file and replace `dockerhost` with your docker IP address.
+
+1. 🚢 Start docker-compose with services which are required to start Taas API locally
+
+   *(NOTE Please ensure that you have installed docker of version 20.10 or above since the docker-compose file uses new feature introduced by docker version 20.10. Run `docker --version` to check your docker version.)*
+
+   ```bash
+   npm run services:up
+   ```
+
+   Wait until all containers are fully started. As a good indicator, wait until `es-processor` successfully started by viewing its logs:
+
+   ```bash
+   npm run services:logs -- -f es-processor
+   ```
+
+   <details><summary>🖱️ Click to see a good logs example</summary>
 
     ``` bash
-    npm run delete-index # run this if you already created index
-    npm run create-index
+    tc-taas-es-processor | Waiting for kafka-client to exit....
+    tc-taas-es-processor | kafka-client exited!
+    tc-taas-es-processor |
+    tc-taas-es-processor | > taas-es-processor@1.0.0 start /opt/app
+    tc-taas-es-processor | > node src/app.js
+    tc-taas-es-processor |
+    tc-taas-es-processor | [2021-01-21T02:44:43.442Z] app INFO : Starting kafka consumer
+    tc-taas-es-processor | 2021-01-21T02:44:44.534Z INFO no-kafka-client Joined group taas-es-processor generationId 1 as no-kafka-client-70c25a43-af93-495e-a123-0c4f4ea389eb
+    tc-taas-es-processor | 2021-01-21T02:44:44.534Z INFO no-kafka-client Elected as group leader
+    tc-taas-es-processor | 2021-01-21T02:44:44.614Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.615Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.615Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.616Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.616Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.617Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.617Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.618Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | 2021-01-21T02:44:44.618Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
+    tc-taas-es-processor | [2021-01-21T02:44:44.619Z] app INFO : Initialized.......
+    tc-taas-es-processor | [2021-01-21T02:44:44.623Z] app INFO : taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete
+    tc-taas-es-processor | [2021-01-21T02:44:44.623Z] app INFO : Kick Start.......
+    tc-taas-es-processor | ********** Topcoder Health Check DropIn listening on port 3001
+    tc-taas-es-processor | Topcoder Health Check DropIn started and ready to roll
     ```
 
-- Start app `npm start`
-- App is running at `http://localhost:3000`
+   </details>
+
+   If you want to learn more about docker-compose configuration
+   <details><summary>🖱️ Click to see more details here</summary>
+   <br>
+
+      This docker-compose file starts the next services:
+      |  Service | Name | Port  |
+      |----------|:-----:|:----:|
+      | PostgreSQL | db | 5432 |
+      | Elasticsearch | esearch | 9200 |
+      | Zookeeper | zookeeper | 2181  |
+      | Kafka | kafka | 9092  |
+      | [tc-bus-api](https://github.com/topcoder-platform/tc-bus-api) | bus-api | 8002  |
+      | [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) | es-processor | 5000  |
+
+      - as many of the Topcoder services in this docker-compose require Auth0 configuration for M2M calls, our docker-compose file passes environment variables `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_URL`, `AUTH0_AUDIENCE`, `AUTH0_PROXY_SERVER_URL` to its containers. docker-compose takes them from `.env` file if provided.
+
+      - `docker-compose` automatically would create Kafka topics which are used by `taas-apis` listed in `./local/kafka-client/topics.txt`.
+
+      - To view the logs from any container inside docker-compose use the following command, replacing `SERVICE_NAME` with the corresponding value under the **Name** column in the above table:
+
+        ```bash
+        npm run services:logs -- -f SERVICE_NAME
+        ```
+
+      - If you want to modify the code of any of the services which are run inside this docker-compose file, you can stop such service inside docker-compose by command `docker-compose -f local/docker-compose.yaml stop <SERVICE_NAME>` and run the service separately, following its README file.<br /><br />
+      *NOTE: If kafka(along with zookeeper) is stopped and brings up in the host machine you will need to restart the `es-processor` service by running `docker-compose -f local/docker-compose.yaml restart es-processor` so the processor will connect with the new zookeeper.*
+
+   *NOTE: In production these dependencies / services are hosted & managed outside Taas API.*
+
+2. ♻ Init DB and ES
+
+   ```bash
+   npm run local:init
+   ```
+
+   This command will do 2 things:
+   - create Database tables
+   - create Elasticsearch indexes
+
+3. 🚀 Start Taas API
+
+   ```bash
+   npm run dev
+   ```
+
+   Runs the Taas API using nodemon, so it would be restarted after any of the files is updated.
+   The API will be served on `http://localhost:3000`.
+
+## NPM Commands
+
+| Command                                      | Description                                                          |
+| --                                           | --                                                                   |
+| `npm start`                                  | Start app.                                                           |
+| `npm run dev`                                | Start app using `nodemon`.                                           |
+| `npm run lint`                               | Check for for lint errors.                                           |
+| `npm run lint:fix`                           | Check for for lint errors and fix error automatically when possible. |
+| `npm run services:up`                        | Start services via docker-compose for local development.             |
+| `npm run services:down`                      | Stop services via docker-compose for local development.              |
+| `npm run services:logs -- -f <service_name>` | View logs of some service inside docker-compose.                     |
+| `npm run local:init`                         | Create Database and Elasticsearch indexes.                           |
+| `npm run init-db`                            | Create database.                                                     |
+| `npm run init-db force`                      | Force re-creating database.                                          |
+| `npm run create-index`                       | Create Elasticsearch indexes.                                        |
+| `npm run delete-index`                       | Delete Elasticsearch indexes.                                        |
+| `npm run migrate`                            | Run DB migration.                                                    |
+| `npm run migrate:undo`                       | Undo DB migration executed previously                                |
+| `npm run test-data`                          | Insert test data.                                                    |
+| `npm run test`                               | Run tests.                                                           |
+| `npm run cov`                                | Run test with coverage.                                              |
+
+## Kafka Commands
+
+You can use the following commands to manipulate kafka topics and messages:
+
+(Replace `TOPIC_NAME` with the name of the desired topic)
+
+### Create Topic
+
+```bash
+docker exec tc-taas-kafka /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic TOPIC_NAME
+```
+
+### List Topics
+
+```bash
+docker exec tc-taas-kafka /opt/kafka/bin/kafka-topics.sh --list --zookeeper zookeeper:2181
+```
+
+### Watch Topic
+
+```bash
+docker exec  tc-taas-kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic TOPIC_NAME
+```
+
+### Post Message to Topic (from stdin)
+
+```bash
+docker exec -it tc-taas-kafka /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic TOPIC_NAME
+```
+
+- Enter or copy/paste the message into the console after starting this command.
 
 ## Local Deployment with Docker
 
