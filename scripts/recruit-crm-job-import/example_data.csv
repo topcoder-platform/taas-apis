@@ -1,0 +1,8 @@
+DirectprojectId,projectId,externalId,title,startDate,endDate,numPositions,userHandle,jobid,customerRate,memberRate
+24568,(dynamic load),,taas-demo-job5,10/26/2020,01/29/2021,2,nkumartest,(dynamic load),20,10
+24568,(dynamic load),0,taas-demo-job5,10/26/2020,01/29/2021,2,not_found_handle,(dynamic load),20,10
+24568,(dynamic load),0,taas-demo-job5,10/26/2020,01/29/2021,2,nkumartest,(dynamic load),20,10
+24567,(dynamic load),1212,Dummy Description,10/20/2020,01/29/2021,2,pshah_manager,(dynamic load),150,100
+24566,(dynamic load),23850272,33fromzaps330,02/21/2021,03/15/2021,7,nkumar2,(dynamic load),50,30
+24565,(dynamic load),23843365,Designer,02/24/2021,03/30/2021,1,GunaK-TopCoder,(dynamic load),70,70
+24564,(dynamic load),23836459,demo-dev-19janV4,01/20/2021,01/30/2021,1,nkumar1,(dynamic load),400,200
