@@ -1002,6 +1002,32 @@ paths:
             type: string
             enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: The rate type.
+        - in: query
+          name: jobId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: The job id.
+        - in: query
+          name: userId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: The job id.
+        - in: query
+          name: projectId
+          required: false
+          schema:
+            type: integer
+          description: The project id.
+        - in: query
+          name: projectIds
+          required: false
+          schema:
+            type: string
+          description: comma separated project ids.
           
       responses:
         '200':

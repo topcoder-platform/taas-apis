@@ -290,7 +290,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       }
     }
 
-    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId']), (value, key) => {
+    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -328,7 +328,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.projectIds) {
@@ -363,6 +363,8 @@ searchResourceBookings.schema = Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),
+    jobId: Joi.string().uuid(),
+    userId: Joi.string().uuid(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),
