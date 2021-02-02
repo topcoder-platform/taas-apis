@@ -19,7 +19,7 @@ class Report {
   // print the last message to the console
   print () {
     const lastMessage = this.messages[this.messages.length - 1]
-    const output = `#${lastMessage.lnum} - ${lastMessage.info.join('; ')}`
+    const output = `#${lastMessage.lnum} - ${_.map(lastMessage.info, 'text').join('; ')}`
     if (lastMessage.status === constants.ProcessingStatus.Skipped) {
       logger.warn(output)
     }
@@ -33,15 +33,26 @@ class Report {
 
   // print a summary to the console
   printSummary () {
+    // summarize total success, failure, skips
     const groups = _.groupBy(this.messages, 'status')
-    const sucesss = groups[constants.ProcessingStatus.Successful] || []
+    const success = groups[constants.ProcessingStatus.Successful] || []
     const failure = groups[constants.ProcessingStatus.Failed] || []
     const skips = groups[constants.ProcessingStatus.Skipped] || []
+    // summarize records created or already existing
+    const groupsByTag = _.groupBy(_.flatten(_.map(this.messages, message => message.info)), 'tag')
+    const jobsCreated = groupsByTag.job_created || []
+    const resourceBookingsCreated = groupsByTag.resource_booking_created || []
+    const jobsAlreadyExist = groupsByTag.job_already_exists || []
+    const resourceBookingsAlreadyExist = groupsByTag.resource_booking_already_exists || []
     logger.info('=== summary ===')
     logger.info(`total: ${this.messages.length}`)
-    logger.info(`success: ${sucesss.length}`)
+    logger.info(`success: ${success.length}`)
     logger.info(`failure: ${failure.length}`)
     logger.info(`skips: ${skips.length}`)
+    logger.info(`jobs created: ${jobsCreated.length}`)
+    logger.info(`resource bookings created: ${resourceBookingsCreated.length}`)
+    logger.info(`jobs already exist: ${jobsAlreadyExist.length}`)
+    logger.info(`resource bookings already exist: ${resourceBookingsAlreadyExist.length}`)
     logger.info('=== summary ===')
   }
 }
