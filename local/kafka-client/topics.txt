@@ -1,0 +1,9 @@
+taas.job.create
+taas.jobcandidate.create
+taas.resourcebooking.create
+taas.job.update
+taas.jobcandidate.update
+taas.resourcebooking.update
+taas.job.delete
+taas.jobcandidate.delete
+taas.resourcebooking.delete

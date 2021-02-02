@@ -15,6 +15,10 @@
     "migrate:undo": "npx sequelize db:migrate:undo",
     "test-data": "node scripts/insert-es-data.js",
     "test": "mocha test/unit/*.test.js --timeout 30000 --exit",
+    "services:up": "docker-compose -f ./local/docker-compose.yml up -d",
+    "services:down": "docker-compose -f ./local/docker-compose.yml down",
+    "services:logs": "docker-compose -f ./local/docker-compose.yml logs",
+    "local:init": "npm run create-index && npm run init-db",
     "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --timeout 30000 --exit"
   },
   "keywords": [],
