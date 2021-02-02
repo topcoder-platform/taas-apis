@@ -7,14 +7,14 @@
 module.exports = {
   up: queryInterface => {
     return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(128)'),
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ALTER COLUMN description TYPE TEXT')
+      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(128)`),
+      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN description TYPE TEXT`)
     ])
   },
   down: queryInterface => {
     return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(64)'),
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ALTER COLUMN description TYPE VARCHAR(255)')
+      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(64)`),
+      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN description TYPE VARCHAR(255)`)
     ])
   }
 }
