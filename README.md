@@ -1,12 +1,10 @@
 # Topcoder Bookings API
 
-## Dependencies
+## Requirements
 
-- nodejs https://nodejs.org/en/ (v12+)
-- PostgreSQL
-- ElasticSearch (7.x)
-- Docker
-- Docker-Compose
+- [Node.js](https://nodejs.org/en/) v12+
+- [Docker](https://www.docker.com/)
+- [Docker-Compose](https://docs.docker.com/compose/install/)
 
 ### Steps to run locally
 
@@ -204,7 +202,3 @@ The following parameters can be set in the config file or via env variables:
 
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
-
-## Verification
-
-Refer to the verification document [Verification.md](Verification.md)
