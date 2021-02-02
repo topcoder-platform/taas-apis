@@ -1,7 +1,7 @@
 {
-  "name": "topcoder-bookings-api",
+  "name": "taas-apis",
   "version": "1.0.0",
-  "description": "Topcoder Bookings API",
+  "description": "Topcoder TaaS API",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

@@ -1,4 +1,4 @@
-# Topcoder Bookings API
+# Topcoder TaaS API
 
 ## Requirements
 
@@ -43,7 +43,7 @@
 
       Alternatively, you may update `.env` file and replace `dockerhost` with your docker IP address.
 
-3. 🚢 Start docker-compose with services which are required to start Topcoder Bookings API locally
+3. 🚢 Start docker-compose with services which are required to start Topcoder TaaS API locally
 
    ```bash
    npm run services:up
@@ -109,7 +109,7 @@
 
    </details>
 
-   _NOTE: In production these dependencies / services are hosted & managed outside Topcoder Bookings API._
+   _NOTE: In production these dependencies / services are hosted & managed outside Topcoder TaaS API._
 
 4. ♻ Init DB, ES
 
@@ -122,14 +122,14 @@
    - create Database table
    - create Elasticsearch indexes
 
-5. 🚀 Start Topcoder Bookings API
+5. 🚀 Start Topcoder TaaS API
 
    ```bash
    npm run dev
    ```
 
-   Runs the Topcoder Bookings API using nodemon, so it would be restarted after any of the files is updated.
-   The Topcoder Bookings API will be served on `http://localhost:3000`.
+   Runs the Topcoder TaaS API using nodemon, so it would be restarted after any of the files is updated.
+   The Topcoder TaaS API will be served on `http://localhost:3000`.
 
 ## NPM Commands
 
