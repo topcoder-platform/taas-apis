@@ -47,6 +47,9 @@ module.exports = {
   // the project service url
   PROJECT_API_URL: process.env.PROJECT_API_URL || 'https://api.topcoder-dev.com',
 
+  // the default path for importing and exporting data
+  DEFAULT_DATA_FILE_PATH: './data/demo-data.json',
+
   esConfig: {
     // the elasticsearch host
     HOST: process.env.ES_HOST || 'http://localhost:9200',
@@ -68,7 +71,12 @@ module.exports = {
     // the job candidate index
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
     // the resource booking index
-    ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking'
+    ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
+
+    // the max bulk size in MB for ES indexing
+    MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
+    // the max number of documents per bulk for ES indexing
+    MAX_BULK_NUM_DOCUMENTS: process.env.MAX_BULK_NUM_DOCUMENTS || 100
   },
 
   // Topcoder Bus API URL
