@@ -133,7 +133,7 @@ async function processJob (job, info = []) {
     data.resourceBookingId = result.id
   }
   // update the resourceBooking based on startDate and endDate
-  const resourceBookingStatus = dateFNS.compareAsc(new Date(data.startDate), new Date(data.endDate)) === 1 ? 'closed' : 'assigned'
+  const resourceBookingStatus = dateFNS.isBefore(data.endDate, dateFNS.startOfToday()) ? 'closed' : 'assigned'
   logger.debug(`resourceBookingId: ${data.resourceBookingId} status: ${resourceBookingStatus}`)
   await helper.updateResourceBookingStatus(data.resourceBookingId, resourceBookingStatus)
   info.push({ text: `id: ${data.resourceBookingId} status: ${resourceBookingStatus} resource booking updated`, tag: 'resource_booking_status_updated' })
