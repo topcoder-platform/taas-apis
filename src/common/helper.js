@@ -2,7 +2,9 @@
  * This file defines helper methods
  */
 
+const fs = require('fs')
 const querystring = require('querystring')
+const Confirm = require('prompt-confirm')
 const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
@@ -49,6 +51,377 @@ function getBusApiClient () {
 
 // ES Client mapping
 const esClients = {}
+
+// The es index property mapping
+const esIndexPropertyMapping = {}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
+  projectId: { type: 'integer' },
+  externalId: { type: 'keyword' },
+  description: { type: 'text' },
+  title: { type: 'text' },
+  startDate: { type: 'date' },
+  endDate: { type: 'date' },
+  numPositions: { type: 'integer' },
+  resourceType: { type: 'keyword' },
+  rateType: { type: 'keyword' },
+  workload: { type: 'keyword' },
+  skills: { type: 'keyword' },
+  status: { type: 'keyword' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
+  jobId: { type: 'keyword' },
+  userId: { type: 'keyword' },
+  status: { type: 'keyword' },
+  externalId: { type: 'keyword' },
+  resume: { type: 'text' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
+  projectId: { type: 'integer' },
+  userId: { type: 'keyword' },
+  jobId: { type: 'keyword' },
+  status: { type: 'keyword' },
+  startDate: { type: 'date' },
+  endDate: { type: 'date' },
+  memberRate: { type: 'float' },
+  customerRate: { type: 'float' },
+  rateType: { type: 'keyword' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+
+/**
+ * Get the first parameter from cli arguments
+ */
+function getParamFromCliArgs () {
+  const filteredArgs = process.argv.filter(arg => !arg.includes('--'))
+
+  if (filteredArgs.length > 2) {
+    return filteredArgs[2]
+  }
+
+  return null
+}
+
+/**
+ * Prompt the user with a y/n query and call a callback function based on the answer
+ * @param {string} promptQuery the query to ask the user
+ * @param {function} cb the callback function
+ */
+async function promptUser (promptQuery, cb) {
+  if (process.argv.includes('--force')) {
+    await cb()
+    return
+  }
+
+  const prompt = new Confirm(promptQuery)
+  prompt.ask(async (answer) => {
+    if (answer) {
+      await cb()
+    }
+  })
+}
+
+/**
+ * Create index in elasticsearch
+ * @param {Object} index the index name
+ * @param {Object} logger the logger object
+ * @param {Object} esClient the elasticsearch client (optional, will create if not given)
+ */
+async function createIndex (index, logger, esClient = null) {
+  if (!esClient) {
+    esClient = getESClient()
+  }
+
+  await esClient.indices.create({
+    index,
+    body: {
+      mappings: {
+        properties: esIndexPropertyMapping[index]
+      }
+    }
+  })
+  logger.info({ component: 'createIndex', message: `ES Index ${index} creation succeeded!` })
+}
+
+/**
+ * Delete index in elasticsearch
+ * @param {Object} index the index name
+ * @param {Object} logger the logger object
+ * @param {Object} esClient the elasticsearch client (optional, will create if not given)
+ */
+async function deleteIndex (index, logger, esClient = null) {
+  if (!esClient) {
+    esClient = getESClient()
+  }
+
+  await esClient.indices.delete({ index })
+  logger.info({ component: 'deleteIndex', message: `ES Index ${index} deletion succeeded!` })
+}
+
+/**
+ * Split data into bulks
+ * @param {Array} data the array of data to split
+ */
+function getBulksFromDocuments (data) {
+  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6
+  const bulks = []
+  let documentIndex = 0
+  let currentBulkSize = 0
+  let currentBulk = []
+
+  while (true) {
+    // break loop when parsed all documents
+    if (documentIndex >= data.length) {
+      bulks.push(currentBulk)
+      break
+    }
+
+    // check if current document size is greater than the max bulk size, if so, throw error
+    const currentDocumentSize = Buffer.byteLength(JSON.stringify(data[documentIndex]), 'utf-8')
+    if (maxBytes < currentDocumentSize) {
+      throw new Error(`Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`)
+    }
+
+    if (currentBulkSize + currentDocumentSize > maxBytes ||
+        currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')) {
+      // if adding the current document goes over the max bulk size OR goes over max number of docs
+      // then push the current bulk to bulks array and reset the current bulk
+      bulks.push(currentBulk)
+      currentBulk = []
+      currentBulkSize = 0
+    } else {
+      // otherwise, add document to current bulk
+      currentBulk.push(data[documentIndex])
+      currentBulkSize += currentDocumentSize
+      documentIndex++
+    }
+  }
+  return bulks
+}
+
+/**
+* Index records in bulk
+* @param {Object} modelName the model name in db
+* @param {Object} indexName the index name
+* @param {Object} logger the logger object
+*/
+async function indexBulkDataToES (modelName, indexName, logger) {
+  logger.info({ component: 'indexBulkDataToES', message: `Reindexing of ${modelName}s started!` })
+
+  const esClient = getESClient()
+
+  // clear index
+  const indexExistsRes = await esClient.indices.exists({ index: indexName })
+  if (indexExistsRes.statusCode !== 404) {
+    await deleteIndex(indexName, logger, esClient)
+  }
+  await createIndex(indexName, logger, esClient)
+
+  // get data from db
+  logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
+  const model = models[modelName]
+  const data = await model.findAll({ raw: true })
+  if (_.isEmpty(data)) {
+    logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
+    return
+  }
+  const bulks = getBulksFromDocuments(data)
+
+  const startTime = Date.now()
+  let doneCount = 0
+  for (const bulk of bulks) {
+    // send bulk to esclient
+    const body = bulk.flatMap(doc => [{ index: { _index: indexName, _id: doc.id } }, doc])
+    await esClient.bulk({ refresh: true, body })
+    doneCount += bulk.length
+
+    // log metrics
+    const timeSpent = Date.now() - startTime
+    const avgTimePerDocument = timeSpent / doneCount
+    const estimatedLength = (avgTimePerDocument * data.length)
+    const timeLeft = (startTime + estimatedLength) - Date.now()
+    logger.info({
+      component: 'indexBulkDataToES',
+      message: `Processed ${doneCount} of ${data.length} documents, average time per document ${formatTime(avgTimePerDocument)}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(timeLeft)}`
+    })
+  }
+}
+
+/**
+ * Index job by id
+ * @param {Object} modelName the model name in db
+ * @param {Object} indexName the index name
+ * @param {string} id the job id
+ * @param {Object} logger the logger object
+ */
+async function indexDataToEsById (id, modelName, indexName, logger) {
+  logger.info({ component: 'indexDataToEsById', message: `Reindexing of ${modelName} with id ${id} started!` })
+  const esClient = getESClient()
+
+  logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
+  const model = models[modelName]
+
+  const data = await model.findById(id)
+  logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
+  await esClient.index({
+    index: indexName,
+    id: id,
+    body: _.omit(data.dataValues, 'id')
+  })
+  logger.info({ component: 'indexDataToEsById', message: 'Indexing complete!' })
+}
+
+/**
+ * Import data from a json file into the database
+ * @param {string} pathToFile the path to the json file
+ * @param {Array} dataModels the data models to import
+ * @param {Object} logger the logger object
+ */
+async function importData (pathToFile, dataModels, logger) {
+  // check if file exists
+  if (!fs.existsSync(pathToFile)) {
+    throw new Error(`File with path ${pathToFile} does not exist`)
+  }
+
+  // clear database
+  logger.info({ component: 'importData', message: 'Clearing database...' })
+  await models.sequelize.sync({ force: true })
+
+  let transaction = null
+  let currentModelName = null
+  try {
+    // Start a transaction
+    transaction = await models.sequelize.transaction()
+    const jsonData = JSON.parse(fs.readFileSync(pathToFile).toString())
+
+    for (let index = 0; index < dataModels.length; index += 1) {
+      const modelName = dataModels[index]
+      currentModelName = modelName
+      const model = models[modelName]
+      const modelRecords = jsonData[modelName]
+
+      if (modelRecords && modelRecords.length > 0) {
+        logger.info({ component: 'importData', message: `Importing data for model: ${modelName}` })
+
+        await model.bulkCreate(modelRecords, { transaction })
+        logger.info({ component: 'importData', message: `Records imported for model: ${modelName} = ${modelRecords.length}` })
+      } else {
+        logger.info({ component: 'importData', message: `No records to import for model: ${modelName}` })
+      }
+    }
+    // commit transaction only if all things went ok
+    logger.info({ component: 'importData', message: 'committing transaction to database...' })
+    await transaction.commit()
+  } catch (error) {
+    logger.error({ component: 'importData', message: `Error while writing data of model: ${currentModelName}` })
+    // rollback all insert operations
+    if (transaction) {
+      logger.info({ component: 'importData', message: 'rollback database transaction...' })
+      transaction.rollback()
+    }
+    if (error.name && error.errors && error.fields) {
+      // For sequelize validation errors, we throw only fields with data that helps in debugging error,
+      // because the error object has many fields that contains very big sql query for the insert bulk operation
+      throw new Error(
+        JSON.stringify({
+          modelName: currentModelName,
+          name: error.name,
+          errors: error.errors,
+          fields: error.fields
+        })
+      )
+    } else {
+      throw error
+    }
+  }
+
+  // after importing, index data
+  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
+  await indexBulkDataToES('JobCandidate', config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
+  await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+}
+
+/**
+ * Export data from the database into a json file
+ * @param {string} pathToFile the path to the json file
+ * @param {Array} dataModels the data models to export
+ * @param {Object} logger the logger object
+ */
+async function exportData (pathToFile, dataModels, logger) {
+  logger.info({ component: 'exportData', message: `Start Saving data to file with path ${pathToFile}....` })
+
+  const allModelsRecords = {}
+  for (let index = 0; index < dataModels.length; index += 1) {
+    const modelName = dataModels[index]
+    const modelRecords = await models[modelName].findAll({
+      raw: true,
+      where: {
+        deletedAt: null
+      },
+      attributes: {
+        exclude: ['deletedAt']
+      }
+    })
+    allModelsRecords[modelName] = modelRecords
+    logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${modelRecords.length}` })
+  }
+
+  fs.writeFileSync(pathToFile, JSON.stringify(allModelsRecords))
+  logger.info({ component: 'exportData', message: 'End Saving data to file....' })
+}
+
+/**
+ * Format a time in milliseconds into a human readable format
+ * @param {Date} milliseconds the number of milliseconds
+ */
+function formatTime (millisec) {
+  const ms = Math.floor(millisec % 1000)
+  const secs = Math.floor((millisec / 1000) % 60)
+  const mins = Math.floor((millisec / (1000 * 60)) % 60)
+  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24)
+  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7)
+  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4)
+  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12)
+  const yrs = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12)))
+
+  let formattedTime = '0 milliseconds'
+  if (ms > 0) {
+    formattedTime = `${ms} milliseconds`
+  }
+  if (secs > 0) {
+    formattedTime = `${secs} seconds ${formattedTime}`
+  }
+  if (mins > 0) {
+    formattedTime = `${mins} minutes ${formattedTime}`
+  }
+  if (hrs > 0) {
+    formattedTime = `${hrs} hours ${formattedTime}`
+  }
+  if (days > 0) {
+    formattedTime = `${days} days ${formattedTime}`
+  }
+  if (weeks > 0) {
+    formattedTime = `${weeks} weeks ${formattedTime}`
+  }
+  if (mnths > 0) {
+    formattedTime = `${mnths} months ${formattedTime}`
+  }
+  if (yrs > 0) {
+    formattedTime = `${yrs} years ${formattedTime}`
+  }
+
+  return formattedTime.trim()
+}
 
 /**
  * Check if exists.
@@ -615,6 +988,14 @@ async function checkIsMemberOfProject (userId, projectId) {
 }
 
 module.exports = {
+  getParamFromCliArgs,
+  promptUser,
+  createIndex,
+  deleteIndex,
+  indexBulkDataToES,
+  indexDataToEsById,
+  importData,
+  exportData,
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
