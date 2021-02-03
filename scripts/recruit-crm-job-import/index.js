@@ -84,8 +84,8 @@ function getPathname () {
  * Process single job data. The processing consists of:
  *  - Validate the data.
  *  - Skip processing if externalId is missing.
- *  - Create a job if it is not already exists.
- *  - Create a resource booking if it is not already exists.
+ *  - Create a job if it does not already exist.
+ *  - Create a resource booking if it does not already exist.
  *  - Update the resourceBooking based on startDate and endDate.
  *
  * @param {Object} job the job data
@@ -96,47 +96,47 @@ async function processJob (job, info = []) {
   // validate the data
   const { value: data, error } = validateJob(job)
   if (error) {
-    info.push(error.details[0].message)
+    info.push({ text: error.details[0].message, tag: 'validation_error' })
     return { status: constants.ProcessingStatus.Failed, info }
   }
   if (!data.externalId) {
-    info.push('externalId is missing')
+    info.push({ text: 'externalId is missing', tag: 'external_id_missing' })
     return { status: constants.ProcessingStatus.Skipped, info }
   }
   data.projectId = (await helper.getProjectByDirectProjectId(data.directProjectId)).id
-  // create a job if it is not already exists
+  // create a job if it does not already exist
   try {
     const result = await helper.getJobByExternalId(data.externalId)
-    info.push(`id: ${result.id} externalId: ${data.externalId} job already exists`)
+    info.push({ text: `id: ${result.id} externalId: ${data.externalId} job already exists`, tag: 'job_already_exists' })
     data.jobId = result.id
   } catch (err) {
     if (!(err.message && err.message.includes('job not found'))) {
       throw err
     }
     const result = await helper.createJob(_.pick(data, ['projectId', 'externalId', 'title', 'numPositions', 'skills']))
-    info.push(`id: ${result.id} job created`)
+    info.push({ text: `id: ${result.id} job created`, tag: 'job_created' })
     data.jobId = result.id
   }
   data.userId = (await helper.getUserByHandle(data.userHandle)).id
   logger.debug(`userHandle: ${data.userHandle} userId: ${data.userId}`)
-  // create a resource booking if it is not already exists
+  // create a resource booking if it does not already exist
   try {
     const result = await helper.getResourceBookingByJobIdAndUserId(data.jobId, data.userId)
-    info.push(`id: ${result.id} resource booking already exists`)
+    info.push({ text: `id: ${result.id} resource booking already exists`, tag: 'resource_booking_already_exists' })
     return { status: constants.ProcessingStatus.Successful, info }
   } catch (err) {
     if (!(err.message && err.message.includes('resource booking not found'))) {
       throw err
     }
     const result = await helper.createResourceBooking(_.pick(data, ['projectId', 'jobId', 'userId', 'startDate', 'endDate', 'memberRate', 'customerRate', 'rateType']))
-    info.push(`id: ${result.id} resource booking created`)
+    info.push({ text: `id: ${result.id} resource booking created`, tag: 'resource_booking_created' })
     data.resourceBookingId = result.id
   }
   // update the resourceBooking based on startDate and endDate
   const resourceBookingStatus = dateFNS.compareAsc(new Date(data.startDate), new Date(data.endDate)) === 1 ? 'closed' : 'assigned'
   logger.debug(`resourceBookingId: ${data.resourceBookingId} status: ${resourceBookingStatus}`)
   await helper.updateResourceBookingStatus(data.resourceBookingId, resourceBookingStatus)
-  info.push(`id: ${data.resourceBookingId} status: ${resourceBookingStatus} resource booking updated`)
+  info.push({ text: `id: ${data.resourceBookingId} status: ${resourceBookingStatus} resource booking updated`, tag: 'resource_booking_status_updated' })
   return { status: constants.ProcessingStatus.Successful, info }
 }
 
@@ -156,9 +156,9 @@ async function main () {
       report.add({ lnum: job._lnum, ...result })
     } catch (err) {
       if (err.response) {
-        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [err.response.error.toString().split('\n')[0]] })
+        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.response.error.toString().split('\n')[0], tag: 'request_error' }] })
       } else {
-        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [err.message] })
+        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.message, tag: 'internal_error' }] })
       }
     }
     report.print()
