@@ -12,6 +12,7 @@ const logger = require('../common/logger')
 const TopicOperationMapping = {
   [config.TAAS_JOB_UPDATE_TOPIC]: JobEventHandler.processUpdate,
   [config.TAAS_JOB_CANDIDATE_CREATE_TOPIC]: JobCandidateEventHandler.processCreate,
+  [config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC]: ResourceBookingEventHandler.processCreate,
   [config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC]: ResourceBookingEventHandler.processUpdate
 }
 

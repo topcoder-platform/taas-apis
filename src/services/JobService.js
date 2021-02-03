@@ -152,7 +152,6 @@ async function createJob (currentUser, job) {
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
-  job.status = 'sourcing'
 
   const created = await Job.create(job)
   await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
@@ -162,6 +161,7 @@ async function createJob (currentUser, job) {
 createJob.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   job: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     externalId: Joi.string(),
     description: Joi.string(),
