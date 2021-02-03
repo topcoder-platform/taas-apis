@@ -69,7 +69,7 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255)
       },
       description: {
-        type: Sequelize.TEXT, // technically unlimited length
+        type: Sequelize.TEXT // technically unlimited length
       },
       title: {
         type: Sequelize.STRING(128),

@@ -9,11 +9,16 @@
     "lint": "standard",
     "lint:fix": "standard --fix",
     "init-db": "node src/init-db.js",
-    "create-index": "node scripts/createIndex.js",
-    "delete-index": "node scripts/deleteIndex.js",
+    "create-index": "node scripts/es/createIndex.js",
+    "delete-index": "node scripts/es/deleteIndex.js",
+    "index:all": "node scripts/es/reIndexAll.js",
+    "index:jobs": "node scripts/es/reIndexJobs.js",
+    "index:job-candidates": "node scripts/es/reIndexJobCandidates.js",
+    "index:resource-bookings": "node scripts/es/reIndexResourceBookings.js",
+    "data:export": "node scripts/data/exportData.js",
+    "data:import": "node scripts/data/importData.js",
     "migrate": "npx sequelize db:migrate",
     "migrate:undo": "npx sequelize db:migrate:undo",
-    "test-data": "node scripts/insert-es-data.js",
     "test": "mocha test/unit/*.test.js --timeout 30000 --exit",
     "services:up": "docker-compose -f ./local/docker-compose.yml up -d",
     "services:down": "docker-compose -f ./local/docker-compose.yml down",
@@ -42,6 +47,7 @@
     "lodash": "^4.17.20",
     "pg": "^8.4.0",
     "pg-hstore": "^2.3.3",
+    "prompt-confirm": "^2.0.4",
     "rewire": "^5.0.0",
     "sequelize": "^6.3.5",
     "superagent": "^6.1.0",
@@ -62,6 +68,10 @@
     "standard": "^14.3.4"
   },
   "standard": {
+    "ignore": [
+      "/docs",
+      "/migrations"
+    ],
     "env": [
       "mocha"
     ]
