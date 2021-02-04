@@ -276,7 +276,7 @@ async function indexDataToEsById (id, modelName, indexName, logger) {
   await esClient.index({
     index: indexName,
     id: id,
-    body: _.omit(data.dataValues, 'id')
+    body: data.dataValues
   })
   logger.info({ component: 'indexDataToEsById', message: 'Indexing complete!' })
 }
