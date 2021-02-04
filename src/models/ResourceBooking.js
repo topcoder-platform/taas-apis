@@ -67,10 +67,6 @@ module.exports = (sequelize) => {
         field: 'end_date',
         type: Sequelize.DATE
       },
-      duration: {
-        field: 'duration',
-        type: Sequelize.INTEGER
-      },
       memberRate: {
         field: 'member_rate',
         type: Sequelize.FLOAT
