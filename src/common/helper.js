@@ -239,7 +239,7 @@ async function indexBulkDataToES (modelName, indexName, logger) {
     raw: true,
     attributes: {
       exclude: ['deletedAt']
-    },
+    }
   })
   if (_.isEmpty(data)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
