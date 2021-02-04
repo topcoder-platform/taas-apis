@@ -105,7 +105,6 @@ async function createResourceBooking (currentUser, resourceBooking) {
   resourceBooking.id = uuid()
   resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
-  resourceBooking.status = 'sourcing'
 
   const created = await ResourceBooking.create(resourceBooking)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, resourceBooking)
@@ -115,6 +114,7 @@ async function createResourceBooking (currentUser, resourceBooking) {
 createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid(),
@@ -290,7 +290,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       }
     }
 
-    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId']), (value, key) => {
+    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -328,7 +328,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   const filter = {
     [Op.and]: [{ deletedAt: null }]
   }
-  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.projectIds) {
@@ -363,6 +363,8 @@ searchResourceBookings.schema = Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),
+    jobId: Joi.string().uuid(),
+    userId: Joi.string().uuid(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),

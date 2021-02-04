@@ -1002,6 +1002,32 @@ paths:
             type: string
             enum: ['hourly', 'daily', 'weekly', 'monthly']
           description: The rate type.
+        - in: query
+          name: jobId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: The job id.
+        - in: query
+          name: userId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: The job id.
+        - in: query
+          name: projectId
+          required: false
+          schema:
+            type: integer
+          description: The project id.
+        - in: query
+          name: projectIds
+          required: false
+          schema:
+            type: string
+          description: comma separated project ids.
           
       responses:
         '200':
@@ -1738,6 +1764,11 @@ components:
           example: "Dummy title"
           description: "The title."
           maxLength: 64
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: "The job status."
+          default: sourcing
         startDate:
           type: string
           format: date-time
@@ -1837,6 +1868,11 @@ components:
           format: uuid
           example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The user id."
+        status:
+          type: string
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled']
+          description: "The job candidate status."
+          default: open
         externalId:
           type: string
           example: "1212"
@@ -1995,6 +2031,11 @@ components:
           type: string
           format: uuid
           description: "The job id."
+        status:
+          type: string
+          enum: ['sourcing', 'in-review', 'assigned', 'closed', 'cancelled']
+          description: "The job status."
+          default: sourcing
         startDate:
           type: string
           format: date-time

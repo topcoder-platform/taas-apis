@@ -156,7 +156,6 @@ async function createJob (currentUser, job) {
   job.id = uuid()
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
-  job.status = 'sourcing'
 
   const created = await Job.create(job)
   await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
@@ -166,15 +165,16 @@ async function createJob (currentUser, job) {
 createJob.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   job: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     externalId: Joi.string(),
-    description: Joi.string(),
+    description: Joi.stringAllowEmpty(),
     title: Joi.title().required(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     duration: Joi.number().integer().min(1),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string(),
+    resourceType: Joi.stringAllowEmpty(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid()).required()
@@ -237,13 +237,14 @@ partiallyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
-    description: Joi.string(),
+    externalId: Joi.string(),
+    description: Joi.stringAllowEmpty(),
     title: Joi.title(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     duration: Joi.number().integer().min(1),
     numPositions: Joi.number().integer().min(1),
-    resourceType: Joi.string(),
+    resourceType: Joi.stringAllowEmpty(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     skills: Joi.array().items(Joi.string().uuid())
