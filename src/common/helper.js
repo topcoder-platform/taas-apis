@@ -230,7 +230,15 @@ async function indexBulkDataToES (modelName, indexName, logger) {
   // get data from db
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
-  const data = await model.findAll({ raw: true })
+  const data = await model.findAll({
+    where: {
+      deletedAt: null
+    },
+    raw: true,
+    attributes: {
+      exclude: ['deletedAt']
+    },
+  })
   if (_.isEmpty(data)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
     return
