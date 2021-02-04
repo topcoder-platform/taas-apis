@@ -54,7 +54,7 @@ services:
         GIT_BRANCH: dev
     command: start kafka-client
     ports:
-      - 5000:5000
+      - 5001:5001
     depends_on:
       - kafka-client
       - elasticsearch
