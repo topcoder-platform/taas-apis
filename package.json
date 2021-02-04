@@ -24,7 +24,7 @@
     "services:down": "docker-compose -f ./local/docker-compose.yml down",
     "services:logs": "docker-compose -f ./local/docker-compose.yml logs",
     "local:init": "npm run local:reset && npm run data:import -- --force",
-    "local:reset": "npm run delete-index -- --force && npm run create-index -- --force && npm run init-db force",
+    "local:reset": "npm run delete-index -- --force || true && npm run create-index -- --force && npm run init-db force",
     "cov": "nyc --reporter=html --reporter=text mocha test/unit/*.test.js --timeout 30000 --exit"
   },
   "keywords": [],
