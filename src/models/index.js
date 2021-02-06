@@ -17,11 +17,21 @@ const sequelize = new Sequelize(config.get('DATABASE_URL'), {
   logging: false
 })
 
+// add customized toJSON method to a model
+const addMethodOfToJSON = (model) => {
+  model.prototype.toJSON = function () {
+    const result = Object.assign({}, this.get())
+    delete result.deletedAt
+    return result
+  }
+}
+
 fs
   .readdirSync(__dirname)
   .filter(file => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
   .forEach((file) => {
     const model = require(path.join(__dirname, file))(sequelize)
+    addMethodOfToJSON(model)
     db[model.name] = model
   })
 

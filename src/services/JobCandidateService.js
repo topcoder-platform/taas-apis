@@ -94,7 +94,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await JobCandidate.create(jobCandidate)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, jobCandidate)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, created.toJSON())
   return helper.clearObject(created.dataValues)
 }
 
@@ -129,8 +129,8 @@ async function updateJobCandidate (currentUser, id, data) {
   data.updatedAt = new Date()
   data.updatedBy = userId
 
-  await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, { id, ...data })
+  const updated = await jobCandidate.update(data)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
   const result = helper.clearObject(_.assign(jobCandidate.dataValues, data))
   return result
 }
