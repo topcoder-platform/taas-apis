@@ -541,21 +541,6 @@ function setResHeaders (req, res, result) {
 }
 
 /**
- * Clear the object, remove all null or empty array field
- * @param {Object|Array} obj the given object
- */
-function clearObject (obj) {
-  if (_.isNull(obj)) {
-    return undefined
-  }
-  if (_.isArray(obj)) {
-    return _.map(obj, e => _.omitBy(e, _.isNull))
-  } else {
-    return _.omitBy(obj, (p) => { return _.isNull(p) || (_.isArray(p) && _.isEmpty(p)) })
-  }
-}
-
-/**
  * Get ES Client
  * @return {Object} Elastic Host Client Instance
  */
@@ -1007,7 +992,6 @@ module.exports = {
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
-  clearObject,
   getESClient,
   getUserId: async (userId) => {
     // check m2m user id
