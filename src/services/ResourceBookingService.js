@@ -218,7 +218,7 @@ async function deleteResourceBooking (currentUser, id) {
   }
 
   const resourceBooking = await ResourceBooking.findById(id)
-  await resourceBooking.update({ deletedAt: new Date() })
+  await resourceBooking.destroy()
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
@@ -325,9 +325,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -336,9 +334,6 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   }
   const resourceBookings = await ResourceBooking.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]

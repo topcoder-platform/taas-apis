@@ -21,11 +21,7 @@ module.exports = (sequelize) => {
     static async findById (id) {
       const jobCandidate = await JobCandidate.findOne({
         where: {
-          id,
-          deletedAt: null
-        },
-        attributes: {
-          exclude: ['deletedAt']
+          id
         }
       })
       if (!jobCandidate) {
@@ -63,34 +59,35 @@ module.exports = (sequelize) => {
       resume: {
         type: Sequelize.STRING(2048)
       },
-      createdAt: {
-        field: 'created_at',
-        type: Sequelize.DATE,
-        allowNull: false
-      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,
         allowNull: false
       },
-      updatedAt: {
-        field: 'updated_at',
-        type: Sequelize.DATE
-      },
       updatedBy: {
         field: 'updated_by',
         type: Sequelize.UUID
-      },
-      deletedAt: {
-        field: 'deleted_at',
-        type: Sequelize.DATE
       }
     },
     {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
       tableName: 'job_candidates',
-      timestamps: false
+      paranoid: true,
+      deletedAt: 'deletedAt',
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
+      timestamps: true,
+      defaultScope: {
+        attributes: {
+          exclude: ['deletedAt']
+        }
+      },
+      hooks: {
+        afterCreate: (jobCandidate) => {
+          delete jobCandidate.dataValues.deletedAt
+        }
+      }
     }
   )
 

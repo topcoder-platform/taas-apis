@@ -193,7 +193,7 @@ async function deleteJobCandidate (currentUser, id) {
   }
 
   const jobCandidate = await JobCandidate.findById(id)
-  await jobCandidate.update({ deletedAt: new Date() })
+  await jobCandidate.destroy()
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
@@ -269,17 +269,12 @@ async function searchJobCandidates (currentUser, criteria) {
     logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   const jobCandidates = await JobCandidate.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]

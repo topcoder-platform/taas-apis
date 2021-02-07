@@ -39,8 +39,7 @@ async function cancelJob (payload) {
       jobId: job.id,
       status: {
         [Op.not]: 'cancelled'
-      },
-      deletedAt: null
+      }
     }
   })
   await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(

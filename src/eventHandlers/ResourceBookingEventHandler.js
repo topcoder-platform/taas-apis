@@ -50,8 +50,7 @@ async function selectJobCandidate (payload) {
       userId: resourceBooking.userId,
       status: {
         [Op.not]: 'selected'
-      },
-      deletedAt: null
+      }
     }
   })
   await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
@@ -111,8 +110,7 @@ async function assignJob (payload) {
   const resourceBookings = await models.ResourceBooking.findAll({
     where: {
       jobId: job.id,
-      status: 'assigned',
-      deletedAt: null
+      status: 'assigned'
     }
   })
   logger.debug({
