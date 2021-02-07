@@ -103,7 +103,6 @@ async function createResourceBooking (currentUser, resourceBooking) {
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
   resourceBooking.id = uuid()
-  resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await ResourceBooking.create(resourceBooking)
@@ -142,7 +141,6 @@ async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
 
-  data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
   const updated = await resourceBooking.update(data)

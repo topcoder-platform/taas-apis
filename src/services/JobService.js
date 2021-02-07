@@ -150,7 +150,6 @@ async function createJob (currentUser, job) {
 
   await _validateSkills(job.skills)
   job.id = uuid()
-  job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await Job.create(job)
@@ -199,7 +198,6 @@ async function updateJob (currentUser, id, data) {
     }
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = ubahnUserId
 
   const updated = await job.update(data)

@@ -90,7 +90,6 @@ async function createJobCandidate (currentUser, jobCandidate) {
   await helper.ensureUserById(jobCandidate.userId) // ensure user exists
 
   jobCandidate.id = uuid()
-  jobCandidate.createdAt = new Date()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await JobCandidate.create(jobCandidate)
@@ -126,7 +125,6 @@ async function updateJobCandidate (currentUser, id, data) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = userId
 
   const updated = await jobCandidate.update(data)
