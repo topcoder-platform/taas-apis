@@ -65,7 +65,7 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
 
   await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.jobId) // check user permission
 
-  return helper.clearObject(jobCandidate.dataValues)
+  return jobCandidate.dataValues
 }
 
 getJobCandidate.schema = Joi.object().keys({
@@ -95,7 +95,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
 
   const created = await JobCandidate.create(jobCandidate)
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, created.toJSON())
-  return helper.clearObject(created.dataValues)
+  return created.dataValues
 }
 
 createJobCandidate.schema = Joi.object().keys({
@@ -131,7 +131,7 @@ async function updateJobCandidate (currentUser, id, data) {
 
   const updated = await jobCandidate.update(data)
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
-  const result = helper.clearObject(_.assign(jobCandidate.dataValues, data))
+  const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
 
@@ -289,7 +289,7 @@ async function searchJobCandidates (currentUser, criteria) {
     total: jobCandidates.length,
     page,
     perPage,
-    result: _.map(jobCandidates, jobCandidate => helper.clearObject(jobCandidate.dataValues))
+    result: _.map(jobCandidates, jobCandidate => jobCandidate.dataValues)
   }
 }
 

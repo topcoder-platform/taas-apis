@@ -24,9 +24,9 @@ const esClient = helper.getESClient()
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    return helper.clearObject(resourceBooking)
+    return resourceBooking
   }
-  return _.omit(helper.clearObject(resourceBooking), 'memberRate')
+  return _.omit(resourceBooking, 'memberRate')
 }
 
 /**
@@ -108,7 +108,7 @@ async function createResourceBooking (currentUser, resourceBooking) {
 
   const created = await ResourceBooking.create(resourceBooking)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, created.toJSON())
-  return helper.clearObject(created.dataValues)
+  return created.dataValues
 }
 
 createResourceBooking.schema = Joi.object().keys({
@@ -147,7 +147,7 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const updated = await resourceBooking.update(data)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
+  const result = _.assign(resourceBooking.dataValues, data)
   return result
 }
 
@@ -348,7 +348,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     total: resourceBookings.length,
     page,
     perPage,
-    result: _.map(resourceBookings, resourceBooking => helper.clearObject(resourceBooking.dataValues))
+    result: _.map(resourceBookings, resourceBooking => resourceBooking.dataValues)
   }
 }
 
