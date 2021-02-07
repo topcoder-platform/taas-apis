@@ -163,15 +163,15 @@ createJob.schema = Joi.object().keys({
   job: Joi.object().keys({
     status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string(),
-    description: Joi.stringAllowEmpty(),
+    externalId: Joi.string().allow(null),
+    description: Joi.stringAllowEmpty().allow(null),
     title: Joi.title().required(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.stringAllowEmpty(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.stringAllowEmpty().allow(null),
+    rateType: Joi.rateType().allow(null),
+    workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
@@ -225,15 +225,15 @@ partiallyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
-    externalId: Joi.string(),
-    description: Joi.stringAllowEmpty(),
+    externalId: Joi.string().allow(null),
+    description: Joi.stringAllowEmpty().allow(null),
     title: Joi.title(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
     numPositions: Joi.number().integer().min(1),
-    resourceType: Joi.stringAllowEmpty(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.stringAllowEmpty().allow(null),
+    rateType: Joi.rateType().allow(null),
+    workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid())
   }).required()
 }).required()
@@ -254,15 +254,15 @@ fullyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string(),
-    description: Joi.string(),
+    externalId: Joi.string().allow(null),
+    description: Joi.string().allow(null),
     title: Joi.title().required(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.string().allow(null),
+    rateType: Joi.rateType().allow(null),
+    workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus()
   }).required()

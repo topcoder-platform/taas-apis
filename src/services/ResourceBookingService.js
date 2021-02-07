@@ -117,11 +117,11 @@ createResourceBooking.schema = Joi.object().keys({
     status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
-    jobId: Joi.string().uuid(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    jobId: Joi.string().uuid().allow(null),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    memberRate: Joi.number().allow(null),
+    customerRate: Joi.number().allow(null),
     rateType: Joi.rateType().required()
   }).required()
 }).required()
@@ -167,10 +167,10 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    memberRate: Joi.number().allow(null),
+    customerRate: Joi.number().allow(null),
     rateType: Joi.rateType()
   }).required()
 }).required()
@@ -196,11 +196,11 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
-    jobId: Joi.string().uuid(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    jobId: Joi.string().uuid().allow(null),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    memberRate: Joi.number().allow(null),
+    customerRate: Joi.number().allow(null),
     rateType: Joi.rateType().required(),
     status: Joi.jobStatus().required()
   }).required()
