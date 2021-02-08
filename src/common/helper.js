@@ -698,7 +698,7 @@ async function getProjects (currentUser, criteria = {}) {
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
   const result = _.map(res.body, item => {
-    return _.pick(item, ['id', 'name'])
+    return _.pick(item, ['id', 'name', 'invites', 'members'])
   })
   return {
     total: Number(_.get(res.headers, 'x-total')),
@@ -828,7 +828,7 @@ async function getProjectById (currentUser, id) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
     localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
-    return _.pick(res.body, ['id', 'name'])
+    return _.pick(res.body, ['id', 'name', 'invites', 'members'])
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
       throw new errors.ForbiddenError(`You are not allowed to access the project with id ${id}`)

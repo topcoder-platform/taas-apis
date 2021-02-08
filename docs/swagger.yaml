@@ -2094,6 +2094,18 @@ components:
           type: string
           example: "1212"
           description: "The team name."
+        invites:
+          type: array
+          items:
+            type: object
+          description: "The invites of the project"
+          example: [{"userIds": [40152855], "role": "copilot"}]
+        members:
+          type: array
+          items:
+            type: object
+          description: "The members of the project"
+          example: [{"lastName": "L_NAME", "role": "customer", "updatedBy": 21926562, "handle": "Tester123", "userId": 21926562, "deletedBy": null, "createdAt": "2021-01-12T10:58:26.237Z", "firstName": "F_NAME", "createdBy": 21926562, "isPrimary": false, "id": 13833, "projectId": 16893, "email": "email@domain.com.z", "updatedAt": "2021-01-12T10:58:26.237Z"}]
         startDate:
           type: string
           format: date-time
@@ -2177,6 +2189,18 @@ components:
           type: string
           example: "1212"
           description: "The team name."
+        invites:
+          type: array
+          items:
+            type: object
+          description: "The invites of the project"
+          example: [{"userIds": [40152855], "role": "copilot"}]
+        members:
+          type: array
+          items:
+            type: object
+          description: "The members of the project"
+          example: [{"lastName": "J", "role": "manager", "updatedBy": 8547899, "handle": "TonyJ", "userId": 8547899, "deletedBy": null, "createdAt": "2021-01-12T04:34:15.006Z", "firstName": "Tony", "createdBy": 8547899, "isPrimary": true, "id": 13819, "projectId": 16893, "email": "ajefts@topcoder.com", "updatedAt": "2021-01-12T04:34:15.018Z"}]
         startDate:
           type: string
           format: date-time
