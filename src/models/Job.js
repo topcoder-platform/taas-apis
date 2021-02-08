@@ -106,6 +106,18 @@ module.exports = (sequelize) => {
       updatedBy: {
         field: 'updated_by',
         type: Sequelize.UUID
+      },
+      createdAt: {
+        field: 'created_at',
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        field: 'updated_at',
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        field: 'deleted_at',
+        type: Sequelize.DATE
       }
     },
     {
