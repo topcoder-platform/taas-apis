@@ -90,11 +90,10 @@ async function createJobCandidate (currentUser, jobCandidate) {
   await helper.ensureUserById(jobCandidate.userId) // ensure user exists
 
   jobCandidate.id = uuid()
-  jobCandidate.createdAt = new Date()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await JobCandidate.create(jobCandidate)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, jobCandidate)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, created.toJSON())
   return created.dataValues
 }
 
@@ -126,11 +125,10 @@ async function updateJobCandidate (currentUser, id, data) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = userId
 
-  await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, { id, ...data })
+  const updated = await jobCandidate.update(data)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
   const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
@@ -193,7 +191,7 @@ async function deleteJobCandidate (currentUser, id) {
   }
 
   const jobCandidate = await JobCandidate.findById(id)
-  await jobCandidate.update({ deletedAt: new Date() })
+  await jobCandidate.destroy()
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
@@ -269,17 +267,12 @@ async function searchJobCandidates (currentUser, criteria) {
     logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   const jobCandidates = await JobCandidate.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]

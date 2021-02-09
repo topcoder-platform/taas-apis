@@ -103,11 +103,10 @@ async function createResourceBooking (currentUser, resourceBooking) {
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
   resourceBooking.id = uuid()
-  resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await ResourceBooking.create(resourceBooking)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, resourceBooking)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, created.toJSON())
   return created.dataValues
 }
 
@@ -142,11 +141,10 @@ async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
 
-  data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  await resourceBooking.update(data)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
+  const updated = await resourceBooking.update(data)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   const result = _.assign(resourceBooking.dataValues, data)
   return result
 }
@@ -218,7 +216,7 @@ async function deleteResourceBooking (currentUser, id) {
   }
 
   const resourceBooking = await ResourceBooking.findById(id)
-  await resourceBooking.update({ deletedAt: new Date() })
+  await resourceBooking.destroy()
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
@@ -325,9 +323,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -336,9 +332,6 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   }
   const resourceBookings = await ResourceBooking.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]

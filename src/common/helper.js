@@ -231,13 +231,7 @@ async function indexBulkDataToES (modelName, indexName, logger) {
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
   const data = await model.findAll({
-    where: {
-      deletedAt: null
-    },
-    raw: true,
-    attributes: {
-      exclude: ['deletedAt']
-    },
+    raw: true
   })
   if (_.isEmpty(data)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
@@ -372,13 +366,7 @@ async function exportData (pathToFile, dataModels, logger) {
   for (let index = 0; index < dataModels.length; index += 1) {
     const modelName = dataModels[index]
     const modelRecords = await models[modelName].findAll({
-      raw: true,
-      where: {
-        deletedAt: null
-      },
-      attributes: {
-        exclude: ['deletedAt']
-      }
+      raw: true
     })
     allModelsRecords[modelName] = modelRecords
     logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${modelRecords.length}` })

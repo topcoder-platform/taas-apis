@@ -20,11 +20,7 @@ module.exports = (sequelize) => {
     static async findById (id) {
       const resourceBooking = await ResourceBooking.findOne({
         where: {
-          id,
-          deletedAt: null
-        },
-        attributes: {
-          exclude: ['deletedAt']
+          id
         }
       })
       if (!resourceBooking) {
@@ -80,23 +76,22 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      createdAt: {
-        field: 'created_at',
-        type: Sequelize.DATE,
-        allowNull: false
-      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,
         allowNull: false
       },
-      updatedAt: {
-        field: 'updated_at',
-        type: Sequelize.DATE
-      },
       updatedBy: {
         field: 'updated_by',
         type: Sequelize.UUID
+      },
+      createdAt: {
+        field: 'created_at',
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        field: 'updated_at',
+        type: Sequelize.DATE
       },
       deletedAt: {
         field: 'deleted_at',
@@ -107,7 +102,21 @@ module.exports = (sequelize) => {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
       tableName: 'resource_bookings',
-      timestamps: false
+      paranoid: true,
+      deletedAt: 'deletedAt',
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
+      timestamps: true,
+      defaultScope: {
+        attributes: {
+          exclude: ['deletedAt']
+        }
+      },
+      hooks: {
+        afterCreate: (resourceBooking) => {
+          delete resourceBooking.dataValues.deletedAt
+        }
+      }
     }
   )
 

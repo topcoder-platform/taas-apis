@@ -150,12 +150,11 @@ async function createJob (currentUser, job) {
 
   await _validateSkills(job.skills)
   job.id = uuid()
-  job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
 
   const created = await Job.create(job)
-  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
-  return created.dataValues
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, created.toJSON())
+  return created.toJSON()
 }
 
 createJob.schema = Joi.object().keys({
@@ -199,11 +198,10 @@ async function updateJob (currentUser, id, data) {
     }
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = ubahnUserId
 
-  await job.update(data)
-  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
+  const updated = await job.update(data)
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => c.dataValues)
   return job.dataValues
@@ -280,7 +278,7 @@ async function deleteJob (currentUser, id) {
   }
 
   const job = await Job.findById(id)
-  await job.update({ deletedAt: new Date() })
+  await job.destroy()
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
 
@@ -411,9 +409,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, [
     'projectId',
     'externalId',
@@ -443,22 +439,13 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   }
   const jobs = await Job.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]],
     include: [{
       model: models.JobCandidate,
       as: 'candidates',
-      where: {
-        deletedAt: null
-      },
-      required: false,
-      attributes: {
-        exclude: ['deletedAt']
-      }
+      required: false
     }]
   })
   return {
