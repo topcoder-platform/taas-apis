@@ -70,7 +70,7 @@ module.exports = (sequelize) => {
       },
       createdAt: {
         field: 'created_at',
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         field: 'updated_at',

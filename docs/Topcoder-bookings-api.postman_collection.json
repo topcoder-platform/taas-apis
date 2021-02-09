@@ -33,7 +33,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -77,7 +77,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -121,7 +121,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -165,7 +165,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -208,7 +208,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -251,7 +251,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -909,7 +909,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -942,7 +942,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -975,7 +975,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1021,7 +1021,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1054,7 +1054,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1087,7 +1087,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1120,7 +1120,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1153,7 +1153,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1186,7 +1186,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1219,7 +1219,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1265,7 +1265,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1298,7 +1298,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1331,7 +1331,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1364,7 +1364,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4563,7 +4563,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job1\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"ee4c50c1-c8c3-475e-b6b6-edbd136a19d6\",\n    \"89139c80-d0a2-47c2-aa16-14589d5afd10\",\n    \"9f2d9127-6a2e-4506-ad76-c4ab63577b09\",\n    \"9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b\",\n    \"c854ab55-5922-4be1-8ecc-b3bc1f8629af\",\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\",\n    \"23839f38-6f19-4de9-9d28-f020056bca73\",\n    \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\n    \"b403f209-63b5-42bc-9b5f-1564416640d8\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job1\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"ee4c50c1-c8c3-475e-b6b6-edbd136a19d6\",\n    \"89139c80-d0a2-47c2-aa16-14589d5afd10\",\n    \"9f2d9127-6a2e-4506-ad76-c4ab63577b09\",\n    \"9515e7ee-83b6-49d1-ba5c-6c59c5a8ef1b\",\n    \"c854ab55-5922-4be1-8ecc-b3bc1f8629af\",\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\",\n    \"23839f38-6f19-4de9-9d28-f020056bca73\",\n    \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\n    \"b403f209-63b5-42bc-9b5f-1564416640d8\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4617,7 +4617,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\",\n    \"23839f38-6f19-4de9-9d28-f020056bca73\",\n    \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\n    \"b403f209-63b5-42bc-9b5f-1564416640d8\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\",\n    \"23839f38-6f19-4de9-9d28-f020056bca73\",\n    \"289e42a3-23e9-49be-88e1-6deb93cd8c31\",\n    \"b403f209-63b5-42bc-9b5f-1564416640d8\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5267,7 +5267,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job3\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job3\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6904,7 +6904,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job4\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job4\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"8456002e-fa2d-44f0-b0e7-86b1c02b6e4c\",\n    \"114b4ec8-805e-4c60-b351-14a955a991a9\",\n    \"213408aa-f16f-46c8-bc57-9e569cee3f11\",\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -7004,7 +7004,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job5\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"0\",\n  \"description\": \"taas-demo-job5\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 7,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"weekly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"b37a48db-f775-4e4e-b403-8ad1d234cdea\",\n    \"99b930b5-1b91-4df1-8b17-d9307107bb51\",\n    \"6388a632-c3ad-4525-9a73-66a527c03672\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -7107,7 +7107,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -7263,7 +7263,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -7296,7 +7296,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -7874,7 +7874,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{project_id_16718}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{project_id_16718}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8029,7 +8029,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{project_id_16718}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{project_id_16718}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8062,7 +8062,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8741,7 +8741,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{project_id_16843}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{project_id_16843}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8897,7 +8897,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"projectId\": {{project_id_16843}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"projectId\": {{project_id_16843}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -8930,7 +8930,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+											"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"

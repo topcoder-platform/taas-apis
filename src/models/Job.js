@@ -69,9 +69,9 @@ module.exports = (sequelize) => {
         field: 'start_date',
         type: Sequelize.DATE
       },
-      endDate: {
-        field: 'end_date',
-        type: Sequelize.DATE
+      duration: {
+        field: 'duration',
+        type: Sequelize.INTEGER
       },
       numPositions: {
         field: 'num_positions',
@@ -109,7 +109,7 @@ module.exports = (sequelize) => {
       },
       createdAt: {
         field: 'created_at',
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         field: 'updated_at',
