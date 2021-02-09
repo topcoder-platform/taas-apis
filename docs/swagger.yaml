@@ -2094,6 +2094,18 @@ components:
           type: string
           example: "1212"
           description: "The team name."
+        invites:
+          type: array
+          items:
+            type: object
+          description: "The invites of the project"
+          example: [{"createdAt": "2021-02-08T09:21:00.885Z", "createdBy": 40159127, "deletedBy": null, "email": null, "id": 3008, "projectId": 16819, "role": "customer", "status": "pending", "updatedAt": "2021-02-08T09:21:00.885Z", "updatedBy": 40159127, "userId": 40153913}]
+        members:
+          type: array
+          items:
+            type: object
+          description: "The members of the project"
+          example: [{"lastName": "L_NAME", "role": "customer", "updatedBy": 21926562, "handle": "Tester123", "userId": 21926562, "deletedBy": null, "createdAt": "2021-01-12T10:58:26.237Z", "firstName": "F_NAME", "createdBy": 21926562, "isPrimary": false, "id": 13833, "projectId": 16893, "email": "email@domain.com.z", "updatedAt": "2021-01-12T10:58:26.237Z"}]
         startDate:
           type: string
           format: date-time
@@ -2177,6 +2189,18 @@ components:
           type: string
           example: "1212"
           description: "The team name."
+        invites:
+          type: array
+          items:
+            type: object
+          description: "The invites of the project"
+          example: [{"createdAt": "2021-02-08T09:21:00.885Z", "createdBy": 40159127, "deletedBy": null, "email": null, "id": 3008, "projectId": 16819, "role": "customer", "status": "pending", "updatedAt": "2021-02-08T09:21:00.885Z", "updatedBy": 40159127, "userId": 40153913}]
+        members:
+          type: array
+          items:
+            type: object
+          description: "The members of the project"
+          example: [{"lastName": "L_NAME", "role": "customer", "updatedBy": 21926562, "handle": "Tester123", "userId": 21926562, "deletedBy": null, "createdAt": "2021-01-12T10:58:26.237Z", "firstName": "F_NAME", "createdBy": 21926562, "isPrimary": false, "id": 13833, "projectId": 16893, "email": "email@domain.com.z", "updatedAt": "2021-01-12T10:58:26.237Z"}]
         startDate:
           type: string
           format: date-time
