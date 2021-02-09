@@ -457,11 +457,6 @@
 									"disabled": true
 								},
 								{
-									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
-									"disabled": true
-								},
-								{
 									"key": "resourceType",
 									"value": "Dummy Resource Type",
 									"disabled": true
@@ -553,11 +548,6 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
-									"disabled": true
-								},
-								{
-									"key": "endDate",
 									"value": "2020-09-27T04:17:23.131Z",
 									"disabled": true
 								},
@@ -657,11 +647,6 @@
 									"disabled": true
 								},
 								{
-									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
-									"disabled": true
-								},
-								{
 									"key": "resourceType",
 									"value": "Dummy Resource Type",
 									"disabled": true
@@ -757,11 +742,6 @@
 									"disabled": true
 								},
 								{
-									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
-									"disabled": true
-								},
-								{
 									"key": "resourceType",
 									"value": "Dummy Resource Type",
 									"disabled": true
@@ -853,11 +833,6 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
-									"disabled": true
-								},
-								{
-									"key": "endDate",
 									"value": "2020-09-27T04:17:23.131Z",
 									"disabled": true
 								},
@@ -7211,11 +7186,6 @@
 													"disabled": true
 												},
 												{
-													"key": "endDate",
-													"value": "2020-09-27T04:17:23.131Z",
-													"disabled": true
-												},
-												{
 													"key": "resourceType",
 													"value": "Dummy Resource Type",
 													"disabled": true
@@ -7973,11 +7943,6 @@
 												},
 												{
 													"key": "startDate",
-													"value": "2020-09-27T04:17:23.131Z",
-													"disabled": true
-												},
-												{
-													"key": "endDate",
 													"value": "2020-09-27T04:17:23.131Z",
 													"disabled": true
 												},
@@ -8841,11 +8806,6 @@
 												},
 												{
 													"key": "startDate",
-													"value": "2020-09-27T04:17:23.131Z",
-													"disabled": true
-												},
-												{
-													"key": "endDate",
 													"value": "2020-09-27T04:17:23.131Z",
 													"disabled": true
 												},
