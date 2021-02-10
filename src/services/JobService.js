@@ -252,17 +252,17 @@ fullyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string().allow(null),
-    description: Joi.stringAllowEmpty().allow(null),
+    externalId: Joi.string().allow(null).default(null),
+    description: Joi.stringAllowEmpty().allow(null).default(null),
     title: Joi.title().required(),
-    startDate: Joi.date().allow(null),
-    duration: Joi.number().integer().min(1).allow(null),
+    startDate: Joi.date().allow(null).default(null),
+    duration: Joi.number().integer().min(1).allow(null).default(null),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.stringAllowEmpty().allow(null),
-    rateType: Joi.rateType().allow(null),
-    workload: Joi.workload().allow(null),
+    resourceType: Joi.stringAllowEmpty().allow(null).default(null),
+    rateType: Joi.rateType().allow(null).default(null),
+    workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
-    status: Joi.jobStatus()
+    status: Joi.jobStatus().default('sourcing')
   }).required()
 }).required()
 

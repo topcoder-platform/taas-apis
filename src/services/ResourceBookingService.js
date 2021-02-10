@@ -194,13 +194,13 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
-    jobId: Joi.string().uuid().allow(null),
-    startDate: Joi.date().allow(null),
-    endDate: Joi.date().allow(null),
-    memberRate: Joi.number().allow(null),
-    customerRate: Joi.number().allow(null),
+    jobId: Joi.string().uuid().allow(null).default(null),
+    startDate: Joi.date().allow(null).default(null),
+    endDate: Joi.date().allow(null).default(null),
+    memberRate: Joi.number().allow(null).default(null),
+    customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
-    status: Joi.jobStatus().required()
+    status: Joi.jobStatus().default('sourcing')
   }).required()
 }).required()
 

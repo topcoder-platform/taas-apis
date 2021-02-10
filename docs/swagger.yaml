@@ -1993,7 +1993,6 @@ components:
       required:
         - projectId
         - userId
-        - status
         - rateType
       properties:
         projectId:
