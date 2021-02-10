@@ -91,7 +91,7 @@ paths:
           schema:
             type: string
             default: id
-            enum: ['id','createdAt','startDate','endDate','rateType','status']
+            enum: ['id','createdAt','startDate','rateType','status']
           description: The sort by column.
         - in: query
           name: sortOrder
@@ -139,13 +139,6 @@ paths:
             type: string
             format: date-time
           description: The job start date.
-        - in: query
-          name: endDate
-          required: false
-          schema:
-            type: string
-            format: date-time
-          description: The job end date.
         - in: query
           name: resourceType
           required: false
@@ -1683,11 +1676,10 @@ components:
           format: date-time
           example: "2020-09-27T04:17:23.131Z"
           description: "The job start date."
-        endDate:
-          type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
-          description: "The job end date."
+        duration:
+          type: integer
+          example: 1
+          description: "The duration in weeks"
         numPositions:
           type: integer
           example: 13
@@ -1770,11 +1762,10 @@ components:
           format: date-time
           example: "2020-09-27T04:17:23.131Z"
           description: "The job start date."
-        endDate:
-          type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
-          description: "The job end date."
+        duration:
+          type: integer
+          example: 1
+          description: "The duration in weeks"
         numPositions:
           type: integer
           example: 13
@@ -1900,11 +1891,10 @@ components:
           format: date-time
           example: "2020-09-27T04:17:23.131Z"
           description: "The job start date."
-        endDate:
-          type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
-          description: "The job end date."
+        duration:
+          type: integer
+          example: 1
+          description: "The duration in weeks"
         numPositions:
           type: integer
           example: 13
@@ -2314,11 +2304,10 @@ components:
           format: date-time
           example: "2020-09-27T04:17:23.131Z"
           description: "The job start date."
-        endDate:
-          type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
-          description: "The job end date."
+        duration:
+          type: integer
+          example: 1
+          description: "The duration in weeks"
         numPositions:
           type: integer
           example: 13

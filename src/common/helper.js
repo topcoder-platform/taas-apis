@@ -60,7 +60,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   description: { type: 'text' },
   title: { type: 'text' },
   startDate: { type: 'date' },
-  endDate: { type: 'date' },
+  duration: { type: 'integer' },
   numPositions: { type: 'integer' },
   resourceType: { type: 'keyword' },
   rateType: { type: 'keyword' },
