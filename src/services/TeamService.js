@@ -188,7 +188,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       } else {
         res.jobs = _.map(jobsTmp, job => {
-          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
+          return _.pick(job, ['id', 'description', 'startDate', 'duration', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
         })
       }
     }
