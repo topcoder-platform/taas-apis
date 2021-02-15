@@ -105,5 +105,14 @@ module.exports = {
   // the update resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_UPDATE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC || 'taas.resourcebooking.update',
   // the delete resource booking entity Kafka message topic
-  TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete'
+  TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
+
+  // the Kafka message topic for sending email
+  EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
+  // the email address for receiving the issue report
+  REPORT_ISSUE_EMAIL: process.env.REPORT_ISSUE_EMAIL || 'test@gtest.com',
+  // SendGrid email template ID for reporting issue
+  REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID || 'aaaaaaa-bbbb-cccc-dddd-asdfsdfsdfsd',
+  // the URL where TaaS App is hosted
+  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
 }

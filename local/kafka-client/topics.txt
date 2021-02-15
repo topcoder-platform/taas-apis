@@ -7,3 +7,4 @@ taas.resourcebooking.update
 taas.job.delete
 taas.jobcandidate.delete
 taas.resourcebooking.delete
+external.action.email
