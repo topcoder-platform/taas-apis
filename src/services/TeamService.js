@@ -310,15 +310,18 @@ getTeamJob.schema = Joi.object().keys({
 
 /**
  * Send email through a particular template
+ * @param {Object} currentUser the user who perform this operation
  * @param {Object} data the email object
  * @returns {undefined}
  */
-async function sendEmail (data) {
+async function sendEmail (currentUser, data) {
   const template = emailTemplates[data.template]
   await helper.postEvent(config.EMAIL_TOPIC, {
-    subject: template.subjectTemplate(data.data),
-    handle: data.data.userHandle,
-    message: template.messageTemplate(data.data),
+    data: {
+      handle: currentUser.handle,
+      subject: template.subjectTemplate(data.data),
+      message: template.messageTemplate(data.data),
+    },
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3',
     recipients: template.recipients
@@ -326,6 +329,7 @@ async function sendEmail (data) {
 }
 
 sendEmail.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   data: Joi.object().keys({
     template: Joi.string().valid(...Object.keys(emailTemplates)).required(),
     data: Joi.object().required()

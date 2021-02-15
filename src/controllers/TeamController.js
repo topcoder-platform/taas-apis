@@ -40,7 +40,7 @@ async function getTeamJob (req, res) {
  * @param res the response
  */
 async function sendEmail (req, res) {
-  await service.sendEmail(req.body)
+  await service.sendEmail(req.authUser, req.body)
   res.status(HttpStatus.NO_CONTENT).end()
 }
 
