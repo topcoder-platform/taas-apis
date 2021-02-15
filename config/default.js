@@ -110,9 +110,9 @@ module.exports = {
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
   // the email address for receiving the issue report
-  REPORT_ISSUE_EMAIL: process.env.REPORT_ISSUE_EMAIL || 'test@gtest.com',
+  REPORT_ISSUE_EMAIL: process.env.REPORT_ISSUE_EMAIL,
   // SendGrid email template ID for reporting issue
-  REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID || 'aaaaaaa-bbbb-cccc-dddd-asdfsdfsdfsd',
+  REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
 }
