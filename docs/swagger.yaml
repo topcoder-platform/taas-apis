@@ -1613,6 +1613,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /taas-teams/email:
+    post:
+      tags: 
+        - Teams
+      description: | 
+        Send emails through one of predefined templates.
+      security: 
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamEmailRequestBody'
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /health:
     get:
       tags:
@@ -2368,6 +2408,17 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Skill'
+    TeamEmailRequestBody:
+      type: object
+      properties:
+        template:
+          type: string
+          description: "the email template name"
+          example: "team-issue-report"
+        data:
+          type: object
+          example: {"projectName": "TaaS Project Name", "projectId": 12345, "reportText": "I have issue with ..."}
+          description: "Arbitrary data to feed the specified template"
     Error:
       required:
         - message

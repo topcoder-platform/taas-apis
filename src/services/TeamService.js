@@ -5,11 +5,23 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
+const Handlebars = require('handlebars')
+const config = require('config')
+const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
+
+const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
+  return {
+    subjectTemplate: Handlebars.compile(template.subject),
+    messageTemplate: Handlebars.compile(template.message),
+    recipients: template.recipients,
+    sendgridTemplateId: template.sendgridTemplateId
+  }
+})
 
 /**
  * Function to get assigned resource bookings with specific projectIds
@@ -296,8 +308,33 @@ getTeamJob.schema = Joi.object().keys({
   jobId: Joi.string().guid().required()
 }).required()
 
+/**
+ * Send email through a particular template
+ * @param {Object} data the email object
+ * @returns {undefined}
+ */
+async function sendEmail (data) {
+  const template = emailTemplates[data.template]
+  await helper.postEvent(config.EMAIL_TOPIC, {
+    subject: template.subjectTemplate(data.data),
+    handle: data.data.userHandle,
+    message: template.messageTemplate(data.data),
+    sendgrid_template_id: template.sendgridTemplateId,
+    version: 'v3',
+    recipients: template.recipients
+  })
+}
+
+sendEmail.schema = Joi.object().keys({
+  data: Joi.object().keys({
+    template: Joi.string().valid(...Object.keys(emailTemplates)).required(),
+    data: Joi.object().required()
+  }).required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
-  getTeamJob
+  getTeamJob,
+  sendEmail
 }

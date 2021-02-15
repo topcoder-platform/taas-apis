@@ -4406,6 +4406,82 @@
 						}
 					},
 					"response": []
+				},
+        {
+					"name": "POST /taas-teams/email - team-issue-report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_member}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"template\": \"team-issue-report\",\n   \"data\": {\n      \"projectName\": \"TaaS Project Name\",\n      \"projectId\": 12345,\n      \"reportText\": \"I have issue with ...\"\n   }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /taas-teams/email - member-issue-report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"template\": \"member-issue-report\",\n   \"data\": {\n      \"projectName\": \"TaaS Project Name\",\n      \"projectId\": 12345,\n      \"userHandle\": \"pshah_manager\",\n      \"reportText\": \"I have issue with ...\"\n   }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"email"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
