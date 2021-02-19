@@ -373,7 +373,7 @@ async function _addMemberToProjectAsCustomer (projectId, userId) {
  * @returns {Object} the success/failed added members
  */
 async function addMembers (currentUser, id, data) {
-  await helper.checkIsMemberOfProject(currentUser.userId, id)
+  await helper.getProjectById(currentUser, id) // check whether the user can access the project
   const result = {
     success: [],
     failed: []
