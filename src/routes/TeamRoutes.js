@@ -43,5 +43,13 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
+  },
+  '/taas-teams/:id/members': {
+    post: {
+      controller: 'TeamController',
+      method: 'addMembers',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
   }
 }

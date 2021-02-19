@@ -5,6 +5,7 @@
 const fs = require('fs')
 const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
+const Bottleneck = require('bottleneck')
 const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
@@ -968,6 +969,89 @@ async function checkIsMemberOfProject (userId, projectId) {
   }
 }
 
+/**
+ * Find topcoder members by handles.
+ *
+ * @param {Array} handles the array of handles
+ * @returns {Array} the member details
+ */
+async function getMemberDetailsByHandles (handles) {
+  if (!handles.length) {
+    return []
+  }
+  const token = await getM2MToken()
+  const res = await request
+    .get(`${config.TOPCODER_MEMBERS_API}/_search`)
+    .query({
+      query: _.map(handles, handle => `handleLower:${handle.toLowerCase()}`).join(' OR '),
+      fields: 'userId,handle,firstName,lastName,email'
+    })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getMemberDetailsByHandles', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
+ * Find topcoder members by email.
+ *
+ * @param {String} token the auth token
+ * @param {String} email the email
+ * @returns {Array} the member details
+ */
+async function _getMemberDetailsByEmail (token, email) {
+  const res = await request
+    .get(config.TOPCODER_USERS_API)
+    .query({
+      filter: `email=${email}`,
+      fields: 'handle,id,email'
+    })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: '_getMemberDetailsByEmail', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
+ * Find topcoder members by emails.
+ * Maximum concurrent requests is limited by MAX_PARALLEL_REQUEST_TOPCODER_USERS_API.
+ *
+ * @param {Array} emails the array of emails
+ * @returns {Array} the member details
+ */
+async function getMemberDetailsByEmails (emails) {
+  const token = await getM2MToken()
+  const limiter = new Bottleneck({ maxConcurrent: config.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API })
+  const membersArray = await Promise.all(emails.map(email => limiter.schedule(() => _getMemberDetailsByEmail(token, email)
+    .catch(() => {
+      localLogger.error({ context: 'getMemberDetailsByEmails', message: `email: ${email} user not found` })
+      return []
+    })
+  )))
+  return _.flatten(membersArray)
+}
+
+/**
+ * Add a member to a project.
+ *
+ * @param {Number} projectId project id
+ * @param {Object} data the userId and the role of the member
+ * @param {Object} criteria the filtering criteria
+ * @returns {Object} the member created
+ */
+async function createProjectMember (projectId, data, criteria) {
+  const m2mToken = await getM2MToken()
+  const { body: member } = await request
+    .post(`${config.TC_API}/projects/${projectId}/members`)
+    .set('Authorization', `Bearer ${m2mToken}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .query(criteria)
+    .send(data)
+  localLogger.debug({ context: 'createProjectMember', message: `response body: ${JSON.stringify(member)}` })
+  return member
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1002,5 +1086,8 @@ module.exports = {
   ensureJobById,
   ensureUserById,
   getAuditM2Muser,
-  checkIsMemberOfProject
+  checkIsMemberOfProject,
+  getMemberDetailsByHandles,
+  getMemberDetailsByEmails,
+  createProjectMember
 }

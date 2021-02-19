@@ -1523,6 +1523,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /taas-teams/{id}/members:
+    post:
+      tags:
+        - Teams
+      description: |
+        Add members to a team by handle or email.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMembersRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddMembersResponseBody'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /taas-teams/skills:
     get:
       tags:
@@ -2419,6 +2476,55 @@ components:
           type: object
           example: {"projectName": "TaaS Project Name", "projectId": 12345, "reportText": "I have issue with ..."}
           description: "Arbitrary data to feed the specified template"
+    AddMembersRequestBody:
+      properties:
+        handles:
+          type: array
+          description: "The handles."
+          items:
+            type: string
+            description: "the handle of a member"
+            example: topcoder321
+        emails:
+          type: array
+          description: "The emails."
+          items:
+            type: string
+            description: "the email of a member"
+            example: 'xxx@xxx.com'
+    AddMembersResponseBody:
+      properties:
+        success:
+          type: array
+          description: "The handles."
+          items:
+            type: object
+            example: {"createdAt": "2021-02-18T19:58:50.610Z", "createdBy": -101, "email": "email@domain.com", "handle": "Scud", "id": 14155, "photoURL": "https://topcoder-dev-media.s3.amazonaws.com/member/profile/Scud-1450982908556.png", "role": "customer", "timeZone": null, "updatedAt": "2021-02-18T19:58:50.611Z", "updatedBy": -101, "userId": 1800091, "workingHourEnd": null, "workingHourStart": null}
+        failed:
+          type: array
+          description: "The emails."
+          items:
+            oneOf:
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    description: the error message
+                    example: "User doesn't exist"
+                  handle:
+                    type: string
+                    description: "the handle of a member"
+                    example: topcoder321
+              - type: object
+                properties:
+                  error:
+                    type: string
+                    description: the error message
+                    example: "User is already added"
+                  email:
+                    type: string
+                    description: "the email of a member"
+                    example: 'xxx@xxx.com'
     Error:
       required:
         - message

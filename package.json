@@ -34,6 +34,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@topcoder-platform/topcoder-bus-api-wrapper": "github:topcoder-platform/tc-bus-api-wrapper",
     "aws-sdk": "^2.787.0",
+    "bottleneck": "^2.19.5",
     "config": "^3.3.2",
     "cors": "^2.8.5",
     "date-fns": "^2.16.1",

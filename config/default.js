@@ -39,6 +39,10 @@ module.exports = {
   TOPCODER_SKILL_PROVIDER_ID: process.env.TOPCODER_SKILL_PROVIDER_ID || '9cc0795a-6e12-4c84-9744-15858dba1861',
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
+  // the api to find topcoder members
+  TOPCODER_MEMBERS_API: process.env.TOPCODER_MEMBERS_API || 'https://api.topcoder-dev.com/v3/members',
+  // rate limit of requests to user api
+  MAX_PARALLEL_REQUEST_TOPCODER_USERS_API: process.env.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API || 100,
 
   // PostgreSQL database url.
   DATABASE_URL: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres',

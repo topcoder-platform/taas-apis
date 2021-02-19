@@ -44,9 +44,19 @@ async function sendEmail (req, res) {
   res.status(HttpStatus.NO_CONTENT).end()
 }
 
+/**
+ * Add members to a team.
+ * @param req the request
+ * @param res the response
+ */
+async function addMembers (req, res) {
+  res.send(await service.addMembers(req.authUser, req.params.id, req.body))
+}
+
 module.exports = {
   searchTeams,
   getTeam,
   getTeamJob,
-  sendEmail
+  sendEmail,
+  addMembers
 }
