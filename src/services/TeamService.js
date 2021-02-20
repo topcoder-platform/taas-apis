@@ -320,7 +320,7 @@ async function sendEmail (currentUser, data) {
     data: {
       handle: currentUser.handle,
       subject: template.subjectTemplate(data.data),
-      message: template.messageTemplate(data.data),
+      message: template.messageTemplate(data.data)
     },
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3',
@@ -336,9 +336,98 @@ sendEmail.schema = Joi.object().keys({
   }).required()
 }).required()
 
+/**
+ * Add a member to a team as customer.
+ *
+ * @param {Number} projectId project id
+ * @param {String} userId user id
+ * @returns {Object} the member added
+ */
+async function _addMemberToProjectAsCustomer (projectId, userId) {
+  try {
+    const member = await helper.createProjectMember(
+      projectId,
+      { userId: userId, role: 'customer' },
+      { fields: 'id,userId,role,createdAt,updatedAt,createdBy,updatedBy,handle,photoURL,workingHourStart,workingHourEnd,timeZone,email' }
+    )
+    return member
+  } catch (err) {
+    err.message = _.get(err, 'response.body.message') || err.message
+    if (err.message && err.message.includes('User already registered')) {
+      throw new Error('User is already added')
+    }
+    logger.error({
+      component: 'TeamService',
+      context: '_addMemberToProjectAsCustomer',
+      message: err.message
+    })
+    throw err
+  }
+}
+
+/**
+ * Add members to a team by handle or email.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the team id
+ * @param {Object} data the object including members with handle/email to be added
+ * @returns {Object} the success/failed added members
+ */
+async function addMembers (currentUser, id, data) {
+  await helper.getProjectById(currentUser, id) // check whether the user can access the project
+  const result = {
+    success: [],
+    failed: []
+  }
+  const membersByHandle = await helper.getMemberDetailsByHandles(data.handles)
+    .then(members => {
+      return _.groupBy(members, 'handle')
+    })
+  const membersByEmail = await helper.getMemberDetailsByEmails(data.emails)
+    .then(members => {
+      return _.groupBy(members, 'email')
+    })
+  await Promise.all([
+    Promise.all(data.handles.map(handle => {
+      if (!membersByHandle[handle]) {
+        result.failed.push({ error: 'User doesn\'t exist', handle })
+        return
+      }
+      return _addMemberToProjectAsCustomer(id, membersByHandle[handle][0].userId)
+        .then(member => {
+          result.success.push(({ ...member, handle }))
+        }).catch(err => {
+          result.failed.push({ error: err.message, handle })
+        })
+    })),
+    Promise.all(data.emails.map(email => {
+      if (!membersByEmail[email]) {
+        result.failed.push({ error: 'User doesn\'t exist', email })
+        return
+      }
+      return _addMemberToProjectAsCustomer(id, membersByEmail[email][0].id)
+        .then(member => {
+          result.success.push(({ ...member, email }))
+        }).catch(err => {
+          result.failed.push({ error: err.message, email })
+        })
+    }))
+  ])
+  return result
+}
+
+addMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  data: Joi.object().keys({
+    handles: Joi.array().items(Joi.string()),
+    emails: Joi.array().items(Joi.string().email())
+  }).or('handles', 'emails').required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
   getTeamJob,
-  sendEmail
+  sendEmail,
+  addMembers
 }

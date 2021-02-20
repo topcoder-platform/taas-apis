@@ -4482,7 +4482,52 @@
 						}
 					},
 					"response": []
-				}
+				},
+        {
+          "name": "POST /taas-teams/:id/members",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "type": "text",
+                "value": "Bearer {{token_administrator}}"
+              },
+              {
+                "key": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"handles\": [\n        \"tester1234\",\n        \"non-existing\"\n    ],\n    \"emails\": [\n        \"non-existing@domain.com\",\n        \"email@domain.com\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/taas-teams/:id/members",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "taas-teams",
+                ":id",
+                "members"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "16705"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
 			]
 		},
 		{
