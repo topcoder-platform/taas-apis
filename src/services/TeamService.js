@@ -374,20 +374,27 @@ async function _addMemberToProjectAsCustomer (projectId, userId) {
  */
 async function addMembers (currentUser, id, data) {
   await helper.getProjectById(currentUser, id) // check whether the user can access the project
+
   const result = {
     success: [],
     failed: []
   }
-  const membersByHandle = await helper.getMemberDetailsByHandles(data.handles)
+
+  const handles = data.handles || []
+  const emails = data.emails || []
+
+  const membersByHandle = await helper.getMemberDetailsByHandles(handles)
     .then(members => {
       return _.groupBy(members, 'handle')
     })
-  const membersByEmail = await helper.getMemberDetailsByEmails(data.emails)
+
+  const membersByEmail = await helper.getMemberDetailsByEmails(emails)
     .then(members => {
       return _.groupBy(members, 'email')
     })
+
   await Promise.all([
-    Promise.all(data.handles.map(handle => {
+    Promise.all(handles.map(handle => {
       if (!membersByHandle[handle]) {
         result.failed.push({ error: 'User doesn\'t exist', handle })
         return
@@ -399,7 +406,7 @@ async function addMembers (currentUser, id, data) {
           result.failed.push({ error: err.message, handle })
         })
     })),
-    Promise.all(data.emails.map(email => {
+    Promise.all(emails.map(email => {
       if (!membersByEmail[email]) {
         result.failed.push({ error: 'User doesn\'t exist', email })
         return
@@ -412,6 +419,7 @@ async function addMembers (currentUser, id, data) {
         })
     }))
   ])
+
   return result
 }
 
