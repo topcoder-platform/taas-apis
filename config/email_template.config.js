@@ -19,9 +19,7 @@ module.exports = {
          `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +
          '\n' +
          '{{reportText}}',
-    recipients: [
-      config.REPORT_ISSUE_EMAIL
-    ],
+    recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
   },
   /* Report issue for a particular member
@@ -39,9 +37,7 @@ module.exports = {
          `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +
          '\n' +
          '{{reportText}}',
-    recipients: [
-      config.REPORT_ISSUE_EMAIL
-    ],
+    recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
   }
 }

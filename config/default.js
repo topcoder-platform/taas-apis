@@ -113,8 +113,9 @@ module.exports = {
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
-  // the email address for receiving the issue report
-  REPORT_ISSUE_EMAIL: process.env.REPORT_ISSUE_EMAIL,
+  // the emails address for receiving the issue report
+  // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
+  REPORT_ISSUE_EMAILS: (process.env.REPORT_ISSUE_EMAILS || '').split(','),
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // the URL where TaaS App is hosted
