@@ -14,10 +14,10 @@ module.exports = {
    */
   'team-issue-report': {
     subject: 'Issue Reported on TaaS Team "{{projectName}}" ({{projectId}}).',
-    body: 'Project Name: {{projectName}}' + '<br />\n' +
-         'Project ID: {{projectId}}' + '<br />\n' +
-         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br />\n' +
-         '<br />\n' +
+    body: 'Project Name: {{projectName}}' + '<br>\n' +
+         'Project ID: {{projectId}}' + '<br>\n' +
+         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br>\n' +
+         '<br>\n' +
          '{{reportText}}',
     recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
@@ -31,11 +31,11 @@ module.exports = {
    */
   'member-issue-report': {
     subject: 'Issue Reported for member "{{userHandle}}" on TaaS Team "{{projectName}}" ({{projectId}}).',
-    body: 'User Handle: {{userHandle}}' + '<br />\n' +
-         'Project Name: {{projectName}}' + '<br />\n' +
-         'Project ID: {{projectId}}' + '<br />\n' +
-         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br />\n' +
-         '<br />\n' +
+    body: 'User Handle: {{userHandle}}' + '<br>\n' +
+         'Project Name: {{projectName}}' + '<br>\n' +
+         'Project ID: {{projectId}}' + '<br>\n' +
+         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br>\n' +
+         '<br>\n' +
          '{{reportText}}',
     recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
