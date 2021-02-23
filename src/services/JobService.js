@@ -153,6 +153,8 @@ async function createJob (currentUser, job) {
   job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
   job.status = 'sourcing'
+  // hotfix to support update Project Service until we release TaaS API 1.5
+  delete job.duration
 
   const created = await Job.create(job)
   await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
@@ -167,6 +169,8 @@ createJob.schema = Joi.object().keys({
     description: Joi.string(),
     title: Joi.title().required(),
     startDate: Joi.date(),
+    // hotfix to support update Project Service until we release TaaS API 1.5
+    duration: Joi.number().integer().min(1).allow(null),
     endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.string(),
