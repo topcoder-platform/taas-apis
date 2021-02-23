@@ -14,7 +14,7 @@ module.exports = {
    */
   'team-issue-report': {
     subject: 'Issue Reported on TaaS Team {{projectName}} ({{projectId}}).',
-    message: 'Project Name: {{projectName}}' + '\n' +
+    body: 'Project Name: {{projectName}}' + '\n' +
          'Project ID: {{projectId}}' + '\n' +
          `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +
          '\n' +
@@ -31,7 +31,7 @@ module.exports = {
    */
   'member-issue-report': {
     subject: 'Issue Reported for member {{userHandle}} on TaaS Team {{projectName}} ({{projectId}}).',
-    message: 'User Handle: {{userHandle}}' + '\n' +
+    body: 'User Handle: {{userHandle}}' + '\n' +
          'Project Name: {{projectName}}' + '\n' +
          'Project ID: {{projectId}}' + '\n' +
          `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +

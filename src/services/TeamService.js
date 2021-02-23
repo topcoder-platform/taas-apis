@@ -17,7 +17,7 @@ const ResourceBookingService = require('./ResourceBookingService')
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
     subjectTemplate: Handlebars.compile(template.subject),
-    messageTemplate: Handlebars.compile(template.message),
+    bodyTemplate: Handlebars.compile(template.body),
     recipients: template.recipients,
     sendgridTemplateId: template.sendgridTemplateId
   }
@@ -318,9 +318,8 @@ async function sendEmail (currentUser, data) {
   const template = emailTemplates[data.template]
   await helper.postEvent(config.EMAIL_TOPIC, {
     data: {
-      handle: currentUser.handle,
       subject: template.subjectTemplate(data.data),
-      message: template.messageTemplate(data.data)
+      body: template.bodyTemplate(data.data)
     },
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3',
