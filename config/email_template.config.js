@@ -13,11 +13,11 @@ module.exports = {
    * - reportText: the body of reported issue. Example: "I have issue with ... \n ... Thank you in advance!"
    */
   'team-issue-report': {
-    subject: 'Issue Reported on TaaS Team "{{projectName}}" ({{projectId}}).',
-    body: 'Project Name: {{projectName}}' + '<br />\n' +
-         'Project ID: {{projectId}}' + '<br />\n' +
-         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br />\n' +
-         '<br />\n' +
+    subject: 'Issue Reported on TaaS Team {{projectName}} ({{projectId}}).',
+    body: 'Project Name: {{projectName}}' + '\n' +
+         'Project ID: {{projectId}}' + '\n' +
+         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +
+         '\n' +
          '{{reportText}}',
     recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
@@ -30,12 +30,12 @@ module.exports = {
    * - reportText: the body of reported issue. Example: "I have issue with ... \n ... Thank you in advance!"
    */
   'member-issue-report': {
-    subject: 'Issue Reported for member "{{userHandle}}" on TaaS Team "{{projectName}}" ({{projectId}}).',
-    body: 'User Handle: {{userHandle}}' + '<br />\n' +
-         'Project Name: {{projectName}}' + '<br />\n' +
-         'Project ID: {{projectId}}' + '<br />\n' +
-         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '<br />\n' +
-         '<br />\n' +
+    subject: 'Issue Reported for member {{userHandle}} on TaaS Team {{projectName}} ({{projectId}}).',
+    body: 'User Handle: {{userHandle}}' + '\n' +
+         'Project Name: {{projectName}}' + '\n' +
+         'Project ID: {{projectId}}' + '\n' +
+         `Project URL: ${config.TAAS_APP_URL}/{{projectId}}` + '\n' +
+         '\n' +
          '{{reportText}}',
     recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REPORT_ISSUE_SENDGRID_TEMPLATE_ID
