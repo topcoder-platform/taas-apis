@@ -76,7 +76,7 @@ app.use((err, req, res, next) => {
 
   if (err.response) {
     // extract error message from V3/V5 API
-    errorResponse.message = _.get(err, 'response.body.result.content') || _.get(err, 'response.body.message')
+    errorResponse.message = _.get(err, 'response.body.result.content.message') || _.get(err, 'response.body.message')
   }
 
   if (_.isUndefined(errorResponse.message)) {

@@ -1580,6 +1580,177 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - Teams
+      description: |
+        Search members in a team.
+        Serves as a proxy endpoint for `GET /projects/{projectId}/members`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+          description: Fields to be returned.
+        - in: query
+          name: role
+          required: false
+          schema:
+            type: string
+          description: Filtered by a specific role.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectMember'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /taas-teams/{id}/invites:
+    get:
+      tags:
+        - Teams
+      description: |
+        Search member invites for a team.
+        Serves as a proxy endpoint for `GET /projects/{projectId}/invites`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+          description: Fields to be returned.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectMemberInvite'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /taas-teams/{id}/members/{projectMemberId}:
+    delete:
+      tags:
+        - Teams
+      description: |
+        Remove a member from a team.
+        Serves as a proxy endpoint for `DELETE /projects/{projectId}/members/{id}`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The team/project id.
+        - in: path
+          name: projectMemberId
+          required: true
+          schema:
+            type: integer
+          description: The id of the project member.
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /taas-teams/skills:
     get:
       tags:
@@ -2496,10 +2667,9 @@ components:
       properties:
         success:
           type: array
-          description: "The handles."
+          description: "The members created."
           items:
-            type: object
-            example: {"createdAt": "2021-02-18T19:58:50.610Z", "createdBy": -101, "email": "email@domain.com", "handle": "Scud", "id": 14155, "photoURL": "https://topcoder-dev-media.s3.amazonaws.com/member/profile/Scud-1450982908556.png", "role": "customer", "timeZone": null, "updatedAt": "2021-02-18T19:58:50.611Z", "updatedBy": -101, "userId": 1800091, "workingHourEnd": null, "workingHourStart": null}
+            $ref: '#/components/schemas/ProjectMember'
         failed:
           type: array
           description: "The emails."
@@ -2525,6 +2695,12 @@ components:
                     type: string
                     description: "the email of a member"
                     example: 'xxx@xxx.com'
+    ProjectMember:
+      type: object
+      example: {"id": 14329, "userId": 40159097, "role": "customer", "createdAt": "2021-02-24T12:34:45.074Z", "updatedAt": "2021-02-24T12:34:45.075Z", "createdBy": -101, "updatedBy": -101, "handle": "tester1234", "photoURL": null, "workingHourStart": "9:00", "workingHourEnd": "17:00", "timeZone": "Asia/Kolkata", "email": "sathya.jayabal@gmail.com"}
+    ProjectMemberInvite:
+      type: object
+      example: {"createdAt": "2021-02-24T11:02:12.673Z", "deletedAt": null, "role": "customer", "updatedBy": -101, "createdBy": -101, "id": 3686, "projectId": 16705, "userId": 23008602, "email": null, "deletedBy": null, "updatedAt": "2021-02-24T11:02:12.674Z", "status": "pending"}
     Error:
       required:
         - message
