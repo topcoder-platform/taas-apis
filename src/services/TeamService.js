@@ -384,36 +384,49 @@ async function addMembers (currentUser, id, criteria, data) {
   const handles = data.handles || []
   const emails = data.emails || []
 
-  const membersByHandle = await helper.getMemberDetailsByHandles(handles)
-    .then(members => {
-      return _.groupBy(members, 'handle')
-    })
+  const handleMembers = await helper.getMemberDetailsByHandles(handles)
+    .then((members) => _.map(members, (member) => ({
+      ...member,
+      // populate members with lower-cased handle for case insensitive search
+      handleLowerCase: member.handle.toLowerCase()
+    })))
 
-  const membersByEmail = await helper.getMemberDetailsByEmails(emails)
-    .then(members => {
-      return _.groupBy(members, 'email')
-    })
+  const emailMembers = await helper.getMemberDetailsByEmails(emails)
+    .then((members) => _.map(members, (member) => ({
+      ...member,
+      // populate members with lower-cased email for case insensitive search
+      emailLowerCase: member.email.toLowerCase()
+    })))
 
   await Promise.all([
     Promise.all(handles.map(handle => {
-      if (!membersByHandle[handle]) {
+      const memberDetails = _.find(handleMembers, { handleLowerCase: handle.toLowerCase() })
+
+      if (!memberDetails) {
         result.failed.push({ error: 'User doesn\'t exist', handle })
         return
       }
-      return _addMemberToProjectAsCustomer(id, membersByHandle[handle][0].userId, criteria.fields)
+
+      return _addMemberToProjectAsCustomer(id, memberDetails.userId, criteria.fields)
         .then(member => {
+          // note, that we return `handle` in the same case it was in request
           result.success.push(({ ...member, handle }))
         }).catch(err => {
           result.failed.push({ error: err.message, handle })
         })
     })),
+
     Promise.all(emails.map(email => {
-      if (!membersByEmail[email]) {
+      const memberDetails = _.find(emailMembers, { emailLowerCase: email.toLowerCase() })
+
+      if (!memberDetails) {
         result.failed.push({ error: 'User doesn\'t exist', email })
         return
       }
-      return _addMemberToProjectAsCustomer(id, membersByEmail[email][0].id, criteria.fields)
+
+      return _addMemberToProjectAsCustomer(id, memberDetails.id, criteria.fields)
         .then(member => {
+          // note, that we return `email` in the same case it was in request
           result.success.push(({ ...member, email }))
         }).catch(err => {
           result.failed.push({ error: err.message, email })
