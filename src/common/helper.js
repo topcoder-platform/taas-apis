@@ -602,7 +602,7 @@ function getAuditM2Muser () {
  */
 async function checkIsMemberOfProject (userId, projectId) {
   const m2mToken = await getM2MToken()
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `m2mToken: ${decodeTom2mToken}` })
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `m2mToken: ${m2mToken}` })
   const res = await request
     .get(`${config.TC_API}/projects/${projectId}`)
     .set('Authorization', `Bearer ${m2mToken}`)
