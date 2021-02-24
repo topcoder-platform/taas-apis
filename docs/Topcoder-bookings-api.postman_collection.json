@@ -4527,7 +4527,136 @@
             }
           },
           "response": []
-        }
+        },
+				{
+					"name": "GET /taas-teams/:id/members",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:id/members?role=customer&fields=id,userId,role,createdAt,updatedAt,createdBy,updatedBy,handle,photoURL,workingHourStart,workingHourEnd,timeZone,email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":id",
+								"members"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "customer"
+								},
+								{
+									"key": "fields",
+									"value": "id,userId,role,createdAt,updatedAt,createdBy,updatedBy,handle,photoURL,workingHourStart,workingHourEnd,timeZone,email"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "16705"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /taas-teams/:id/invites",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:id/invites?fields=createdAt,deletedAt,role,updatedBy,createdBy,id,projectId,userId,email,deletedBy,updatedAt,status",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":id",
+								"invites"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "createdAt,deletedAt,role,updatedBy,createdBy,id,projectId,userId,email,deletedBy,updatedAt,status"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "16705"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /taas-teams/:id/members/:projectMemberId",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/:id/members/:projectMemberId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":id",
+								"members",
+								":projectMemberId"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "16705"
+								},
+								{
+									"key": "projectMemberId",
+									"value": "14327"
+								}
+							]
+						}
+					},
+					"response": []
+				}
 			]
 		},
 		{

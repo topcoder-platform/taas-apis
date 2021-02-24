@@ -1052,6 +1052,69 @@ async function createProjectMember (projectId, data, criteria) {
   return member
 }
 
+/**
+ * List members of a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {Object} criteria the search criteria
+ * @returns {Array} the project members
+ */
+async function listProjectMembers (currentUser, projectId, criteria = {}) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  const { body: members } = await request
+    .get(`${config.TC_API}/projects/${projectId}/members`)
+    .query(criteria)
+    .set('Authorization', token)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'listProjectMembers', message: `response body: ${JSON.stringify(members)}` })
+  return members
+}
+
+/**
+ * List member invites of a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {Object} criteria the search criteria
+ * @returns {Array} the member invites
+ */
+async function listProjectMemberInvites (currentUser, projectId, criteria = {}) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  const { body: invites } = await request
+    .get(`${config.TC_API}/projects/${projectId}/invites`)
+    .query(criteria)
+    .set('Authorization', token)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'listProjectMemberInvites', message: `response body: ${JSON.stringify(invites)}` })
+  return invites
+}
+
+/**
+ * Remove a member from a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {String} projectMemberId the id of the project member
+ * @returns {undefined}
+ */
+async function deleteProjectMember (currentUser, projectId, projectMemberId) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  try {
+    await request
+      .delete(`${config.TC_API}/projects/${projectId}/members/${projectMemberId}`)
+      .set('Authorization', token)
+  } catch (err) {
+    if (err.status === HttpStatus.NOT_FOUND) {
+      throw new errors.NotFoundError(`projectMemberId: ${projectMemberId} "member" doesn't exist in project ${projectId}`)
+    }
+    throw err
+  }
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1089,5 +1152,8 @@ module.exports = {
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
   getMemberDetailsByEmails,
-  createProjectMember
+  createProjectMember,
+  listProjectMembers,
+  listProjectMemberInvites,
+  deleteProjectMember
 }

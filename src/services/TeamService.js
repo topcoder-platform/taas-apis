@@ -340,14 +340,15 @@ sendEmail.schema = Joi.object().keys({
  *
  * @param {Number} projectId project id
  * @param {String} userId user id
+ * @param {String} fields the fields to be returned
  * @returns {Object} the member added
  */
-async function _addMemberToProjectAsCustomer (projectId, userId) {
+async function _addMemberToProjectAsCustomer (projectId, userId, fields) {
   try {
     const member = await helper.createProjectMember(
       projectId,
       { userId: userId, role: 'customer' },
-      { fields: 'id,userId,role,createdAt,updatedAt,createdBy,updatedBy,handle,photoURL,workingHourStart,workingHourEnd,timeZone,email' }
+      { fields }
     )
     return member
   } catch (err) {
@@ -368,10 +369,11 @@ async function _addMemberToProjectAsCustomer (projectId, userId) {
  * Add members to a team by handle or email.
  * @param {Object} currentUser the user who perform this operation
  * @param {String} id the team id
+ * @params {Object} criteria the search criteria
  * @param {Object} data the object including members with handle/email to be added
  * @returns {Object} the success/failed added members
  */
-async function addMembers (currentUser, id, data) {
+async function addMembers (currentUser, id, criteria, data) {
   await helper.getProjectById(currentUser, id) // check whether the user can access the project
 
   const result = {
@@ -398,7 +400,7 @@ async function addMembers (currentUser, id, data) {
         result.failed.push({ error: 'User doesn\'t exist', handle })
         return
       }
-      return _addMemberToProjectAsCustomer(id, membersByHandle[handle][0].userId)
+      return _addMemberToProjectAsCustomer(id, membersByHandle[handle][0].userId, criteria.fields)
         .then(member => {
           result.success.push(({ ...member, handle }))
         }).catch(err => {
@@ -410,7 +412,7 @@ async function addMembers (currentUser, id, data) {
         result.failed.push({ error: 'User doesn\'t exist', email })
         return
       }
-      return _addMemberToProjectAsCustomer(id, membersByEmail[email][0].id)
+      return _addMemberToProjectAsCustomer(id, membersByEmail[email][0].id, criteria.fields)
         .then(member => {
           result.success.push(({ ...member, email }))
         }).catch(err => {
@@ -425,10 +427,77 @@ async function addMembers (currentUser, id, data) {
 addMembers.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    fields: Joi.string()
+  }).required(),
   data: Joi.object().keys({
     handles: Joi.array().items(Joi.string()),
     emails: Joi.array().items(Joi.string().email())
   }).or('handles', 'emails').required()
+}).required()
+
+/**
+ * Search members in a team.
+ * Serves as a proxy endpoint for `GET /projects/{projectId}/members`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the search result
+ */
+async function searchMembers (currentUser, id, criteria) {
+  const result = await helper.listProjectMembers(currentUser, id, criteria)
+  return { result }
+}
+
+searchMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    role: Joi.string(),
+    fields: Joi.string()
+  }).required()
+}).required()
+
+/**
+ * Search member invites for a team.
+ * Serves as a proxy endpoint for `GET /projects/{projectId}/invites`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the search result
+ */
+async function searchInvites (currentUser, id, criteria) {
+  const result = await helper.listProjectMemberInvites(currentUser, id, criteria)
+  return { result }
+}
+
+searchInvites.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    fields: Joi.string()
+  }).required()
+}).required()
+
+/**
+ * Remove a member from a team.
+ * Serves as a proxy endpoint for `DELETE /projects/{projectId}/members/{id}`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @param {String} projectMemberId the id of the project member
+ * @returns {undefined}
+ */
+async function deleteMember (currentUser, id, projectMemberId) {
+  await helper.deleteProjectMember(currentUser, id, projectMemberId)
+}
+
+deleteMember.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  projectMemberId: Joi.number().integer().required()
 }).required()
 
 module.exports = {
@@ -436,5 +505,8 @@ module.exports = {
   getTeam,
   getTeamJob,
   sendEmail,
-  addMembers
+  addMembers,
+  searchMembers,
+  searchInvites,
+  deleteMember
 }
