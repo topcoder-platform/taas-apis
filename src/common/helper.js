@@ -607,8 +607,9 @@ async function checkIsMemberOfProject (userId, projectId) {
     .set('Authorization', `Bearer ${m2mToken}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `got project object ${projectId}: ${JSON.stringify(res.body)}` })
   const memberIdList = _.map(res.body.members, 'userId')
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${memberIdList}` })
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${JSON.stringify(memberIdList)}, authUserId: ${JSON.stringify(userId)}` })
   if (!memberIdList.includes(userId)) {
     throw new errors.UnauthorizedError(`userId: ${userId} the user is not a member of project ${projectId}`)
   }
