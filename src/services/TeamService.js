@@ -268,35 +268,35 @@ async function getTeamJob (currentUser, id, jobId) {
     )
   }
 
+  // If the job has candidates, the following data for each candidate would be populated:
+  //
+  // - the `status`, `resume`, `userId` and `id` of the candidate
+  // - the `handle`, `firstName` `lastName` and `skills` of the user(from GET /users/:userId) for the candidate
+  // - the `photoURL` of the member(from GET /members) for the candidate
+  //
   if (job && job.candidates && job.candidates.length > 0) {
-    const usersPromises = []
-    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(candidate.userId, true)) })
-    const candidates = await Promise.all(usersPromises)
+    // find user data for candidates
+    const users = await Promise.all(
+      _.map(_.uniq(_.map(job.candidates, 'userId')), userId => helper.getUserById(userId, true))
+    )
+    const userMap = _.groupBy(users, 'id')
 
-    const userHandles = _.map(candidates, 'handle')
-    if (userHandles && userHandles.length > 0) {
-      // Get user photo from /v5/members
-      const members = await helper.getMembers(userHandles)
+    // find photo URLs for users
+    const members = await helper.getMembers(_.map(users, 'handle'))
+    const photoURLMap = _.groupBy(members, 'handleLower')
 
-      for (const item of candidates) {
-        const candidate = _.find(job.candidates, { userId: item.id })
-        // TODO this logic should be vice-verse, we should loop trough candidates and populate users data if found,
-        //      not loop through users and populate candidates data if found
-        if (candidate) {
-          item.resume = candidate.resume
-          item.status = candidate.status
-          // return User id as `userId` and JobCandidate id as `id`
-          item.userId = item.id
-          item.id = candidate.id
-        }
-        const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
-        if (findMember && findMember.photoURL) {
-          item.photo_url = findMember.photoURL
-        }
+    result.candidates = _.map(job.candidates, candidate => {
+      const candidateData = _.pick(candidate, ['status', 'resume', 'userId', 'id'])
+      const userData = userMap[candidate.userId][0]
+      // attach user data to the candidate
+      Object.assign(candidateData, _.pick(userData, ['handle', 'firstName', 'lastName', 'skills']))
+      // attach photo URL to the candidate
+      const handleLower = userData.handle.toLowerCase()
+      if (photoURLMap[handleLower]) {
+        candidateData.photo_url = photoURLMap[handleLower][0].photoURL
       }
-    }
-
-    result.candidates = candidates
+      return candidateData
+    })
   }
 
   return result
