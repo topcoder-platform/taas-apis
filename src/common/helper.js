@@ -957,13 +957,15 @@ function getAuditM2Muser () {
  */
 async function checkIsMemberOfProject (userId, projectId) {
   const m2mToken = await getM2MToken()
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `m2mToken: ${m2mToken}` })
   const res = await request
     .get(`${config.TC_API}/projects/${projectId}`)
     .set('Authorization', `Bearer ${m2mToken}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `got project object ${projectId}: ${JSON.stringify(res.body)}` })
   const memberIdList = _.map(res.body.members, 'userId')
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${memberIdList}` })
+  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${JSON.stringify(memberIdList)}, authUserId: ${JSON.stringify(userId)}` })
   if (!memberIdList.includes(userId)) {
     throw new errors.UnauthorizedError(`userId: ${userId} the user is not a member of project ${projectId}`)
   }
