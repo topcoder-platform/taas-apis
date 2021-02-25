@@ -19,7 +19,9 @@ const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 
 const localLogger = {
-  debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message })
+  debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message }),
+  error: (message) => logger.error({ component: 'helper', context: message.context, message: message.message }),
+  info: (message) => logger.info({ component: 'helper', context: message.context, message: message.message })
 }
 
 AWS.config.region = config.esConfig.AWS_REGION
