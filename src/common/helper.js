@@ -1025,8 +1025,8 @@ async function getMemberDetailsByEmails (emails) {
   const token = await getM2MToken()
   const limiter = new Bottleneck({ maxConcurrent: config.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API })
   const membersArray = await Promise.all(emails.map(email => limiter.schedule(() => _getMemberDetailsByEmail(token, email)
-    .catch(() => {
-      localLogger.error({ context: 'getMemberDetailsByEmails', message: `email: ${email} user not found` })
+    .catch((error) => {
+      localLogger.error({ context: 'getMemberDetailsByEmails', message: error.message })
       return []
     })
   )))
