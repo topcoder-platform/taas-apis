@@ -1,73 +1,198 @@
-# Topcoder Bookings API
+# Topcoder TaaS API
 
-## Dependencies
+## Requirements
 
-- nodejs https://nodejs.org/en/ (v12+)
-- PostgreSQL
-- ElasticSearch (7.x)
-- Docker
-- Docker-Compose
+- [Node.js](https://nodejs.org/en/) v12+
+- [Docker](https://www.docker.com/)
+- [Docker-Compose](https://docs.docker.com/compose/install/)
 
-## Configuration
+### Steps to run locally
 
-Configuration for the application is at `config/default.js`.
+1. 📦 Install npm dependencies
 
-The following parameters can be set in config files or in env variables:
+   ```bash
+   npm install
+   ```
 
-- `LOG_LEVEL`: the log level, default is 'debug'
-- `PORT`: the server port, default is 3000
-- `BASE_PATH`: the server api base path
-- `AUTH_SECRET`: The authorization secret used during token verification.
-- `VALID_ISSUERS`: The valid issuer of tokens, a json array contains valid issuer.
+2. ⚙ Local config
 
-- `AUTH0_URL`: Auth0 URL, used to get TC M2M token
-- `AUTH0_AUDIENCE`: Auth0 audience, used to get TC M2M token
-- `AUTH0_AUDIENCE_UBAHN`: Auth0 audience for U-Bahn
-- `TOKEN_CACHE_TIME`: Auth0 token cache time, used to get TC M2M token
-- `AUTH0_CLIENT_ID`: Auth0 client id, used to get TC M2M token
-- `AUTH0_CLIENT_SECRET`: Auth0 client secret, used to get TC M2M token
-- `AUTH0_PROXY_SERVER_URL`: Proxy Auth0 URL, used to get TC M2M token
+   1. In the `taas-apis` root directory create `.env` file with the next environment variables. Values for **Auth0 config** should be shared with you on the forum.<br>
 
-- `m2m.M2M_AUDIT_USER_ID`: default value is `00000000-0000-0000-0000-000000000000`
-- `m2m.M2M_AUDIT_HANDLE`: default value is `TopcoderService`
+      ```bash
+      # Auth0 config
+      AUTH0_URL=
+      AUTH0_AUDIENCE=
+      AUTH0_AUDIENCE_UBAHN=
+      AUTH0_CLIENT_ID=
+      AUTH0_CLIENT_SECRET=
 
-- `DATABASE_URL`: PostgreSQL database url.
-- `DB_SCHEMA_NAME`: string - PostgreSQL database target schema
-- `PROJECT_API_URL`: the project service url
-- `TC_API`: the Topcoder v5 url
-- `ORG_ID`: the organization id
-- `TOPCODER_SKILL_PROVIDER_ID`: the referenced skill provider id
+      # Locally deployed services (via docker-compose)
+      ES_HOST=dockerhost:9200
+      DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
+      BUSAPI_URL=http://dockerhost:8002/v5
+      ```
 
-- `esConfig.HOST`: the elasticsearch host
-- `esConfig.ES_INDEX_JOB`: the job index
-- `esConfig.ES_INDEX_JOB_CANDIDATE`: the job candidate index
-- `esConfig.ES_INDEX_RESOURCE_BOOKING`: the resource booking index
-- `esConfig.AWS_REGION`: The Amazon region to use when using AWS Elasticsearch service
-- `esConfig.ELASTICCLOUD.id`: The elastic cloud id, if your elasticsearch instance is hosted on elastic cloud. DO NOT provide a value for ES_HOST if you are using this
-- `esConfig.ELASTICCLOUD.username`: The elastic cloud username for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
-- `esConfig.ELASTICCLOUD.password`: The elastic cloud password for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
+      - Values from this file would be automatically used by many `npm` commands.
+      - ⚠️ Never commit this file or its copy to the repository!
 
-- `BUSAPI_URL`: Topcoder Bus API URL
-- `KAFKA_ERROR_TOPIC`: The error topic at which bus api will publish any errors
-- `KAFKA_MESSAGE_ORIGINATOR`: The originator value for the kafka messages
+   1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
 
-- `TAAS_JOB_CREATE_TOPIC`: the create job entity Kafka message topic
-- `TAAS_JOB_UPDATE_TOPIC`: the update job entity Kafka message topic
-- `TAAS_JOB_DELETE_TOPIC`: the delete job entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_CREATE_TOPIC`: the create job candidate entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_UPDATE_TOPIC`: the update job candidate entity Kafka message topic
-- `TAAS_JOB_CANDIDATE_DELETE_TOPIC`: the delete job candidate entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_CREATE_TOPIC`: the create resource booking entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_UPDATE_TOPIC`: the update resource booking entity Kafka message topic
-- `TAAS_RESOURCE_BOOKING_DELETE_TOPIC`: the delete resource booking entity Kafka message topic
+      ```
+      127.0.0.1       dockerhost
+      ```
 
+      Alternatively, you may update `.env` file and replace `dockerhost` with your docker IP address.
 
-## PostgreSQL Database Setup
-- Go to https://www.postgresql.org/ download and install the PostgreSQL.
-- Modify `DATABASE_URL` under `config/default.js` to meet your environment.
-- Run `npm run init-db` to create table(run `npm run init-db force` to force creating table)
+3. 🚢 Start docker-compose with services which are required to start Topcoder TaaS API locally
+
+   ```bash
+   npm run services:up
+   ```
+
+   Wait until all containers are fully started. As a good indicator, wait until `taas-es-processor` successfully started by viewing its logs:
+
+   ```bash
+   npm run services:logs -- -f taas-es-processor
+   ```
+
+   <details><summary>Click to see a good logs example</summary>
+   <br>
+
+   - first it would be waiting for `kafka-client` to create all the required topics and exit, you would see:
+
+   ```
+   tc-taas-es-procesor  | Waiting for kafka-client to exit....
+   ```
+
+   - after that, `taas-es-processor` would be started itself. Make sure it successfully connected to Kafka, you should see 9 lines with text `Subscribed to taas.`:
+
+   ```
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.971Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.973Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.974Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.975Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.976Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.977Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
+   tc-taas-es-procesor  | 2021-01-22T14:27:48.978Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
+   ```
+
+   </details>
+
+   <br>
+   If you want to learn more about docker-compose configuration
+   <details><summary>see more details here</summary>
+   <br>
+
+   This docker-compose file starts the next services:
+   | Service | Name | Port |
+   |----------|:-----:|:----:|
+   | PostgreSQL | postgres | 5432 |
+   | Elasticsearch | elasticsearch | 9200 |
+   | Zookeeper | zookeeper | 2181 |
+   | Kafka | kafka | 9092 |
+   | [tc-bus-api](https://github.com/topcoder-platform/tc-bus-api) | tc-bus-api | 8002 |
+   | [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) | taas-es-processor | 5000 |
+
+   - as many of the Topcoder services in this docker-compose require Auth0 configuration for M2M calls, our docker-compose file passes environment variables `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_URL`, `AUTH0_AUDIENCE`, `AUTH0_PROXY_SERVER_URL` to its containers. docker-compose takes them from `.env` file if provided.
+
+   - `docker-compose` automatically would create Kafka topics which are used by `taas-es-processor` listed in `local/kafka-client/topics.txt`.
+
+   - To view the logs from any container inside docker-compose use the following command, replacing `SERVICE_NAME` with the corresponding value under the **Name** column in the above table:
+
+     ```bash
+     npm run services:log -- -f SERVICE_NAME
+     ```
+
+   - If you want to modify the code of any of the services which are run inside this docker-compose file, you can stop such service inside docker-compose by command `docker-compose -f local/docker-compose.yml stop -f <SERVICE_NAME>` and run the service separately, following its README file.
+
+   </details>
+
+   _NOTE: In production these dependencies / services are hosted & managed outside Topcoder TaaS API._
+
+4. ♻ Init DB, ES
+
+   ```bash
+   npm run local:init
+   ```
+
+   This command will do 3 things:
+
+   - create Database tables (drop if exists)
+   - create Elasticsearch indexes (drop if exists)
+   - import demo data to Database and index it to ElasticSearch (clears any existent data if exist)
+
+5. 🚀 Start Topcoder TaaS API
+
+   ```bash
+   npm run dev
+   ```
+
+   Runs the Topcoder TaaS API using nodemon, so it would be restarted after any of the files is updated.
+   The Topcoder TaaS API will be served on `http://localhost:3000`.
+
+## NPM Commands
+
+| Command&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                          |
+| ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `npm run lint`                                                                                                            | Check for for lint errors.                                           |
+| `npm run lint:fix`                                                                                                        | Check for for lint errors and fix error automatically when possible. |
+| `npm run build`                                                                                                           | Build source code for production run into `dist` folder.             |
+| `npm run start`                                                                                                           | Start app in the production mode from prebuilt `dist` folder.        |
+| `npm run dev`                                                                                                             | Start app in the development mode using `nodemon`.                   |
+| `npm run test`                                                                                                            | Run tests.                                                           |
+| `npm run init-db`                                                                                                         | Initializes Database.                                                |
+| `npm run create-index`                                                                                                    | Create Elasticsearch indexes. Use `-- --force` flag to skip confirmation                                       |
+| `npm run delete-index`                                                                                                    | Delete Elasticsearch indexes. Use `-- --force` flag to skip confirmation  |
+| `npm run data:import <filePath>`                                                                                                       | Imports data into ES and db from filePath (`./data/demo-data.json` is used as default). Use `-- --force` flag to skip confirmation |
+| `npm run data:export <filePath>`                                                                                                       | Exports data from ES and db into filePath (`./data/demo-data.json` is used as default). Use `-- --force` flag to skip confirmation |
+| `npm run index:all`                                                                                                       | Indexes all data from db into ES. Use `-- --force` flag to skip confirmation|
+| `npm run index:jobs <jobId>`                                                                                                       | Indexes job data from db into ES, if jobId is not given all data is indexed. Use `-- --force` flag to skip confirmation |
+| `npm run index:job-candidates <jobCandidateId>`                                                                                                   | Indexes job candidate data from db into ES, if jobCandidateId is not given all data is indexed. Use `-- --force` flag to skip confirmation |
+| `npm run index:resource-bookings <resourceBookingsId>`                                                                                                       | Indexes resource bookings data from db into ES, if resourceBookingsId is not given all data is indexed. Use `-- --force` flag to skip confirmation |
+| `npm run services:up`                                                                                                     | Start services via docker-compose for local development.             |
+| `npm run services:down`                                                                                                   | Stop services via docker-compose for local development.              |
+| `npm run services:logs -- -f <service_name>`                                                                              | View logs of some service inside docker-compose.                     |
+| `npm run local:init`                                                                                                      | Recreate Database and Elasticsearch indexes and populate demo data for local development (removes any existent data).                 |
+| `npm run local:reset`                                                                                                     | Recreate Database and Elasticsearch indexes (removes any existent data).              |
+| `npm run cov`                                                                                                             | Code Coverage Report.                                                |
+| `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                       |
+| `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                        |
+
+## Kafka commands
+
+If you've used `docker-compose` with the file `local/docker-compose.yml` during local setup to spawn kafka & zookeeper, you can use the following commands to manipulate kafka topics and messages:
+(Replace `TOPIC_NAME` with the name of the desired topic)
+
+### Create Topic
+
+```bash
+docker exec tc-taas-kafka /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic TOPIC_NAME
+```
+
+### List Topics
+
+```bash
+docker exec tc-taas-kafka /opt/kafka/bin/kafka-topics.sh --list --zookeeper zookeeper:2181
+```
+
+### Watch Topic
+
+```bash
+docker exec tc-taas-kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic TOPIC_NAME
+```
+
+### Post Message to Topic (from stdin)
+
+```bash
+docker exec -it tc-taas-kafka /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic TOPIC_NAME
+```
+
+- Enter or copy/paste the message into the console after starting this command.
 
 ## DB Migration
+
 - `npm run migrate`: run any migration files which haven't run yet.
 - `npm run migrate:undo`: revert most recent migration.
 
@@ -80,52 +205,7 @@ The following parameters can be set in the config file or via env variables:
 - `database`: set via env `DB_NAME`; datebase name
 - `host`: set via env `DB_HOST`; datebase host name
 
-## ElasticSearch Setup
-- Go to https://www.elastic.co/downloads/ download and install the elasticsearch.
-- Modify `esConfig` under `config/default.js` to meet your environment.
-- Run `npm run create-index` to create ES index.
-- Run `npm run delete-index` to delete ES index.
-
-## Local Deployment
-
-- Install dependencies `npm install`
-- Run lint `npm run lint`
-- Run lint fix `npm run lint:fix`
-- Clear and init db `npm run init-db force`
-- Clear and create es index
-
-    ``` bash
-    npm run delete-index # run this if you already created index
-    npm run create-index
-    ```
-
-- Start app `npm start`
-- App is running at `http://localhost:3000`
-
-## Local Deployment with Docker
-
-Make sure all config values are right, and you can run on local successful, then run below commands
-
-1. Navigate to the directory `docker`
-
-2. Rename the file `sample.api.env` to `api.env`
-
-3. Set the required AUTH0 configurations, PostgreSQL Database url and ElasticSearch host in the file `api.env`
-
-    Note that you can also add other variables to `api.env`, with `<key>=<value>` format per line.
-    If using AWS ES you should add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` variables as well.
-
-4. Once that is done, run the following command
-
-    ```bash
-    docker-compose up
-    ```
-
-5. When you are running the application for the first time, It will take some time initially to download the image and install the dependencies
-
 ## Testing
+
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
-
-## Verification
-Refer to the verification document [Verification.md](Verification.md)

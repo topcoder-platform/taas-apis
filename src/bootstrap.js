@@ -10,6 +10,10 @@ Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'c
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')
 Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview')
 Joi.title = () => Joi.string().max(128)
+// Empty string is not allowed by Joi by default and must be enabled with allow('').
+// See https://joi.dev/api/?v=17.3.0#string fro details why it's like this.
+// In many cases we would like to allow empty string to make it easier to create UI for editing data.
+Joi.stringAllowEmpty = () => Joi.string().allow('')
 
 function buildServices (dir) {
   const files = fs.readdirSync(dir)

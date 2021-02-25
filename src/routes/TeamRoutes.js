@@ -12,6 +12,14 @@ module.exports = {
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
+  '/taas-teams/email': {
+    post: {
+      controller: 'TeamController',
+      method: 'sendEmail',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
   '/taas-teams/skills': {
     get: {
       controller: 'SkillController',
@@ -32,6 +40,36 @@ module.exports = {
     get: {
       controller: 'TeamController',
       method: 'getTeamJob',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
+  '/taas-teams/:id/members': {
+    post: {
+      controller: 'TeamController',
+      method: 'addMembers',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    },
+    get: {
+      controller: 'TeamController',
+      method: 'searchMembers',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
+  '/taas-teams/:id/invites': {
+    get: {
+      controller: 'TeamController',
+      method: 'searchInvites',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
+  '/taas-teams/:id/members/:projectMemberId': {
+    delete: {
+      controller: 'TeamController',
+      method: 'deleteMember',
       auth: 'jwt',
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }

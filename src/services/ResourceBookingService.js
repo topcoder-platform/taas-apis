@@ -24,9 +24,9 @@ const esClient = helper.getESClient()
  */
 async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    return helper.clearObject(resourceBooking)
+    return resourceBooking
   }
-  return _.omit(helper.clearObject(resourceBooking), 'memberRate')
+  return _.omit(resourceBooking, 'memberRate')
 }
 
 /**
@@ -103,25 +103,24 @@ async function createResourceBooking (currentUser, resourceBooking) {
   await helper.ensureUserById(resourceBooking.userId) // ensure user exists
 
   resourceBooking.id = uuid()
-  resourceBooking.createdAt = new Date()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
-  resourceBooking.status = 'sourcing'
 
   const created = await ResourceBooking.create(resourceBooking)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, resourceBooking)
-  return helper.clearObject(created.dataValues)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, created.toJSON())
+  return created.dataValues
 }
 
 createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
-    jobId: Joi.string().uuid(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    jobId: Joi.string().uuid().allow(null),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    memberRate: Joi.number().allow(null),
+    customerRate: Joi.number().allow(null),
     rateType: Joi.rateType().required()
   }).required()
 }).required()
@@ -142,12 +141,11 @@ async function updateResourceBooking (currentUser, id, data) {
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
 
-  data.updatedAt = new Date()
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  await resourceBooking.update(data)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
-  const result = helper.clearObject(_.assign(resourceBooking.dataValues, data))
+  const updated = await resourceBooking.update(data)
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  const result = _.assign(resourceBooking.dataValues, data)
   return result
 }
 
@@ -167,10 +165,10 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    startDate: Joi.date().allow(null),
+    endDate: Joi.date().allow(null),
+    memberRate: Joi.number().allow(null),
+    customerRate: Joi.number().allow(null),
     rateType: Joi.rateType()
   }).required()
 }).required()
@@ -196,13 +194,13 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
-    jobId: Joi.string().uuid(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
-    memberRate: Joi.number(),
-    customerRate: Joi.number(),
+    jobId: Joi.string().uuid().allow(null).default(null),
+    startDate: Joi.date().allow(null).default(null),
+    endDate: Joi.date().allow(null).default(null),
+    memberRate: Joi.number().allow(null).default(null),
+    customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
-    status: Joi.jobStatus().required()
+    status: Joi.jobStatus().default('sourcing')
   }).required()
 }).required()
 
@@ -218,7 +216,7 @@ async function deleteResourceBooking (currentUser, id) {
   }
 
   const resourceBooking = await ResourceBooking.findById(id)
-  await resourceBooking.update({ deletedAt: new Date() })
+  await resourceBooking.destroy()
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
@@ -290,7 +288,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       }
     }
 
-    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId']), (value, key) => {
+    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -325,10 +323,8 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
-  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType']), (value, key) => {
+  const filter = {}
+  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.projectIds) {
@@ -336,9 +332,6 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   }
   const resourceBookings = await ResourceBooking.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
@@ -348,7 +341,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     total: resourceBookings.length,
     page,
     perPage,
-    result: _.map(resourceBookings, resourceBooking => helper.clearObject(resourceBooking.dataValues))
+    result: _.map(resourceBookings, resourceBooking => resourceBooking.dataValues)
   }
 }
 
@@ -363,6 +356,8 @@ searchResourceBookings.schema = Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),
+    jobId: Joi.string().uuid(),
+    userId: Joi.string().uuid(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),

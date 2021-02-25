@@ -5,11 +5,23 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
+const Handlebars = require('handlebars')
+const config = require('config')
+const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
+
+const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
+  return {
+    subjectTemplate: Handlebars.compile(template.subject),
+    bodyTemplate: Handlebars.compile(template.body),
+    recipients: template.recipients,
+    sendgridTemplateId: template.sendgridTemplateId
+  }
+})
 
 /**
  * Function to get assigned resource bookings with specific projectIds
@@ -188,7 +200,7 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         }
       } else {
         res.jobs = _.map(jobsTmp, job => {
-          return _.pick(job, ['id', 'description', 'startDate', 'endDate', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
+          return _.pick(job, ['id', 'description', 'startDate', 'duration', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
         })
       }
     }
@@ -256,35 +268,35 @@ async function getTeamJob (currentUser, id, jobId) {
     )
   }
 
+  // If the job has candidates, the following data for each candidate would be populated:
+  //
+  // - the `status`, `resume`, `userId` and `id` of the candidate
+  // - the `handle`, `firstName` `lastName` and `skills` of the user(from GET /users/:userId) for the candidate
+  // - the `photoURL` of the member(from GET /members) for the candidate
+  //
   if (job && job.candidates && job.candidates.length > 0) {
-    const usersPromises = []
-    _.map(job.candidates, (candidate) => { usersPromises.push(helper.getUserById(candidate.userId, true)) })
-    const candidates = await Promise.all(usersPromises)
+    // find user data for candidates
+    const users = await Promise.all(
+      _.map(_.uniq(_.map(job.candidates, 'userId')), userId => helper.getUserById(userId, true))
+    )
+    const userMap = _.groupBy(users, 'id')
 
-    const userHandles = _.map(candidates, 'handle')
-    if (userHandles && userHandles.length > 0) {
-      // Get user photo from /v5/members
-      const members = await helper.getMembers(userHandles)
+    // find photo URLs for users
+    const members = await helper.getMembers(_.map(users, 'handle'))
+    const photoURLMap = _.groupBy(members, 'handleLower')
 
-      for (const item of candidates) {
-        const candidate = _.find(job.candidates, { userId: item.id })
-        // TODO this logic should be vice-verse, we should loop trough candidates and populate users data if found,
-        //      not loop through users and populate candidates data if found
-        if (candidate) {
-          item.resume = candidate.resume
-          item.status = candidate.status
-          // return User id as `userId` and JobCandidate id as `id`
-          item.userId = item.id
-          item.id = candidate.id
-        }
-        const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
-        if (findMember && findMember.photoURL) {
-          item.photo_url = findMember.photoURL
-        }
+    result.candidates = _.map(job.candidates, candidate => {
+      const candidateData = _.pick(candidate, ['status', 'resume', 'userId', 'id'])
+      const userData = userMap[candidate.userId][0]
+      // attach user data to the candidate
+      Object.assign(candidateData, _.pick(userData, ['handle', 'firstName', 'lastName', 'skills']))
+      // attach photo URL to the candidate
+      const handleLower = userData.handle.toLowerCase()
+      if (photoURLMap[handleLower]) {
+        candidateData.photo_url = photoURLMap[handleLower][0].photoURL
       }
-    }
-
-    result.candidates = candidates
+      return candidateData
+    })
   }
 
   return result
@@ -296,8 +308,218 @@ getTeamJob.schema = Joi.object().keys({
   jobId: Joi.string().guid().required()
 }).required()
 
+/**
+ * Send email through a particular template
+ * @param {Object} currentUser the user who perform this operation
+ * @param {Object} data the email object
+ * @returns {undefined}
+ */
+async function sendEmail (currentUser, data) {
+  const template = emailTemplates[data.template]
+  await helper.postEvent(config.EMAIL_TOPIC, {
+    data: {
+      subject: template.subjectTemplate(data.data),
+      body: template.bodyTemplate(data.data)
+    },
+    sendgrid_template_id: template.sendgridTemplateId,
+    version: 'v3',
+    recipients: template.recipients
+  })
+}
+
+sendEmail.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  data: Joi.object().keys({
+    template: Joi.string().valid(...Object.keys(emailTemplates)).required(),
+    data: Joi.object().required()
+  }).required()
+}).required()
+
+/**
+ * Add a member to a team as customer.
+ *
+ * @param {Number} projectId project id
+ * @param {String} userId user id
+ * @param {String} fields the fields to be returned
+ * @returns {Object} the member added
+ */
+async function _addMemberToProjectAsCustomer (projectId, userId, fields) {
+  try {
+    const member = await helper.createProjectMember(
+      projectId,
+      { userId: userId, role: 'customer' },
+      { fields }
+    )
+    return member
+  } catch (err) {
+    err.message = _.get(err, 'response.body.message') || err.message
+    if (err.message && err.message.includes('User already registered')) {
+      throw new Error('User is already added')
+    }
+    logger.error({
+      component: 'TeamService',
+      context: '_addMemberToProjectAsCustomer',
+      message: err.message
+    })
+    throw err
+  }
+}
+
+/**
+ * Add members to a team by handle or email.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the team id
+ * @params {Object} criteria the search criteria
+ * @param {Object} data the object including members with handle/email to be added
+ * @returns {Object} the success/failed added members
+ */
+async function addMembers (currentUser, id, criteria, data) {
+  await helper.getProjectById(currentUser, id) // check whether the user can access the project
+
+  const result = {
+    success: [],
+    failed: []
+  }
+
+  const handles = data.handles || []
+  const emails = data.emails || []
+
+  const handleMembers = await helper.getMemberDetailsByHandles(handles)
+    .then((members) => _.map(members, (member) => ({
+      ...member,
+      // populate members with lower-cased handle for case insensitive search
+      handleLowerCase: member.handle.toLowerCase()
+    })))
+
+  const emailMembers = await helper.getMemberDetailsByEmails(emails)
+    .then((members) => _.map(members, (member) => ({
+      ...member,
+      // populate members with lower-cased email for case insensitive search
+      emailLowerCase: member.email.toLowerCase()
+    })))
+
+  await Promise.all([
+    Promise.all(handles.map(handle => {
+      const memberDetails = _.find(handleMembers, { handleLowerCase: handle.toLowerCase() })
+
+      if (!memberDetails) {
+        result.failed.push({ error: 'User doesn\'t exist', handle })
+        return
+      }
+
+      return _addMemberToProjectAsCustomer(id, memberDetails.userId, criteria.fields)
+        .then(member => {
+          // note, that we return `handle` in the same case it was in request
+          result.success.push(({ ...member, handle }))
+        }).catch(err => {
+          result.failed.push({ error: err.message, handle })
+        })
+    })),
+
+    Promise.all(emails.map(email => {
+      const memberDetails = _.find(emailMembers, { emailLowerCase: email.toLowerCase() })
+
+      if (!memberDetails) {
+        result.failed.push({ error: 'User doesn\'t exist', email })
+        return
+      }
+
+      return _addMemberToProjectAsCustomer(id, memberDetails.id, criteria.fields)
+        .then(member => {
+          // note, that we return `email` in the same case it was in request
+          result.success.push(({ ...member, email }))
+        }).catch(err => {
+          result.failed.push({ error: err.message, email })
+        })
+    }))
+  ])
+
+  return result
+}
+
+addMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    fields: Joi.string()
+  }).required(),
+  data: Joi.object().keys({
+    handles: Joi.array().items(Joi.string()),
+    emails: Joi.array().items(Joi.string().email())
+  }).or('handles', 'emails').required()
+}).required()
+
+/**
+ * Search members in a team.
+ * Serves as a proxy endpoint for `GET /projects/{projectId}/members`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the search result
+ */
+async function searchMembers (currentUser, id, criteria) {
+  const result = await helper.listProjectMembers(currentUser, id, criteria)
+  return { result }
+}
+
+searchMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    role: Joi.string(),
+    fields: Joi.string()
+  }).required()
+}).required()
+
+/**
+ * Search member invites for a team.
+ * Serves as a proxy endpoint for `GET /projects/{projectId}/invites`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the search result
+ */
+async function searchInvites (currentUser, id, criteria) {
+  const result = await helper.listProjectMemberInvites(currentUser, id, criteria)
+  return { result }
+}
+
+searchInvites.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  criteria: Joi.object().keys({
+    fields: Joi.string()
+  }).required()
+}).required()
+
+/**
+ * Remove a member from a team.
+ * Serves as a proxy endpoint for `DELETE /projects/{projectId}/members/{id}`.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the team id
+ * @param {String} projectMemberId the id of the project member
+ * @returns {undefined}
+ */
+async function deleteMember (currentUser, id, projectMemberId) {
+  await helper.deleteProjectMember(currentUser, id, projectMemberId)
+}
+
+deleteMember.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.number().integer().required(),
+  projectMemberId: Joi.number().integer().required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
-  getTeamJob
+  getTeamJob,
+  sendEmail,
+  addMembers,
+  searchMembers,
+  searchInvites,
+  deleteMember
 }

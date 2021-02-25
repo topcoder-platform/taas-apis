@@ -126,8 +126,8 @@ async function getJob (currentUser, id, fromDb = false) {
 
   await _checkUserPermissionForGetJob(currentUser, job.projectId) // check user permission
 
-  job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
-  return helper.clearObject(job.dataValues)
+  job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => c.dataValues)
+  return job.dataValues
 }
 
 getJob.schema = Joi.object().keys({
@@ -150,32 +150,27 @@ async function createJob (currentUser, job) {
 
   await _validateSkills(job.skills)
   job.id = uuid()
-  job.createdAt = new Date()
   job.createdBy = await helper.getUserId(currentUser.userId)
-  job.status = 'sourcing'
-  // hotfix to support update Project Service until we release TaaS API 1.5
-  delete job.duration
 
   const created = await Job.create(job)
-  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, job)
-  return helper.clearObject(created.dataValues)
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, created.toJSON())
+  return created.toJSON()
 }
 
 createJob.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   job: Joi.object().keys({
+    status: Joi.jobStatus().default('sourcing'),
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string(),
-    description: Joi.string(),
+    externalId: Joi.string().allow(null),
+    description: Joi.stringAllowEmpty().allow(null),
     title: Joi.title().required(),
-    startDate: Joi.date(),
-    // hotfix to support update Project Service until we release TaaS API 1.5
+    startDate: Joi.date().allow(null),
     duration: Joi.number().integer().min(1).allow(null),
-    endDate: Joi.date(),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.stringAllowEmpty().allow(null),
+    rateType: Joi.rateType().allow(null),
+    workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required()
   }).required()
 }).required()
@@ -203,14 +198,13 @@ async function updateJob (currentUser, id, data) {
     }
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = ubahnUserId
 
-  await job.update(data)
-  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, { id, ...data }, { oldValue: oldValue })
+  const updated = await job.update(data)
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   job = await Job.findById(id, true)
-  job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => helper.clearObject(c.dataValues))
-  return helper.clearObject(job.dataValues)
+  job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => c.dataValues)
+  return job.dataValues
 }
 
 /**
@@ -229,15 +223,15 @@ partiallyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     status: Joi.jobStatus(),
-    externalId: Joi.string(),
-    description: Joi.string(),
+    externalId: Joi.string().allow(null),
+    description: Joi.stringAllowEmpty().allow(null),
     title: Joi.title(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().allow(null),
+    duration: Joi.number().integer().min(1).allow(null),
     numPositions: Joi.number().integer().min(1),
-    resourceType: Joi.string(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.stringAllowEmpty().allow(null),
+    rateType: Joi.rateType().allow(null),
+    workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid())
   }).required()
 }).required()
@@ -258,17 +252,17 @@ fullyUpdateJob.schema = Joi.object().keys({
   id: Joi.string().guid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    externalId: Joi.string(),
-    description: Joi.string(),
+    externalId: Joi.string().allow(null).default(null),
+    description: Joi.stringAllowEmpty().allow(null).default(null),
     title: Joi.title().required(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().allow(null).default(null),
+    duration: Joi.number().integer().min(1).allow(null).default(null),
     numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.string(),
-    rateType: Joi.rateType(),
-    workload: Joi.workload(),
+    resourceType: Joi.stringAllowEmpty().allow(null).default(null),
+    rateType: Joi.rateType().allow(null).default(null),
+    workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
-    status: Joi.jobStatus()
+    status: Joi.jobStatus().default('sourcing')
   }).required()
 }).required()
 
@@ -284,7 +278,7 @@ async function deleteJob (currentUser, id) {
   }
 
   const job = await Job.findById(id)
-  await job.update({ deletedAt: new Date() })
+  await job.destroy()
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
 
@@ -350,7 +344,6 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'externalId',
       'description',
       'startDate',
-      'endDate',
       'resourceType',
       'skill',
       'rateType',
@@ -415,14 +408,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, [
     'projectId',
     'externalId',
     'startDate',
-    'endDate',
     'resourceType',
     'rateType',
     'workload',
@@ -447,22 +437,13 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   }
   const jobs = await Job.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]],
     include: [{
       model: models.JobCandidate,
       as: 'candidates',
-      where: {
-        deletedAt: null
-      },
-      required: false,
-      attributes: {
-        exclude: ['deletedAt']
-      }
+      required: false
     }]
   })
   return {
@@ -470,7 +451,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     total: jobs.length,
     page,
     perPage,
-    result: _.map(jobs, job => helper.clearObject(job.dataValues))
+    result: _.map(jobs, job => job.dataValues)
   }
 }
 
@@ -479,14 +460,13 @@ searchJobs.schema = Joi.object().keys({
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
-    sortBy: Joi.string().valid('id', 'createdAt', 'startDate', 'endDate', 'rateType', 'status'),
+    sortBy: Joi.string().valid('id', 'createdAt', 'startDate', 'rateType', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
     description: Joi.string(),
     title: Joi.title(),
     startDate: Joi.date(),
-    endDate: Joi.date(),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     rateType: Joi.rateType(),

@@ -65,7 +65,7 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
 
   await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.jobId) // check user permission
 
-  return helper.clearObject(jobCandidate.dataValues)
+  return jobCandidate.dataValues
 }
 
 getJobCandidate.schema = Joi.object().keys({
@@ -90,22 +90,21 @@ async function createJobCandidate (currentUser, jobCandidate) {
   await helper.ensureUserById(jobCandidate.userId) // ensure user exists
 
   jobCandidate.id = uuid()
-  jobCandidate.createdAt = new Date()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
-  jobCandidate.status = 'open'
 
   const created = await JobCandidate.create(jobCandidate)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, jobCandidate)
-  return helper.clearObject(created.dataValues)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, created.toJSON())
+  return created.dataValues
 }
 
 createJobCandidate.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidate: Joi.object().keys({
+    status: Joi.jobCandidateStatus().default('open'),
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
-    externalId: Joi.string(),
-    resume: Joi.string().uri()
+    externalId: Joi.string().allow(null),
+    resume: Joi.string().uri().allow(null)
   }).required()
 }).required()
 
@@ -126,12 +125,11 @@ async function updateJobCandidate (currentUser, id, data) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 
-  data.updatedAt = new Date()
   data.updatedBy = userId
 
-  await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, { id, ...data })
-  const result = helper.clearObject(_.assign(jobCandidate.dataValues, data))
+  const updated = await jobCandidate.update(data)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
+  const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
 
@@ -151,8 +149,8 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     status: Joi.jobCandidateStatus(),
-    externalId: Joi.string(),
-    resume: Joi.string().uri()
+    externalId: Joi.string().allow(null),
+    resume: Joi.string().uri().allow(null)
   }).required()
 }).required()
 
@@ -175,9 +173,9 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
   data: Joi.object().keys({
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
-    status: Joi.jobCandidateStatus(),
-    externalId: Joi.string(),
-    resume: Joi.string().uri()
+    status: Joi.jobCandidateStatus().default('open'),
+    externalId: Joi.string().allow(null).default(null),
+    resume: Joi.string().uri().allow(null).default(null)
   }).required()
 }).required()
 
@@ -193,7 +191,7 @@ async function deleteJobCandidate (currentUser, id) {
   }
 
   const jobCandidate = await JobCandidate.findById(id)
-  await jobCandidate.update({ deletedAt: new Date() })
+  await jobCandidate.destroy()
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
@@ -269,17 +267,12 @@ async function searchJobCandidates (currentUser, criteria) {
     logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
-  const filter = {
-    [Op.and]: [{ deletedAt: null }]
-  }
+  const filter = {}
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   const jobCandidates = await JobCandidate.findAll({
     where: filter,
-    attributes: {
-      exclude: ['deletedAt']
-    },
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
@@ -289,7 +282,7 @@ async function searchJobCandidates (currentUser, criteria) {
     total: jobCandidates.length,
     page,
     perPage,
-    result: _.map(jobCandidates, jobCandidate => helper.clearObject(jobCandidate.dataValues))
+    result: _.map(jobCandidates, jobCandidate => jobCandidate.dataValues)
   }
 }
 

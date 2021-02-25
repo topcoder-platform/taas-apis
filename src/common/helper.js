@@ -2,7 +2,10 @@
  * This file defines helper methods
  */
 
+const fs = require('fs')
 const querystring = require('querystring')
+const Confirm = require('prompt-confirm')
+const Bottleneck = require('bottleneck')
 const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
@@ -49,6 +52,373 @@ function getBusApiClient () {
 
 // ES Client mapping
 const esClients = {}
+
+// The es index property mapping
+const esIndexPropertyMapping = {}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
+  projectId: { type: 'integer' },
+  externalId: { type: 'keyword' },
+  description: { type: 'text' },
+  title: { type: 'text' },
+  startDate: { type: 'date' },
+  duration: { type: 'integer' },
+  numPositions: { type: 'integer' },
+  resourceType: { type: 'keyword' },
+  rateType: { type: 'keyword' },
+  workload: { type: 'keyword' },
+  skills: { type: 'keyword' },
+  status: { type: 'keyword' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
+  jobId: { type: 'keyword' },
+  userId: { type: 'keyword' },
+  status: { type: 'keyword' },
+  externalId: { type: 'keyword' },
+  resume: { type: 'text' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
+  projectId: { type: 'integer' },
+  userId: { type: 'keyword' },
+  jobId: { type: 'keyword' },
+  status: { type: 'keyword' },
+  startDate: { type: 'date' },
+  endDate: { type: 'date' },
+  memberRate: { type: 'float' },
+  customerRate: { type: 'float' },
+  rateType: { type: 'keyword' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+
+/**
+ * Get the first parameter from cli arguments
+ */
+function getParamFromCliArgs () {
+  const filteredArgs = process.argv.filter(arg => !arg.includes('--'))
+
+  if (filteredArgs.length > 2) {
+    return filteredArgs[2]
+  }
+
+  return null
+}
+
+/**
+ * Prompt the user with a y/n query and call a callback function based on the answer
+ * @param {string} promptQuery the query to ask the user
+ * @param {function} cb the callback function
+ */
+async function promptUser (promptQuery, cb) {
+  if (process.argv.includes('--force')) {
+    await cb()
+    return
+  }
+
+  const prompt = new Confirm(promptQuery)
+  prompt.ask(async (answer) => {
+    if (answer) {
+      await cb()
+    }
+  })
+}
+
+/**
+ * Create index in elasticsearch
+ * @param {Object} index the index name
+ * @param {Object} logger the logger object
+ * @param {Object} esClient the elasticsearch client (optional, will create if not given)
+ */
+async function createIndex (index, logger, esClient = null) {
+  if (!esClient) {
+    esClient = getESClient()
+  }
+
+  await esClient.indices.create({
+    index,
+    body: {
+      mappings: {
+        properties: esIndexPropertyMapping[index]
+      }
+    }
+  })
+  logger.info({ component: 'createIndex', message: `ES Index ${index} creation succeeded!` })
+}
+
+/**
+ * Delete index in elasticsearch
+ * @param {Object} index the index name
+ * @param {Object} logger the logger object
+ * @param {Object} esClient the elasticsearch client (optional, will create if not given)
+ */
+async function deleteIndex (index, logger, esClient = null) {
+  if (!esClient) {
+    esClient = getESClient()
+  }
+
+  await esClient.indices.delete({ index })
+  logger.info({ component: 'deleteIndex', message: `ES Index ${index} deletion succeeded!` })
+}
+
+/**
+ * Split data into bulks
+ * @param {Array} data the array of data to split
+ */
+function getBulksFromDocuments (data) {
+  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6
+  const bulks = []
+  let documentIndex = 0
+  let currentBulkSize = 0
+  let currentBulk = []
+
+  while (true) {
+    // break loop when parsed all documents
+    if (documentIndex >= data.length) {
+      bulks.push(currentBulk)
+      break
+    }
+
+    // check if current document size is greater than the max bulk size, if so, throw error
+    const currentDocumentSize = Buffer.byteLength(JSON.stringify(data[documentIndex]), 'utf-8')
+    if (maxBytes < currentDocumentSize) {
+      throw new Error(`Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`)
+    }
+
+    if (currentBulkSize + currentDocumentSize > maxBytes ||
+        currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')) {
+      // if adding the current document goes over the max bulk size OR goes over max number of docs
+      // then push the current bulk to bulks array and reset the current bulk
+      bulks.push(currentBulk)
+      currentBulk = []
+      currentBulkSize = 0
+    } else {
+      // otherwise, add document to current bulk
+      currentBulk.push(data[documentIndex])
+      currentBulkSize += currentDocumentSize
+      documentIndex++
+    }
+  }
+  return bulks
+}
+
+/**
+* Index records in bulk
+* @param {Object} modelName the model name in db
+* @param {Object} indexName the index name
+* @param {Object} logger the logger object
+*/
+async function indexBulkDataToES (modelName, indexName, logger) {
+  logger.info({ component: 'indexBulkDataToES', message: `Reindexing of ${modelName}s started!` })
+
+  const esClient = getESClient()
+
+  // clear index
+  const indexExistsRes = await esClient.indices.exists({ index: indexName })
+  if (indexExistsRes.statusCode !== 404) {
+    await deleteIndex(indexName, logger, esClient)
+  }
+  await createIndex(indexName, logger, esClient)
+
+  // get data from db
+  logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
+  const model = models[modelName]
+  const data = await model.findAll({
+    raw: true
+  })
+  if (_.isEmpty(data)) {
+    logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
+    return
+  }
+  const bulks = getBulksFromDocuments(data)
+
+  const startTime = Date.now()
+  let doneCount = 0
+  for (const bulk of bulks) {
+    // send bulk to esclient
+    const body = bulk.flatMap(doc => [{ index: { _index: indexName, _id: doc.id } }, doc])
+    await esClient.bulk({ refresh: true, body })
+    doneCount += bulk.length
+
+    // log metrics
+    const timeSpent = Date.now() - startTime
+    const avgTimePerDocument = timeSpent / doneCount
+    const estimatedLength = (avgTimePerDocument * data.length)
+    const timeLeft = (startTime + estimatedLength) - Date.now()
+    logger.info({
+      component: 'indexBulkDataToES',
+      message: `Processed ${doneCount} of ${data.length} documents, average time per document ${formatTime(avgTimePerDocument)}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(timeLeft)}`
+    })
+  }
+}
+
+/**
+ * Index job by id
+ * @param {Object} modelName the model name in db
+ * @param {Object} indexName the index name
+ * @param {string} id the job id
+ * @param {Object} logger the logger object
+ */
+async function indexDataToEsById (id, modelName, indexName, logger) {
+  logger.info({ component: 'indexDataToEsById', message: `Reindexing of ${modelName} with id ${id} started!` })
+  const esClient = getESClient()
+
+  logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
+  const model = models[modelName]
+
+  const data = await model.findById(id)
+  logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
+  await esClient.index({
+    index: indexName,
+    id: id,
+    body: data.dataValues
+  })
+  logger.info({ component: 'indexDataToEsById', message: 'Indexing complete!' })
+}
+
+/**
+ * Import data from a json file into the database
+ * @param {string} pathToFile the path to the json file
+ * @param {Array} dataModels the data models to import
+ * @param {Object} logger the logger object
+ */
+async function importData (pathToFile, dataModels, logger) {
+  // check if file exists
+  if (!fs.existsSync(pathToFile)) {
+    throw new Error(`File with path ${pathToFile} does not exist`)
+  }
+
+  // clear database
+  logger.info({ component: 'importData', message: 'Clearing database...' })
+  await models.sequelize.sync({ force: true })
+
+  let transaction = null
+  let currentModelName = null
+  try {
+    // Start a transaction
+    transaction = await models.sequelize.transaction()
+    const jsonData = JSON.parse(fs.readFileSync(pathToFile).toString())
+
+    for (let index = 0; index < dataModels.length; index += 1) {
+      const modelName = dataModels[index]
+      currentModelName = modelName
+      const model = models[modelName]
+      const modelRecords = jsonData[modelName]
+
+      if (modelRecords && modelRecords.length > 0) {
+        logger.info({ component: 'importData', message: `Importing data for model: ${modelName}` })
+
+        await model.bulkCreate(modelRecords, { transaction })
+        logger.info({ component: 'importData', message: `Records imported for model: ${modelName} = ${modelRecords.length}` })
+      } else {
+        logger.info({ component: 'importData', message: `No records to import for model: ${modelName}` })
+      }
+    }
+    // commit transaction only if all things went ok
+    logger.info({ component: 'importData', message: 'committing transaction to database...' })
+    await transaction.commit()
+  } catch (error) {
+    logger.error({ component: 'importData', message: `Error while writing data of model: ${currentModelName}` })
+    // rollback all insert operations
+    if (transaction) {
+      logger.info({ component: 'importData', message: 'rollback database transaction...' })
+      transaction.rollback()
+    }
+    if (error.name && error.errors && error.fields) {
+      // For sequelize validation errors, we throw only fields with data that helps in debugging error,
+      // because the error object has many fields that contains very big sql query for the insert bulk operation
+      throw new Error(
+        JSON.stringify({
+          modelName: currentModelName,
+          name: error.name,
+          errors: error.errors,
+          fields: error.fields
+        })
+      )
+    } else {
+      throw error
+    }
+  }
+
+  // after importing, index data
+  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
+  await indexBulkDataToES('JobCandidate', config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
+  await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+}
+
+/**
+ * Export data from the database into a json file
+ * @param {string} pathToFile the path to the json file
+ * @param {Array} dataModels the data models to export
+ * @param {Object} logger the logger object
+ */
+async function exportData (pathToFile, dataModels, logger) {
+  logger.info({ component: 'exportData', message: `Start Saving data to file with path ${pathToFile}....` })
+
+  const allModelsRecords = {}
+  for (let index = 0; index < dataModels.length; index += 1) {
+    const modelName = dataModels[index]
+    const modelRecords = await models[modelName].findAll({
+      raw: true
+    })
+    allModelsRecords[modelName] = modelRecords
+    logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${modelRecords.length}` })
+  }
+
+  fs.writeFileSync(pathToFile, JSON.stringify(allModelsRecords))
+  logger.info({ component: 'exportData', message: 'End Saving data to file....' })
+}
+
+/**
+ * Format a time in milliseconds into a human readable format
+ * @param {Date} milliseconds the number of milliseconds
+ */
+function formatTime (millisec) {
+  const ms = Math.floor(millisec % 1000)
+  const secs = Math.floor((millisec / 1000) % 60)
+  const mins = Math.floor((millisec / (1000 * 60)) % 60)
+  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24)
+  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7)
+  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4)
+  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12)
+  const yrs = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12)))
+
+  let formattedTime = '0 milliseconds'
+  if (ms > 0) {
+    formattedTime = `${ms} milliseconds`
+  }
+  if (secs > 0) {
+    formattedTime = `${secs} seconds ${formattedTime}`
+  }
+  if (mins > 0) {
+    formattedTime = `${mins} minutes ${formattedTime}`
+  }
+  if (hrs > 0) {
+    formattedTime = `${hrs} hours ${formattedTime}`
+  }
+  if (days > 0) {
+    formattedTime = `${days} days ${formattedTime}`
+  }
+  if (weeks > 0) {
+    formattedTime = `${weeks} weeks ${formattedTime}`
+  }
+  if (mnths > 0) {
+    formattedTime = `${mnths} months ${formattedTime}`
+  }
+  if (yrs > 0) {
+    formattedTime = `${yrs} years ${formattedTime}`
+  }
+
+  return formattedTime.trim()
+}
 
 /**
  * Check if exists.
@@ -156,21 +526,6 @@ function setResHeaders (req, res, result) {
       link += `, <${getPageLink(req, result.page + 1)}>; rel="next"`
     }
     res.set('Link', link)
-  }
-}
-
-/**
- * Clear the object, remove all null or empty array field
- * @param {Object|Array} obj the given object
- */
-function clearObject (obj) {
-  if (_.isNull(obj)) {
-    return undefined
-  }
-  if (_.isArray(obj)) {
-    return _.map(obj, e => _.omitBy(e, _.isNull))
-  } else {
-    return _.omitBy(obj, (p) => { return _.isNull(p) || (_.isArray(p) && _.isEmpty(p)) })
   }
 }
 
@@ -332,7 +687,7 @@ async function getProjects (currentUser, criteria = {}) {
     .set('Accept', 'application/json')
   localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
   const result = _.map(res.body, item => {
-    return _.pick(item, ['id', 'name'])
+    return _.pick(item, ['id', 'name', 'invites', 'members'])
   })
   return {
     total: Number(_.get(res.headers, 'x-total')),
@@ -462,7 +817,7 @@ async function getProjectById (currentUser, id) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
     localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
-    return _.pick(res.body, ['id', 'name'])
+    return _.pick(res.body, ['id', 'name', 'invites', 'members'])
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
       throw new errors.ForbiddenError(`You are not allowed to access the project with id ${id}`)
@@ -602,13 +957,11 @@ function getAuditM2Muser () {
  */
 async function checkIsMemberOfProject (userId, projectId) {
   const m2mToken = await getM2MToken()
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `m2mToken: ${m2mToken}` })
   const res = await request
     .get(`${config.TC_API}/projects/${projectId}`)
     .set('Authorization', `Bearer ${m2mToken}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `got project object ${projectId}: ${JSON.stringify(res.body)}` })
   const memberIdList = _.map(res.body.members, 'userId')
   localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${JSON.stringify(memberIdList)}, authUserId: ${JSON.stringify(userId)}` })
   if (!memberIdList.includes(userId)) {
@@ -616,11 +969,164 @@ async function checkIsMemberOfProject (userId, projectId) {
   }
 }
 
+/**
+ * Find topcoder members by handles.
+ *
+ * @param {Array} handles the array of handles
+ * @returns {Array} the member details
+ */
+async function getMemberDetailsByHandles (handles) {
+  if (!handles.length) {
+    return []
+  }
+  const token = await getM2MToken()
+  const res = await request
+    .get(`${config.TOPCODER_MEMBERS_API}/_search`)
+    .query({
+      query: _.map(handles, handle => `handleLower:${handle.toLowerCase()}`).join(' OR '),
+      fields: 'userId,handle,firstName,lastName,email'
+    })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getMemberDetailsByHandles', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
+ * Find topcoder members by email.
+ *
+ * @param {String} token the auth token
+ * @param {String} email the email
+ * @returns {Array} the member details
+ */
+async function _getMemberDetailsByEmail (token, email) {
+  const res = await request
+    .get(config.TOPCODER_USERS_API)
+    .query({
+      filter: `email=${email}`,
+      fields: 'handle,id,email'
+    })
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: '_getMemberDetailsByEmail', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
+ * Find topcoder members by emails.
+ * Maximum concurrent requests is limited by MAX_PARALLEL_REQUEST_TOPCODER_USERS_API.
+ *
+ * @param {Array} emails the array of emails
+ * @returns {Array} the member details
+ */
+async function getMemberDetailsByEmails (emails) {
+  const token = await getM2MToken()
+  const limiter = new Bottleneck({ maxConcurrent: config.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API })
+  const membersArray = await Promise.all(emails.map(email => limiter.schedule(() => _getMemberDetailsByEmail(token, email)
+    .catch(() => {
+      localLogger.error({ context: 'getMemberDetailsByEmails', message: `email: ${email} user not found` })
+      return []
+    })
+  )))
+  return _.flatten(membersArray)
+}
+
+/**
+ * Add a member to a project.
+ *
+ * @param {Number} projectId project id
+ * @param {Object} data the userId and the role of the member
+ * @param {Object} criteria the filtering criteria
+ * @returns {Object} the member created
+ */
+async function createProjectMember (projectId, data, criteria) {
+  const m2mToken = await getM2MToken()
+  const { body: member } = await request
+    .post(`${config.TC_API}/projects/${projectId}/members`)
+    .set('Authorization', `Bearer ${m2mToken}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .query(criteria)
+    .send(data)
+  localLogger.debug({ context: 'createProjectMember', message: `response body: ${JSON.stringify(member)}` })
+  return member
+}
+
+/**
+ * List members of a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {Object} criteria the search criteria
+ * @returns {Array} the project members
+ */
+async function listProjectMembers (currentUser, projectId, criteria = {}) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  const { body: members } = await request
+    .get(`${config.TC_API}/projects/${projectId}/members`)
+    .query(criteria)
+    .set('Authorization', token)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'listProjectMembers', message: `response body: ${JSON.stringify(members)}` })
+  return members
+}
+
+/**
+ * List member invites of a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {Object} criteria the search criteria
+ * @returns {Array} the member invites
+ */
+async function listProjectMemberInvites (currentUser, projectId, criteria = {}) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  const { body: invites } = await request
+    .get(`${config.TC_API}/projects/${projectId}/invites`)
+    .query(criteria)
+    .set('Authorization', token)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'listProjectMemberInvites', message: `response body: ${JSON.stringify(invites)}` })
+  return invites
+}
+
+/**
+ * Remove a member from a project.
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} projectId the project id
+ * @param {String} projectMemberId the id of the project member
+ * @returns {undefined}
+ */
+async function deleteProjectMember (currentUser, projectId, projectMemberId) {
+  const token = (currentUser.hasManagePermission || currentUser.isMachine)
+    ? `Bearer ${await getM2MToken()}`
+    : currentUser.jwtToken
+  try {
+    await request
+      .delete(`${config.TC_API}/projects/${projectId}/members/${projectMemberId}`)
+      .set('Authorization', token)
+  } catch (err) {
+    if (err.status === HttpStatus.NOT_FOUND) {
+      throw new errors.NotFoundError(`projectMemberId: ${projectMemberId} "member" doesn't exist in project ${projectId}`)
+    }
+    throw err
+  }
+}
+
 module.exports = {
+  getParamFromCliArgs,
+  promptUser,
+  createIndex,
+  deleteIndex,
+  indexBulkDataToES,
+  indexDataToEsById,
+  importData,
+  exportData,
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
-  clearObject,
   getESClient,
   getUserId: async (userId) => {
     // check m2m user id
@@ -643,5 +1149,11 @@ module.exports = {
   ensureJobById,
   ensureUserById,
   getAuditM2Muser,
-  checkIsMemberOfProject
+  checkIsMemberOfProject,
+  getMemberDetailsByHandles,
+  getMemberDetailsByEmails,
+  createProjectMember,
+  listProjectMembers,
+  listProjectMemberInvites,
+  deleteProjectMember
 }
