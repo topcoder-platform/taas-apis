@@ -116,8 +116,13 @@ module.exports = {
   // the emails address for receiving the issue report
   // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
   REPORT_ISSUE_EMAILS: (process.env.REPORT_ISSUE_EMAILS || '').split(','),
+  // the emails address for receiving the issue report
+  // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
+  REQUEST_EXTENSION_EMAILS: (process.env.REQUEST_EXTENSION_EMAILS || '').split(','),
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
+  // SendGrid email template ID for requesting extension
+  REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
 }
