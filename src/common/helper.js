@@ -70,6 +70,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   workload: { type: 'keyword' },
   skills: { type: 'keyword' },
   status: { type: 'keyword' },
+  isApplicationPageActive: { type: 'boolean' },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },

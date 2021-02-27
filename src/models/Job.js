@@ -98,6 +98,12 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      isApplicationPageActive: {
+        field: 'is_application_page_active',
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,
