@@ -28,6 +28,14 @@ module.exports = {
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
+  '/taas-teams/me': {
+    get: {
+      controller: 'TeamController',
+      method: 'getMe',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
   '/taas-teams/:id': {
     get: {
       controller: 'TeamController',
