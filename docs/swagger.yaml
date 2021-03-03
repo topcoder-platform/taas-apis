@@ -1894,59 +1894,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
-  /taas-teams/me:
-    get:
-      tags:
-        - Teams
-      description: |
-        Return details about the current user.
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: query
-          name: enrich
-          required: false
-          schema:
-            type: boolean
-          description: whether to return enriched data or not.
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UbahnUser'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /health:
     get:
       tags:
@@ -2772,13 +2719,10 @@ components:
                     example: 'xxx@xxx.com'
     ProjectMember:
       type: object
-      example: {"id": 14329, "userId": 40159097, "role": "customer", "createdAt": "2021-02-24T12:34:45.074Z", "updatedAt": "2021-02-24T12:34:45.075Z", "createdBy": -101, "updatedBy": -101, "handle": "tester1234", "photoURL": null, "workingHourStart": "9:00", "workingHourEnd": "17:00", "timeZone": "Asia/Kolkata", "email": "xxx@xxx.com"}
+      example: {"id": 14329, "userId": 40159097, "role": "customer", "createdAt": "2021-02-24T12:34:45.074Z", "updatedAt": "2021-02-24T12:34:45.075Z", "createdBy": -101, "updatedBy": -101, "handle": "tester1234", "photoURL": null, "workingHourStart": "9:00", "workingHourEnd": "17:00", "timeZone": "Asia/Kolkata", "email": "sathya.jayabal@gmail.com"}
     ProjectMemberInvite:
       type: object
       example: {"createdAt": "2021-02-24T11:02:12.673Z", "deletedAt": null, "role": "customer", "updatedBy": -101, "createdBy": -101, "id": 3686, "projectId": 16705, "userId": 23008602, "email": null, "deletedBy": null, "updatedAt": "2021-02-24T11:02:12.674Z", "status": "pending"}
-    UbahnUser:
-      type: object
-      example: {"lastName": "DeLaurentis", "updatedBy": "tcAdmin", "achievements": [{"certifierId": "certifierId", "updatedBy": "tcAdmin", "createdBy": "tc-user", "certifiedDate": "2020-05-04T07:36:28.036Z", "created": "2020-05-13T08:44:27.244Z", "name": "Topcoder", "id": "a49e1013-fd42-4c08-bc12-492510cadb96", "achievementsProviderId": "ce05133f-129e-484d-9ef9-72bf51ff81f9", "uri": "http://www.google.com/xx", "updated": "2021-01-05T10:58:32.429Z", "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699", "achievementprovider": {"updatedBy": "tcAdmin", "createdBy": "tc-user", "created": "2020-05-13T08:42:41.877Z", "name": "achievementsProviders_02", "id": "ce05133f-129e-484d-9ef9-72bf51ff81f9", "updated": "2021-01-05T10:58:32.341Z"}}], "created": "2020-05-05T10:18:03.882Z", "handle": "lazybaer", "skills": [{"certifierId": null, "skillId": "d67f35c3-fa42-4866-a0f9-0a4b84fcf4a9", "updatedBy": "tcAdmin", "createdBy": "lazybaer", "certifiedDate": null, "created": "2020-10-23T16:22:11.208Z", "skill": {"updatedBy": "tcAdmin", "skillprovider": {"updatedBy": "tcAdmin", "createdBy": "TonyJ", "created": "2020-08-31T12:30:00.543Z", "name": "Wipro Digital", "id": "26fb37b1-5f9f-4727-baa9-f3c87de84ab1", "updated": "2021-01-05T10:58:32.836Z"}, "createdBy": "0", "created": "2020-09-01T21:59:21.554Z", "skillProviderId": "26fb37b1-5f9f-4727-baa9-f3c87de84ab1", "name": "GitHub", "externalId": null, "id": "d67f35c3-fa42-4866-a0f9-0a4b84fcf4a9", "uri": null, "updated": "2021-01-05T10:58:33.332Z"}, "metricValue": null, "id": "8a84c1b4-1884-4a3c-90b2-eb86bf469bb6", "updated": "2021-01-05T10:58:34.080Z", "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699"}], "firstName": "Christopher", "externalProfiles": [{"organizationId": "0d2320f9-be61-4ba4-973e-edc3bb682a69", "updatedBy": "tcAdmin", "createdBy": "TonyJ", "isInactive": false, "created": "2020-08-31T12:30:38.495Z", "organization": {"updatedBy": "tcAdmin", "createdBy": "TonyJ", "created": "2020-08-31T12:29:58.081Z", "name": "Wipro Digital", "skillProviders": [{"organizationId": "0d2320f9-be61-4ba4-973e-edc3bb682a69", "updatedBy": "tcAdmin", "createdBy": "TonyJ", "created": "2020-08-31T12:30:08.410Z", "skillProviderId": "26fb37b1-5f9f-4727-baa9-f3c87de84ab1", "id": "5b26cdd3-fe68-4b30-85c5-ceaf280bd688", "updated": "2021-01-05T10:58:32.919Z"}], "id": "0d2320f9-be61-4ba4-973e-edc3bb682a69", "updated": "2021-01-05T10:58:32.261Z"}, "externalId": "8547899", "id": "870af97b-8c3b-4659-92d6-cac126bbe9de", "uri": null, "updated": "2021-01-05T10:58:32.724Z", "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699"}], "createdBy": "tc-Copilot", "attributes": [{"attributeId": "d709276a-80c3-491c-9b29-a4f065b2a56f", "updatedBy": "tcAdmin", "createdBy": "tc-Admin", "created": "2020-05-13T08:19:13.709Z", "id": "21de9324-900d-41ea-b127-f297dfb9a873", "attribute": {"updatedBy": "tcAdmin", "attributegroup": {"organizationId": "36ed815b-3da1-49f1-a043-aaed0a4e81ad", "updatedBy": "tc-Admin", "createdBy": "tc-Admin", "created": "2020-05-13T07:15:01.215Z", "name": "group 03", "id": "84634bbd-8191-40cf-a03e-9962d7e39fda", "updated": "2020-05-13T07:16:20.636Z"}, "createdBy": "tc-Admin", "created": "2020-05-13T07:32:03.128Z", "name": "Billing Account", "id": "d709276a-80c3-491c-9b29-a4f065b2a56f", "attributeGroupId": "84634bbd-8191-40cf-a03e-9962d7e39fda", "updated": "2021-01-05T10:58:32.604Z"}, "value": "74314457", "updated": "2021-01-05T10:58:33.739Z", "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699"}], "id": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699", "updated": "2021-01-05T10:58:32.113Z"}
     Error:
       required:
         - message

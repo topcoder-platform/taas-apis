@@ -83,15 +83,6 @@ async function deleteMember (req, res) {
   res.status(HttpStatus.NO_CONTENT).end()
 }
 
-/**
- * Return details about the current user.
- * @param req the request
- * @param res the response
- */
-async function getMe (req, res) {
-  res.send(await service.getMe(req.authUser, req.query))
-}
-
 module.exports = {
   searchTeams,
   getTeam,
@@ -100,6 +91,5 @@ module.exports = {
   addMembers,
   searchMembers,
   searchInvites,
-  deleteMember,
-  getMe
+  deleteMember
 }
