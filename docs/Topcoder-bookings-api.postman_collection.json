@@ -4694,6 +4694,30 @@
 						}
 					},
 					"response": []
+				},
+        {
+					"name": "GET /taas-teams/me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/taas-teams/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"me"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

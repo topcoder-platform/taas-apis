@@ -598,17 +598,17 @@ function encodeQueryString (queryObj, nesting = '') {
 }
 
 /**
- * Function to get user ids
- * @param {Integer} userId  user id from jwt token
- * @returns {String} user id.
+ * Function to list users by external id.
+ * @param {Integer} externalId the legacy user id
+ * @returns {Array} the users found
  */
-async function getUserIds (userId) {
+async function listUsersByExternalId (externalId) {
   const token = await getM2MUbahnToken()
   const q = {
     enrich: true,
     externalProfile: {
       organizationId: config.ORG_ID,
-      externalId: userId
+      externalId
     }
   }
   const url = `${config.TC_API}/users?${encodeQueryString(q)}`
@@ -617,21 +617,21 @@ async function getUserIds (userId) {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getUserIds', message: `response body: ${JSON.stringify(res.body)}` })
+  localLogger.debug({ context: 'listUserByExternalId', message: `response body: ${JSON.stringify(res.body)}` })
   return res.body
 }
 
 /**
- * Function to get user id
- * @param {Integer} userId  user id from jwt token
- * @returns {String} user id.
+ * Function to get user by external id.
+ * @param {Integer} externalId the legacy user id
+ * @returns {Object} the user
  */
-async function getUserId (userId) {
-  const ids = await getUserIds(userId)
-  if (_.isEmpty(ids)) {
-    throw new errors.NotFoundError(`userId: ${userId} "user" not found`)
+async function getUserByExternalId (externalId) {
+  const users = await listUsersByExternalId(externalId)
+  if (_.isEmpty(users)) {
+    throw new errors.NotFoundError(`externalId: ${externalId} "user" not found`)
   }
-  return ids[0].id
+  return users[0]
 }
 
 /**
@@ -883,7 +883,7 @@ async function getSkillById (skillId) {
 }
 
 /**
- * Encapsulate the getUserId function.
+ * Encapsulate the getUserByExternalId function.
  * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
  *
  * In the case the user does not exist in /v5/users but can be found in /v3/users
@@ -894,7 +894,7 @@ async function getSkillById (skillId) {
  */
 async function ensureUbahnUserId (currentUser) {
   try {
-    return await getUserId(currentUser.userId)
+    return (await getUserByExternalId(currentUser.userId)).id
   } catch (err) {
     if (!(err instanceof errors.NotFoundError)) {
       throw err
@@ -1138,6 +1138,7 @@ module.exports = {
     }
     return ensureUbahnUserId({ userId })
   },
+  getUserByExternalId,
   getM2MToken,
   getM2MUbahnToken,
   postEvent,
