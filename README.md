@@ -61,21 +61,21 @@
    - first it would be waiting for `kafka-client` to create all the required topics and exit, you would see:
 
    ```
-   tc-taas-es-procesor  | Waiting for kafka-client to exit....
+   tc-taas-es-processor  | Waiting for kafka-client to exit....
    ```
 
    - after that, `taas-es-processor` would be started itself. Make sure it successfully connected to Kafka, you should see 9 lines with text `Subscribed to taas.`:
 
    ```
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.971Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.973Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.974Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.975Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.976Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.977Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
-   tc-taas-es-procesor  | 2021-01-22T14:27:48.978Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.971Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.973Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.974Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.975Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.976Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.977Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor  | 2021-01-22T14:27:48.978Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
    ```
 
    </details>

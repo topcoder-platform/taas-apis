@@ -45,7 +45,7 @@ services:
       - 9200:9200
 
   taas-es-processor:
-    container_name: tc-taas-es-procesor
+    container_name: tc-taas-es-processor
     build:
       context: ./generic-tc-service
       args:
