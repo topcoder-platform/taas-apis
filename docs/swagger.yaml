@@ -23,6 +23,11 @@ paths:
         Create job.
 
         **Authorization** All topcoder members are allowed
+
+        Permission rules on field `isApplicationPageActive`:
+          - M2M user is allowed to set the value of the field
+          - Other users are not allowed to set the value of the field
+
       security:
         - bearerAuth: []
       requestBody:
@@ -352,6 +357,10 @@ paths:
         Update the job.
 
         **Authorization** Every topcoder member can update the job he/she created. bookingmanager and connectmember can update all jobs.
+
+        Permission rules on field `isApplicationPageActive`:
+          - M2M user is allowed to update the value of the field
+          - Other users are not allowed to update the value of the field
       security:
         - bearerAuth: []
       parameters:
@@ -413,6 +422,10 @@ paths:
         Update job.
 
         **Authorization** Topcoder token with patch job scope is allowed
+
+        Permission rules on field `isApplicationPageActive`:
+          - M2M user is allowed to update the value of the field
+          - Other users are not allowed to update the value of the field
       security:
         - bearerAuth: []
       parameters:
@@ -1980,6 +1993,9 @@ components:
           description: "The job candidates."
           items:
             $ref: '#/components/schemas/JobCandidate'
+        isApplicationPageActive:
+          type: boolean
+          default: false
         createdAt:
           type: string
           format: date-time
@@ -2057,6 +2073,9 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        isApplicationPageActive:
+          type: boolean
+          default: false
     JobCandidate:
       required: 
         - id
@@ -2186,6 +2205,9 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        isApplicationPageActive:
+          type: boolean
+          default: false
     ResourceBooking:
       required:
         - id

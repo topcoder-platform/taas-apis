@@ -4407,7 +4407,7 @@
 					},
 					"response": []
 				},
-        {
+				{
 					"name": "POST /taas-teams/email - team-issue-report",
 					"request": {
 						"method": "POST",
@@ -4483,51 +4483,89 @@
 					},
 					"response": []
 				},
-        {
-          "name": "POST /taas-teams/:id/members",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "type": "text",
-                "value": "Bearer {{token_administrator}}"
-              },
-              {
-                "key": "Content-Type",
-                "type": "text",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"handles\": [\n        \"tester1234\",\n        \"non-existing\"\n    ],\n    \"emails\": [\n        \"non-existing@domain.com\",\n        \"email@domain.com\"\n    ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{URL}}/taas-teams/:id/members",
-              "host": [
-                "{{URL}}"
-              ],
-              "path": [
-                "taas-teams",
-                ":id",
-                "members"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "16705"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
+				{
+					"name": "POST /taas-teams/email - extension-request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"template\": \"extension-request\",\n   \"data\": {\n      \"projectName\": \"TaaS Project Name\",\n      \"projectId\": 12345,\n      \"userHandle\": \"pshah_manager\",\n      \"reportText\": \"I would like to keep working with this member for 2 months...\"\n   }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /taas-teams/:id/members",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"handles\": [\n        \"tester1234\",\n        \"non-existing\"\n    ],\n    \"emails\": [\n        \"non-existing@domain.com\",\n        \"email@domain.com\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/:id/members",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								":id",
+								"members"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "16705"
+								}
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "GET /taas-teams/:id/members",
 					"request": {

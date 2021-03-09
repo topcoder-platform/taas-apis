@@ -148,6 +148,11 @@ async function createJob (currentUser, job) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 
+  // the "isApplicationPageActive" field can be set/updated only by M2M user
+  if (!_.isUndefined(job.isApplicationPageActive) && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to set/update the value of field "isApplicationPageActive".')
+  }
+
   await _validateSkills(job.skills)
   job.id = uuid()
   job.createdBy = await helper.getUserId(currentUser.userId)
@@ -171,7 +176,8 @@ createJob.schema = Joi.object().keys({
     resourceType: Joi.stringAllowEmpty().allow(null),
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
-    skills: Joi.array().items(Joi.string().uuid()).required()
+    skills: Joi.array().items(Joi.string().uuid()).required(),
+    isApplicationPageActive: Joi.boolean()
   }).required()
 }).required()
 
@@ -188,6 +194,12 @@ async function updateJob (currentUser, id, data) {
   }
   let job = await Job.findById(id)
   const oldValue = job.toJSON()
+
+  // the "isApplicationPageActive" field can be set/updated only by M2M user
+  if (!_.isUndefined(data.isApplicationPageActive) && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to set/update the value of field "isApplicationPageActive".')
+  }
+
   const ubahnUserId = await helper.getUserId(currentUser.userId)
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     // Check whether user can update the job.
@@ -232,7 +244,8 @@ partiallyUpdateJob.schema = Joi.object().keys({
     resourceType: Joi.stringAllowEmpty().allow(null),
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
-    skills: Joi.array().items(Joi.string().uuid())
+    skills: Joi.array().items(Joi.string().uuid()),
+    isApplicationPageActive: Joi.boolean()
   }).required()
 }).required()
 
@@ -262,7 +275,8 @@ fullyUpdateJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null).default(null),
     workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
-    status: Joi.jobStatus().default('sourcing')
+    status: Joi.jobStatus().default('sourcing'),
+    isApplicationPageActive: Joi.boolean()
   }).required()
 }).required()
 
