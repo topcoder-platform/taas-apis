@@ -2,18 +2,27 @@
  * Provide some commonly used functions for the RCRM import script.
  */
 const config = require('./config')
+const _ = require('lodash')
 const request = require('superagent')
-const { getM2MToken } = require('../../src/common/helper')
+const commonHelper = require('../common/helper')
 
-/**
- * Sleep for a given number of milliseconds.
- *
- * @param {Number} milliseconds the sleep time
- * @returns {undefined}
+/*
+ * Function to get M2M token
+ * @returns {Promise}
  */
-async function sleep (milliseconds) {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds))
-}
+const getM2MToken = (() => {
+  const m2mAuth = require('tc-core-library-js').auth.m2m
+  const m2m = m2mAuth(_.pick(config, [
+    'AUTH0_URL',
+    'AUTH0_AUDIENCE',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'AUTH0_PROXY_SERVER_URL'
+  ]))
+  return async () => {
+    return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
+  }
+})()
 
 /**
  * Create a new job via taas api.
@@ -38,13 +47,7 @@ async function createJob (data) {
  */
 async function getJobByExternalId (externalId) {
   const token = await getM2MToken()
-  const { body: jobs } = await request.get(`${config.TAAS_API_URL}/jobs`)
-    .query({ externalId })
-    .set('Authorization', `Bearer ${token}`)
-  if (!jobs.length) {
-    throw new Error(`externalId: ${externalId} job not found`)
-  }
-  return jobs[0]
+  return commonHelper.getJobByExternalId(token, config.TAAS_API_URL, externalId)
 }
 
 /**
@@ -131,7 +134,9 @@ async function getProjectByDirectProjectId (directProjectId) {
 }
 
 module.exports = {
-  sleep,
+  sleep: commonHelper.sleep,
+  loadCSVFromFile: commonHelper.loadCSVFromFile,
+  getPathnameFromCommandline: commonHelper.getPathnameFromCommandline,
   createJob,
   getJobByExternalId,
   updateResourceBookingStatus,

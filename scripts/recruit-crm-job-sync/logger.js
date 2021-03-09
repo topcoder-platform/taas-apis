@@ -1,5 +1,5 @@
 /*
- * Logger for the RCRM import script.
+ * Logger for the RCRM sync script.
  */
 const logger = require('../common/logger')
 
