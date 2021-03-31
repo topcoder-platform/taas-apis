@@ -160,6 +160,42 @@
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                       |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                        |
 
+## Import and Export data
+
+### 📤 Export data
+
+To export data to the default file `data/demo-data.json`, run:
+```bash
+npm run data:export
+```
+
+If you want to export data to another file, run:
+
+```bash
+npm run data:export -- --file path/to-file.json
+```
+
+- List of models that will be exported are defined in `scripts/data/exportData.js`.
+
+### 📥 Import data
+
+⚠️ This command would clear any existent data in DB and ES before importing.
+
+*During importing, data would be first imported to the database, and after from the database it would be indexed to the Elasticsearch index.*
+
+To import data from the default file `data/demo-data.json`, run:
+```bash
+npm run data:import
+```
+
+If you want to import data from another file, run:
+
+```bash
+npm run data:import -- --file path/to-file.json
+```
+
+- List of models that will be imported are defined in `scripts/data/importData.js`.
+
 ## Kafka commands
 
 If you've used `docker-compose` with the file `local/docker-compose.yml` during local setup to spawn kafka & zookeeper, you can use the following commands to manipulate kafka topics and messages:
@@ -209,3 +245,22 @@ The following parameters can be set in the config file or via env variables:
 
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
+
+## 📋 Code Guidelines
+
+### General Requirements
+
+- Split code into reusable methods where applicable.
+- Lint should pass.
+
+### Documentation and Utils
+
+When we add, update or delete models and/or endpoints we have to make sure that we keep documentation and utility scripts up to date.
+
+- Update Swagger.
+- Update Postman.
+- Update mapping definitions for ElasticSearch indexes inside this repository and inside [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) repository.
+- NPM command `index:all` should re-index data in all ES indexes. And there should be an individual NPM command `index:*` which would re-index data only in one ES index.
+- NPM commands `data:import` and `data:export` should support importing/exporting data from/to all the models.
+- NPM commands `create-index` and `delete-index` should support creating/deleting all the indexes.
+- If there are any updates in DB schemas, create a DB migration script inside `migrations` folder which would make any necessary updates to the DB schema. Test, that when we migrate DB from the previous state using `npm run migrate`, we get the same exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
