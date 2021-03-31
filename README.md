@@ -1,6 +1,15 @@
 # Topcoder TaaS API
 
-## Requirements
+## Tech Stack
+
+- [Node.js](https://nodejs.org/) v12
+- [PostgreSQL](https://www.postgresql.org/)
+- [ElasticSearch](https://www.elastic.co/) v7.7
+- [Apache Kafka](https://kafka.apache.org/)
+
+## Local Setup
+
+### Requirements
 
 - [Node.js](https://nodejs.org/en/) v12+
 - [Docker](https://www.docker.com/)
