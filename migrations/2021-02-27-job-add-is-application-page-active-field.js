@@ -1,19 +1,27 @@
+const config = require('config')
+
 /*
  * Add isApplicationPageActive field to the Job model.
  */
 
 module.exports = {
-  up: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ADD is_application_page_active BOOLEAN NOT NULL DEFAULT false'),
-      // this command looks like does nothing, because we already set default value to `null` and this column cannot be `NULL`
-      // but we keep it as it was tested this way, and it looks harmful
-      queryInterface.sequelize.query('UPDATE bookings.jobs SET is_application_page_active=false WHERE is_application_page_active is NULL'),
-    ])
+  up: async (queryInterface, Sequelize) => {
+    const transaction = await queryInterface.sequelize.transaction()
+    try {
+      await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'is_application_page_active',
+        { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+        { transaction })
+      await queryInterface.bulkUpdate({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME },
+        { is_application_page_active: false },
+        { is_application_page_active: null },
+        { transaction })
+      await transaction.commit()
+    } catch (err) {
+      await transaction.rollback()
+      throw err
+    }
   },
-  down: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs DROP is_application_page_active')
-    ])
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'is_application_page_active')
   }
 }
