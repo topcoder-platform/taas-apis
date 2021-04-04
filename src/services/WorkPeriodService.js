@@ -113,7 +113,7 @@ async function _checkUserPermissionForWriteWorkPeriod (currentUser) {
   * Checks if one of the date is missing and autocalculates it.
   * @param {Object} data workPeriod data object
   */
-async function _autoCalculateDates (data) {
+function _autoCalculateDates (data) {
   if (data.startDate && !data.endDate) {
     const date = new Date(data.startDate)
     date.setDate(date.getDate() + 6)
