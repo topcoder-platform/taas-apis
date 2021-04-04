@@ -26,7 +26,9 @@ module.exports = {
               schema: config.DB_SCHEMA_NAME
             },
             key: 'id'
-          }
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
         },
         userHandle: {
           field: 'user_handle',
