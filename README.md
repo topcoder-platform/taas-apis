@@ -270,10 +270,17 @@ The following parameters can be set in the config file or via env variables:
 
 When we add, update or delete models and/or endpoints we have to make sure that we keep documentation and utility scripts up to date.
 
-- Update Swagger.
-- Update Postman.
-- Update mapping definitions for ElasticSearch indexes inside this repository and inside [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) repository.
-- NPM command `index:all` should re-index data in all ES indexes. And there should be an individual NPM command `index:*` which would re-index data only in one ES index.
-- NPM commands `data:import` and `data:export` should support importing/exporting data from/to all the models.
-- NPM commands `create-index` and `delete-index` should support creating/deleting all the indexes.
-- If there are any updates in DB schemas, create a DB migration script inside `migrations` folder which would make any necessary updates to the DB schema. Test, that when we migrate DB from the previous state using `npm run migrate`, we get the same exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
+- **Swagger**
+- **Postman**
+- **ES Mapping**
+  - Update mapping definitions for ElasticSearch indexes inside both repositories [taas-apis](https://github.com/topcoder-platform/taas-apis) and [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor).
+- **Reindex**
+  - NPM command `index:all` should re-index data in all ES indexes.
+  - There should be an individual NPM command `index:*` which would re-index data only in one ES index.
+- **Import/Export**
+  - NPM commands `data:import` and `data:export` should support importing/exporting data from/to all the models.
+- **Create/Delete Index**
+  - NPM commands `create-index` and `delete-index` should support creating/deleting all the indexes.
+- **DB Migration**
+  - If there are any updates in DB schemas, create a DB migration script inside `migrations` folder which would make any necessary updates to the DB schema.
+  - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
