@@ -110,6 +110,22 @@ async function _checkUserPermissionForWriteWorkPeriod (currentUser) {
 }
 
 /**
+  * Checks if one of the date is missing and autocalculates it.
+  * @param {Object} data workPeriod data object
+  */
+async function _autoCalculateDates (data) {
+  if (data.startDate && !data.endDate) {
+    const date = new Date(data.startDate)
+    date.setDate(date.getDate() + 6)
+    data.endDate = date
+  } else if (!data.startDate && data.endDate) {
+    const date = new Date(data.endDate)
+    date.setDate(date.getDate() - 6)
+    data.startDate = date
+  }
+}
+
+/**
   * Get workPeriod by id
   * @param {Object} currentUser the user who perform this operation.
   * @param {String} id the workPeriod id
@@ -162,15 +178,7 @@ async function createWorkPeriod (currentUser, workPeriod) {
   // check permission
   await _checkUserPermissionForWriteWorkPeriod(currentUser)
   // If one of the dates are missing then auto-calculate it
-  if (workPeriod.startDate && !workPeriod.endDate) {
-    const date = new Date(workPeriod.startDate)
-    date.setDate(date.getDate() + 6)
-    workPeriod.endDate = date
-  } else if (!workPeriod.startDate && workPeriod.endDate) {
-    const date = new Date(workPeriod.endDate)
-    date.setDate(date.getDate() - 6)
-    workPeriod.startDate = date
-  }
+  _autoCalculateDates(workPeriod)
 
   const resourceBooking = await helper.ensureResourceBookingById(workPeriod.resourceBookingId) // ensure resource booking exists
   workPeriod.projectId = resourceBooking.projectId
@@ -232,20 +240,8 @@ async function updateWorkPeriod (currentUser, id, data) {
     data.userHandle = user.handle
   }
   // If one of the dates are missing then auto-calculate it
-  if (data.startDate && !data.endDate) {
-    const date = new Date(data.startDate)
-    date.setDate(date.getDate() + 6)
-    data.endDate = date
-  } else if (!data.startDate && data.endDate) {
-    const date = new Date(data.endDate)
-    date.setDate(date.getDate() - 6)
-    data.startDate = date
-  }
-  // change the date format to match with database model
-  if (data.startDate && data.endDate) {
-    data.startDate = moment(data.startDate).format('YYYY-MM-DD')
-    data.endDate = moment(data.endDate).format('YYYY-MM-DD')
-  }
+  _autoCalculateDates(data)
+
   data.updatedBy = await helper.getUserId(currentUser.userId)
   let updated = null
   try {
@@ -259,8 +255,7 @@ async function updateWorkPeriod (currentUser, id, data) {
   }
 
   await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  const result = _.assign(workPeriod.dataValues, data)
-  return result
+  return updated.dataValues
 }
 
 /**
