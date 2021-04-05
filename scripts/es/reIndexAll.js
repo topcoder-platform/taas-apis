@@ -13,6 +13,7 @@ async function indexAll () {
       await helper.indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
       await helper.indexBulkDataToES('JobCandidate', config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
       await helper.indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+      await helper.indexBulkDataToES('WorkPeriod', config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
       process.exit(0)
     } catch (err) {
       logger.logFullError(err, { component: 'indexAll' })

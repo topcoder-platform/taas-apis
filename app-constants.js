@@ -33,7 +33,13 @@ const Scopes = {
   DELETE_RESOURCE_BOOKING: 'delete:taas-resourceBookings',
   ALL_RESOURCE_BOOKING: 'all:taas-resourceBookings',
   // taas-team
-  READ_TAAS_TEAM: 'read:taas-teams'
+  READ_TAAS_TEAM: 'read:taas-teams',
+  // work period
+  READ_WORK_PERIOD: 'read:taas-workPeriods',
+  CREATE_WORK_PERIOD: 'create:taas-workPeriods',
+  UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
+  DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
+  ALL_WORK_PERIOD: 'all:taas-workPeriods'
 }
 
 module.exports = {

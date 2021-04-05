@@ -76,6 +76,8 @@ module.exports = {
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
     // the resource booking index
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
+    // the work period index
+    ES_INDEX_WORK_PERIOD: process.env.ES_INDEX_WORK_PERIOD || 'work_period',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
@@ -103,13 +105,20 @@ module.exports = {
   TAAS_JOB_CANDIDATE_UPDATE_TOPIC: process.env.TAAS_JOB_CANDIDATE_UPDATE_TOPIC || 'taas.jobcandidate.update',
   // the delete job candidate entity Kafka message topic
   TAAS_JOB_CANDIDATE_DELETE_TOPIC: process.env.TAAS_JOB_CANDIDATE_DELETE_TOPIC || 'taas.jobcandidate.delete',
-  // topics for job service
+  // topics for resource booking service
   // the create resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_CREATE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_CREATE_TOPIC || 'taas.resourcebooking.create',
   // the update resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_UPDATE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC || 'taas.resourcebooking.update',
   // the delete resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
+  // topics for work period service
+  // the create rwork period entity Kafka message topic
+  TAAS_WORK_PERIOD_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_CREATE_TOPIC || 'taas.workperiod.create',
+  // the update work period entity Kafka message topic
+  TAAS_WORK_PERIOD_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_UPDATE_TOPIC || 'taas.workperiod.update',
+  // the delete work period entity Kafka message topic
+  TAAS_WORK_PERIOD_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_DELETE_TOPIC || 'taas.workperiod.delete',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',

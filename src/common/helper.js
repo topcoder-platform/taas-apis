@@ -102,6 +102,22 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   updatedAt: { type: 'date' },
   updatedBy: { type: 'keyword' }
 }
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
+  resourceBookingId: { type: 'keyword' },
+  userHandle: { type: 'keyword' },
+  projectId: { type: 'integer' },
+  userId: { type: 'keyword' },
+  startDate: { type: 'date', format: 'yyyy-MM-dd' },
+  endDate: { type: 'date', format: 'yyyy-MM-dd' },
+  daysWorked: { type: 'integer' },
+  memberRate: { type: 'float' },
+  customerRate: { type: 'float' },
+  paymentStatus: { type: 'keyword' },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
 
 /**
  * Get the first parameter from cli arguments
@@ -917,6 +933,16 @@ async function ensureJobById (jobId) {
 }
 
 /**
+ * Ensure resource booking with specific id exists.
+ *
+ * @param {String} resourceBookingId the job id
+ * @returns {Object} the job data
+ */
+async function ensureResourceBookingById (resourceBookingId) {
+  return models.ResourceBooking.findById(resourceBookingId)
+}
+
+/**
  * Ensure user with specific id exists.
  *
  * @param {String} jobId the user id
@@ -1151,6 +1177,7 @@ module.exports = {
   getTopcoderSkills,
   getSkillById,
   ensureJobById,
+  ensureResourceBookingById,
   ensureUserById,
   getAuditM2Muser,
   checkIsMemberOfProject,
