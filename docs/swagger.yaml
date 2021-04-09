@@ -589,15 +589,7 @@ paths:
           required: false
           schema:
             type: string
-            enum:
-              [
-                "open",
-                "selected",
-                "shortlist",
-                "rejected",
-                "cancelled",
-                "interview",
-              ]
+            enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
           description: The job candidate status.
         - in: query
           name: externalId
@@ -2620,15 +2612,7 @@ components:
           description: "The user id."
         status:
           type: string
-          enum:
-            [
-              "open",
-              "selected",
-              "shortlist",
-              "rejected",
-              "cancelled",
-              "interview",
-            ]
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
           description: "The job candidate status."
         externalId:
           type: string
@@ -2685,15 +2669,7 @@ components:
       properties:
         status:
           type: string
-          enum:
-            [
-              "open",
-              "selected",
-              "shortlist",
-              "rejected",
-              "cancelled",
-              "interview",
-            ]
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
         externalId:
           type: string
           example: "1212"
@@ -3401,15 +3377,7 @@ components:
                 description: "The link for the resume that can be downloaded"
               status:
                 type: string
-                enum:
-                  [
-                    "open",
-                    "selected",
-                    "shortlist",
-                    "rejected",
-                    "cancelled",
-                    "interview",
-                  ]
+                enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
                 description: "The job candidate status."
               skills:
                 type: array
