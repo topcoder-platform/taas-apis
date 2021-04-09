@@ -1,17 +1,16 @@
 /*
- * Configuration for the RCRM import script.
+ * Configuration for the RCRM sync script.
  * Namespace is created to allow to configure the env variables for this script independently.
  */
 
 const config = require('config')
 
-const namespace = process.env.RCRM_IMPORT_CONFIG_NAMESAPCE || ''
+const namespace = process.env.RCRM_SYNC_CONFIG_NAMESAPCE || ''
 
 module.exports = {
   SLEEP_TIME: process.env[`${namespace}SLEEP_TIME`] || 500,
   TAAS_API_URL: process.env[`${namespace}TAAS_API_URL`] || config.TC_API,
 
-  TC_API: process.env[`${namespace}TC_API`] || config.TC_API,
   AUTH0_URL: process.env[`${namespace}AUTH0_URL`] || config.AUTH0_URL,
   AUTH0_AUDIENCE: process.env[`${namespace}AUTH0_AUDIENCE`] || config.AUTH0_AUDIENCE,
   TOKEN_CACHE_TIME: process.env[`${namespace}TOKEN_CACHE_TIME`] || config.TOKEN_CACHE_TIME,

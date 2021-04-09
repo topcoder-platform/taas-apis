@@ -15,6 +15,7 @@
     "index:jobs": "node scripts/es/reIndexJobs.js",
     "index:job-candidates": "node scripts/es/reIndexJobCandidates.js",
     "index:resource-bookings": "node scripts/es/reIndexResourceBookings.js",
+    "index:work-periods": "node scripts/es/reIndexWorkPeriods.js",
     "data:export": "node scripts/data/exportData.js",
     "data:import": "node scripts/data/importData.js",
     "migrate": "npx sequelize db:migrate",
@@ -32,6 +33,7 @@
   "license": "ISC",
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
+    "@joi/date": "^2.0.1",
     "@topcoder-platform/topcoder-bus-api-wrapper": "github:topcoder-platform/tc-bus-api-wrapper",
     "aws-sdk": "^2.787.0",
     "bottleneck": "^2.19.5",
@@ -59,7 +61,6 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@joi/date": "^2.0.1",
     "chai": "^4.2.0",
     "csv-parser": "^3.0.0",
     "mocha": "^8.1.3",

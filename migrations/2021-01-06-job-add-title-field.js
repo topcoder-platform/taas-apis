@@ -1,18 +1,28 @@
+const config = require('config')
+
 /*
  * Add title field to the Job model.
  */
 
 module.exports = {
-  up: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ADD title VARCHAR(64)'),
-      queryInterface.sequelize.query('UPDATE bookings.jobs SET title=description WHERE title is NULL'),
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs ALTER COLUMN title SET NOT NULL')
-    ])
+  up: async (queryInterface, Sequelize) => {
+    const transaction = await queryInterface.sequelize.transaction()
+    try {
+      await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'title',
+        { type: Sequelize.STRING(64) },
+        { transaction })
+      await queryInterface.sequelize.query(`UPDATE ${config.DB_SCHEMA_NAME}.jobs SET title = description`,
+        { transaction })
+      await queryInterface.changeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'title',
+        { type: Sequelize.STRING(64), allowNull: false }
+        , { transaction })
+      await transaction.commit()
+    } catch (err) {
+      await transaction.rollback()
+      throw err
+    }
   },
-  down: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query('ALTER TABLE bookings.jobs DROP title')
-    ])
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'title')
   }
 }

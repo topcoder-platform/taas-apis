@@ -2,8 +2,6 @@
  * Script to import Jobs data from Recruit CRM to Taas API.
  */
 
-const csv = require('csv-parser')
-const fs = require('fs')
 const Joi = require('joi')
   .extend(require('@joi/date'))
 const _ = require('lodash')
@@ -36,48 +34,6 @@ const jobSchema = Joi.object({
  */
 function validateJob (job) {
   return jobSchema.validate(job)
-}
-
-/**
- * Load Recruit CRM jobs data from file.
- *
- * @param {String} pathname the pathname for the file
- * @returns {Array} the result jobs data
- */
-async function loadRcrmJobsFromFile (pathname) {
-  let lnum = 1
-  const result = []
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(pathname)
-      .pipe(csv({
-        mapHeaders: ({ header }) => constants.fieldNameMap[header] || header
-      }))
-      .on('data', (data) => {
-        result.push({ ...data, _lnum: lnum })
-        lnum += 1
-      })
-      .on('error', err => reject(err))
-      .on('end', () => resolve(result))
-  })
-}
-
-/**
- * Get pathname for a csv file from command line arguments.
- *
- * @returns {undefined}
- */
-function getPathname () {
-  if (process.argv.length < 3) {
-    throw new Error('pathname for the csv file is required')
-  }
-  const pathname = process.argv[2]
-  if (!fs.existsSync(pathname)) {
-    throw new Error(`pathname: ${pathname} path not exist`)
-  }
-  if (!fs.lstatSync(pathname).isFile()) {
-    throw new Error(`pathname: ${pathname} path is not a regular file`)
-  }
-  return pathname
 }
 
 /**
@@ -146,8 +102,8 @@ async function processJob (job, info = []) {
  * @returns {undefined}
  */
 async function main () {
-  const pathname = getPathname()
-  const jobs = await loadRcrmJobsFromFile(pathname)
+  const pathname = helper.getPathnameFromCommandline()
+  const jobs = await helper.loadCSVFromFile(pathname, constants.fieldNameMap)
   const report = new Report()
   for (const job of jobs) {
     logger.debug(`processing line #${job._lnum} - ${JSON.stringify(job)}`)
