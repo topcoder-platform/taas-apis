@@ -1,5 +1,5 @@
 /**
- * Controller for ResourceBooking endpoints
+ * Controller for WorkPeriod endpoints
  */
 const HttpStatus = require('http-status-codes')
 const service = require('../services/WorkPeriodService')

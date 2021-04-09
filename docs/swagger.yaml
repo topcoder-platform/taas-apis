@@ -1795,6 +1795,370 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /workPeriodPayments:
+    post:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Create Work Period Payment.
+
+        **Authorization** Topcoder token with write Work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPeriodPayment"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Search work period payment.
+
+        **Authorization** Topcoder token with read work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: createdAt
+            enum:
+              [
+                "status",
+                "amount",
+                "createdAt",
+                "updatedAt",
+              ]
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ["desc", "asc"]
+        - in: query
+          name: workPeriodId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: The work period id.
+        - in: query
+          name: workPeriodIds
+          required: false
+          schema:
+            oneOf:
+              - type: array
+                items:
+                  type: string
+                  format: uuid
+              - type: string
+          description: comma separated work period ids.
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: ["completed", "cancelled"]
+          description: The payment status.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkPeriodPayment"
+          headers:
+            X-Next-Page:
+              schema:
+                type: integer
+                description: The index of the next page
+            X-Page:
+              schema:
+                type: integer
+                description: The index of the current page (starting at 1)
+            X-Per-Page:
+              schema:
+                type: integer
+                description: The number of items to list per page
+            X-Prev-Page:
+              schema:
+                type: integer
+                description: The index of the previous page
+            X-Total:
+              schema:
+                type: integer
+                description: The total number of items
+            X-Total-Pages:
+              schema:
+                type: integer
+                description: The total number of pages
+            Link:
+              schema:
+                type: string
+                description: Pagination link header.
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /workPeriodPayments/{id}:
+    get:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Get work period payment by id.
+
+        **Authorization** Topcoder token with read work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The work period payment id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPeriodPayment"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Update the work period payment.
+
+        **Authorization** Topcoder token with update work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of work period payment.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPeriodPayment"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Partial Update work period payment.
+
+        **Authorization** Topcoder token with update work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of work period payment.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPeriodPayment"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams:
     get:
       tags:
@@ -2950,6 +3314,11 @@ components:
           type: string
           enum: ["pending", "partially-completed", "completed", "cancelled"]
           description: "The payment status."
+        payments:
+          type: array
+          description: "The payments related with work period"
+          items:
+            $ref: "#/components/schemas/WorkPeriodPayment"
         createdAt:
           type: string
           format: date-time
@@ -3038,6 +3407,82 @@ components:
         paymentStatus:
           type: string
           enum: ["pending", "partially-completed", "completed", "cancelled"]
+          description: "The payment status."
+    WorkPeriodPayment:
+      required:
+        - id
+        - workPeriodId
+        - challengeId
+        - amount
+        - status
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The work period payment id."
+        workPeriodId:
+          type: string
+          format: uuid
+          description: "The work period id."
+        challengeId:
+          type: string
+          format: uuid
+          description: "The challenge id."
+        amount:
+          type: integer
+          example: 2
+          description: "The amount to be paid."
+        status:
+          type: string
+          enum: ["completed", "cancelled"]
+          description: "The payment status."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The work period payment created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user Id who created the work period payment.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The work period payment last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user Id who updated the work period payment last time.(Will get the user info from the token)"
+    WorkPeriodPaymentRequestBody:
+      required:
+        - workPeriodId
+      properties:
+        workPeriodId:
+          type: string
+          format: uuid
+          description: "The work period id."
+        amount:
+          type: integer
+          example: 2
+          description: "The amount to be paid."
+        status:
+          type: string
+          enum: ["completed", "cancelled"]
+          description: "The payment status."
+    WorkPeriodPaymentPatchRequestBody:
+      properties:
+        workPeriodId:
+          type: string
+          format: uuid
+          description: "The work period id."
+        amount:
+          type: integer
+          example: 2
+          description: "The amount to be paid."
+        status:
+          type: string
+          enum: ["completed", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object
