@@ -8,7 +8,7 @@ Joi.perPage = () => Joi.number().integer().min(1).default(20)
 Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')
-Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview')
+Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected')
 Joi.title = () => Joi.string().max(128)
 // Empty string is not allowed by Joi by default and must be enabled with allow('').
 // See https://joi.dev/api/?v=17.3.0#string fro details why it's like this.
