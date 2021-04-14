@@ -2775,7 +2775,7 @@ components:
           description: "The external id."
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
           description: "The job status."
         startDate:
           type: string
@@ -2785,7 +2785,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: integer
@@ -2838,7 +2838,7 @@ components:
           description: "The job id."
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
           description: "The job status."
           default: sourcing
         startDate:
@@ -2849,7 +2849,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: number
@@ -2869,7 +2869,7 @@ components:
       properties:
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
         startDate:
           type: string
           format: date-time
@@ -2878,7 +2878,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: number
