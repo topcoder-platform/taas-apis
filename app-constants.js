@@ -36,8 +36,15 @@ const Scopes = {
   READ_TAAS_TEAM: 'read:taas-teams'
 }
 
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  ChallengeStatus
 }
