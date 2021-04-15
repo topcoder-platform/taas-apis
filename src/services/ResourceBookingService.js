@@ -14,6 +14,7 @@ const errors = require('../common/errors')
 const models = require('../models')
 
 const ResourceBooking = models.ResourceBooking
+const WorkPeriod = models.WorkPeriod
 const esClient = helper.getESClient()
 
 /**
@@ -40,6 +41,50 @@ async function _checkUserPermissionForGetResourceBooking (currentUser, projectId
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
     await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
+}
+
+/**
+ * Check if any work period is paid and tried to be deleted
+ *
+ * @param {string} resourceBookingId workPeriod object array.
+ * @param {Object} [oldValue] old value of resourceBooking object.
+ * @param {Object} [newValue] new value of resourceBooking object.
+ * @throws {BadRequestError}
+ */
+async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, newValue) {
+  function _checkForPaidWorkPeriods (workPeriods) {
+    const paidWorkPeriods = _.filter(workPeriods
+      , workPeriod => _.includes(['completed', 'partially-completed'], workPeriod.paymentStatus))
+    if (paidWorkPeriods.length > 0) {
+      throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
+        has completed or partially-completed payment status.`)
+    }
+  }
+  // find related workPeriods to evaluate the changes
+  const workPeriods = await WorkPeriod.findAll({
+    where: {
+      resourceBookingId: resourceBookingId
+    },
+    raw: true
+  })
+  // oldValue and newValue are not provided at deleteResourceBooking process
+  if (_.isUndefined(oldValue) || _.isUndefined(newValue)) {
+    _checkForPaidWorkPeriods(workPeriods)
+    return
+  }
+  // We should not be able to change status of ResourceBooking to 'cancelled'
+  // if there is at least one associated Work Period with paymentStatus 'partially-completed' or 'completed'.
+  if (oldValue.status !== 'cancelled' && newValue.status === 'cancelled') {
+    _checkForPaidWorkPeriods(workPeriods)
+    // we have already checked all existing workPeriods
+    return
+  }
+  // gather workPeriod dates from provided dates
+  const newWorkPeriods = helper.extractWorkPeriods(newValue.startDate || oldValue.startDate, newValue.endDate || oldValue.endDate)
+  // find which workPeriods should be removed
+  const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
+  // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
+  _checkForPaidWorkPeriods(workPeriodsToRemove)
 }
 
 /**
@@ -113,12 +158,19 @@ async function createResourceBooking (currentUser, resourceBooking) {
 createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
-    status: Joi.jobStatus().default('sourcing'),
+    status: Joi.resourceBookingStatus().default('assigned'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null),
     startDate: Joi.date().allow(null),
-    endDate: Joi.date().allow(null),
+    endDate: Joi.date().when('startDate', {
+      is: Joi.exist(),
+      then: Joi.date().allow(null).greater(Joi.ref('startDate')
+      ).messages({
+        'date.greater': 'endDate must be greater than startDate'
+      }),
+      otherwise: Joi.date().allow(null)
+    }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     rateType: Joi.rateType().required()
@@ -127,9 +179,9 @@ createResourceBooking.schema = Joi.object().keys({
 
 /**
  * Update resourceBooking
- * @params {Object} currentUser the user who perform this operation
- * @params {String} id the resourceBooking id
- * @params {Object} data the data to be updated
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the resourceBooking id
+ * @param {Object} data the data to be updated
  * @returns {Object} the updated resourceBooking
  */
 async function updateResourceBooking (currentUser, id, data) {
@@ -140,6 +192,8 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
+  // before updating the record, we need to check if any paid work periods tried to be deleted
+  await _ensurePaidWorkPeriodsNotDeleted(id, oldValue, data)
 
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
@@ -151,9 +205,9 @@ async function updateResourceBooking (currentUser, id, data) {
 
 /**
  * Partially update resourceBooking by id
- * @params {Object} currentUser the user who perform this operation
- * @params {String} id the resourceBooking id
- * @params {Object} data the data to be updated
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the resourceBooking id
+ * @param {Object} data the data to be updated
  * @returns {Object} the updated resourceBooking
  */
 async function partiallyUpdateResourceBooking (currentUser, id, data) {
@@ -164,9 +218,16 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    status: Joi.jobStatus(),
+    status: Joi.resourceBookingStatus(),
     startDate: Joi.date().allow(null),
-    endDate: Joi.date().allow(null),
+    endDate: Joi.date().when('startDate', {
+      is: Joi.exist(),
+      then: Joi.date().allow(null).greater(Joi.ref('startDate')
+      ).messages({
+        'date.greater': 'endDate must be greater than startDate'
+      }),
+      otherwise: Joi.date().allow(null)
+    }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     rateType: Joi.rateType()
@@ -175,9 +236,9 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
 
 /**
  * Fully update resourceBooking by id
- * @params {Object} currentUser the user who perform this operation
- * @params {String} id the resourceBooking id
- * @params {Object} data the data to be updated
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the resourceBooking id
+ * @param {Object} data the data to be updated
  * @returns {Object} the updated resourceBooking
  */
 async function fullyUpdateResourceBooking (currentUser, id, data) {
@@ -196,18 +257,25 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
     startDate: Joi.date().allow(null).default(null),
-    endDate: Joi.date().allow(null).default(null),
+    endDate: Joi.date().when('startDate', {
+      is: Joi.exist(),
+      then: Joi.date().allow(null).default(null).greater(Joi.ref('startDate')
+      ).messages({
+        'date.greater': 'endDate must be greater than startDate'
+      }),
+      otherwise: Joi.date().allow(null).default(null)
+    }),
     memberRate: Joi.number().allow(null).default(null),
     customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
-    status: Joi.jobStatus().default('sourcing')
+    status: Joi.resourceBookingStatus().required()
   }).required()
 }).required()
 
 /**
  * Delete resourceBooking by id
- * @params {Object} currentUser the user who perform this operation
- * @params {String} id the resourceBooking id
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the resourceBooking id
  */
 async function deleteResourceBooking (currentUser, id) {
   // check permission
@@ -215,6 +283,8 @@ async function deleteResourceBooking (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
+  // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
+  await _ensurePaidWorkPeriodsNotDeleted(id)
   const resourceBooking = await ResourceBooking.findById(id)
   await resourceBooking.destroy()
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
@@ -228,8 +298,8 @@ deleteResourceBooking.schema = Joi.object().keys({
 /**
  * List resourceBookings
  * @param {Object} currentUser the user who perform this operation.
- * @params {Object} criteria the search criteria
- * @params {Object} options the extra options to control the function
+ * @param {Object} criteria the search criteria
+ * @param {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
@@ -323,7 +393,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
-  const filter = {}
+  const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -352,7 +422,7 @@ searchResourceBookings.schema = Joi.object().keys({
     perPage: Joi.number().integer(),
     sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
-    status: Joi.jobStatus(),
+    status: Joi.resourceBookingStatus(),
     startDate: Joi.date(),
     endDate: Joi.date(),
     rateType: Joi.rateType(),

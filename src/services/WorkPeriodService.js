@@ -320,6 +320,9 @@ async function deleteWorkPeriod (currentUser, id) {
   }
 
   const workPeriod = await WorkPeriod.findById(id)
+  if (_.includes(['completed', 'partially-completed'], workPeriod.paymentStatus)) {
+    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed or partially-completed")
+  }
   await workPeriod.destroy()
   await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id })
 }
