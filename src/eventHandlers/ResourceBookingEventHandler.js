@@ -254,7 +254,7 @@ async function deleteWorkPeriods (payload) {
  * @returns {undefined}
  */
 async function _createWorkPeriods (periods, resourceBookingId) {
-  Promise.all(_.forEach(periods, async period => await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
+  await Promise.all(_.map(periods, async period => await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
     {
       resourceBookingId: resourceBookingId,
       startDate: period.startDate,
@@ -270,7 +270,7 @@ async function _createWorkPeriods (periods, resourceBookingId) {
  * @returns {undefined}
  */
 async function _updateWorkPeriods (periods) {
-  Promise.all(_.forEach(periods, async period => await WorkPeriodService.partiallyUpdateWorkPeriod(helper.getAuditM2Muser(),
+  await Promise.all(_.map(periods, async period => await WorkPeriodService.partiallyUpdateWorkPeriod(helper.getAuditM2Muser(),
     period.id,
     {
       daysWorked: period.daysWorked
@@ -283,7 +283,7 @@ async function _updateWorkPeriods (periods) {
  * @returns {undefined}
  */
 async function _deleteWorkPeriods (workPeriods) {
-  Promise.all(_.forEach(workPeriods,
+  await Promise.all(_.map(workPeriods,
     async workPeriod => await WorkPeriodService.deleteWorkPeriod(helper.getAuditM2Muser(), workPeriod.id)))
 }
 
