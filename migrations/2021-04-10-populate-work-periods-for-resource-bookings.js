@@ -32,7 +32,7 @@ module.exports = {
       await Promise.all(resourceBookings.map(async rb => {
         if (!_.isNil(rb.startDate) && !_.isNil(rb.endDate)) {
           const periods = helper.extractWorkPeriods(rb.startDate, rb.endDate)
-          const user = await helper.getUserById(rb.userId)
+          const user = await helper.ensureUserById(rb.userId)
           _.forEach(periods, period => {
             workPeriodData.push({
               id: uuid(),
