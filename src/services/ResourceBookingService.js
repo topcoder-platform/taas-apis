@@ -165,9 +165,9 @@ createResourceBooking.schema = Joi.object().keys({
     startDate: Joi.date().allow(null),
     endDate: Joi.date().when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).greater(Joi.ref('startDate')
+      then: Joi.date().allow(null).min(Joi.ref('startDate')
       ).messages({
-        'date.greater': 'endDate must be greater than startDate'
+        'date.min': 'endDate cannot be earlier than startDate'
       }),
       otherwise: Joi.date().allow(null)
     }),
@@ -222,9 +222,9 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
     startDate: Joi.date().allow(null),
     endDate: Joi.date().when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).greater(Joi.ref('startDate')
+      then: Joi.date().allow(null).min(Joi.ref('startDate')
       ).messages({
-        'date.greater': 'endDate must be greater than startDate'
+        'date.min': 'endDate cannot be earlier than startDate'
       }),
       otherwise: Joi.date().allow(null)
     }),
@@ -259,9 +259,9 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     startDate: Joi.date().allow(null).default(null),
     endDate: Joi.date().when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).default(null).greater(Joi.ref('startDate')
+      then: Joi.date().allow(null).default(null).min(Joi.ref('startDate')
       ).messages({
-        'date.greater': 'endDate must be greater than startDate'
+        'date.min': 'endDate cannot be earlier than startDate'
       }),
       otherwise: Joi.date().allow(null).default(null)
     }),
