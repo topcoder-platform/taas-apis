@@ -135,9 +135,5 @@ module.exports = {
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // default time zone for Work Periods
-  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York',
-  // maximum start date of resource bookings when populating work periods from existing resource bookings in migration script
-  MAX_START_DATE: process.env.MAX_START_DATE || '2100-12-31',
-  // maximum end date of resource bookings when populating work periods from existing resource bookings in migration script
-  MAX_END_DATE: process.env.MAX_END_DATE || '2100-12-31'
+  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York'
 }

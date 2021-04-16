@@ -4,6 +4,11 @@ const _ = require('lodash')
 const helper = require('../src/common/helper')
 const { v4: uuid } = require('uuid')
 
+// maximum start date of resource bookings when populating work periods from existing resource bookings in migration script
+const MAX_START_DATE = process.env.MAX_START_DATE || '2100-12-31'
+// maximum end date of resource bookings when populating work periods from existing resource bookings in migration script
+const MAX_END_DATE = process.env.MAX_END_DATE || '2100-12-31'
+
 /*
  * Populate WorkPeriods for ResourceBookings
  */
@@ -15,8 +20,8 @@ module.exports = {
     try {
       const resourceBookings = await ResourceBooking.findAll({
         where: {
-          start_date: { [Op.lt]: new Date(config.MAX_START_DATE) },
-          end_date: { [Op.lt]: new Date(config.MAX_END_DATE) }
+          start_date: { [Op.lt]: new Date(MAX_START_DATE) },
+          end_date: { [Op.lt]: new Date(MAX_END_DATE) }
         }
       })
       if (resourceBookings.length === 0) {
@@ -57,8 +62,8 @@ module.exports = {
       const Op = Sequelize.Op
       const resourceBookings = await ResourceBooking.findAll({
         where: {
-          start_date: { [Op.lt]: new Date(config.MAX_START_DATE) },
-          end_date: { [Op.lt]: new Date(config.MAX_END_DATE) }
+          start_date: { [Op.lt]: new Date(MAX_START_DATE) },
+          end_date: { [Op.lt]: new Date(MAX_END_DATE) }
         },
         // include soft-deleted resourceBookings
         paranoid: false
