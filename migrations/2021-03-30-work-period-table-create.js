@@ -28,7 +28,7 @@ module.exports = {
             key: 'id'
           },
           onUpdate: 'CASCADE',
-          onDelete: 'CASCADE',
+          onDelete: 'CASCADE'
         },
         userHandle: {
           field: 'user_handle',
@@ -89,7 +89,7 @@ module.exports = {
           type: Sequelize.DATE
         }
       }, {
-        schema: 'bookings',
+        schema: config.DB_SCHEMA_NAME,
         transaction
       })
       await queryInterface.addIndex(

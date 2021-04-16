@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "488f8826-1016-4c2a-9d72-244c9ad4d9aa",
+		"_postman_id": "8ad4971b-dab3-4581-996a-9480aa21c1f4",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2819,14 +2819,117 @@
 			"name": "Resource Bookings",
 			"item": [
 				{
+					"name": "Before Test",
+					"item": [
+						{
+							"name": "create job",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job with m2m",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"postman.setEnvironmentVariable(\"jobIdCreatedByM2M\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_job}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "create resource booking with booking manager",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingId\", response.id);\r",
+									"    }\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2843,7 +2946,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-10-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2863,14 +2966,109 @@
 					"response": []
 				},
 				{
+					"name": "search work periods of newly created resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create resource booking with m2m create",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingIdCreatedByM2M\",data.id);"
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingIdCreatedByM2M\", response.id);\r",
+									"    }\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2887,7 +3085,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2907,14 +3105,107 @@
 					"response": []
 				},
 				{
+					"name": "search work periods of newly created resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingIdCreatedByM2M}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingIdCreatedByM2M}},{{resourceBookingIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create resource booking with connect user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2931,7 +3222,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2957,7 +3248,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2974,7 +3269,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3000,7 +3295,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3017,7 +3316,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3043,7 +3342,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3081,6 +3384,19 @@
 				},
 				{
 					"name": "get resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3105,6 +3421,19 @@
 				},
 				{
 					"name": "get resource booking with m2m read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3129,6 +3458,19 @@
 				},
 				{
 					"name": "get resource booking with booking manager from db",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3159,6 +3501,19 @@
 				},
 				{
 					"name": "get resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3183,6 +3538,21 @@
 				},
 				{
 					"name": "get resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3207,6 +3577,19 @@
 				},
 				{
 					"name": "search resource bookings with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3262,7 +3645,7 @@
 								},
 								{
 									"key": "status",
-									"value": "sourcing",
+									"value": "assigned",
 									"disabled": true
 								},
 								{
@@ -3277,6 +3660,19 @@
 				},
 				{
 					"name": "search resource bookings with m2m all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3332,7 +3728,7 @@
 								},
 								{
 									"key": "status",
-									"value": "sourcing",
+									"value": "assigned",
 									"disabled": true
 								}
 							]
@@ -3342,6 +3738,19 @@
 				},
 				{
 					"name": "search resource bookings with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3401,6 +3810,17 @@
 				},
 				{
 					"name": "search resource bookings with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3460,6 +3880,21 @@
 				},
 				{
 					"name": "search resource bookings with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3519,6 +3954,19 @@
 				},
 				{
 					"name": "put resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3530,7 +3978,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26T04:17:23.131Z\",\r\n  \"endDate\": \"2020-11-29T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3551,7 +3999,110 @@
 					"response": []
 				},
 				{
+					"name": "search extended work periods of resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put resource booking with m2m update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3563,7 +4114,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-10T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3584,7 +4135,112 @@
 					"response": []
 				},
 				{
+					"name": "search reduced work periods of resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingIdCreatedByM2M}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingIdCreatedByM2M}},{{resourceBookingIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3596,7 +4252,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3618,6 +4274,21 @@
 				},
 				{
 					"name": "put resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3629,7 +4300,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3651,6 +4322,21 @@
 				},
 				{
 					"name": "put resource booking with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3662,7 +4348,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3684,6 +4370,21 @@
 				},
 				{
 					"name": "put resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -3695,7 +4396,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3717,6 +4418,19 @@
 				},
 				{
 					"name": "patch resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3728,7 +4442,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-09-30T04:17:23.131Z\",\r\n    \"endDate\": \"2020-11-28T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3750,6 +4464,19 @@
 				},
 				{
 					"name": "patch resource booking with m2m update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3761,7 +4488,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-12-30T04:17:23.131Z\",\r\n    \"endDate\": \"2021-02-10T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3783,6 +4510,21 @@
 				},
 				{
 					"name": "patch resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3794,7 +4536,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3816,6 +4558,21 @@
 				},
 				{
 					"name": "patch resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3827,7 +4584,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3849,6 +4606,21 @@
 				},
 				{
 					"name": "patch resource booking with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3860,7 +4632,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3882,6 +4654,21 @@
 				},
 				{
 					"name": "patch resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3914,7 +4701,251 @@
 					"response": []
 				},
 				{
+					"name": "search work periods",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.environment.set(\"workPeriodIdForPaid\", response[0].id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?perPage=1&sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "1"
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period set status to completed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"paymentStatus\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-periods/{{workPeriodIdForPaid}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods",
+								"{{workPeriodIdForPaid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking to cancelled",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking to reduce",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": \"2020-10-04T04:17:23.131Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3948,6 +4979,21 @@
 				},
 				{
 					"name": "delete resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3981,6 +5027,19 @@
 				},
 				{
 					"name": "delete resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -4014,6 +5073,19 @@
 				},
 				{
 					"name": "delete resource booking with m2m delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 204', function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -4047,6 +5119,21 @@
 				},
 				{
 					"name": "delete resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -4224,12 +5311,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4273,12 +5360,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4320,12 +5407,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4367,12 +5454,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4414,12 +5501,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4461,12 +5548,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4508,12 +5595,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4555,12 +5642,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4602,12 +5689,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4649,12 +5736,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4696,12 +5783,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4743,12 +5830,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4790,12 +5877,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4837,12 +5924,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4884,12 +5971,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4931,12 +6018,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -4967,12 +6054,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5004,12 +6091,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -5041,12 +6128,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}?fromDb=true",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}?fromDb=true",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							],
 							"query": [
@@ -5084,12 +6171,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5121,12 +6208,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5158,12 +6245,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -5173,7 +6260,7 @@
 								},
 								{
 									"key": "perPage",
-									"value": "5",
+									"value": "35",
 									"disabled": true
 								},
 								{
@@ -5251,12 +6338,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -5344,12 +6431,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -5424,12 +6511,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -5517,12 +6604,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -5619,12 +6706,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5665,12 +6752,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -5713,12 +6800,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5761,12 +6848,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5809,12 +6896,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5857,12 +6944,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5905,12 +6992,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -5953,12 +7040,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6001,12 +7088,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6049,12 +7136,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6097,12 +7184,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6145,12 +7232,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6193,12 +7280,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6241,12 +7328,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6289,12 +7376,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6337,12 +7424,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6383,12 +7470,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6429,12 +7516,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -6477,12 +7564,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6525,12 +7612,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6573,12 +7660,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6621,12 +7708,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6669,12 +7756,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6717,12 +7804,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6765,12 +7852,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6813,12 +7900,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6861,12 +7948,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6909,12 +7996,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6957,12 +8044,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7005,12 +8092,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7053,12 +8140,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7099,12 +8186,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7145,12 +8232,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -7193,12 +8280,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7239,12 +8326,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11424,12 +12511,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -11447,12 +12534,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -11471,12 +12558,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -11573,12 +12660,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -11619,12 +12706,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -11665,12 +12752,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -12683,12 +13770,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -12732,12 +13819,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -12755,13 +13842,19 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
+											],
+											"query": [
+												{
+													"key": "projectId",
+													"value": "16718"
+												}
 											]
 										}
 									},
@@ -12779,12 +13872,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16718",
+											"raw": "{{URL}}/work-periods?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -12882,12 +13975,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -12930,12 +14023,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -12978,12 +14071,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -13994,12 +15087,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -14043,12 +15136,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -14066,12 +15159,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -14090,12 +15183,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16843",
+											"raw": "{{URL}}/work-periods?projectId=16843",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -14193,12 +15286,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -14241,12 +15334,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -14289,12 +15382,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}

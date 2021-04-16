@@ -113,7 +113,7 @@ module.exports = {
   // the delete resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
   // topics for work period service
-  // the create rwork period entity Kafka message topic
+  // the create work period entity Kafka message topic
   TAAS_WORK_PERIOD_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_CREATE_TOPIC || 'taas.workperiod.create',
   // the update work period entity Kafka message topic
   TAAS_WORK_PERIOD_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_UPDATE_TOPIC || 'taas.workperiod.update',
@@ -133,5 +133,7 @@ module.exports = {
   // SendGrid email template ID for requesting extension
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
   // the URL where TaaS App is hosted
-  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
+  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // default time zone for Work Periods
+  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York'
 }
