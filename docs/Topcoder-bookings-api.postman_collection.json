@@ -2990,12 +2990,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -3129,12 +3129,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -4023,12 +4023,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -4159,12 +4159,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -4727,12 +4727,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods?perPage=1&sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"raw": "{{URL}}/work-periods?perPage=1&sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -4825,12 +4825,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdForPaid}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdForPaid}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdForPaid}}"
 							]
 						}
@@ -5311,12 +5311,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5360,12 +5360,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5407,12 +5407,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5454,12 +5454,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5501,12 +5501,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5548,12 +5548,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5595,12 +5595,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5642,12 +5642,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5689,12 +5689,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5736,12 +5736,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5783,12 +5783,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5830,12 +5830,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5877,12 +5877,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5924,12 +5924,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -5971,12 +5971,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -6018,12 +6018,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -6054,12 +6054,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6091,12 +6091,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -6128,12 +6128,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}?fromDb=true",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}?fromDb=true",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							],
 							"query": [
@@ -6171,12 +6171,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6208,12 +6208,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6245,12 +6245,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -6338,12 +6338,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -6431,12 +6431,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -6511,12 +6511,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -6604,12 +6604,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -6706,12 +6706,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6752,12 +6752,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -6800,12 +6800,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6848,12 +6848,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6896,12 +6896,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6944,12 +6944,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -6992,12 +6992,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7040,12 +7040,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7088,12 +7088,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7136,12 +7136,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7184,12 +7184,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7232,12 +7232,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7280,12 +7280,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7328,12 +7328,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7376,12 +7376,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7424,12 +7424,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7470,12 +7470,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7516,12 +7516,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -7564,12 +7564,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7612,12 +7612,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7660,12 +7660,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7708,12 +7708,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7756,12 +7756,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7804,12 +7804,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7852,12 +7852,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7900,12 +7900,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7948,12 +7948,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -7996,12 +7996,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8044,12 +8044,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8092,12 +8092,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8140,12 +8140,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8186,12 +8186,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8232,12 +8232,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -8280,12 +8280,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -8326,12 +8326,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -12511,12 +12511,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -12534,12 +12534,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -12558,12 +12558,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -12660,12 +12660,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -12706,12 +12706,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -12752,12 +12752,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -13770,12 +13770,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -13819,12 +13819,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -13842,12 +13842,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}?projectId=16718",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											],
 											"query": [
@@ -13872,12 +13872,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16718",
+											"raw": "{{URL}}/work-periods?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -13975,12 +13975,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -14023,12 +14023,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -14071,12 +14071,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -15087,12 +15087,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -15136,12 +15136,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -15159,12 +15159,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -15183,12 +15183,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16843",
+											"raw": "{{URL}}/work-periods?projectId=16843",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -15286,12 +15286,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -15334,12 +15334,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -15382,12 +15382,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}

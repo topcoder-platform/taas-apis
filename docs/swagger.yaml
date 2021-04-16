@@ -1347,7 +1347,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriods:
+  /work-periods:
     post:
       tags:
         - WorkPeriods
@@ -1565,7 +1565,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriods/{id}:
+  /work-periods/{id}:
     get:
       tags:
         - WorkPeriods
