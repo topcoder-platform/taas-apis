@@ -9,20 +9,31 @@ module.exports = (sequelize) => {
      * @param {Object} models the database models
      */
     static associate (models) {
+      WorkPeriod._models = models
       WorkPeriod.belongsTo(models.ResourceBooking, { foreignKey: 'resourceBookingId' })
+      WorkPeriod.hasMany(models.WorkPeriodPayment, { as: 'payments', foreignKey: 'workPeriodId' })
     }
 
     /**
      * Get work period by id
      * @param {String} id the work period id
+     * @param {Boolean} withPayments whether contains payments
      * @returns {WorkPeriod} the work period instance
      */
-    static async findById (id) {
-      const workPeriod = await WorkPeriod.findOne({
+    static async findById (id, withPayments) {
+      const criteria = {
         where: {
           id
         }
-      })
+      }
+      if (withPayments) {
+        criteria.include = [{
+          model: WorkPeriod._models.WorkPeriodPayment,
+          as: 'payments',
+          required: false
+        }]
+      }
+      const workPeriod = await WorkPeriod.findOne(criteria)
       if (!workPeriod) {
         throw new errors.NotFoundError(`id: ${id} "WorkPeriod" doesn't exists.`)
       }

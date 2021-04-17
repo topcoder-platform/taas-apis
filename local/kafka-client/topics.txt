@@ -2,10 +2,12 @@ taas.job.create
 taas.jobcandidate.create
 taas.resourcebooking.create
 taas.workperiod.create
+taas.workperiodpayment.create
 taas.job.update
 taas.jobcandidate.update
 taas.resourcebooking.update
 taas.workperiod.update
+taas.workperiodpayment.update
 taas.job.delete
 taas.jobcandidate.delete
 taas.resourcebooking.delete

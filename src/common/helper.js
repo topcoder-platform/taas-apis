@@ -113,6 +113,19 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
   paymentStatus: { type: 'keyword' },
+  payments: {
+    type: 'nested',
+    properties: {
+      workPeriodId: { type: 'keyword' },
+      challengeId: { type: 'keyword' },
+      amount: { type: 'float' },
+      status: { type: 'keyword' },
+      createdAt: { type: 'date' },
+      createdBy: { type: 'keyword' },
+      updatedAt: { type: 'date' },
+      updatedBy: { type: 'keyword' }
+    }
+  },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -250,9 +263,18 @@ async function indexBulkDataToES (modelName, indexName, logger) {
   // get data from db
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
-  const data = await model.findAll({
+  const criteria = {
     raw: true
-  })
+  }
+  if (modelName === 'WorkPeriod') {
+    criteria.raw = false
+    criteria.include = [{
+      model: models.WorkPeriodPayment,
+      as: 'payments',
+      required: false
+    }]
+  }
+  const data = await model.findAll(criteria)
   if (_.isEmpty(data)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
     return
@@ -293,7 +315,7 @@ async function indexDataToEsById (id, modelName, indexName, logger) {
   logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
   const model = models[modelName]
 
-  const data = await model.findById(id)
+  const data = await model.findById(id, modelName === 'WorkPeriod')
   logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
   await esClient.index({
     index: indexName,
@@ -371,6 +393,7 @@ async function importData (pathToFile, dataModels, logger) {
   await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
   await indexBulkDataToES('JobCandidate', config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
   await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+  await indexBulkDataToES('WorkPeriod', config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
 }
 
 /**
@@ -935,11 +958,20 @@ async function ensureJobById (jobId) {
 /**
  * Ensure resource booking with specific id exists.
  *
- * @param {String} resourceBookingId the job id
- * @returns {Object} the job data
+ * @param {String} resourceBookingId the resourceBooking id
+ * @returns {Object} the resourceBooking data
  */
 async function ensureResourceBookingById (resourceBookingId) {
   return models.ResourceBooking.findById(resourceBookingId)
+}
+
+/**
+ * Ensure work period with specific id exists.
+ * @param {String} workPeriodId the workPeriod id
+ * @returns the workPeriod data
+ */
+async function ensureWorkPeriodById (workPeriodId) {
+  return models.WorkPeriod.findById(workPeriodId)
 }
 
 /**
@@ -1179,6 +1211,7 @@ module.exports = {
   ensureJobById,
   ensureResourceBookingById,
   ensureUserById,
+  ensureWorkPeriodById,
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,

@@ -81,7 +81,7 @@ async function _getWorkPeriodFilteringFields (currentUser, workPeriod) {
   if (currentUser.hasManagePermission || currentUser.isMachine) {
     return workPeriod
   }
-  return _.omit(workPeriod, 'memberRate')
+  return _.omit(workPeriod, ['memberRate', 'payments'])
 }
 
 /**
@@ -155,7 +155,7 @@ async function getWorkPeriod (currentUser, id, fromDb = false) {
     }
   }
   logger.info({ component: 'WorkPeriodService', context: 'getWorkPeriod', message: 'try to query db for data' })
-  const workPeriod = await WorkPeriod.findById(id)
+  const workPeriod = await WorkPeriod.findById(id, true)
 
   await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.projectId) // check user permission
   // We should only return "memberRate" to Booking Manager, Administrator or M2M
@@ -319,7 +319,8 @@ async function deleteWorkPeriod (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const workPeriod = await WorkPeriod.findById(id)
+  const workPeriod = await WorkPeriod.findById(id, true)
+  await Promise.all(workPeriod.payments.map((payment) => payment.destroy()))
   await workPeriod.destroy()
   await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id })
 }
@@ -445,6 +446,11 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
   }
   const workPeriods = await WorkPeriod.findAll({
     where: filter,
+    include: [{
+      model: models.WorkPeriodPayment,
+      as: 'payments',
+      required: false
+    }],
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
