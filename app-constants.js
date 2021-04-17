@@ -47,8 +47,15 @@ const Scopes = {
   ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments'
 }
 
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  ChallengeStatus
 }

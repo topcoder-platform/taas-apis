@@ -1176,6 +1176,82 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
   }
 }
 
+/**
+ * Create a new challenge
+ *
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge created
+ */
+async function createChallenge (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges`
+  localLogger.debug({ context: 'createChallenge', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Update a challenge
+ *
+ * @param {String} challengeId id of the challenge
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge updated
+ */
+async function updateChallenge (challengeId, data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges/${challengeId}`
+  localLogger.debug({ context: 'updateChallenge', message: `EndPoint: PATCH ${url}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .patch(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'updateChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Create a challenge resource
+ *
+ * @param {Object} data resource
+ * @param {String} token m2m token
+ * @returns {Object} the resource created
+ */
+async function createChallengeResource (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/resources`
+  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: resource, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallengeResource', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
+  return resource
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1219,5 +1295,8 @@ module.exports = {
   createProjectMember,
   listProjectMembers,
   listProjectMemberInvites,
-  deleteProjectMember
+  deleteProjectMember,
+  createChallenge,
+  updateChallenge,
+  createChallengeResource
 }
