@@ -589,15 +589,7 @@ paths:
           required: false
           schema:
             type: string
-            enum:
-              [
-                "open",
-                "selected",
-                "shortlist",
-                "rejected",
-                "cancelled",
-                "interview",
-              ]
+            enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
           description: The job candidate status.
         - in: query
           name: externalId
@@ -1347,7 +1339,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriods:
+  /work-periods:
     post:
       tags:
         - WorkPeriods
@@ -1565,7 +1557,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriods/{id}:
+  /work-periods/{id}:
     get:
       tags:
         - WorkPeriods
@@ -2984,15 +2976,7 @@ components:
           description: "The user id."
         status:
           type: string
-          enum:
-            [
-              "open",
-              "selected",
-              "shortlist",
-              "rejected",
-              "cancelled",
-              "interview",
-            ]
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
           description: "The job candidate status."
         externalId:
           type: string
@@ -3049,15 +3033,7 @@ components:
       properties:
         status:
           type: string
-          enum:
-            [
-              "open",
-              "selected",
-              "shortlist",
-              "rejected",
-              "cancelled",
-              "interview",
-            ]
+          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
         externalId:
           type: string
           example: "1212"
@@ -3139,7 +3115,7 @@ components:
           description: "The external id."
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
           description: "The job status."
         startDate:
           type: string
@@ -3149,7 +3125,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: integer
@@ -3202,7 +3178,7 @@ components:
           description: "The job id."
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
           description: "The job status."
           default: sourcing
         startDate:
@@ -3213,7 +3189,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: number
@@ -3233,7 +3209,7 @@ components:
       properties:
         status:
           type: string
-          enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
+          enum: ["assigned", "closed", "cancelled"]
         startDate:
           type: string
           format: date-time
@@ -3242,7 +3218,7 @@ components:
         endDate:
           type: string
           format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          example: "2020-09-28T04:17:23.131Z"
           description: "The job end date."
         memberRate:
           type: number
@@ -3846,15 +3822,7 @@ components:
                 description: "The link for the resume that can be downloaded"
               status:
                 type: string
-                enum:
-                  [
-                    "open",
-                    "selected",
-                    "shortlist",
-                    "rejected",
-                    "cancelled",
-                    "interview",
-                  ]
+                enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
                 description: "The job candidate status."
               skills:
                 type: array

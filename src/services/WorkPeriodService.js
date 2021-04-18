@@ -319,7 +319,10 @@ async function deleteWorkPeriod (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const workPeriod = await WorkPeriod.findById(id, true)
+  const workPeriod = await WorkPeriod.findById(id)
+  if (_.includes(['completed', 'partially-completed'], workPeriod.paymentStatus)) {
+    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed or partially-completed")
+  }
   await Promise.all(workPeriod.payments.map((payment) => payment.destroy()))
   await workPeriod.destroy()
   await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id })
