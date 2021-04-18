@@ -1787,7 +1787,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriodPayments:
+  /work-period-payments:
     post:
       tags:
         - WorkPeriodPayments
@@ -1971,7 +1971,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /workPeriodPayments/{id}:
+  /work-period-payments/{id}:
     get:
       tags:
         - WorkPeriodPayments

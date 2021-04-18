@@ -8,10 +8,12 @@ const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const uuid = require('uuid')
+const moment = require('moment')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const { createPayment } = require('./PaymentService')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
 const esClient = helper.getESClient()
@@ -56,11 +58,14 @@ async function getWorkPeriodPayment (currentUser, id, fromDb = false) {
         }
       })
 
+      if (!workPeriod.body.hits.total.value) {
+        throw new errors.NotFoundError()
+      }
       const workPeriodPaymentRecord = _.find(workPeriod.body.hits.hits[0]._source.payments, { id })
       return workPeriodPaymentRecord
     } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFountError(`id: ${id} "WorkPeriodPayment" not found`)
+      if (err.httpStatus === HttpStatus.NOT_FOUND) {
+        throw new errors.NotFoundError(`id: ${id} "WorkPeriodPayment" not found`)
       }
       if (err.httpStatus === HttpStatus.FORBIDDEN) {
         throw err
@@ -90,8 +95,16 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
   // check permission
   await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
-  await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+  const { projectId, userHandle, endDate } = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+  const paymentChallenge = await createPayment({
+    projectId,
+    userHandle,
+    amount: workPeriodPayment.amount,
+    name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('DD/MM/YYYY')}}`,
+    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('DD/MM/YYYY')}}`
+  })
   workPeriodPayment.id = uuid.v4()
+  workPeriodPayment.challengeId = paymentChallenge.id
   workPeriodPayment.createdBy = await helper.getUserId(currentUser.userId)
 
   let created = null
@@ -169,7 +182,7 @@ partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
   data: Joi.object().keys({
     workPeriodId: Joi.string().uuid(),
     amount: Joi.number().greater(0).allow(null),
-    status: Joi.workPeriodPaymentStatus().default('completed')
+    status: Joi.workPeriodPaymentStatus()
   }).required()
 }).required()
 
@@ -261,12 +274,13 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     if (criteria.sortOrder === 'desc') {
       payments = _.reverse(payments)
     }
+    const total = payments.length
     if (!options.returnAll) {
       payments = _.slice(payments, (page - 1) * perPage, page * perPage)
     }
 
     return {
-      total: payments.length,
+      total,
       page,
       perPage,
       result: payments

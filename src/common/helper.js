@@ -117,6 +117,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
   payments: {
     type: 'nested',
     properties: {
+      id: { type: 'keyword' },
       workPeriodId: { type: 'keyword' },
       challengeId: { type: 'keyword' },
       amount: { type: 'float' },

@@ -17,16 +17,16 @@ module.exports = (sequelize) => {
     /**
      * Get work period by id
      * @param {String} id the work period id
-     * @param {Boolean} withPayments whether contains payments
+     * @param {Object} options { withPayments: true/false } whether contains payments
      * @returns {WorkPeriod} the work period instance
      */
-    static async findById (id, withPayments) {
+    static async findById (id, options = { withPayments: false }) {
       const criteria = {
         where: {
           id
         }
       }
-      if (withPayments) {
+      if (options.withPayments) {
         criteria.include = [{
           model: WorkPeriod._models.WorkPeriodPayment,
           as: 'payments',
