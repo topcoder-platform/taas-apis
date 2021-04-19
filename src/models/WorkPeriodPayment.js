@@ -45,8 +45,7 @@ module.exports = (sequelize) => {
       challengeId: {
         field: 'challenge_id',
         type: Sequelize.UUID,
-        allowNull: false,
-        defaultValue: '00000000-0000-0000-0000-000000000000'
+        allowNull: false
       },
       amount: {
         type: Sequelize.DOUBLE

@@ -90,12 +90,13 @@
    tc-taas-es-processor | 2021-04-09T21:20:21.466Z DEBUG no-kafka-client Subscribed to taas.workperiod.delete:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.468Z DEBUG no-kafka-client Subscribed to taas.workperiod.create:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.469Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor | 2021-04-09T21:20:21.470Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.create:0 offset 0 leader kafka:9093
-   tc-taas-es-processor | 2021-04-09T21:20:21.471Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor | 2021-04-09T21:20:21.472Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor | [2021-04-09T21:20:21.473Z] app INFO : Initialized.......
-   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete,taas.workperiod.create,taas.workperiod.update,taas.workperiod.delete,taas.workperiodpayment.create,taas.workperiodpayment.update
-   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : Kick Start.......
+   tc-taas-es-processor | 2021-04-09T21:20:21.470Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.471Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.473Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.474Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | [2021-04-09T21:20:21.475Z] app INFO : Initialized.......
+   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete,taas.workperiod.create,taas.workperiod.update,taas.workperiod.delete,taas.workperiodpayment.create,taas.workperiodpayment.update,taas.workperiodpayment.delete
+   tc-taas-es-processor | [2021-04-09T21:20:21.480Z] app INFO : Kick Start.......
    tc-taas-es-processor | ********** Topcoder Health Check DropIn listening on port 3001
    tc-taas-es-processor | Topcoder Health Check DropIn started and ready to roll
    ```

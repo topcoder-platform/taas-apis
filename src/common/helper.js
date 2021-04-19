@@ -17,6 +17,7 @@ const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
+const moment = require('moment-timezone')
 
 const localLogger = {
   debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message }),
@@ -116,6 +117,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
   payments: {
     type: 'nested',
     properties: {
+      id: { type: 'keyword' },
       workPeriodId: { type: 'keyword' },
       challengeId: { type: 'keyword' },
       amount: { type: 'float' },
@@ -1252,6 +1254,50 @@ async function createChallengeResource (data, token) {
   return resource
 }
 
+/**
+ * Populates workPeriods from start and end date of resource booking
+ * @param {Date} start start date of the resource booking
+ * @param {Date} end end date of the resource booking
+ * @returns {Array} information about workPeriods
+ */
+function extractWorkPeriods (start, end) {
+  // canculate daysWorked for a week
+  function getDaysWorked (week) {
+    if (weeks === 1) {
+      return Math.min(endDay, 5) - Math.max(startDay, 1) + 1
+    } else if (week === 0) {
+      return Math.min(6 - startDay, 5)
+    } else if (week === (weeks - 1)) {
+      return Math.min(endDay, 5)
+    } else return 5
+  }
+  const periods = []
+  if (_.isNil(start) || _.isNil(end)) {
+    return periods
+  }
+  const startDate = moment(start)
+  startDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
+  const startDay = startDate.get('day')
+  startDate.set('day', 0).startOf('day')
+
+  const endDate = moment(end)
+  endDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
+  const endDay = endDate.get('day')
+  endDate.set('day', 6).endOf('day')
+
+  const weeks = Math.round(moment.duration(endDate - startDate).asDays()) / 7
+
+  for (let i = 0; i < weeks; i++) {
+    periods.push({
+      startDate: startDate.format('YYYY-MM-DD'),
+      endDate: startDate.add(6, 'day').format('YYYY-MM-DD'),
+      daysWorked: getDaysWorked(i)
+    })
+    startDate.add(1, 'day')
+  }
+  return periods
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1298,5 +1344,6 @@ module.exports = {
   deleteProjectMember,
   createChallenge,
   updateChallenge,
-  createChallengeResource
+  createChallengeResource,
+  extractWorkPeriods
 }

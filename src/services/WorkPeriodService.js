@@ -12,6 +12,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const constants = require('../../app-constants')
 const moment = require('moment')
 
 const WorkPeriod = models.WorkPeriod
@@ -72,13 +73,23 @@ Joi.workPeriodEndDateOptional = () => Joi.date()
   })
 
 /**
+ * Check user scopes for getting payments
+ * @param {Object} currentUser the user who perform this operation.
+ * @returns {Boolean} true if user is machine and has read/all payment scopes
+ */
+function _checkUserScopesForGetPayments (currentUser) {
+  const getPaymentsScopes = [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
+  return currentUser.isMachine && helper.checkIfExists(getPaymentsScopes, currentUser.scopes)
+}
+
+/**
   * filter fields of work period by user role.
   * @param {Object} currentUser the user who perform this operation.
   * @param {Object} workPeriod the workPeriod with all fields
   * @returns {Object} the workPeriod
   */
 async function _getWorkPeriodFilteringFields (currentUser, workPeriod) {
-  if (currentUser.hasManagePermission || currentUser.isMachine) {
+  if (currentUser.hasManagePermission || _checkUserScopesForGetPayments(currentUser)) {
     return workPeriod
   }
   return _.omit(workPeriod, ['memberRate', 'payments'])
@@ -155,7 +166,7 @@ async function getWorkPeriod (currentUser, id, fromDb = false) {
     }
   }
   logger.info({ component: 'WorkPeriodService', context: 'getWorkPeriod', message: 'try to query db for data' })
-  const workPeriod = await WorkPeriod.findById(id, true)
+  const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
 
   await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.projectId) // check user permission
   // We should only return "memberRate" to Booking Manager, Administrator or M2M
@@ -319,8 +330,16 @@ async function deleteWorkPeriod (currentUser, id) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
 
-  const workPeriod = await WorkPeriod.findById(id, true)
-  await Promise.all(workPeriod.payments.map((payment) => payment.destroy()))
+  const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
+  if (_.includes(['completed', 'partially-completed'], workPeriod.paymentStatus)) {
+    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed or partially-completed")
+  }
+  await models.WorkPeriodPayment.destroy({
+    where: {
+      workPeriodId: id
+    }
+  })
+  await Promise.all(workPeriod.payments.map(({ id }) => helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC, { id })))
   await workPeriod.destroy()
   await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id })
 }
@@ -427,8 +446,9 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
         const obj = _.cloneDeep(hit._source)
         obj.id = hit._id
         // We should only return "memberRate" to Booking Manager, Administrator or M2M
-        if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+        if (!currentUser.hasManagePermission && !_checkUserScopesForGetPayments(currentUser)) {
           delete obj.memberRate
+          delete obj.payments
         }
         return obj
       })
@@ -462,8 +482,9 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     perPage,
     result: _.map(workPeriods, workPeriod => {
       // We should only return "memberRate" to Booking Manager, Administrator or M2M
-      if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+      if (!currentUser.hasManagePermission && !_checkUserScopesForGetPayments(currentUser)) {
         delete workPeriod.dataValues.memberRate
+        delete workPeriod.dataValues.payments
       }
       return workPeriod.dataValues
     })

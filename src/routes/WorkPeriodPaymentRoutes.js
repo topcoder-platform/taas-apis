@@ -4,7 +4,7 @@
 const constants = require('../../app-constants')
 
 module.exports = {
-  '/workPeriodPayments': {
+  '/work-period-payments': {
     post: {
       controller: 'WorkPeriodPaymentController',
       method: 'createWorkPeriodPayment',
@@ -18,7 +18,7 @@ module.exports = {
       scopes: [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
     }
   },
-  '/workPeriodPayments/:id': {
+  '/work-period-payments/:id': {
     get: {
       controller: 'WorkPeriodPaymentController',
       method: 'getWorkPeriodPayment',

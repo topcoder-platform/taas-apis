@@ -4,5 +4,6 @@ module.exports = {
   AUTH0_AUDIENCE: 'http://example.com',
   AUTH0_AUDIENCE_UBAHN: 'http://example.com',
   AUTH0_CLIENT_ID: 'fake_id',
-  AUTH0_CLIENT_SECRET: 'fake_secret'
+  AUTH0_CLIENT_SECRET: 'fake_secret',
+  WORK_PERIOD_TIME_ZONE: 'America/New_York'
 }
