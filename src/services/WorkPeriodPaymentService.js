@@ -100,8 +100,8 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
     projectId,
     userHandle,
     amount: workPeriodPayment.amount,
-    name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('DD/MM/YYYY')}}`,
-    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('DD/MM/YYYY')}}`
+    name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
+    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`
   })
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.challengeId = paymentChallenge.id
