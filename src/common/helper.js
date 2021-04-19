@@ -114,6 +114,20 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
   paymentStatus: { type: 'keyword' },
+  payments: {
+    type: 'nested',
+    properties: {
+      id: { type: 'keyword' },
+      workPeriodId: { type: 'keyword' },
+      challengeId: { type: 'keyword' },
+      amount: { type: 'float' },
+      status: { type: 'keyword' },
+      createdAt: { type: 'date' },
+      createdBy: { type: 'keyword' },
+      updatedAt: { type: 'date' },
+      updatedBy: { type: 'keyword' }
+    }
+  },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -251,9 +265,18 @@ async function indexBulkDataToES (modelName, indexName, logger) {
   // get data from db
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
-  const data = await model.findAll({
+  const criteria = {
     raw: true
-  })
+  }
+  if (modelName === 'WorkPeriod') {
+    criteria.raw = false
+    criteria.include = [{
+      model: models.WorkPeriodPayment,
+      as: 'payments',
+      required: false
+    }]
+  }
+  const data = await model.findAll(criteria)
   if (_.isEmpty(data)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
     return
@@ -294,7 +317,7 @@ async function indexDataToEsById (id, modelName, indexName, logger) {
   logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
   const model = models[modelName]
 
-  const data = await model.findById(id)
+  const data = await model.findById(id, modelName === 'WorkPeriod')
   logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
   await esClient.index({
     index: indexName,
@@ -937,11 +960,20 @@ async function ensureJobById (jobId) {
 /**
  * Ensure resource booking with specific id exists.
  *
- * @param {String} resourceBookingId the job id
- * @returns {Object} the job data
+ * @param {String} resourceBookingId the resourceBooking id
+ * @returns {Object} the resourceBooking data
  */
 async function ensureResourceBookingById (resourceBookingId) {
   return models.ResourceBooking.findById(resourceBookingId)
+}
+
+/**
+ * Ensure work period with specific id exists.
+ * @param {String} workPeriodId the workPeriod id
+ * @returns the workPeriod data
+ */
+async function ensureWorkPeriodById (workPeriodId) {
+  return models.WorkPeriod.findById(workPeriodId)
 }
 
 /**
@@ -1147,6 +1179,82 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
 }
 
 /**
+ * Create a new challenge
+ *
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge created
+ */
+async function createChallenge (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges`
+  localLogger.debug({ context: 'createChallenge', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Update a challenge
+ *
+ * @param {String} challengeId id of the challenge
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge updated
+ */
+async function updateChallenge (challengeId, data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges/${challengeId}`
+  localLogger.debug({ context: 'updateChallenge', message: `EndPoint: PATCH ${url}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .patch(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'updateChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Create a challenge resource
+ *
+ * @param {Object} data resource
+ * @param {String} token m2m token
+ * @returns {Object} the resource created
+ */
+async function createChallengeResource (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/resources`
+  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: resource, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallengeResource', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
+  return resource
+}
+
+/**
  * Populates workPeriods from start and end date of resource booking
  * @param {Date} start start date of the resource booking
  * @param {Date} end end date of the resource booking
@@ -1225,6 +1333,7 @@ module.exports = {
   ensureJobById,
   ensureResourceBookingById,
   ensureUserById,
+  ensureWorkPeriodById,
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
@@ -1233,5 +1342,8 @@ module.exports = {
   listProjectMembers,
   listProjectMemberInvites,
   deleteProjectMember,
+  createChallenge,
+  updateChallenge,
+  createChallengeResource,
   extractWorkPeriods
 }

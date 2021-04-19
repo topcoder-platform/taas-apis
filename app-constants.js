@@ -39,11 +39,23 @@ const Scopes = {
   CREATE_WORK_PERIOD: 'create:taas-workPeriods',
   UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
   DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
-  ALL_WORK_PERIOD: 'all:taas-workPeriods'
+  ALL_WORK_PERIOD: 'all:taas-workPeriods',
+  // work period payment
+  READ_WORK_PERIOD_PAYMENT: 'read:taas-workPeriodPayments',
+  CREATE_WORK_PERIOD_PAYMENT: 'create:taas-workPeriodPayments',
+  UPDATE_WORK_PERIOD_PAYMENT: 'update:taas-workPeriodPayments',
+  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments'
+}
+
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
 }
 
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  ChallengeStatus
 }
