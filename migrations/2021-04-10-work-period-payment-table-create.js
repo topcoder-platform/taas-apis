@@ -2,8 +2,8 @@
  * Create work_period_payments table and reference to the "work_periods" table
  */
 
-const config = require('config') 
- 
+const config = require('config')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('work_period_payment', {
@@ -64,8 +64,7 @@ module.exports = {
         type: Sequelize.DATE
       }
     }, {
-      schema: config.DB_SCHEMA_NAME,
-      transaction
+      schema: config.DB_SCHEMA_NAME
     })
   },
   down: async (queryInterface) => {
@@ -75,4 +74,3 @@ module.exports = {
     })
   }
 }
- 
