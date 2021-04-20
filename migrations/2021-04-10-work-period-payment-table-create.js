@@ -6,7 +6,7 @@ const config = require('config')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('work_period_payment', {
+    await queryInterface.createTable('work_period_payments', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
