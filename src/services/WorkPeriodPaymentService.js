@@ -12,8 +12,9 @@ const moment = require('moment')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const constants = require('../../app-constants')
 const models = require('../models')
-const { createPayment } = require('./PaymentService')
+const PaymentService = require('./PaymentService')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
 const esClient = helper.getESClient()
@@ -89,20 +90,21 @@ getWorkPeriodPayment.schema = Joi.object().keys({
  * Create workPeriodPayment
  * @param {Object} currentUser the user who perform this operation
  * @param {Object} workPeriodPayment the workPeriodPayment to be created
+ * @param {Object} options the extra options to control the function
  * @returns {Object} the created workPeriodPayment
  */
-async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
+async function createWorkPeriodPayment (currentUser, workPeriodPayment, options = { paymentProcessingSwitch: 'OFF' }) {
   // check permission
   await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
   const { projectId, userHandle, endDate } = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
-  const paymentChallenge = await createPayment({
+  const paymentChallenge = options.paymentProcessingSwitch === constants.PaymentProcessingSwitch.ON ? (await PaymentService.createPayment({
     projectId,
     userHandle,
     amount: workPeriodPayment.amount,
     name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
     description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`
-  })
+  })) : ({ id: '00000000-0000-0000-0000-000000000000' })
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.challengeId = paymentChallenge.id
   workPeriodPayment.createdBy = await helper.getUserId(currentUser.userId)
@@ -128,7 +130,8 @@ createWorkPeriodPayment.schema = Joi.object().keys({
     workPeriodId: Joi.string().uuid().required(),
     amount: Joi.number().greater(0).allow(null),
     status: Joi.workPeriodPaymentStatus().default('completed')
-  }).required()
+  }).required(),
+  options: Joi.object()
 }).required()
 
 /**
