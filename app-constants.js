@@ -53,9 +53,15 @@ const ChallengeStatus = {
   COMPLETED: 'Completed'
 }
 
+const PaymentProcessingSwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
-  ChallengeStatus
+  ChallengeStatus,
+  PaymentProcessingSwitch
 }

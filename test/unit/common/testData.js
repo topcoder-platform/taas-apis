@@ -496,10 +496,43 @@ resourceBookingUpdate.updateResponse4.toJSON = function () {
 resourceBookingUpdate.response4.update = function () {
   return resourceBookingUpdate.updateResponse4
 }
+
+const workPeriodPayment01 = {
+  request: {
+    workPeriodId: '467b4df7-ced4-41b9-9710-b83808cddaf4',
+    amount: 600,
+    status: 'completed'
+  },
+  response: {
+    workPeriodId: '467b4df7-ced4-41b9-9710-b83808cddaf4',
+    amount: 600,
+    status: 'completed',
+    id: '01971e6f-0f09-4a2a-bc2e-2adac0f00622',
+    challengeId: '00000000-0000-0000-0000-000000000000',
+    createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+    updatedAt: '2021-04-21T12:58:07.535Z',
+    createdAt: '2021-04-21T12:58:07.535Z',
+    updatedBy: null
+  },
+  ensureWorkPeriodByIdResponse: {
+    projectId: 111,
+    userHandle: 'pshah_manager',
+    endDate: '2021-03-13'
+  },
+  createPaymentResponse: {
+    id: 'c65f0cbf-b197-423d-91cc-db6e3bad9075'
+  }
+}
+
+workPeriodPayment01.response.toJSON = function () {
+  return workPeriodPayment01.response
+}
+
 module.exports = {
   currentUser,
   UserTCConnCopilot,
   resourceBooking5Week,
   resourceBooking1Week,
-  resourceBookingUpdate
+  resourceBookingUpdate,
+  workPeriodPayment01
 }

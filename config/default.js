@@ -148,5 +148,6 @@ module.exports = {
   DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
 
   // default time zone for Work Periods
-  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York'
+  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York',
+  PAYMENT_PROCESSING_SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF'
 }

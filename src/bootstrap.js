@@ -2,6 +2,8 @@ const fs = require('fs')
 const Joi = require('joi')
 const path = require('path')
 const logger = require('./common/logger')
+const constants = require('../app-constants')
+const config = require('config')
 
 Joi.page = () => Joi.number().integer().min(1).default(1)
 Joi.perPage = () => Joi.number().integer().min(1).default(20)
@@ -36,3 +38,14 @@ function buildServices (dir) {
 }
 
 buildServices(path.join(__dirname, 'services'))
+
+// validate some configurable parameters for the app
+const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
+  ...Object.values(constants.PaymentProcessingSwitch)
+)
+try {
+  Joi.attempt(config.PAYMENT_PROCESSING_SWITCH, paymentProcessingSwitchSchema)
+} catch (err) {
+  console.error(err.message)
+  process.exit(1)
+}
