@@ -39,11 +39,23 @@ const Scopes = {
   CREATE_WORK_PERIOD: 'create:taas-workPeriods',
   UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
   DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
-  ALL_WORK_PERIOD: 'all:taas-workPeriods'
+  ALL_WORK_PERIOD: 'all:taas-workPeriods',
+  // interview
+  READ_INTERVIEW: 'read:taas-interviews',
+  CREATE_INTERVIEW: 'create:taas-interviews',
+  ALL_INTERVIEW: 'all:taas-interviews'
+}
+
+// Interview related constants
+const Interviews = {
+  Status: {
+    Requested: 'Requested'
+  }
 }
 
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  Interviews
 }

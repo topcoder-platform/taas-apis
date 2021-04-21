@@ -10,4 +10,5 @@ taas.job.delete
 taas.jobcandidate.delete
 taas.resourcebooking.delete
 taas.workperiod.delete
+taas.interview.request
 external.action.email

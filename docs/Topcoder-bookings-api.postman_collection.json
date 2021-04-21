@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "488f8826-1016-4c2a-9d72-244c9ad4d9aa",
+		"_postman_id": "92cd67db-2636-4704-bfa7-39851407cb81",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2808,6 +2808,1405 @@
 							"path": [
 								"jobCandidates",
 								"{{jobCandidateIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Interviews",
+			"item": [
+				{
+					"name": "Before Test",
+					"item": [
+						{
+							"name": "create job",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job candidate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobCandidateId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\",\n  \"externalId\": \"88774631\",\n  \"resume\": \"http://example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Request interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Requested\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview for the same jobCandidateId - should increment round",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        const lastRound = pm.environment.get(\"interviewRound\")\r",
+									"        pm.expect(response.round).to.eq(lastRound + 1)\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"    }\r",
+									"});\r",
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"        pm.expect(response.status).to.eq(\"Requested\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Requested\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview without status - should take default status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"        pm.expect(response.status).to.eq(\"Requested\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with invalid status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"interview.status\\\" must be [Requested]\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"status\": \"xxxx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with round - should not accept",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"interview.round\\\" is not allowed\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"round\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview without xaiTemplate - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" is required\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Requested\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with non-existing jobCandidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"The job candidate with id=9105f597-f9d5-49c0-9cbf-9a0cbda47260 doesn't exist.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/9105f597-f9d5-49c0-9cbf-9a0cbda47260/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"9105f597-f9d5-49c0-9cbf-9a0cbda47260",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with non-existing userId in token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_userId_not_exist}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview without token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"No token provided.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by round",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/{{interviewRound}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"{{interviewRound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview fromDb by round",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/{{interviewRound}}?fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"{{interviewRound}}"
+							],
+							"query": [
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by negative round",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"round\\\" must be a positive number\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/-1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by round=0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"round\\\" must be a positive number\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/0",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by non-existing round",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"Interview doesn't exist with round: 999\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/999",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by round without token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"No token provided.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by round with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "createdAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "Requested",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews by invalid status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"criteria.status\\\" must be [Requested]\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews?status=xxx",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "createdAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "xxx"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews by invalid createdAt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"criteria.createdAt\\\" must be a valid date\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews?createdAt=xxxx",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "createdAt",
+									"value": "xxxx"
+								},
+								{
+									"key": "updatedAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "Requested",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews by invalid updatedAt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"criteria.updatedAt\\\" must be a valid date\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews?updatedAt=xxx",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "createdAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt",
+									"value": "xxx"
+								},
+								{
+									"key": "status",
+									"value": "Requested",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews by invalid sortOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"criteria.sortOrder\\\" must be one of [desc, asc]\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews?sortOrder=xxx",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "xxx"
+								},
+								{
+									"key": "createdAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "Requested",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews by invalid sortBy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"\\\"criteria.sortBy\\\" must be one of [round, createdAt, updatedAt]\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews?sortBy=xxx",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "xxx"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "createdAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "updatedAt",
+									"value": "2021-04-13T20:28:37.954Z",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "Requested",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews without token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"No token provided.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
 							]
 						}
 					},
@@ -11039,6 +12438,232 @@
 							]
 						},
 						{
+							"name": "Interviews",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_by_administrator\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "create job candidate",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_candidate_id_created_by_administrator\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobCandidates",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobCandidates"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✔ request interview with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    if(pm.response.status === \"OK\"){\r",
+													"        const response = pm.response.json()\r",
+													"        pm.environment.set(\"interview_round_created_by_administrator\", response.round);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Requested\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}/requestInterview",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}",
+												"requestInterview"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get interview with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}/interviews/{{interview_round_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}",
+												"interviews",
+												"{{interview_round_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search interviews with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_by_administrator}}/interviews",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_by_administrator}}",
+												"interviews"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "Resource Bookings",
 							"item": [
 								{
@@ -12239,6 +13864,232 @@
 											"path": [
 												"jobCandidates",
 												"{{job_candidate_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Interviews",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_for_member\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "create job candidate",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_candidate_id_created_for_member\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobCandidates",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobCandidates"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✔ request interview with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    if(pm.response.status === \"OK\"){\r",
+													"        const response = pm.response.json()\r",
+													"        pm.environment.set(\"interview_round_created_by_member\", response.round);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Requested\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}/requestInterview",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}",
+												"requestInterview"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get interview with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}/interviews/{{interview_round_created_by_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}",
+												"interviews",
+												"{{interview_round_created_by_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search interviews with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_member}}/interviews",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_member}}",
+												"interviews"
 											]
 										}
 									},
@@ -13554,6 +15405,232 @@
 											"path": [
 												"jobCandidates",
 												"{{job_candidate_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Interviews",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_for_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "create job candidate",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_candidate_id_created_for_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobCandidates",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobCandidates"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✔ request interview with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    if(pm.response.status === \"OK\"){\r",
+													"        const response = pm.response.json()\r",
+													"        pm.environment.set(\"interview_round_created_by_connect_manager\", response.round);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Requested\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}/requestInterview",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}",
+												"requestInterview"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get interview with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}/interviews/{{interview_round_created_by_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}",
+												"interviews",
+												"{{interview_round_created_by_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search interviews with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/jobCandidates/{{job_candidate_id_created_for_connect_manager}}/interviews",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"jobCandidates",
+												"{{job_candidate_id_created_for_connect_manager}}",
+												"interviews"
 											]
 										}
 									},

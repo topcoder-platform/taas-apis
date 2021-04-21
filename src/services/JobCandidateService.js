@@ -61,7 +61,9 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
     }
   }
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
-  const jobCandidate = await JobCandidate.findById(id)
+  // include interviews
+  const include = [{ model: models.Interview, as: 'interviews' }]
+  const jobCandidate = await JobCandidate.findById(id, include)
 
   await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.jobId) // check user permission
 
@@ -271,8 +273,13 @@ async function searchJobCandidates (currentUser, criteria) {
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+
+  // include interviews
+  const include = [{ model: models.Interview, as: 'interviews' }]
+
   const jobCandidates = await JobCandidate.findAll({
     where: filter,
+    include,
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
