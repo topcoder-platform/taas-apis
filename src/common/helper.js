@@ -18,6 +18,7 @@ const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
+const moment = require('moment-timezone')
 
 const localLogger = {
   debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message }),
@@ -132,6 +133,20 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
   paymentStatus: { type: 'keyword' },
+  payments: {
+    type: 'nested',
+    properties: {
+      id: { type: 'keyword' },
+      workPeriodId: { type: 'keyword' },
+      challengeId: { type: 'keyword' },
+      amount: { type: 'float' },
+      status: { type: 'keyword' },
+      createdAt: { type: 'date' },
+      createdBy: { type: 'keyword' },
+      updatedAt: { type: 'date' },
+      updatedBy: { type: 'keyword' }
+    }
+  },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -256,7 +271,7 @@ function getBulksFromDocuments (data) {
 */
 async function indexBulkDataToES (modelOpts, indexName, logger) {
   const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
+  let include = _.get(modelOpts, 'include', [])
 
   logger.info({ component: 'indexBulkDataToES', message: `Reindexing of ${modelName}s started!` })
 
@@ -272,6 +287,13 @@ async function indexBulkDataToES (modelOpts, indexName, logger) {
   // get data from db
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
+  if (modelName === 'WorkPeriod') {
+    include = [{
+      model: models.WorkPeriodPayment,
+      as: 'payments',
+      required: false
+    }]
+  }
   const data = await model.findAll({ include })
   const rawObjects = _.map(data, r => r.toJSON())
   if (_.isEmpty(rawObjects)) {
@@ -317,7 +339,7 @@ async function indexDataToEsById (id, modelOpts, indexName, logger) {
   logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
   const model = models[modelName]
 
-  const data = await model.findById(id, include)
+  const data = _.has(modelOpts, include) ? (await model.findById(id, include)) : (await model.findById(id, modelName === 'WorkPeriod'))
   logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
   await esClient.index({
     index: indexName,
@@ -405,6 +427,7 @@ async function importData (pathToFile, dataModels, logger) {
   await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
   await indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
   await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+  await indexBulkDataToES('WorkPeriod', config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
 }
 
 /**
@@ -972,11 +995,20 @@ async function ensureJobById (jobId) {
 /**
  * Ensure resource booking with specific id exists.
  *
- * @param {String} resourceBookingId the job id
- * @returns {Object} the job data
+ * @param {String} resourceBookingId the resourceBooking id
+ * @returns {Object} the resourceBooking data
  */
 async function ensureResourceBookingById (resourceBookingId) {
   return models.ResourceBooking.findById(resourceBookingId)
+}
+
+/**
+ * Ensure work period with specific id exists.
+ * @param {String} workPeriodId the workPeriod id
+ * @returns the workPeriod data
+ */
+async function ensureWorkPeriodById (workPeriodId) {
+  return models.WorkPeriod.findById(workPeriodId)
 }
 
 /**
@@ -1193,6 +1225,126 @@ function getUserAttributeValue (user, attributeName) {
   return _.get(targetAttribute, 'value')
 }
 
+/**
+ * Create a new challenge
+ *
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge created
+ */
+async function createChallenge (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges`
+  localLogger.debug({ context: 'createChallenge', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Update a challenge
+ *
+ * @param {String} challengeId id of the challenge
+ * @param {Object} data challenge data
+ * @param {String} token m2m token
+ * @returns {Object} the challenge updated
+ */
+async function updateChallenge (challengeId, data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/challenges/${challengeId}`
+  localLogger.debug({ context: 'updateChallenge', message: `EndPoint: PATCH ${url}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: challenge, status: httpStatus } = await request
+    .patch(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'updateChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'updateChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
+ * Create a challenge resource
+ *
+ * @param {Object} data resource
+ * @param {String} token m2m token
+ * @returns {Object} the resource created
+ */
+async function createChallengeResource (data, token) {
+  if (!token) {
+    token = await getM2MToken()
+  }
+  const url = `${config.TC_API}/resources`
+  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Request Body: ${JSON.stringify(data)}` })
+  const { body: resource, status: httpStatus } = await request
+    .post(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data)
+  localLogger.debug({ context: 'createChallengeResource', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'createChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
+  return resource
+}
+
+/**
+ * Populates workPeriods from start and end date of resource booking
+ * @param {Date} start start date of the resource booking
+ * @param {Date} end end date of the resource booking
+ * @returns {Array} information about workPeriods
+ */
+function extractWorkPeriods (start, end) {
+  // canculate daysWorked for a week
+  function getDaysWorked (week) {
+    if (weeks === 1) {
+      return Math.min(endDay, 5) - Math.max(startDay, 1) + 1
+    } else if (week === 0) {
+      return Math.min(6 - startDay, 5)
+    } else if (week === (weeks - 1)) {
+      return Math.min(endDay, 5)
+    } else return 5
+  }
+  const periods = []
+  if (_.isNil(start) || _.isNil(end)) {
+    return periods
+  }
+  const startDate = moment(start)
+  startDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
+  const startDay = startDate.get('day')
+  startDate.set('day', 0).startOf('day')
+
+  const endDate = moment(end)
+  endDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
+  const endDay = endDate.get('day')
+  endDate.set('day', 6).endOf('day')
+
+  const weeks = Math.round(moment.duration(endDate - startDate).asDays()) / 7
+
+  for (let i = 0; i < weeks; i++) {
+    periods.push({
+      startDate: startDate.format('YYYY-MM-DD'),
+      endDate: startDate.add(6, 'day').format('YYYY-MM-DD'),
+      daysWorked: getDaysWorked(i)
+    })
+    startDate.add(1, 'day')
+  }
+  return periods
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1228,6 +1380,7 @@ module.exports = {
   ensureJobById,
   ensureResourceBookingById,
   ensureUserById,
+  ensureWorkPeriodById,
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
@@ -1236,5 +1389,9 @@ module.exports = {
   listProjectMembers,
   listProjectMemberInvites,
   deleteProjectMember,
-  getUserAttributeValue
+  getUserAttributeValue,
+  createChallenge,
+  updateChallenge,
+  createChallengeResource,
+  extractWorkPeriods
 }

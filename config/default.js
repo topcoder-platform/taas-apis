@@ -113,7 +113,7 @@ module.exports = {
   // the delete resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
   // topics for work period service
-  // the create rwork period entity Kafka message topic
+  // the create work period entity Kafka message topic
   TAAS_WORK_PERIOD_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_CREATE_TOPIC || 'taas.workperiod.create',
   // the update work period entity Kafka message topic
   TAAS_WORK_PERIOD_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_UPDATE_TOPIC || 'taas.workperiod.update',
@@ -124,6 +124,13 @@ module.exports = {
   TAAS_INTERVIEW_REQUEST_TOPIC: process.env.TAAS_INTERVIEW_REQUEST_TOPIC || 'taas.interview.requested',
   // the update interview Kafka message topic
   TAAS_INTERVIEW_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_UPDATE_TOPIC || 'taas.interview.update',
+  // topics for work period payment service
+  // the create work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC || 'taas.workperiodpayment.create',
+  // the update work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC || 'taas.workperiodpayment.update',
+  // the delete work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC || 'taas.workperiodpayment.delete',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
@@ -153,5 +160,13 @@ module.exports = {
   // The interview schedule cron config
   INTERVIEW_SCHEDULE_CRON: process.env.INTERVIEW_SCHEDULE_CRON || '0 * * * *',
   // The max interview duration, unit hour
-  INTERVIEW_MAX_DURATION: parseInt(process.env.INTERVIEW_MAX_DURATION || 1)
+  INTERVIEW_MAX_DURATION: parseInt(process.env.INTERVIEW_MAX_DURATION || 1),
+  // environment variables for Payment Service
+  ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
+  TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
+  DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
+  DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
+
+  // default time zone for Work Periods
+  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York'
 }
