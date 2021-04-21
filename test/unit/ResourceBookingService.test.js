@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-expressions */
-process.env.NODE_ENV = 'test'
-require('../../src/bootstrap')
 
 // const _ = require('lodash')
 const expect = require('chai').expect
@@ -10,12 +8,10 @@ const service = require('../../src/services/ResourceBookingService')
 const workPeriodService = require('../../src/services/WorkPeriodService')
 const testData = require('./common/testData')
 const helper = require('../../src/common/helper')
-const eventHandlers = require('../../src/eventHandlers')
 // const esClient = helper.getESClient()
 const busApiClient = helper.getBusApiClient()
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
-eventHandlers.init()
 describe('resourceBooking service test', () => {
   let stubEnsureJobById
   let stubEnsureUserById

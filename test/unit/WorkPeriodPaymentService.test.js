@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-expressions */
-process.env.NODE_ENV = 'test'
-require('../../src/bootstrap')
 
 // const _ = require('lodash')
 const expect = require('chai').expect
@@ -10,10 +8,8 @@ const service = require('../../src/services/WorkPeriodPaymentService')
 const paymentService = require('../../src/services/PaymentService')
 const testData = require('./common/testData')
 const helper = require('../../src/common/helper')
-const eventHandlers = require('../../src/eventHandlers')
 // const esClient = helper.getESClient()
 const busApiClient = helper.getBusApiClient()
-eventHandlers.init()
 describe('workPeriod service test', () => {
   beforeEach(() => {
     sinon.stub(busApiClient, 'postEvent').callsFake(async () => {})
