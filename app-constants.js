@@ -39,11 +39,29 @@ const Scopes = {
   CREATE_WORK_PERIOD: 'create:taas-workPeriods',
   UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
   DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
-  ALL_WORK_PERIOD: 'all:taas-workPeriods'
+  ALL_WORK_PERIOD: 'all:taas-workPeriods',
+  // interview
+  READ_INTERVIEW: 'read:taas-interviews',
+  CREATE_INTERVIEW: 'create:taas-interviews',
+  UPDATE_INTERVIEW: 'update:taas-interviews',
+  ALL_INTERVIEW: 'all:taas-interviews'
+}
+
+// Interview related constants
+const Interviews = {
+  Status: {
+    Scheduling: 'Scheduling',
+    Scheduled: 'Scheduled',
+    RequestedForReschedule: 'Requested for reschedule',
+    Rescheduled: 'Rescheduled',
+    Completed: 'Completed',
+    Cancelled: 'Cancelled'
+  }
 }
 
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  Interviews
 }
