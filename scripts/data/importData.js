@@ -16,7 +16,7 @@ const jobCandidateModelOpts = {
 
 const filePath = helper.getParamFromCliArgs() || config.DEFAULT_DATA_FILE_PATH
 const userPrompt = `WARNING: this would remove existing data. Are you sure you want to import data from a json file with the path ${filePath}?`
-const dataModels = ['Job', jobCandidateModelOpts, 'ResourceBooking', 'WorkPeriod']
+const dataModels = ['Job', jobCandidateModelOpts, 'ResourceBooking', 'WorkPeriod', 'WorkPeriodPayment']
 
 async function importData () {
   await helper.promptUser(userPrompt, async () => {

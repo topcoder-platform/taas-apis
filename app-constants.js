@@ -56,12 +56,24 @@ const Interviews = {
     Rescheduled: 'Rescheduled',
     Completed: 'Completed',
     Cancelled: 'Cancelled'
-  }
+  },
+  // work period payment
+  READ_WORK_PERIOD_PAYMENT: 'read:taas-workPeriodPayments',
+  CREATE_WORK_PERIOD_PAYMENT: 'create:taas-workPeriodPayments',
+  UPDATE_WORK_PERIOD_PAYMENT: 'update:taas-workPeriodPayments',
+  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments'
+}
+
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
 }
 
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
-  Interviews
+  Interviews,
+  ChallengeStatus
 }
