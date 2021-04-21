@@ -36,6 +36,17 @@ function handleSequelizeError (err, jobCandidateId) {
 }
 
 /**
+ * Check Only Booking Manager, Admin, and M2M (Regular member) should be able to view or update.
+ * @param {Object} currentUser the current user
+ */
+function checkPermission (currentUser) {
+  // check user permission
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+}
+
+/**
  * Get interview by round
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} jobCandidateId the job candidate id
@@ -44,6 +55,8 @@ function handleSequelizeError (err, jobCandidateId) {
  * @returns {Object} the interview
  */
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
+  checkPermission(currentUser)
+
   if (!fromDb) {
     try {
       // get job candidate from ES
@@ -92,6 +105,8 @@ getInterviewByRound.schema = Joi.object().keys({
  * @returns {Object} the created/requested interview
  */
 async function requestInterview (currentUser, jobCandidateId, interview) {
+  checkPermission(currentUser)
+
   interview.id = uuid()
   interview.jobCandidateId = jobCandidateId
   interview.createdBy = await helper.getUserId(currentUser.userId)
@@ -121,65 +136,34 @@ requestInterview.schema = Joi.object().keys({
   interview: Joi.object().keys({
     googleCalendarId: Joi.string(),
     customMessage: Joi.string(),
-    xaiTemplate: Joi.string().required(),
-    status: Joi.interviewStatus().default(InterviewConstants.Status.Requested)
+    xaiTemplate: Joi.string().valid(...config.INTERVIEW_INVITATION_XAI_TEMPLATE_ID).required(),
+    status: Joi.interviewStatus().default(InterviewConstants.Status.Scheduling),
+    attendeesList: Joi.array().items(Joi.string().email()),
+    startTimestamp: Joi.date().iso().greater('now')
   }).required()
 }).required()
 
 /**
  * List interviews
- * @param {Object} currentUser the user who perform this operation.
  * @param {String} jobCandidateId the job candidate id
  * @param {Object} criteria the search criteria
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchInterviews (currentUser, jobCandidateId, criteria) {
+  checkPermission(currentUser)
+
   const { page, perPage } = criteria
   try {
-    // construct query for nested search
-    const esQueryBody = {
-      _source: false,
-      query: {
-        nested: {
-          path: 'interviews',
-          query: {
-            bool: {
-              must: []
-            }
-          },
-          inner_hits: {
-            size: 100 // max. inner_hits size
-          }
-        }
-      }
-    }
-    // add filtering terms
-    _.each(_.pick(criteria, ['status', 'createdAt', 'updatedAt']), (value, key) => {
-      const innerKey = `interviews.${key}`
-      esQueryBody.query.nested.query.bool.must.push({
-        term: {
-          [innerKey]: {
-            value
-          }
-        }
-      })
-    })
     // search
-    const { body } = await esClient.search({
+    // get job candidate from ES
+    const jobCandidateES = await esClient.get({
       index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-      body: esQueryBody
+      id: jobCandidateId
     })
-    // get jobCandidate hit from body - there's always one jobCandidate hit as we search via jobCandidateId
-    // extract inner interview hits from jobCandidate
-    const interviewHits = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits', [])
-    const interviews = _.map(interviewHits, '_source')
-
-    // we need to sort & paginate payments manually
-    // as it's not possible with ES query on nested type
-    // (ES applies pagination & sorting on parent documents, not on the nested objects)
-
-    // sort
-    const sortedInterviews = _.orderBy(interviews, criteria.sortBy, criteria.sortOrder)
+    // extract interviews from ES object
+    const jobCandidateInterviews = _.get(jobCandidateES, 'body._source.interviews', [])
+    // filter and sort
+    const sortedInterviews = _.orderBy(_.filter(jobCandidateInterviews, interview => _.every(_.pick(criteria, ['status', 'createdAt', 'updatedAt']), (v, k) => interview[k] === v)), criteria.sortBy, criteria.sortOrder)
     // paginate
     const start = (page - 1) * perPage
     const end = start + perPage
@@ -231,8 +215,47 @@ searchInterviews.schema = Joi.object().keys({
   }).required()
 }).required()
 
+/**
+ * Update interview by round
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} jobCandidateId the job candidate id
+ * @param {Number} round the interview round
+ * @param {Object} data the data to updated
+ * @returns {Object} the created/requested interview
+ */
+async function updateInterviewByRound (currentUser, jobCandidateId, round, data) {
+  checkPermission(currentUser)
+
+  const interview = await Interview.findOne({
+    where: { jobCandidateId, round }
+  })
+  if (!interview) {
+    throw new errors.NotFoundError(`jobCandidateId: ${jobCandidateId}, round: ${round} "Interview" doesn't exist.`)
+  }
+  const oldValue = interview.toJSON()
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+  const updated = await interview.update(data)
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  return updated.dataValues
+}
+
+updateInterviewByRound.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  jobCandidateId: Joi.string().uuid().required(),
+  round: Joi.number().integer().positive().required(),
+  data: Joi.object().keys({
+    googleCalendarId: Joi.string(),
+    customMessage: Joi.string(),
+    xaiTemplate: Joi.string().valid(...config.INTERVIEW_INVITATION_XAI_TEMPLATE_ID),
+    status: Joi.interviewStatus(),
+    attendeesList: Joi.array().items(Joi.string().email()),
+    startTimestamp: Joi.date().iso().greater('now')
+  }).required()
+}).required()
+
 module.exports = {
   getInterviewByRound,
   requestInterview,
-  searchInterviews
+  searchInterviews,
+  updateInterviewByRound
 }

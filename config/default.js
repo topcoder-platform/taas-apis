@@ -121,7 +121,9 @@ module.exports = {
   TAAS_WORK_PERIOD_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_DELETE_TOPIC || 'taas.workperiod.delete',
   // topics for interview service
   // the request interview Kafka message topic
-  TAAS_INTERVIEW_REQUEST_TOPIC: process.env.TAAS_INTERVIEW_REQUEST_TOPIC || 'taas.interview.request',
+  TAAS_INTERVIEW_REQUEST_TOPIC: process.env.TAAS_INTERVIEW_REQUEST_TOPIC || 'taas.interview.requested',
+  // the update interview Kafka message topic
+  TAAS_INTERVIEW_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_UPDATE_TOPIC || 'taas.interview.update',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
@@ -141,8 +143,15 @@ module.exports = {
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for interview invitation
   INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
+  // X AI template id for interview invitation
+  // INTERVIEW_INVITATION_XAI_TEMPLATE_ID may contain comma-separated list of template id which is converted to array
+  INTERVIEW_INVITATION_XAI_TEMPLATE_ID: (process.env.INTERVIEW_INVITATION_XAI_TEMPLATE_ID || '30-min-interview,60-min-interview').split(','),
   // The sender (aka `from`) email for invitation.
   INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL,
   // the URL where TaaS App is hosted
-  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
+  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // The interview schedule cron config
+  INTERVIEW_SCHEDULE_CRON: process.env.INTERVIEW_SCHEDULE_CRON || '0 * * * *',
+  // The max interview duration, unit hour
+  INTERVIEW_MAX_DURATION: parseInt(process.env.INTERVIEW_MAX_DURATION || 1)
 }

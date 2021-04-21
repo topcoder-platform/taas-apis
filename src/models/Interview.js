@@ -68,6 +68,14 @@ module.exports = (sequelize) => {
         type: Sequelize.ENUM(statuses),
         allowNull: false
       },
+      startTimestamp: {
+        field: 'start_timestamp',
+        type: Sequelize.DATE
+      },
+      attendeesList: {
+        field: 'attendees_list',
+        type: Sequelize.ARRAY(Sequelize.STRING)
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

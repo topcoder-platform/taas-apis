@@ -1,7 +1,8 @@
 /*
  * Handle events for Interview.
  */
-
+const config = require('config')
+const _ = require('lodash')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -27,6 +28,7 @@ async function sendInvitationEmail (payload) {
     teamService.sendEmail({}, {
       template: 'interview-invitation',
       recipients: [jobCandidateUserEmail, customerUserEmail],
+      cc: _.union(config.INTERVIEW_INVITATION_CC_LIST, interview.attendeesList),
       data: {
         interviewType: interview.xaiTemplate,
         jobName: job.title,

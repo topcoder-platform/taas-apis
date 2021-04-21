@@ -34,8 +34,19 @@ async function searchInterviews (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Update interview by round
+ * @param req the request
+ * @param res the response
+ */
+async function updateInterviewByRound (req, res) {
+  const { jobCandidateId, round } = req.params
+  res.send(await service.updateInterviewByRound(req.authUser, jobCandidateId, round, req.body))
+}
+
 module.exports = {
   getInterviewByRound,
   requestInterview,
-  searchInterviews
+  searchInterviews,
+  updateInterviewByRound
 }

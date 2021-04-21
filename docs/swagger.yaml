@@ -959,6 +959,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /jobCandidates/{jobCandidateId}/updateInterview/{round}:
+    patch:
+      tags:
+        - Interviews
+      description: |
+        Update an interview.
+
+        **Authorization** Topcoder token with update interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobCandidateId
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: round
+          description: The interview round.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInterviewBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /jobCandidates/{jobCandidateId}/interviews:
     get:
       tags:
@@ -1025,7 +1091,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["Requested"]
+            enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
           description: The interview status.
       responses:
         "200":
@@ -3032,9 +3098,19 @@ components:
           type: integer
           example: 1
           description: "The interview round."
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "The interview start timestamp."
+        attendeesList:
+          type: array
+          description: "The interview attendees list."
+          items:
+            type: string
+            format: email
         status:
           type: string
-          enum: ["Requested"]
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
           description: "The interview status."
         createdAt:
           type: string
@@ -3068,10 +3144,48 @@ components:
           type: string
           example: "30-min-interview"
           description: "The x.ai template name"
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "The interview start timestamp."
+        attendeesList:
+          type: array
+          description: "The interview attendees list."
+          items:
+            type: string
+            format: email
         status:
           type: string
-          enum: ["Requested"]
-          default: "Requested"
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          default: "Scheduling"
+          description: "The interview status."
+    UpdateInterviewBody:
+      properties:
+        googleCalendarId:
+          type: string
+          example: "dummyId"
+          description: "The google calendar id."
+        customMessage:
+          type: string
+          example: "This is a custom message"
+          description: "The custom message."
+        xaiTemplate:
+          type: string
+          example: "30-min-interview"
+          description: "The x.ai template name"
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "The interview start timestamp."
+        attendeesList:
+          type: array
+          description: "The interview attendees list."
+          items:
+            type: string
+            format: email
+        status:
+          type: string
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
           description: "The interview status."
     JobPatchRequestBody:
       properties:

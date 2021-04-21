@@ -284,3 +284,48 @@ When we add, update or delete models and/or endpoints we have to make sure that 
 - **DB Migration**
   - If there are any updates in DB schemas, create a DB migration script inside `migrations` folder which would make any necessary updates to the DB schema.
   - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
+
+## Permission rules
+
+ | **Endpoint**  | **Topcoder User** | **Booking Manager** | **Connect Manager** |
+ | ---- | ---- | ---- | ---- |
+ | `GET /taas-teams` | ☑️ `Only when member of the project` | ✅ All | ✅ All
+ | `GET /taas-teams/:teamId` | ☑️ `Only when member of the project` | ✅ | ✅
+ | `GET /taas-teams/:teamId/jobs/:jobId` | ☑️ `Only when member of the project` | ✅ | ✅
+ | **Jobs** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `GET /jobs` | ☑️❗ | `Only if filter by "projectId" and is member of that project` | ✅ | ✅
+ | `GET /jobs/:id` | ☑️ `Only when member of the project` | ✅ | ✅
+ | `POST /jobs/` | ☑️ `Only when member of the project` | ✅ | ❌
+ | `PUT/PATCH /jobs/:id` | ☑️ `Only when member of the project` AND `if they created particular job` | ✅ | ❌
+ | `DELETE /jobs/:id` | ❌ | ✅ | ❌
+ | **JobsCandidates** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `GET /jobsCandidates` | ☑️❗ `Only if filter by "jobId" and member of the project of that Job` | ✅ | ✅
+ | `GET /jobsCandidates/:id` | ☑️ `Only when member of the project` | ✅ | ✅
+ | `POST /jobs/` | ❌ | ✅ | ❌
+ | `PUT/PATCH /jobs/:jobId` | ☑️ `Only when member of the project` | ✅ | ❌
+ | `DELETE /jobs/:jobId` | ❌ | ✅ | ❌
+ | **Interviews** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `PATCH /jobCandidates/:jobCandidateId/requestInterview` | ❌ | ✅ | ❌
+ | `GET /jobCandidates/:jobCandidateId/interviews` | ❌ | ✅ | ❌
+ | `GET /jobCandidates/:jobCandidateId/interviews/:round` | ❌ | ✅ | ❌
+ | `PATCH /jobCandidates/:jobCandidateId/updateInterview/:round` | ❌ | ✅ | ❌
+ | **ResourceBookings** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `GET /resourceBookings` | ☑️❗ `Only if filter by "projectId" and member of that project` | ✅ | ✅
+ | `GET /resourceBookings/:id` | ☑️ `Only when member of the project` | ✅ | ✅
+ | `POST /jobs/` | ❌ | ✅ | ❌
+ | `PUT/PATCH /resourceBookings/:id` | ❌ | ✅ | ❌
+ | `DELETE /resourceBookings/:id` | ❌ | ✅ | ❌
+ | **WorkPeriods** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `GET /workPeriods` | ☑️❗ `Only if filter by "projectId" and member of that project` | ✅ | ✅
+ | `GET /workPeriods/:id` | ☑️ `Only when member of the project` | ✅ | ✅
+ | `POST /workPeriods/` | ❌ | ✅ | ❌
+ | `PUT/PATCH /workPeriods/:id` | ❌ | ✅ | ❌
+ | `DELETE /workPeriods/:id` | ❌ | ✅ | ❌
+ | **WorkPeriodPayments** | _Topcoder User_ | _Booking Manager_ | _Connect Manager_
+ | `GET /workPeriods` | ❌ | ✅ | ❌
+ | `GET /workPeriods/:id` | ❌ | ✅ | ❌
+ | `POST /workPeriods/` | ❌ | ✅ | ❌
+ | `PUT/PATCH /workPeriods/:id` | ❌ | ✅ | ❌
+ | `DELETE /workPeriods/:id` | not supported | not supported | not supported
+ #### NOTES
+ * `administrator` users should have all the permissions like Booking Manager users.

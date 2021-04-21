@@ -43,13 +43,19 @@ const Scopes = {
   // interview
   READ_INTERVIEW: 'read:taas-interviews',
   CREATE_INTERVIEW: 'create:taas-interviews',
+  UPDATE_INTERVIEW: 'update:taas-interviews',
   ALL_INTERVIEW: 'all:taas-interviews'
 }
 
 // Interview related constants
 const Interviews = {
   Status: {
-    Requested: 'Requested'
+    Scheduling: 'Scheduling',
+    Scheduled: 'Scheduled',
+    RequestedForReschedule: 'Requested for reschedule',
+    Rescheduled: 'Rescheduled',
+    Completed: 'Completed',
+    Cancelled: 'Cancelled'
   }
 }
 

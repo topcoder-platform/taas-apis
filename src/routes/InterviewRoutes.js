@@ -27,5 +27,13 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.READ_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
     }
+  },
+  '/jobCandidates/:jobCandidateId/updateInterview/:round': {
+    patch: {
+      controller: 'InterviewController',
+      method: 'updateInterviewByRound',
+      auth: 'jwt',
+      scopes: [constants.Scopes.UPDATE_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
+    }
   }
 }
