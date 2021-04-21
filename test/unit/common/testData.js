@@ -12,8 +12,8 @@ const resourceBooking5Week = {
     projectId: 21,
     userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
     jobId: '36762910-4efa-4db4-9b2a-c9ab54c232ed',
-    startDate: '2020-09-27T04:17:23.131Z',
-    endDate: '2020-10-27T04:17:23.131Z',
+    startDate: '2020-09-27',
+    endDate: '2020-10-27',
     memberRate: 13.23,
     customerRate: 13,
     rateType: 'hourly'
@@ -24,8 +24,8 @@ const resourceBooking5Week = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-09-27T04:17:23.131Z',
-      endDate: '2020-10-27T04:17:23.131Z',
+      startDate: '2020-09-27',
+      endDate: '2020-10-27',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -78,8 +78,8 @@ const resourceBooking1Week = {
     projectId: 21,
     userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
     jobId: '36762910-4efa-4db4-9b2a-c9ab54c232ed',
-    startDate: '2020-11-20T04:17:23.131Z',
-    endDate: '2020-11-21T04:17:23.131Z',
+    startDate: '2020-11-20',
+    endDate: '2020-11-21',
     memberRate: 13.23,
     customerRate: 13,
     rateType: 'hourly'
@@ -90,8 +90,8 @@ const resourceBooking1Week = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-11-20T04:17:23.131Z',
-      endDate: '2020-11-21T04:17:23.131Z',
+      startDate: '2020-11-20',
+      endDate: '2020-11-21',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -104,7 +104,7 @@ const resourceBooking1Week = {
     resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
     startDate: '2020-11-15',
     endDate: '2020-11-21',
-    daysWorked: 2,
+    daysWorked: 1,
     paymentStatus: 'pending'
   }],
   workPeriodResponse: [{
@@ -124,7 +124,7 @@ const resourceBooking1Week = {
     updatedAt: '2021-04-10T22:25:08.289Z'
   }],
   updateRequest: {
-    startDate: '2020-11-18T04:17:23.131Z'
+    startDate: '2020-11-18'
   },
   updateResponse: {
     dataValues: {
@@ -132,8 +132,8 @@ const resourceBooking1Week = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: new Date('2020-11-18T04:17:23.131Z'),
-      endDate: '2020-11-21T04:17:23.131Z',
+      startDate: '2020-11-18',
+      endDate: '2020-11-21',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -144,7 +144,7 @@ const resourceBooking1Week = {
     }
   },
   workPeriodUpdateRequests: [{
-    daysWorked: 4
+    daysWorked: 3
   }]
 }
 resourceBooking1Week.response.toJSON = function () {
@@ -163,8 +163,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: '2020-09-10T04:17:23.131Z',
+      startDate: '2020-08-20',
+      endDate: '2020-09-10',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -235,7 +235,7 @@ const resourceBookingUpdate = {
     updatedAt: '2021-04-10T22:25:08.289Z'
   }],
   updateRequest: {
-    endDate: '2020-09-12T04:17:23.131Z'
+    endDate: '2020-09-12'
   },
   updateResponse: {
     dataValues: {
@@ -243,8 +243,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: new Date('2020-09-12T04:17:23.131Z'),
+      startDate: '2020-08-20',
+      endDate: '2020-09-12',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -263,8 +263,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: '2020-09-10T04:17:23.131Z',
+      startDate: '2020-08-20',
+      endDate: '2020-09-10',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -274,7 +274,7 @@ const resourceBookingUpdate = {
     }
   },
   updateRequest2: {
-    endDate: '2020-09-15T04:17:23.131Z'
+    endDate: '2020-09-15'
   },
   updateResponse2: {
     dataValues: {
@@ -282,8 +282,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: new Date('2020-09-15T04:17:23.131Z'),
+      startDate: '2020-08-20',
+      endDate: '2020-09-15',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -308,8 +308,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: '2020-09-10T04:17:23.131Z',
+      startDate: '2020-08-20',
+      endDate: '2020-09-10',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -319,7 +319,7 @@ const resourceBookingUpdate = {
     }
   },
   updateRequest3: {
-    startDate: '2020-08-25T04:17:23.131Z'
+    startDate: '2020-08-25'
   },
   updateResponse3: {
     dataValues: {
@@ -327,8 +327,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: new Date('2020-08-25T04:17:23.131Z'),
-      endDate: '2020-09-10T04:17:23.131Z',
+      startDate: '2020-08-25',
+      endDate: '2020-09-10',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -354,8 +354,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: '2020-08-20T04:17:23.131Z',
-      endDate: '2020-09-10T04:17:23.131Z',
+      startDate: '2020-08-20',
+      endDate: '2020-09-10',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -426,8 +426,8 @@ const resourceBookingUpdate = {
     updatedAt: '2021-04-10T22:25:08.289Z'
   }],
   updateRequest4: {
-    startDate: '2020-08-25T04:17:23.131Z',
-    endDate: '2020-09-05T04:17:23.131Z'
+    startDate: '2020-08-25',
+    endDate: '2020-09-05'
   },
   updateResponse4: {
     dataValues: {
@@ -435,8 +435,8 @@ const resourceBookingUpdate = {
       projectId: 21,
       userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
       jobId: '6093e58c-683d-4022-8482-5515e8345016',
-      startDate: new Date('2020-08-25T04:17:23.131Z'),
-      endDate: new Date('2020-09-05T04:17:23.131Z'),
+      startDate: '2020-08-25',
+      endDate: '2020-09-05',
       memberRate: 13.23,
       customerRate: 13,
       rateType: 'hourly',
@@ -450,8 +450,8 @@ const resourceBookingUpdate = {
     daysWorked: 4
   }, '10faf505-d0e3-4d13-a817-7f1319625e91', '3907e916-efdc-49d3-b0ef-970ccf7d78b0'],
   updateRequest5: {
-    startDate: '2020-08-24T04:17:23.131Z',
-    endDate: '2020-08-29T04:17:23.131Z'
+    startDate: '2020-08-24',
+    endDate: '2020-08-29'
   },
   updateRequest6: {
     status: 'cancelled'
