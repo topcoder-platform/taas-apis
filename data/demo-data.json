@@ -133,6 +133,31 @@
       "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "createdAt": "2021-01-28T19:41:35.098Z",
       "updatedAt": "2021-01-28T19:41:42.124Z"
+    },
+    {
+      "id": "1324da27-9d7d-47d8-a04e-9fb3f35a67fa",
+      "projectId": 111,
+      "externalId": "88774632",
+      "description": "Dummy Description",
+      "title": "Dummy title - at most 64 characters",
+      "startDate": "2020-09-27T04:17:23.131Z",
+      "duration": 1,
+      "numPositions": 13,
+      "resourceType": "Dummy Resource Type",
+      "rateType": "hourly",
+      "workload": "full-time",
+      "skills": [
+        "23e00d92-207a-4b5b-b3c9-4c5662644941",
+        "7d076384-ccf6-4e43-a45d-1b24b1e624aa",
+        "cbac57a3-7180-4316-8769-73af64893158",
+        "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+      ],
+      "status": "in-review",
+      "isApplicationPageActive": false,
+      "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+      "updatedBy": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2021-04-14T08:46:17.739Z",
+      "updatedAt": "2021-04-14T08:46:23.311Z"
     }
   ],
   "JobCandidate": [
@@ -146,7 +171,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:05.723Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "7ff45b8f-2b71-4510-b760-8dfa62e79504",
@@ -158,7 +184,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:11.598Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "91d63d5f-01d5-419e-89df-6117ea92f535",
@@ -170,7 +197,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:18.066Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "257f98d9-45f7-4e13-a6c2-d7e7b6efc9fe",
@@ -182,7 +210,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:24.095Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "a01852d0-fa08-410c-b97b-67580ce62215",
@@ -194,7 +223,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:29.734Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "2fd7ca69-c8ec-4bf3-a7f3-655fbfe3e7df",
@@ -206,7 +236,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:44.728Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "f0023058-2996-4bba-8c5f-d09a7023be38",
@@ -218,7 +249,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:50.619Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "a189b34d-acde-4633-b18b-f7a34d7c5a74",
@@ -230,7 +262,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:37:56.456Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "5191a860-4327-4c50-b76b-84beba04519b",
@@ -242,7 +275,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "createdAt": "2021-01-28T19:36:51.222Z",
-      "updatedAt": "2021-01-28T19:38:02.293Z"
+      "updatedAt": "2021-01-28T19:38:02.293Z",
+      "interviews": []
     },
     {
       "id": "e6d9635c-b122-4f69-9285-09fb1ab30106",
@@ -254,7 +288,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "createdAt": "2021-01-28T19:36:58.774Z",
-      "updatedAt": "2021-01-28T19:38:13.553Z"
+      "updatedAt": "2021-01-28T19:38:13.553Z",
+      "interviews": []
     },
     {
       "id": "f67b155e-0f09-4fdd-89a7-d79c5e46cac6",
@@ -266,7 +301,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:38:38.332Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "8ffd33d3-4a43-4719-aee4-8e46be1d8f1c",
@@ -278,7 +314,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:38:43.967Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "2b8ba549-8878-43d6-ad5f-6a66e3b9d6c9",
@@ -290,7 +327,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:38:50.106Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "ae5a81ec-5d05-43c4-8253-847d91a54711",
@@ -302,7 +340,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": null,
       "createdAt": "2021-01-28T19:38:55.734Z",
-      "updatedAt": "2021-03-30T19:11:05.043Z"
+      "updatedAt": "2021-03-30T19:11:05.043Z",
+      "interviews": []
     },
     {
       "id": "85d6649e-2682-4904-9480-a77b72fef27d",
@@ -314,7 +353,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:38:30.856Z",
-      "updatedAt": "2021-01-28T19:40:27.209Z"
+      "updatedAt": "2021-01-28T19:40:27.209Z",
+      "interviews": []
     },
     {
       "id": "922dfce3-4e06-4387-9fdb-64f70675e86b",
@@ -326,7 +366,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:39:02.435Z",
-      "updatedAt": "2021-01-28T19:40:49.349Z"
+      "updatedAt": "2021-01-28T19:40:49.349Z",
+      "interviews": []
     },
     {
       "id": "c26c38e2-a47d-405b-abc6-fe62a739561c",
@@ -338,7 +379,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:39:08.233Z",
-      "updatedAt": "2021-01-28T19:40:53.659Z"
+      "updatedAt": "2021-01-28T19:40:53.659Z",
+      "interviews": []
     },
     {
       "id": "7bef2b37-e1ee-4638-bfc1-c911787ac955",
@@ -350,7 +392,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:39:13.469Z",
-      "updatedAt": "2021-01-28T19:40:57.999Z"
+      "updatedAt": "2021-01-28T19:40:57.999Z",
+      "interviews": []
     },
     {
       "id": "e9716139-1f40-4bf1-9f8a-77ae4bcc621e",
@@ -362,7 +405,8 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:39:19.215Z",
-      "updatedAt": "2021-01-28T19:41:01.953Z"
+      "updatedAt": "2021-01-28T19:41:01.953Z",
+      "interviews": []
     },
     {
       "id": "a1731d01-eac9-4eff-8e5a-8a3c99bc66e0",
@@ -374,7 +418,48 @@
       "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
       "updatedBy": "00000000-0000-0000-0000-000000000000",
       "createdAt": "2021-01-28T19:39:24.625Z",
-      "updatedAt": "2021-01-28T19:41:06.370Z"
+      "updatedAt": "2021-01-28T19:41:06.370Z",
+      "interviews": []
+    },
+    {
+      "id": "25787cb2-d876-4883-b533-d5e628d213ce",
+      "jobId": "1324da27-9d7d-47d8-a04e-9fb3f35a67fa",
+      "userId": "95e7970f-12b4-43b7-ab35-38c34bf033c7",
+      "status": "open",
+      "externalId": "88774631",
+      "resume": "http://example.com",
+      "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+      "updatedBy": null,
+      "createdAt": "2021-04-14T08:46:23.250Z",
+      "updatedAt": "2021-04-14T08:46:23.250Z",
+      "interviews": [
+        {
+          "id": "81f03238-1ce2-4d3d-80c5-5ecd5e7e94a2",
+          "jobCandidateId": "25787cb2-d876-4883-b533-d5e628d213ce",
+          "googleCalendarId": "dummyId",
+          "customMessage": "This is a custom message",
+          "xaiTemplate": "30-min-interview",
+          "round": 1,
+          "status": "Scheduling",
+          "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+          "updatedBy": null,
+          "createdAt": "2021-04-14T08:46:34.597Z",
+          "updatedAt": "2021-04-14T08:46:34.597Z"
+        },
+        {
+          "id": "75363f1d-46c3-4261-9c21-70019f90a61a",
+          "jobCandidateId": "25787cb2-d876-4883-b533-d5e628d213ce",
+          "googleCalendarId": "dummyId",
+          "customMessage": "This is a custom message",
+          "xaiTemplate": "30-min-interview",
+          "round": 2,
+          "status": "Scheduling",
+          "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+          "updatedBy": null,
+          "createdAt": "2021-04-14T08:50:15.109Z",
+          "updatedAt": "2021-04-14T08:50:15.109Z"
+        }
+      ]
     }
   ],
   "ResourceBooking": [

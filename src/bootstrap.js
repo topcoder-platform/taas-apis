@@ -1,9 +1,14 @@
 const fs = require('fs')
 const Joi = require('joi')
 const path = require('path')
+const _ = require('lodash')
+const { Interviews } = require('../app-constants')
 const logger = require('./common/logger')
 const constants = require('../app-constants')
 const config = require('config')
+
+const allowedInterviewStatuses = _.values(Interviews.Status)
+const allowedXAITemplate = _.values(Interviews.XaiTemplate)
 
 Joi.page = () => Joi.number().integer().min(1).default(1)
 Joi.perPage = () => Joi.number().integer().min(1).default(20)
@@ -14,6 +19,8 @@ Joi.workload = () => Joi.string().valid('full-time', 'fractional')
 Joi.jobCandidateStatus = () => Joi.string().valid('open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected')
 Joi.title = () => Joi.string().max(128)
 Joi.paymentStatus = () => Joi.string().valid('pending', 'partially-completed', 'completed', 'cancelled')
+Joi.xaiTemplate = () => Joi.string().valid(...allowedXAITemplate)
+Joi.interviewStatus = () => Joi.string().valid(...allowedInterviewStatuses)
 Joi.workPeriodPaymentStatus = () => Joi.string().valid('completed', 'cancelled')
 // Empty string is not allowed by Joi by default and must be enabled with allow('').
 // See https://joi.dev/api/?v=17.3.0#string fro details why it's like this.

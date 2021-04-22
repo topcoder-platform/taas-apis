@@ -44,7 +44,28 @@ const Scopes = {
   READ_WORK_PERIOD_PAYMENT: 'read:taas-workPeriodPayments',
   CREATE_WORK_PERIOD_PAYMENT: 'create:taas-workPeriodPayments',
   UPDATE_WORK_PERIOD_PAYMENT: 'update:taas-workPeriodPayments',
-  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments'
+  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments',
+  // interview
+  READ_INTERVIEW: 'read:taas-interviews',
+  CREATE_INTERVIEW: 'create:taas-interviews',
+  UPDATE_INTERVIEW: 'update:taas-interviews',
+  ALL_INTERVIEW: 'all:taas-interviews'
+}
+
+// Interview related constants
+const Interviews = {
+  Status: {
+    Scheduling: 'Scheduling',
+    Scheduled: 'Scheduled',
+    RequestedForReschedule: 'Requested for reschedule',
+    Rescheduled: 'Rescheduled',
+    Completed: 'Completed',
+    Cancelled: 'Cancelled'
+  },
+  XaiTemplate: {
+    '30MinInterview': '30-min-interview',
+    '60MinInterview': '60-min-interview'
+  }
 }
 
 const ChallengeStatus = {
@@ -62,6 +83,7 @@ module.exports = {
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
+  Interviews,
   ChallengeStatus,
   PaymentProcessingSwitch
 }

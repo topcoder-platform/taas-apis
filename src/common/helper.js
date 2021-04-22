@@ -12,6 +12,7 @@ const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
 const request = require('superagent')
 const elasticsearch = require('@elastic/elasticsearch')
+const { ResponseError: ESResponseError } = require('@elastic/elasticsearch/lib/errors')
 const errors = require('../common/errors')
 const logger = require('./logger')
 const models = require('../models')
@@ -83,6 +84,24 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
   status: { type: 'keyword' },
   externalId: { type: 'keyword' },
   resume: { type: 'text' },
+  interviews: {
+    type: 'nested',
+    properties: {
+      id: { type: 'keyword' },
+      jobCandidateId: { type: 'keyword' },
+      googleCalendarId: { type: 'keyword' },
+      customMessage: { type: 'text' },
+      xaiTemplate: { type: 'keyword' },
+      startTimestamp: { type: 'date' },
+      attendeesList: [],
+      round: { type: 'integer' },
+      status: { type: 'keyword' },
+      createdAt: { type: 'date' },
+      createdBy: { type: 'keyword' },
+      updatedAt: { type: 'date' },
+      updatedBy: { type: 'keyword' }
+    }
+  },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -246,11 +265,14 @@ function getBulksFromDocuments (data) {
 
 /**
 * Index records in bulk
-* @param {Object} modelName the model name in db
+* @param {Object | String} modelOpts the model name in db, or model options
 * @param {Object} indexName the index name
 * @param {Object} logger the logger object
 */
-async function indexBulkDataToES (modelName, indexName, logger) {
+async function indexBulkDataToES (modelOpts, indexName, logger) {
+  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
+  const include = _.get(modelOpts, 'include', [])
+
   logger.info({ component: 'indexBulkDataToES', message: `Reindexing of ${modelName}s started!` })
 
   const esClient = getESClient()
@@ -265,23 +287,13 @@ async function indexBulkDataToES (modelName, indexName, logger) {
   // get data from db
   logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
   const model = models[modelName]
-  const criteria = {
-    raw: true
-  }
-  if (modelName === 'WorkPeriod') {
-    criteria.raw = false
-    criteria.include = [{
-      model: models.WorkPeriodPayment,
-      as: 'payments',
-      required: false
-    }]
-  }
-  const data = await model.findAll(criteria)
-  if (_.isEmpty(data)) {
+  const data = await model.findAll({ include })
+  const rawObjects = _.map(data, r => r.toJSON())
+  if (_.isEmpty(rawObjects)) {
     logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
     return
   }
-  const bulks = getBulksFromDocuments(data)
+  const bulks = getBulksFromDocuments(rawObjects)
 
   const startTime = Date.now()
   let doneCount = 0
@@ -305,19 +317,22 @@ async function indexBulkDataToES (modelName, indexName, logger) {
 
 /**
  * Index job by id
- * @param {Object} modelName the model name in db
+ * @param {Object | String} modelOpts the model name in db, or model options
  * @param {Object} indexName the index name
  * @param {string} id the job id
  * @param {Object} logger the logger object
  */
-async function indexDataToEsById (id, modelName, indexName, logger) {
+async function indexDataToEsById (id, modelOpts, indexName, logger) {
+  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
+  const include = _.get(modelOpts, 'include', [])
+
   logger.info({ component: 'indexDataToEsById', message: `Reindexing of ${modelName} with id ${id} started!` })
   const esClient = getESClient()
 
   logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
   const model = models[modelName]
 
-  const data = await model.findById(id, modelName === 'WorkPeriod')
+  const data = await model.findById(id, include)
   logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
   await esClient.index({
     index: indexName,
@@ -351,7 +366,10 @@ async function importData (pathToFile, dataModels, logger) {
     const jsonData = JSON.parse(fs.readFileSync(pathToFile).toString())
 
     for (let index = 0; index < dataModels.length; index += 1) {
-      const modelName = dataModels[index]
+      const modelOpts = dataModels[index]
+      const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
+      const include = _.get(modelOpts, 'include', [])
+
       currentModelName = modelName
       const model = models[modelName]
       const modelRecords = jsonData[modelName]
@@ -359,7 +377,7 @@ async function importData (pathToFile, dataModels, logger) {
       if (modelRecords && modelRecords.length > 0) {
         logger.info({ component: 'importData', message: `Importing data for model: ${modelName}` })
 
-        await model.bulkCreate(modelRecords, { transaction })
+        await model.bulkCreate(modelRecords, { include, transaction })
         logger.info({ component: 'importData', message: `Records imported for model: ${modelName} = ${modelRecords.length}` })
       } else {
         logger.info({ component: 'importData', message: `No records to import for model: ${modelName}` })
@@ -392,10 +410,24 @@ async function importData (pathToFile, dataModels, logger) {
   }
 
   // after importing, index data
+  const jobCandidateModelOpts = {
+    modelName: 'JobCandidate',
+    include: [{
+      model: models.Interview,
+      as: 'interviews'
+    }]
+  }
+  const workPeriodModelOpts = {
+    modelName: 'WorkPeriod',
+    include: [{
+      model: models.WorkPeriodPayment,
+      as: 'payments'
+    }]
+  }
   await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
-  await indexBulkDataToES('JobCandidate', config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
+  await indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
   await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
-  await indexBulkDataToES('WorkPeriod', config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
+  await indexBulkDataToES(workPeriodModelOpts, config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
 }
 
 /**
@@ -409,12 +441,13 @@ async function exportData (pathToFile, dataModels, logger) {
 
   const allModelsRecords = {}
   for (let index = 0; index < dataModels.length; index += 1) {
-    const modelName = dataModels[index]
-    const modelRecords = await models[modelName].findAll({
-      raw: true
-    })
-    allModelsRecords[modelName] = modelRecords
-    logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${modelRecords.length}` })
+    const modelOpts = dataModels[index]
+    const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
+    const include = _.get(modelOpts, 'include', [])
+    const modelRecords = await models[modelName].findAll({ include })
+    const rawRecords = _.map(modelRecords, r => r.toJSON())
+    allModelsRecords[modelName] = rawRecords
+    logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${rawRecords.length}` })
   }
 
   fs.writeFileSync(pathToFile, JSON.stringify(allModelsRecords))
@@ -702,7 +735,7 @@ async function postEvent (topic, payload, options = {}) {
  * @returns {Boolean} the result
  */
 function isDocumentMissingException (err) {
-  if (err.statusCode === 404) {
+  if (err.statusCode === 404 && err instanceof ESResponseError) {
     return true
   }
   return false
@@ -780,6 +813,8 @@ async function getUserById (userId, enrich) {
 
   if (enrich) {
     user.skills = (res.body.skills || []).map((skillObj) => _.pick(skillObj.skill, ['id', 'name']))
+    const attributes = _.get(res, 'body.attributes', [])
+    user.attributes = _.map(attributes, attr => _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name']))
   }
 
   return user
@@ -1179,6 +1214,18 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
 }
 
 /**
+ * Gets requested attribute value from user's attributes array.
+ * @param {Object} user The enriched (i.e. includes attributes) user object from users API. (check getUserById, getUserByExternalId functions)
+ * @param {String} attributeName Requested attribute name, e.g. "email"
+ * @returns attribute value
+ */
+function getUserAttributeValue (user, attributeName) {
+  const attributes = _.get(user, 'attributes', [])
+  const targetAttribute = _.find(attributes, a => a.attribute.name === attributeName)
+  return _.get(targetAttribute, 'value')
+}
+
+/**
  * Create a new challenge
  *
  * @param {Object} data challenge data
@@ -1342,6 +1389,7 @@ module.exports = {
   listProjectMembers,
   listProjectMemberInvites,
   deleteProjectMember,
+  getUserAttributeValue,
   createChallenge,
   updateChallenge,
   createChallengeResource,

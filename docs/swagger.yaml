@@ -12,6 +12,7 @@ servers:
 tags:
   - name: Jobs
   - name: JobCandidates
+  - name: Interviews
   - name: ResourceBookings
   - name: Teams
   - name: WorkPeriods
@@ -605,7 +606,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/JobCandidate"
+                  $ref: "#/components/schemas/JobCandidateInterviewsIncluded"
 
           headers:
             X-Next-Page:
@@ -690,7 +691,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JobCandidate"
+                $ref: "#/components/schemas/JobCandidateInterviewsIncluded"
         "400":
           description: Bad request
           content:
@@ -860,6 +861,306 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/JobCandidate"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /jobCandidates/{jobCandidateId}/requestInterview:
+    patch:
+      tags:
+        - Interviews
+      description: |
+        Request a new interview.
+
+        **Authorization** Topcoder token with create interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobCandidateId
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestInterviewBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /jobCandidates/{jobCandidateId}/updateInterview/{round}:
+    patch:
+      tags:
+        - Interviews
+      description: |
+        Partially update interview.
+
+        **Authorization** Topcoder token with update interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobCandidateId
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: round
+          description: The interview round.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInterviewRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /jobCandidates/{jobCandidateId}/interviews:
+    get:
+      tags:
+        - Interviews
+      description: |
+        Search interviews.
+
+        **Authorization** Topcoder token with read interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobCandidateId
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+          description: The page number.
+        - in: query
+          name: perPage
+          required: false
+          schema:
+            type: integer
+            default: 20
+          description: The number of items to list per page.
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+            default: createdAt
+            enum: ["round", "createdAt", "updatedAt"]
+          description: The sort by column.
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+            default: desc
+            enum: ["desc", "asc"]
+        - in: query
+          name: createdAt
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The creation date/time of interview.
+        - in: query
+          name: updatedAt
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: The last update date/time of interview.
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: ["Requested"]
+          description: The interview status.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /jobCandidates/{jobCandidateId}/interviews/{round}:
+    get:
+      tags:
+        - Interviews
+      description: |
+        Get interview by round.
+
+        **Authorization** Topcoder token with read interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobCandidateId
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: round
+          description: The interview round.
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
         "400":
           description: Bad request
           content:
@@ -3002,6 +3303,67 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobCandidateInterviewsIncluded:
+      required:
+        - id
+        - jobId
+        - userId
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The job id."
+        jobId:
+          type: string
+          format: uuid
+          description: "The project id."
+        userId:
+          type: string
+          format: uuid
+          example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
+          description: "The user id."
+        status:
+          type: string
+          enum:
+            [
+              "open",
+              "selected",
+              "shortlist",
+              "rejected",
+              "cancelled",
+              "interview",
+            ]
+          description: "The job candidate status."
+        externalId:
+          type: string
+          example: "1212"
+          description: "The external id."
+        resume:
+          type: string
+          example: "http://example.com"
+          description: "The resume link"
+        interviews:
+          type: array
+          description: "Interviews associated to this job candidate."
+          items:
+            $ref: "#/components/schemas/Interview"
+        createdAt:
+          type: string
+          format: date-time
+          description: "The job created date."
+        createdBy:
+          type: string
+          example: "topocder user"
+          description: "The user who created the job.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The job last updated at."
+        updatedBy:
+          type: string
+          example: "topcoder user"
+          description: "The user who updated the job last time.(Will get the user info from the token)"
     JobCandidateRequestBody:
       required:
         - jobId
@@ -3042,6 +3404,125 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+    Interview:
+      required:
+        - id
+        - jobCandidateId
+        - xaiTemplate
+        - round
+        - status
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The interview id."
+        jobCandidateId:
+          type: string
+          format: uuid
+          description: "The job candidate id."
+        googleCalendarId:
+          type: string
+          example: "dummyId"
+          description: "The google calendar id."
+        xaiTemplate:
+          type: string
+          example: "30-min-interview"
+          enum: ["30-min-interview", "60-min-interview"]
+          description: "The x.ai template name"
+        customMessage:
+          type: string
+          example: "This is a custom message"
+          description: "The custom message."
+        round:
+          type: integer
+          example: 1
+          description: "The interview round."
+        attendeesList:
+          type: array
+          description: "Attendee list for this interview."
+          items:
+            type: string
+            format: email
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "Interview start time."
+        status:
+          type: string
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          description: "The interview status."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The interview created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user who created the interview.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The interview last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user who updated the interview last time.(Will get the user info from the token)"
+    RequestInterviewBody:
+      required:
+        - xaiTemplate
+      properties:
+        googleCalendarId:
+          type: string
+          example: "dummyId"
+          description: "The google calendar id."
+        customMessage:
+          type: string
+          example: "This is a custom message"
+          description: "The custom message."
+        xaiTemplate:
+          type: string
+          enum: ["30-min-interview", "60-min-interview"]
+          example: "30-min-interview"
+          description: "The x.ai template name"
+        attendeesList:
+          type: array
+          items:
+            type: string
+            format: email
+        status:
+          type: string
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          default: "Scheduling"
+          description: "The interview status."
+    UpdateInterviewRequestBody:
+      properties:
+        googleCalendarId:
+          type: string
+          example: "dummyId"
+          description: "The google calendar id."
+        customMessage:
+          type: string
+          example: "This is a custom message"
+          description: "The custom message."
+        xaiTemplate:
+          type: string
+          enum: ["30-min-interview", "60-min-interview"]
+          example: "30-min-interview"
+          description: "The x.ai template name"
+        attendeesList:
+          type: array
+          items:
+            type: string
+            format: email
+        startTimestamp:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          description: "The interview status."
     JobPatchRequestBody:
       properties:
         status:

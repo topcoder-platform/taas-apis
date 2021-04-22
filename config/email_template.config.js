@@ -59,5 +59,29 @@ module.exports = {
          '{{text}}',
     recipients: config.REPORT_ISSUE_EMAILS,
     sendgridTemplateId: config.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID
+  },
+
+  /* Request interview for a job candidate
+   *
+   * - interviewType: the x.ai interview type. Example: "30-min-interview"
+   * - candidateName: Full name of candidate. Example: "John Doe"
+   * - jobName: The title of the job. Example: "TaaS API Misc Updates"
+   * - customMessage: if it's needed, a custom message can be added to the end of email. Example: "I would like to invite you for an interview..."
+   *
+   * Template (defined in SendGrid):
+   * Subject: '/{{interviewType}} tech interview with {{candidateName}} for {{jobName}} is requested by the Customer'
+   * Body:
+   * 'The customer has requested /{{interviewType}} with {{candidateName}} for {{jobName}}.'
+   * + 'In a few minutes you will receive an invitation from our scheduling tool. Please proceed with the invitation to agree on timing.'
+   * + '<br /><br />{{customMessage}}'
+   *
+   * Note, that the template should be defined in SendGrid.
+   * The subject & body above (identical to actual SendGrid template) is for reference purposes.
+   * We won't pass subject & body but only substitutions (replacements in template subject/body).
+   */
+  'interview-invitation': {
+    from: config.INTERVIEW_INVITATION_SENDER_EMAIL,
+    cc: config.INTERVIEW_INVITATION_CC_LIST,
+    sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
   }
 }
