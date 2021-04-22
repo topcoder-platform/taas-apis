@@ -3162,6 +3162,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
         createdAt:
           type: string
           format: date-time
@@ -3226,6 +3230,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
     ResourceBookingPatchRequestBody:
       properties:
         status:
@@ -3255,6 +3263,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
     WorkPeriod:
       required:
         - id
@@ -3435,6 +3447,10 @@ components:
           type: string
           enum: ["completed", "cancelled"]
           description: "The payment status."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
         createdAt:
           type: string
           format: date-time

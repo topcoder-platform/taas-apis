@@ -20,23 +20,61 @@ describe('workPeriod service test', () => {
   })
 
   describe('create work period test', () => {
-    describe('when PAYMENT_PROCESSING_SWITCH is ON/OFF', async () => {
-      let stubCreatePaymentService
+    let stubGetUserId
+    let stubEnsureWorkPeriodById
+    let stubEnsureResourceBookingById
+    let stubCreateWorkPeriodPayment
+    let stubCreatePayment
 
-      beforeEach(async () => {
-        sinon.stub(helper, 'ensureWorkPeriodById').callsFake(async () => testData.workPeriodPayment01.ensureWorkPeriodByIdResponse)
-        sinon.stub(helper, 'getUserId').callsFake(async () => {})
-        sinon.stub(models.WorkPeriodPayment, 'create').callsFake(() => testData.workPeriodPayment01.response)
-        stubCreatePaymentService = sinon.stub(paymentService, 'createPayment').callsFake(async () => testData.workPeriodPayment01.createPaymentResponse)
+    beforeEach(async () => {
+      stubGetUserId = sinon.stub(helper, 'getUserId').callsFake(async () => testData.workPeriodPayment01.getUserIdResponse)
+      stubEnsureWorkPeriodById = sinon.stub(helper, 'ensureWorkPeriodById').callsFake(async () => testData.workPeriodPayment01.ensureWorkPeriodByIdResponse)
+      stubEnsureResourceBookingById = sinon.stub(helper, 'ensureResourceBookingById').callsFake(async () => testData.workPeriodPayment01.ensureResourceBookingByIdResponse)
+      stubCreateWorkPeriodPayment = sinon.stub(models.WorkPeriodPayment, 'create').callsFake(() => testData.workPeriodPayment01.response)
+      stubCreatePayment = sinon.stub(paymentService, 'createPayment').callsFake(async () => testData.workPeriodPayment01.createPaymentResponse)
+    })
+
+    it('create work period success', async () => {
+      const response = await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
+      expect(stubGetUserId.calledOnce).to.be.true
+      expect(stubEnsureWorkPeriodById.calledOnce).to.be.true
+      expect(stubEnsureResourceBookingById.calledOnce).to.be.true
+      expect(stubCreatePayment.calledOnce).to.be.true
+      expect(stubCreateWorkPeriodPayment.calledOnce).to.be.true
+      expect(response).to.eql(testData.workPeriodPayment01.response.dataValues)
+    })
+
+    it('create work period success - billingAccountId is set', async () => {
+      await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
+      expect(stubCreatePayment.calledOnce).to.be.true
+      expect(stubCreatePayment.args[0][0]).to.include({
+        billingAccountId: testData.workPeriodPayment01.ensureResourceBookingByIdResponse.billingAccountId
       })
+      expect(stubCreateWorkPeriodPayment.calledOnce).to.be.true
+      expect(stubCreateWorkPeriodPayment.args[0][0]).to.include({
+        billingAccountId: testData.workPeriodPayment01.ensureResourceBookingByIdResponse.billingAccountId
+      })
+    })
 
+    it('fail to create work period if corresponding resource booking does not have bill account', async () => {
+      stubEnsureResourceBookingById.restore()
+      sinon.stub(helper, 'ensureResourceBookingById').callsFake(async () => testData.workPeriodPayment01.ensureResourceBookingByIdResponse02)
+
+      try {
+        await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request)
+      } catch (err) {
+        expect(err.message).to.include('"ResourceBooking" Billing account is not assigned to the resource booking')
+      }
+    })
+
+    describe('when PAYMENT_PROCESSING_SWITCH is ON/OFF', async () => {
       it('do not create payment if PAYMENT_PROCESSING_SWITCH is OFF', async () => {
         await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'OFF' })
-        expect(stubCreatePaymentService.calledOnce).to.be.false
+        expect(stubCreatePayment.calledOnce).to.be.false
       })
       it('create payment if PAYMENT_PROCESSING_SWITCH is ON', async () => {
         await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
-        expect(stubCreatePaymentService.calledOnce).to.be.true
+        expect(stubCreatePayment.calledOnce).to.be.true
       })
     })
   })
