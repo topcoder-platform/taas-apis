@@ -57,6 +57,10 @@ module.exports = (sequelize) => {
         ),
         allowNull: false
       },
+      billingAccountId: {
+        field: 'billing_account_id',
+        type: Sequelize.BIGINT
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

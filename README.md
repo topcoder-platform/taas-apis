@@ -278,6 +278,7 @@ The following parameters can be set in the config file or via env variables:
 
 - Split code into reusable methods where applicable.
 - Lint should pass.
+- Unit tests should pass.
 
 ### Documentation and Utils
 
