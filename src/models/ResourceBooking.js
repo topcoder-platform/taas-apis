@@ -58,11 +58,11 @@ module.exports = (sequelize) => {
       },
       startDate: {
         field: 'start_date',
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       endDate: {
         field: 'end_date',
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       memberRate: {
         field: 'member_rate',

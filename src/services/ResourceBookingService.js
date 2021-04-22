@@ -3,7 +3,7 @@
  */
 
 const _ = require('lodash')
-const Joi = require('joi')
+const Joi = require('joi').extend(require('@joi/date'))
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
@@ -12,6 +12,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const moment = require('moment')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
@@ -162,14 +163,14 @@ createResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null),
-    startDate: Joi.date().allow(null),
-    endDate: Joi.date().when('startDate', {
+    startDate: Joi.date().format('YYYY-MM-DD').allow(null),
+    endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).min(Joi.ref('startDate')
+      then: Joi.date().format('YYYY-MM-DD').allow(null).min(Joi.ref('startDate')
       ).messages({
         'date.min': 'endDate cannot be earlier than startDate'
       }),
-      otherwise: Joi.date().allow(null)
+      otherwise: Joi.date().format('YYYY-MM-DD').allow(null)
     }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
@@ -199,8 +200,7 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const updated = await resourceBooking.update(data)
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  const result = _.assign(resourceBooking.dataValues, data)
-  return result
+  return updated.dataValues
 }
 
 /**
@@ -219,14 +219,14 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     status: Joi.resourceBookingStatus(),
-    startDate: Joi.date().allow(null),
-    endDate: Joi.date().when('startDate', {
+    startDate: Joi.date().format('YYYY-MM-DD').allow(null),
+    endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).min(Joi.ref('startDate')
+      then: Joi.date().format('YYYY-MM-DD').allow(null).min(Joi.ref('startDate')
       ).messages({
         'date.min': 'endDate cannot be earlier than startDate'
       }),
-      otherwise: Joi.date().allow(null)
+      otherwise: Joi.date().format('YYYY-MM-DD').allow(null)
     }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
@@ -256,14 +256,14 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
-    startDate: Joi.date().allow(null).default(null),
-    endDate: Joi.date().when('startDate', {
+    startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
+    endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
       is: Joi.exist(),
-      then: Joi.date().allow(null).default(null).min(Joi.ref('startDate')
+      then: Joi.date().format('YYYY-MM-DD').allow(null).default(null).min(Joi.ref('startDate')
       ).messages({
         'date.min': 'endDate cannot be earlier than startDate'
       }),
-      otherwise: Joi.date().allow(null).default(null)
+      otherwise: Joi.date().format('YYYY-MM-DD').allow(null).default(null)
     }),
     memberRate: Joi.number().allow(null).default(null),
     customerRate: Joi.number().allow(null).default(null),
@@ -357,7 +357,13 @@ async function searchResourceBookings (currentUser, criteria, options = { return
         sort
       }
     }
-
+    // change the date format to match with index schema
+    if (criteria.startDate) {
+      criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
+    }
+    if (criteria.endDate) {
+      criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
+    }
     _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
@@ -423,8 +429,8 @@ searchResourceBookings.schema = Joi.object().keys({
     sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     status: Joi.resourceBookingStatus(),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
+    startDate: Joi.date().format('YYYY-MM-DD'),
+    endDate: Joi.date().format('YYYY-MM-DD'),
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
     userId: Joi.string().uuid(),
