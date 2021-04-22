@@ -5,7 +5,6 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
-const Handlebars = require('handlebars')
 const config = require('config')
 const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
@@ -16,9 +15,9 @@ const ResourceBookingService = require('./ResourceBookingService')
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
-    subjectTemplate: Handlebars.compile(template.subject),
-    bodyTemplate: Handlebars.compile(template.body),
+    from: template.from,
     recipients: template.recipients,
+    cc: template.cc,
     sendgridTemplateId: template.sendgridTemplateId
   }
 })
@@ -316,14 +315,21 @@ getTeamJob.schema = Joi.object().keys({
  */
 async function sendEmail (currentUser, data) {
   const template = emailTemplates[data.template]
+
+  const dataCC = data.cc || []
+  const templateCC = template.cc || []
+  const dataRecipients = data.recipients || []
+  const templateRecipients = template.recipients || []
+
   await helper.postEvent(config.EMAIL_TOPIC, {
-    data: {
-      subject: template.subjectTemplate(data.data),
-      body: template.bodyTemplate(data.data)
-    },
+    data: data.data, // substitutions
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3',
-    recipients: template.recipients
+    // override template if coming data already have the 'from' address
+    from: data.from || template.from,
+    // create a set of uniq. recipients & CCs, from both coming data & template
+    recipients: _.uniq([...dataRecipients, ...templateRecipients]),
+    cc: _.uniq([...dataCC, ...templateCC])
   })
 }
 
@@ -331,7 +337,10 @@ sendEmail.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   data: Joi.object().keys({
     template: Joi.string().valid(...Object.keys(emailTemplates)).required(),
-    data: Joi.object().required()
+    data: Joi.object().required(),
+    from: Joi.string().email(),
+    recipients: Joi.array().items(Joi.string().email()).allow(null),
+    cc: Joi.array().items(Joi.string().email()).allow(null)
   }).required()
 }).required()
 

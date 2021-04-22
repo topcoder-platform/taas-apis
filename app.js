@@ -9,8 +9,10 @@ const express = require('express')
 const cors = require('cors')
 const HttpStatus = require('http-status-codes')
 const interceptor = require('express-interceptor')
+const schedule = require('node-schedule')
 const logger = require('./src/common/logger')
 const eventHandlers = require('./src/eventHandlers')
+const interviewService = require('./src/services/InterviewService')
 
 // setup express app
 const app = express()
@@ -93,6 +95,8 @@ app.use((err, req, res, next) => {
 const server = app.listen(app.get('port'), () => {
   logger.info({ component: 'app', message: `Express server listening on port ${app.get('port')}` })
   eventHandlers.init()
+  // schedule updateCompletedInterviews to run every hour
+  schedule.scheduleJob('0 0 * * * *', interviewService.updateCompletedInterviews)
 })
 
 if (process.env.NODE_ENV === 'test') {

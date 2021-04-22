@@ -34,7 +34,9 @@
       AUTH0_AUDIENCE_UBAHN=
       AUTH0_CLIENT_ID=
       AUTH0_CLIENT_SECRET=
-
+      # necessary if you'll utilize email functionality of interviews
+      INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID=
+      INTERVIEW_INVITATION_SENDER_EMAIL=
       # Locally deployed services (via docker-compose)
       ES_HOST=dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres

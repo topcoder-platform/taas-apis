@@ -10,4 +10,7 @@ taas.job.delete
 taas.jobcandidate.delete
 taas.resourcebooking.delete
 taas.workperiod.delete
+taas.interview.requested
+taas.interview.update
+taas.interview.bulkUpdate
 external.action.email
