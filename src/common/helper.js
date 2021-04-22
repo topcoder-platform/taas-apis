@@ -1263,7 +1263,7 @@ async function createChallengeResource (data, token) {
  * @returns {Array<{startDate:Date, endDate:Date, daysWorked:number}>} information about workPeriods
  */
 function extractWorkPeriods (start, end) {
-  // canculate maximum possible daysWorked for a week
+  // calculate maximum possible daysWorked for a week
   function getDaysWorked (week) {
     if (weeks === 1) {
       return Math.min(endDay, 5) - Math.max(startDay, 1) + 1
