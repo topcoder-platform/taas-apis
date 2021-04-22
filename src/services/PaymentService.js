@@ -79,13 +79,13 @@ async function createChallenge (challenge, token) {
       pureV5Task: true
     },
     tags: ['Other'],
-    startDate: new Date(),
+    startDate: new Date()
   }
 
   if (challenge.billingAccountId) {
     body.billing = {
       billingAccountId: challenge.billingAccountId,
-      markup: 0, // for TaaS payments we always use 0 markup
+      markup: 0 // for TaaS payments we always use 0 markup
     }
   }
   try {

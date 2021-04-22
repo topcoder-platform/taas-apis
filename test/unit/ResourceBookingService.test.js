@@ -1,62 +1,66 @@
 /* eslint-disable no-unused-expressions */
 
-// const _ = require('lodash')
 const expect = require('chai').expect
 const sinon = require('sinon')
 const models = require('../../src/models')
 const service = require('../../src/services/ResourceBookingService')
 const workPeriodService = require('../../src/services/WorkPeriodService')
-const testData = require('./common/testData')
+const commonData = require('./common/CommonData')
+const testData = require('./common/ResourceBookingData')
 const helper = require('../../src/common/helper')
-// const esClient = helper.getESClient()
 const busApiClient = helper.getBusApiClient()
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
 describe('resourceBooking service test', () => {
-  let stubEnsureJobById
-  let stubEnsureUserById
   let stubPostEvent
   let stubCreateWorkPeriodService
   let stubUpdateWorkPeriodService
   let stubDeleteWorkPeriodService
   beforeEach(() => {
-    stubEnsureJobById = sinon.stub(helper, 'ensureJobById').callsFake(async () => {})
-    stubEnsureUserById = sinon.stub(helper, 'ensureUserById').callsFake(async () => testData.UserTCConnCopilot)
-    stubPostEvent = sinon.stub(busApiClient, 'postEvent').callsFake(async () => {})
-    stubCreateWorkPeriodService = sinon.stub(workPeriodService, 'createWorkPeriod').callsFake(async () => {})
-    stubUpdateWorkPeriodService = sinon.stub(workPeriodService, 'partiallyUpdateWorkPeriod').callsFake(async () => {})
-    stubDeleteWorkPeriodService = sinon.stub(workPeriodService, 'deleteWorkPeriod').callsFake(async () => {})
+    stubPostEvent = sinon.stub(busApiClient, 'postEvent').callsFake(async () => undefined)
+    stubCreateWorkPeriodService = sinon.stub(workPeriodService, 'createWorkPeriod').callsFake(async () => undefined)
+    stubUpdateWorkPeriodService = sinon.stub(workPeriodService, 'partiallyUpdateWorkPeriod').callsFake(async () => undefined)
+    stubDeleteWorkPeriodService = sinon.stub(workPeriodService, 'deleteWorkPeriod').callsFake(async () => undefined)
   })
 
   afterEach(() => {
     sinon.restore()
   })
 
-  describe('create resource booking test', () => {
-    it('create resource booking and auto populate work periods for 5 weeks', async () => {
+  describe('Create resource booking successfully', () => {
+    let stubEnsureJobById
+    let stubEnsureUserById
+    beforeEach(() => {
+      stubEnsureJobById = sinon.stub(helper, 'ensureJobById').callsFake(async () => undefined)
+      stubEnsureUserById = sinon.stub(helper, 'ensureUserById').callsFake(async () => commonData.UserTCConnCopilot)
+    })
+    it('T01:Create resource booking start Saturday end Sunday', async () => {
+      const data = testData.T01
       const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
-        return testData.resourceBooking5Week.response
+        return data.resourceBooking.response
       })
-      const entity = await service.createResourceBooking(testData.currentUser, testData.resourceBooking5Week.request)
-      expect(entity).to.deep.eql(testData.resourceBooking5Week.response.toJSON())
+      const entity = await service.createResourceBooking(commonData.currentUser, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
       expect(stubEnsureJobById.calledOnce).to.be.true
       expect(stubEnsureUserById.calledOnce).to.be.true
       expect(stubDBCreate.calledOnce).to.be.true
       expect(stubPostEvent.calledOnce).to.be.true
-      expect(stubCreateWorkPeriodService.callCount).to.eq(5)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBooking5Week.workPeriodRequests[0])
-      expect(stubCreateWorkPeriodService.getCall(1).args[1]).to.deep.eq(testData.resourceBooking5Week.workPeriodRequests[1])
-      expect(stubCreateWorkPeriodService.getCall(2).args[1]).to.deep.eq(testData.resourceBooking5Week.workPeriodRequests[2])
-      expect(stubCreateWorkPeriodService.getCall(3).args[1]).to.deep.eq(testData.resourceBooking5Week.workPeriodRequests[3])
-      expect(stubCreateWorkPeriodService.getCall(4).args[1]).to.deep.eq(testData.resourceBooking5Week.workPeriodRequests[4])
+      expect(stubCreateWorkPeriodService.callCount).to.eq(6)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubCreateWorkPeriodService.getCall(1).args[1]).to.deep.eq(data.workPeriod.request[1])
+      expect(stubCreateWorkPeriodService.getCall(2).args[1]).to.deep.eq(data.workPeriod.request[2])
+      expect(stubCreateWorkPeriodService.getCall(3).args[1]).to.deep.eq(data.workPeriod.request[3])
+      expect(stubCreateWorkPeriodService.getCall(4).args[1]).to.deep.eq(data.workPeriod.request[4])
     })
-    it('create resource booking and auto populate work periods for 1 week', async () => {
+    it('T02:Create resource booking start Sunday end Saturday', async () => {
+      const data = testData.T02
       const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(async () => {
-        return testData.resourceBooking1Week.response
+        return data.resourceBooking.response
       })
-
-      const entity = await service.createResourceBooking(testData.currentUser, testData.resourceBooking1Week.request)
-      expect(entity).to.deep.eql(testData.resourceBooking1Week.response.toJSON())
+      const entity = await service.createResourceBooking(commonData.currentUser, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
       expect(stubEnsureJobById.calledOnce).to.be.true
       expect(stubEnsureUserById.calledOnce).to.be.true
       expect(stubDBCreate.calledOnce).to.be.true
@@ -64,175 +68,285 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBooking1Week.workPeriodRequests[0])
+      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
     })
-    it('update resource booking and cause daysWorked to change', async () => {
+    it('T03:Create resource booking without startDate', async () => {
+      const data = testData.T03
+      const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(async () => {
+        return data.resourceBooking.response
+      })
+      const entity = await service.createResourceBooking(commonData.currentUser, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubEnsureJobById.calledOnce).to.be.true
+      expect(stubEnsureUserById.calledOnce).to.be.true
+      expect(stubDBCreate.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+    it('T04:Create resource booking without endDate', async () => {
+      const data = testData.T04
+      const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(async () => {
+        return data.resourceBooking.response
+      })
+      const entity = await service.createResourceBooking(commonData.currentUser, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubEnsureJobById.calledOnce).to.be.true
+      expect(stubEnsureUserById.calledOnce).to.be.true
+      expect(stubDBCreate.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+  })
+  describe('Create resource booking unsuccessfully', () => {
+    let stubEnsureJobById
+    let stubEnsureUserById
+    beforeEach(() => {
+      stubEnsureJobById = sinon.stub(helper, 'ensureJobById').callsFake(async () => undefined)
+      stubEnsureUserById = sinon.stub(helper, 'ensureUserById').callsFake(async () => commonData.UserTCConnCopilot)
+    })
+    it('T05:Fail to create resource booking with startDate greater then endDate', async () => {
+      const data = testData.T05
+      const stubDBCreate = sinon.stub(ResourceBooking, 'create').callsFake(() => {
+        return data.resourceBooking.response
+      })
+      let error
+      try {
+        await service.createResourceBooking(commonData.currentUser, data.resourceBooking.request)
+      } catch (err) {
+        error = err
+      }
+      expect(error.message).to.eq(data.error.message)
+      expect(stubEnsureJobById.notCalled).to.be.true
+      expect(stubEnsureUserById.notCalled).to.be.true
+      expect(stubDBCreate.notCalled).to.be.true
+      expect(stubPostEvent.notCalled).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+  })
+  describe('Update resource booking successfully', () => {
+    it('T06:Update resource booking dates and do not cause work period change', async () => {
+      const data = testData.T06
       const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBooking1Week.response
+        return data.resourceBooking.value
       })
       const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBooking1Week.workPeriodResponse
+        return data.workPeriod.response
       })
-      const entity = await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBooking1Week.response.dataValues.id, testData.resourceBooking1Week.updateRequest)
-      expect(entity).to.deep.eql(testData.resourceBooking1Week.updateResponse.toJSON())
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
       expect(stubResourceBookingFindById.calledOnce).to.be.true
       expect(stubPostEvent.calledOnce).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(testData.resourceBooking1Week.workPeriodUpdateRequests[0])
     })
-    it('update resource booking and cause daysWorked to change', async () => {
+    it('T07:Update resource booking dates and cause work period creation - 1', async () => {
+      const data = testData.T07
       const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response
+        return data.resourceBooking.value
       })
       const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse
+        return data.workPeriod.response
       })
-      const entity = await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response.dataValues.id, testData.resourceBookingUpdate.updateRequest)
-      expect(entity).to.deep.eql(testData.resourceBookingUpdate.updateResponse.toJSON())
-      expect(stubResourceBookingFindById.calledOnce).to.be.true
-      expect(stubPostEvent.calledOnce).to.be.true
-      expect(stubWorkPeriodFindAll.called).to.be.true
-      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
-      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests[0])
-    })
-    it('update resource booking and cause workPeriod to create', async () => {
-      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response2
-      })
-      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse
-      })
-      const entity = await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response2.dataValues.id, testData.resourceBookingUpdate.updateRequest2)
-      expect(entity).to.deep.eql(testData.resourceBookingUpdate.updateResponse2.toJSON())
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
       expect(stubResourceBookingFindById.calledOnce).to.be.true
       expect(stubPostEvent.calledOnce).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests2[0])
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests2[1])
+      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
     })
-    it('update resource booking and cause workPeriod to delete', async () => {
+    it('T08:Update resource booking dates and cause work period creation - 2', async () => {
+      const data = testData.T08
       const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response3
+        return data.resourceBooking.value
       })
       const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse
+        return data.workPeriod.response
       })
-      const entity = await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response3.dataValues.id, testData.resourceBookingUpdate.updateRequest3)
-      expect(entity).to.deep.eql(testData.resourceBookingUpdate.updateResponse3.toJSON())
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(1)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+    })
+    it('T09:Update resource booking startDate and cause work period to be deleted', async () => {
+      const data = testData.T09
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
       expect(stubResourceBookingFindById.calledOnce).to.be.true
       expect(stubPostEvent.calledOnce).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+    })
+    it('T10:Update resource booking endDate and cause work period to be deleted', async () => {
+      const data = testData.T10
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+    })
+    it('T11:Update resource booking dates and cause work period daysWorked to change', async () => {
+      const data = testData.T11
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1])
+    })
+    it('T12:Update resource booking dates and cause delete, update, create work period operations', async () => {
+      const data = testData.T12
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(1)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[0])
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[1])
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[2])
+      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1])
+      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[2])
+      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[3])
     })
-    it('delete resource booking and cause workPeriod to delete', async () => {
+  })
+  describe('Update resource booking unsuccessfully', () => {
+    it('T13:Fail to update resource booking status to cancelled', async () => {
+      const data = testData.T13
       const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response3
+        return data.resourceBooking.value
       })
       const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse
+        return data.workPeriod.response
       })
-      await service.deleteResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response3.dataValues.id)
+      let error
+      try {
+        await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.notCalled).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+    it('T14:Fail to update resource booking dates', async () => {
+      const data = testData.T14
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      let error
+      try {
+        await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.notCalled).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+  })
+  describe('Delete resource booking successfully', () => {
+    it('T15:Delete resource booking and cause work periods to be deleted ', async () => {
+      const data = testData.T15
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      await service.deleteResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id)
       expect(stubResourceBookingFindById.calledOnce).to.be.true
       expect(stubPostEvent.calledOnce).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
-      expect(stubDeleteWorkPeriodService.callCount).to.eq(4)
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[3])
-      expect(stubDeleteWorkPeriodService.getCall(1).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[4])
-      expect(stubDeleteWorkPeriodService.getCall(2).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[5])
-      expect(stubDeleteWorkPeriodService.getCall(3).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests3[6])
-    })
-    it('update resource booking with paid weeks and cause workPeriod to delete', async () => {
-      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response4
-      })
-      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse4
-      })
-      const entity = await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response4.dataValues.id, testData.resourceBookingUpdate.updateRequest4)
-      expect(entity).to.deep.eql(testData.resourceBookingUpdate.updateResponse4.toJSON())
-      expect(stubResourceBookingFindById.calledOnce).to.be.true
-      expect(stubPostEvent.calledOnce).to.be.true
-      expect(stubWorkPeriodFindAll.called).to.be.true
-      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(2)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests4[0])
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests4[1])
-      expect(stubDeleteWorkPeriodService.getCall(1).args[1]).to.deep.eq(testData.resourceBookingUpdate.workPeriodUpdateRequests4[2])
+      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubDeleteWorkPeriodService.getCall(1).args[1]).to.deep.eq(data.workPeriod.request[1])
     })
-    it('fail to update resource booking with paid weeks when try to delete paid weeks', async () => {
+  })
+  describe('Delete resource booking unsuccessfully', () => {
+    it('T16:Fail to delete resource booking with paid work periods', async () => {
+      const data = testData.T16
       const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response4
+        return data.resourceBooking.value
       })
       const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse4
+        return data.workPeriod.response
       })
-      let httpStatus
+      let error
       try {
-        await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response4.dataValues.id, testData.resourceBookingUpdate.updateRequest5)
+        await service.deleteResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id)
       } catch (err) {
-        httpStatus = err.httpStatus
+        error = err
       }
-      expect(httpStatus).to.eq(400)
-      expect(stubResourceBookingFindById.calledOnce).to.be.true
-      expect(stubPostEvent.calledOnce).to.be.false
-      expect(stubWorkPeriodFindAll.called).to.be.true
-      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
-      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-    })
-    it('fail to update resource booking with paid weeks when try to set status cancelled', async () => {
-      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response4
-      })
-      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse4
-      })
-      let httpStatus
-      try {
-        await service.partiallyUpdateResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response4.dataValues.id, testData.resourceBookingUpdate.updateRequest6)
-      } catch (err) {
-        httpStatus = err.httpStatus
-      }
-      expect(httpStatus).to.eq(400)
-      expect(stubResourceBookingFindById.calledOnce).to.be.true
-      expect(stubPostEvent.calledOnce).to.be.false
-      expect(stubWorkPeriodFindAll.called).to.be.true
-      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
-      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-    })
-    it('fail to delete resource booking with paid weeks', async () => {
-      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
-        return testData.resourceBookingUpdate.response4
-      })
-      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
-        return testData.resourceBookingUpdate.workPeriodResponse4
-      })
-      let httpStatus
-      try {
-        await service.deleteResourceBooking(testData.currentUser, testData.resourceBookingUpdate.response4.dataValues.id)
-      } catch (err) {
-        httpStatus = err.httpStatus
-      }
-      expect(httpStatus).to.eq(400)
-      expect(stubResourceBookingFindById.calledOnce).to.be.false
-      expect(stubPostEvent.calledOnce).to.be.false
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+      expect(stubResourceBookingFindById.notCalled).to.be.true
+      expect(stubPostEvent.notCalled).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
