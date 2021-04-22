@@ -15,6 +15,7 @@ const TopicOperationMapping = {
   [config.TAAS_JOB_CANDIDATE_CREATE_TOPIC]: JobCandidateEventHandler.processCreate,
   [config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC]: ResourceBookingEventHandler.processCreate,
   [config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC]: ResourceBookingEventHandler.processUpdate,
+  [config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC]: ResourceBookingEventHandler.processDelete,
   [config.TAAS_INTERVIEW_REQUEST_TOPIC]: InterviewEventHandler.processRequest
 }
 

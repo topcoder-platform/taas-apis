@@ -78,18 +78,29 @@
    - after that, `taas-es-processor` would be started itself. Make sure it successfully connected to Kafka, you should see 9 lines with text `Subscribed to taas.`:
 
    ```
-   tc-taas-es-processor  | 2021-01-22T14:27:48.971Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.972Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.973Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.974Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.975Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.976Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.977Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.978Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.979Z DEBUG no-kafka-client Subscribed to taas.workperiod.create:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.980Z DEBUG no-kafka-client Subscribed to taas.workperiod.update:0 offset 0 leader kafka:9093
-   tc-taas-es-processor  | 2021-01-22T14:27:48.981Z DEBUG no-kafka-client Subscribed to taas.workperiod.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | [2021-04-09T21:20:19.035Z] app INFO : Starting kafka consumer
+   tc-taas-es-processor | 2021-04-09T21:20:21.292Z INFO no-kafka-client Joined group taas-es-processor generationId 1 as no-kafka-client-076538fc-60dd-4ca4-a2b9-520bdf73bc9e
+   tc-taas-es-processor | 2021-04-09T21:20:21.293Z INFO no-kafka-client Elected as group leader
+   tc-taas-es-processor | 2021-04-09T21:20:21.452Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.455Z DEBUG no-kafka-client Subscribed to taas.job.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.456Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.457Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.458Z DEBUG no-kafka-client Subscribed to taas.jobcandidate.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.459Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.461Z DEBUG no-kafka-client Subscribed to taas.job.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.463Z DEBUG no-kafka-client Subscribed to taas.workperiod.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.466Z DEBUG no-kafka-client Subscribed to taas.workperiod.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.468Z DEBUG no-kafka-client Subscribed to taas.workperiod.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.469Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.470Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.delete:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.471Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.473Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.474Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | [2021-04-09T21:20:21.475Z] app INFO : Initialized.......
+   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete,taas.workperiod.create,taas.workperiod.update,taas.workperiod.delete,taas.workperiodpayment.create,taas.workperiodpayment.update,taas.workperiodpayment.delete
+   tc-taas-es-processor | [2021-04-09T21:20:21.480Z] app INFO : Kick Start.......
+   tc-taas-es-processor | ********** Topcoder Health Check DropIn listening on port 3001
+   tc-taas-es-processor | Topcoder Health Check DropIn started and ready to roll
    ```
 
    </details>

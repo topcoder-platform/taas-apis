@@ -40,6 +40,11 @@ const Scopes = {
   UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
   DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
   ALL_WORK_PERIOD: 'all:taas-workPeriods',
+  // work period payment
+  READ_WORK_PERIOD_PAYMENT: 'read:taas-workPeriodPayments',
+  CREATE_WORK_PERIOD_PAYMENT: 'create:taas-workPeriodPayments',
+  UPDATE_WORK_PERIOD_PAYMENT: 'update:taas-workPeriodPayments',
+  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments',
   // interview
   READ_INTERVIEW: 'read:taas-interviews',
   CREATE_INTERVIEW: 'create:taas-interviews',
@@ -63,9 +68,22 @@ const Interviews = {
   }
 }
 
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
+}
+
+const PaymentProcessingSwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
-  Interviews
+  Interviews,
+  ChallengeStatus,
+  PaymentProcessingSwitch
 }

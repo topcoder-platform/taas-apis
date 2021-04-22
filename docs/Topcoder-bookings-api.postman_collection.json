@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9346a502-7b04-48d4-ab58-c6b866c400d1",
+		"_postman_id": "2ec8ba88-98dd-4719-8e72-53ed706f071c",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -7308,14 +7308,117 @@
 			"name": "Resource Bookings",
 			"item": [
 				{
+					"name": "Before Test",
+					"item": [
+						{
+							"name": "create job",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job with m2m",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"postman.setEnvironmentVariable(\"jobIdCreatedByM2M\",data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_job}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "create resource booking with booking manager",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingId\", response.id);\r",
+									"    }\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7332,7 +7435,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-10-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7352,14 +7455,109 @@
 					"response": []
 				},
 				{
+					"name": "search work periods of newly created resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create resource booking with m2m create",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingIdCreatedByM2M\",data.id);"
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingIdCreatedByM2M\", response.id);\r",
+									"    }\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7376,7 +7574,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7396,14 +7594,107 @@
 					"response": []
 				},
 				{
+					"name": "search work periods of newly created resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingIdCreatedByM2M}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingIdCreatedByM2M}},{{resourceBookingIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create resource booking with connect user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var data = JSON.parse(responseBody);\r",
-									"postman.setEnvironmentVariable(\"resourceBookingId\",data.id);"
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7420,7 +7711,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7446,7 +7737,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7463,7 +7758,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7489,7 +7784,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7506,7 +7805,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7532,7 +7831,11 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7570,6 +7873,19 @@
 				},
 				{
 					"name": "get resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7594,6 +7910,19 @@
 				},
 				{
 					"name": "get resource booking with m2m read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7618,6 +7947,19 @@
 				},
 				{
 					"name": "get resource booking with booking manager from db",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7648,6 +7990,19 @@
 				},
 				{
 					"name": "get resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7672,6 +8027,21 @@
 				},
 				{
 					"name": "get resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7696,6 +8066,19 @@
 				},
 				{
 					"name": "search resource bookings with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7751,7 +8134,7 @@
 								},
 								{
 									"key": "status",
-									"value": "sourcing",
+									"value": "assigned",
 									"disabled": true
 								},
 								{
@@ -7766,6 +8149,19 @@
 				},
 				{
 					"name": "search resource bookings with m2m all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7821,7 +8217,7 @@
 								},
 								{
 									"key": "status",
-									"value": "sourcing",
+									"value": "assigned",
 									"disabled": true
 								}
 							]
@@ -7831,6 +8227,19 @@
 				},
 				{
 					"name": "search resource bookings with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7890,6 +8299,17 @@
 				},
 				{
 					"name": "search resource bookings with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -7949,6 +8369,21 @@
 				},
 				{
 					"name": "search resource bookings with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -8008,6 +8443,19 @@
 				},
 				{
 					"name": "put resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8019,7 +8467,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26T04:17:23.131Z\",\r\n  \"endDate\": \"2020-11-29T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8040,7 +8488,110 @@
 					"response": []
 				},
 				{
+					"name": "search extended work periods of resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put resource booking with m2m update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8052,7 +8603,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-10T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8073,7 +8624,112 @@
 					"response": []
 				},
 				{
+					"name": "search reduced work periods of resource booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingIdCreatedByM2M}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingIdCreatedByM2M}},{{resourceBookingIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "put resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8085,7 +8741,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8107,6 +8763,21 @@
 				},
 				{
 					"name": "put resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8118,7 +8789,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8140,6 +8811,21 @@
 				},
 				{
 					"name": "put resource booking with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8151,7 +8837,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8173,6 +8859,21 @@
 				},
 				{
 					"name": "put resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -8184,7 +8885,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8206,6 +8907,19 @@
 				},
 				{
 					"name": "patch resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8217,7 +8931,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-09-30T04:17:23.131Z\",\r\n    \"endDate\": \"2020-11-28T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8239,6 +8953,19 @@
 				},
 				{
 					"name": "patch resource booking with m2m update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8250,7 +8977,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-12-30T04:17:23.131Z\",\r\n    \"endDate\": \"2021-02-10T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8272,6 +8999,21 @@
 				},
 				{
 					"name": "patch resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8283,7 +9025,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8305,6 +9047,21 @@
 				},
 				{
 					"name": "patch resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8316,7 +9073,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8338,6 +9095,21 @@
 				},
 				{
 					"name": "patch resource booking with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8349,7 +9121,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8371,6 +9143,21 @@
 				},
 				{
 					"name": "patch resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -8403,7 +9190,251 @@
 					"response": []
 				},
 				{
+					"name": "search work periods",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.environment.set(\"workPeriodIdForPaid\", response[0].id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods?perPage=1&sortBy=startDate&sortOrder=asc&resourceBookingId={{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "1"
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}"
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period set status to completed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"paymentStatus\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-periods/{{workPeriodIdForPaid}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods",
+								"{{workPeriodIdForPaid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking to cancelled",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"status\": \"cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking to reduce",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": \"2020-10-04T04:17:23.131Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete resource booking with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -8437,6 +9468,21 @@
 				},
 				{
 					"name": "delete resource booking with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -8470,6 +9516,19 @@
 				},
 				{
 					"name": "delete resource booking with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -8503,6 +9562,19 @@
 				},
 				{
 					"name": "delete resource booking with m2m delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 204', function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -8536,6 +9608,21 @@
 				},
 				{
 					"name": "delete resource booking with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -8713,12 +9800,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8762,12 +9849,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8809,12 +9896,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8856,12 +9943,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8903,12 +9990,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8950,12 +10037,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -8997,12 +10084,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9044,12 +10131,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9091,12 +10178,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9138,12 +10225,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9185,12 +10272,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9232,12 +10319,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9279,12 +10366,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9326,12 +10413,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9373,12 +10460,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9420,12 +10507,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							]
 						}
 					},
@@ -9456,12 +10543,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -9469,7 +10556,7 @@
 					"response": []
 				},
 				{
-					"name": "get work period with m2m read",
+					"name": "get work period with m2m read 1",
 					"event": [
 						{
 							"listen": "test",
@@ -9493,12 +10580,49 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
+								"{{workPeriodIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period with m2m read 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_work_period_and_payment}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -9530,12 +10654,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}?fromDb=true",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}?fromDb=true",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							],
 							"query": [
@@ -9573,12 +10697,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -9610,12 +10734,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -9647,12 +10771,105 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "35",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "resourceBookingId",
+									"value": "{{resourceBookingId}}",
+									"disabled": true
+								},
+								{
+									"key": "resourceBookingIds",
+									"value": "{{resourceBookingId}},{{resourceBookingIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "paymentStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2021-03-14",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2021-03-20",
+									"disabled": true
+								},
+								{
+									"key": "userHandle",
+									"value": "pshah_manager",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "16843",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work periods with m2m all 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_work_period}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-periods",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-periods"
 							],
 							"query": [
 								{
@@ -9716,7 +10933,7 @@
 					"response": []
 				},
 				{
-					"name": "search work periods with m2m all",
+					"name": "search work periods with m2m all 2",
 					"event": [
 						{
 							"listen": "test",
@@ -9736,16 +10953,16 @@
 							{
 								"key": "Authorization",
 								"type": "text",
-								"value": "Bearer {{token_m2m_all_work_period}}"
+								"value": "Bearer {{token_m2m_all_work_period_and_payment}}"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -9833,12 +11050,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -9913,12 +11130,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -10006,12 +11223,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/workPeriods",
+							"raw": "{{URL}}/work-periods",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods"
+								"work-periods"
 							],
 							"query": [
 								{
@@ -10108,12 +11325,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10154,12 +11371,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -10202,12 +11419,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10250,12 +11467,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10298,12 +11515,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10346,12 +11563,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10394,12 +11611,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10442,12 +11659,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10490,12 +11707,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10538,12 +11755,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10586,12 +11803,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10634,12 +11851,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10682,12 +11899,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10730,12 +11947,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10778,12 +11995,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10826,12 +12043,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10872,12 +12089,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -10918,12 +12135,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -10966,12 +12183,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11014,12 +12231,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11062,12 +12279,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11110,12 +12327,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11158,12 +12375,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11206,12 +12423,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11254,12 +12471,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11302,12 +12519,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11350,12 +12567,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11398,12 +12615,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11446,12 +12663,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11494,12 +12711,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11542,12 +12759,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11588,12 +12805,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11634,12 +12851,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodIdCreatedByM2M}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodIdCreatedByM2M}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodIdCreatedByM2M}}"
 							]
 						}
@@ -11682,12 +12899,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
 							]
 						}
@@ -11728,13 +12945,2543 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/workPeriods/{{workPeriodId}}",
+							"raw": "{{URL}}/work-periods/{{workPeriodId}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"workPeriods",
+								"work-periods",
 								"{{workPeriodId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Work Period Payments",
+			"item": [
+				{
+					"name": "Before Test",
+					"item": [
+						{
+							"name": "create job",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create resource booking",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"resourceBookingId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-10-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/resourceBookings",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create work period",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"workPeriodId\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"resourceBookingId\": \"{{resourceBookingId}}\",\r\n    \"startDate\": \"2021-03-07\",\r\n    \"endDate\": \"2021-03-13\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/work-periods",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"work-periods"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create work period payment with boooking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"workPeriodPaymentId\", response.id);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"workPeriodPaymentIdCreatedByM2M\", response.id);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_create_work_period_payment}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodIdCreatedByM2M}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_userId_not_exist}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer invalid_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with missing workPeriodId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.workPeriodId\\\" is required\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid workPeriodId 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.workPeriodId\\\" must be a valid GUID\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"aaa-bb-c\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid workPeriodId 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.workPeriodId\\\" must be a string\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": 123,\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid amount 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.amount\\\" must be a number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": \"abc\",\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid amount 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.amount\\\" must be greater than 0\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 0,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid status 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": 123\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create work period payment with invalid status 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": \"invalid-status\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period payment with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period payment with m2m read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_read_work_period_payment}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period payment with booking manager from db",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}?fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							],
+							"query": [
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period payment with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get work period payment with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work period payments with booking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "status",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodId",
+									"value": "{{workPeriodId}}",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodIds",
+									"value": "{{workPeriodId}},{{workPeriodIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work period payments with m2m all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_work_period_payment}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "status",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodId",
+									"value": "{{workPeriodId}}",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodIds",
+									"value": "{{workPeriodId}},{{workPeriodIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work period payments with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "status",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodId",
+									"value": "{{workPeriodId}}",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodIds",
+									"value": "{{workPeriodId}},{{workPeriodIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work period payments with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "status",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodId",
+									"value": "{{workPeriodId}}",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodIds",
+									"value": "{{workPeriodId}},{{workPeriodIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search work period payments with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer invalid_token"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "status",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodId",
+									"value": "{{workPeriodId}}",
+									"disabled": true
+								},
+								{
+									"key": "workPeriodIds",
+									"value": "{{workPeriodId}},{{workPeriodIdCreatedByM2M}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with boooking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_work_period_payment}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodIdCreatedByM2M}}\",\r\n    \"amount\": 1600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_userId_not_exist}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer invalid_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with missing workPeriodId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.workPeriodId\\\" is required\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid workPeriodId 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.workPeriodId\\\" must be a valid GUID\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"aaa-bb-c\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid workPeriodId 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.workPeriodId\\\" must be a string\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": 123,\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid amount 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.amount\\\" must be a number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": \"abc\",\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid amount 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.amount\\\" must be greater than 0\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 0,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid status 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": 123\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put work period payment with invalid status 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": \"invalid-status\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with boooking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 450,\r\n    \"status\": \"cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with m2m create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_update_work_period_payment}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodIdCreatedByM2M}}\",\r\n    \"amount\": 450,\r\n    \"status\": \"cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentIdCreatedByM2M}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentIdCreatedByM2M}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with connect user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with user id not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Bad Request\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_userId_not_exist}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer invalid_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid workPeriodId 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.workPeriodId\\\" must be a valid GUID\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"aaa-bb-c\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid workPeriodId 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.workPeriodId\\\" must be a string\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": 123,\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid amount 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.amount\\\" must be a number\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": \"abc\",\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid amount 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.amount\\\" must be greater than 0\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 0,\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid status 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": 123\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment with invalid status 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.status\\\" must be one of [completed, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 1200,\r\n    \"status\": \"invalid-status\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"{{workPeriodPaymentId}}"
 							]
 						}
 					},
@@ -16187,12 +19934,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -16210,12 +19957,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -16234,12 +19981,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -16336,12 +20083,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -16382,12 +20129,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
 											]
 										}
@@ -16428,13 +20175,421 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_by_administrator}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_by_administrator}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Work Period Payments",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "✔ create job with administrator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"job_id_created_by_administrator\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{project_id_17234}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create resource booking with administrator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"resource_bookings_id_created_by_administrator\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/resourceBookings",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"resourceBookings"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create work period with administrator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"workPeriodId_created_by_administrator\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"resourceBookingId\": \"{{resource_bookings_id_created_by_administrator}}\",\r\n    \"startDate\": \"2021-03-07\",\r\n    \"endDate\": \"2021-03-13\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/work-periods",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"work-periods"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✔ create work period payment with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    if(pm.response.status === \"OK\"){\r",
+													"        const response = pm.response.json()\r",
+													"        pm.environment.set(\"workPeriodPaymentId_created_by_administrator\", response.id);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_by_administrator}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get work period payment with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search work period payments with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "status",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodId",
+													"value": "{{workPeriodId_created_by_administrator}}",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodIds",
+													"value": "{{workPeriodId_created_by_administrator}},{{workPeriodId_created_by_administrator}}",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "completed",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ put work period payment with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_by_administrator}}\",\r\n    \"amount\": 1600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ patch work period payment with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_by_administrator}}\",\r\n    \"amount\": 450,\r\n    \"status\": \"cancelled\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_by_administrator}}"
 											]
 										}
 									},
@@ -17773,12 +21928,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -17822,12 +21977,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -17845,13 +22000,19 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
+											],
+											"query": [
+												{
+													"key": "projectId",
+													"value": "16718"
+												}
 											]
 										}
 									},
@@ -17869,12 +22030,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16718",
+											"raw": "{{URL}}/work-periods?projectId=16718",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -17972,12 +22133,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -18020,12 +22181,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
 											]
 										}
@@ -18068,13 +22229,476 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_member}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_member}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Work Period Payments",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "✔ create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"job_id_created_for_member\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{project_id_17234}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create resource booking",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"resource_bookings_id_created_for_member\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/resourceBookings",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"resourceBookings"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create work period",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"workPeriodId_created_for_member\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"resourceBookingId\": \"{{resource_bookings_id_created_for_member}}\",\r\n    \"startDate\": \"2021-03-07\",\r\n    \"endDate\": \"2021-03-13\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/work-periods",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"work-periods"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create work period payment",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"workPeriodPaymentId_created_for_member\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_member}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/work-period-payments",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"work-period-payments"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✘ create work period payment with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_member}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ get work period payment with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ search work period payments with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "status",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodId",
+													"value": "{{workPeriodPaymentId_created_for_member}}",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodIds",
+													"value": "{{workPeriodPaymentId_created_for_member}},{{workPeriodPaymentId_created_for_member}}",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "completed",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put work period payment with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_member}}\",\r\n    \"amount\": 1600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch work period payment with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_member}}\",\r\n    \"amount\": 450,\r\n    \"status\": \"cancelled\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_member}}"
 											]
 										}
 									},
@@ -19411,12 +24035,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/workPeriods",
+													"raw": "{{URL}}/work-periods",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"workPeriods"
+														"work-periods"
 													]
 												}
 											},
@@ -19460,12 +24084,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods",
+											"raw": "{{URL}}/work-periods",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											]
 										}
 									},
@@ -19483,12 +24107,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -19507,12 +24131,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/workPeriods?projectId=16843",
+											"raw": "{{URL}}/work-periods?projectId=16843",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods"
+												"work-periods"
 											],
 											"query": [
 												{
@@ -19610,12 +24234,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -19658,12 +24282,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
 											]
 										}
@@ -19706,13 +24330,476 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/workPeriods/{{workPeriodId_created_for_connect_manager}}",
+											"raw": "{{URL}}/work-periods/{{workPeriodId_created_for_connect_manager}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"workPeriods",
+												"work-periods",
 												"{{workPeriodId_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Work Period Payments",
+							"item": [
+								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "✔ create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"job_id_created_for_connect_manager\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{project_id_17234}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create resource booking",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"resource_bookings_id_created_for_connect_manager\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/resourceBookings",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"resourceBookings"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create work period",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"workPeriodId_created_for_connect_manager\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"resourceBookingId\": \"{{resource_bookings_id_created_for_connect_manager}}\",\r\n    \"startDate\": \"2021-03-07\",\r\n    \"endDate\": \"2021-03-13\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/work-periods",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"work-periods"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "✔ create work period payment",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"workPeriodPaymentId_created_for_connect_manager\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_connect_manager}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/work-period-payments",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"work-period-payments"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✘ create work period payment with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_connect_manager}}\",\r\n    \"amount\": 600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ get work period payment with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ search work period payments with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/work-period-payments",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1",
+													"disabled": true
+												},
+												{
+													"key": "perPage",
+													"value": "5",
+													"disabled": true
+												},
+												{
+													"key": "sortBy",
+													"value": "status",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodId",
+													"value": "{{workPeriodPaymentId_created_for_connect_manager}}",
+													"disabled": true
+												},
+												{
+													"key": "workPeriodIds",
+													"value": "{{workPeriodPaymentId_created_for_connect_manager}},{{workPeriodPaymentId_created_for_connect_manager}}",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "completed",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ put work period payment with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_connect_manager}}\",\r\n    \"amount\": 1600,\r\n    \"status\": \"completed\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ patch work period payment with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId_created_for_connect_manager}}\",\r\n    \"amount\": 450,\r\n    \"status\": \"cancelled\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/{{workPeriodPaymentId_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"{{workPeriodPaymentId_created_for_connect_manager}}"
 											]
 										}
 									},

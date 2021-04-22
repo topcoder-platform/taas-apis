@@ -2,7 +2,7 @@
  * Import data from a json file into the db and index it in Elasticsearch
  */
 const config = require('config')
-const { Interview } = require('../../src/models')
+const { Interview, WorkPeriodPayment } = require('../../src/models')
 const logger = require('../../src/common/logger')
 const helper = require('../../src/common/helper')
 
@@ -14,9 +14,17 @@ const jobCandidateModelOpts = {
   }]
 }
 
+const workPeriodModelOpts = {
+  modelName: 'WorkPeriod',
+  include: [{
+    model: WorkPeriodPayment,
+    as: 'payments'
+  }]
+}
+
 const filePath = helper.getParamFromCliArgs() || config.DEFAULT_DATA_FILE_PATH
 const userPrompt = `WARNING: this would remove existing data. Are you sure you want to import data from a json file with the path ${filePath}?`
-const dataModels = ['Job', jobCandidateModelOpts, 'ResourceBooking', 'WorkPeriod']
+const dataModels = ['Job', jobCandidateModelOpts, 'ResourceBooking', workPeriodModelOpts]
 
 async function importData () {
   await helper.promptUser(userPrompt, async () => {

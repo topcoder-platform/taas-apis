@@ -113,12 +113,19 @@ module.exports = {
   // the delete resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
   // topics for work period service
-  // the create rwork period entity Kafka message topic
+  // the create work period entity Kafka message topic
   TAAS_WORK_PERIOD_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_CREATE_TOPIC || 'taas.workperiod.create',
   // the update work period entity Kafka message topic
   TAAS_WORK_PERIOD_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_UPDATE_TOPIC || 'taas.workperiod.update',
   // the delete work period entity Kafka message topic
   TAAS_WORK_PERIOD_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_DELETE_TOPIC || 'taas.workperiod.delete',
+  // topics for work period payment service
+  // the create work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC || 'taas.workperiodpayment.create',
+  // the update work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC || 'taas.workperiodpayment.update',
+  // the delete work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC || 'taas.workperiodpayment.delete',
   // topics for interview service
   // the request interview Kafka message topic
   TAAS_INTERVIEW_REQUEST_TOPIC: process.env.TAAS_INTERVIEW_REQUEST_TOPIC || 'taas.interview.requested',
@@ -148,5 +155,14 @@ module.exports = {
   // The sender (aka `from`) email for invitation.
   INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL,
   // the URL where TaaS App is hosted
-  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
+  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // environment variables for Payment Service
+  ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
+  TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
+  DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
+  DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
+
+  // default time zone for Work Periods
+  WORK_PERIOD_TIME_ZONE: process.env.WORK_PERIOD_TIME_ZONE || 'America/New_York',
+  PAYMENT_PROCESSING_SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF'
 }
