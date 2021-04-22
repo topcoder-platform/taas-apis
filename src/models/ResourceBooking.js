@@ -77,6 +77,10 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      billingAccountId: {
+        field: 'billing_account_id',
+        type: Sequelize.BIGINT
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

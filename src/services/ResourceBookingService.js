@@ -174,7 +174,8 @@ createResourceBooking.schema = Joi.object().keys({
     }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
-    rateType: Joi.rateType().required()
+    rateType: Joi.rateType().required(),
+    billingAccountId: Joi.number().allow(null)
   }).required()
 }).required()
 
@@ -230,7 +231,8 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
     }),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
-    rateType: Joi.rateType()
+    rateType: Joi.rateType(),
+    billingAccountId: Joi.number().allow(null)
   }).required()
 }).required()
 
@@ -268,7 +270,8 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     memberRate: Joi.number().allow(null).default(null),
     customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
-    status: Joi.resourceBookingStatus().required()
+    status: Joi.resourceBookingStatus().required(),
+    billingAccountId: Joi.number().allow(null).default(null)
   }).required()
 }).required()
 
