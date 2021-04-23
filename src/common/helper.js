@@ -1260,10 +1260,10 @@ async function createChallengeResource (data, token) {
  * Populates workPeriods from start and end date of resource booking
  * @param {Date} start start date of the resource booking
  * @param {Date} end end date of the resource booking
- * @returns {Array} information about workPeriods
+ * @returns {Array<{startDate:Date, endDate:Date, daysWorked:number}>} information about workPeriods
  */
 function extractWorkPeriods (start, end) {
-  // canculate daysWorked for a week
+  // calculate maximum possible daysWorked for a week
   function getDaysWorked (week) {
     if (weeks === 1) {
       return Math.min(endDay, 5) - Math.max(startDay, 1) + 1

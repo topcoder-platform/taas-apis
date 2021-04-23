@@ -176,7 +176,8 @@ async function updateWorkPeriods (payload) {
   const workPeriodsToAdd = _.differenceBy(newWorkPeriods, workPeriods, 'startDate')
   // find which workperiods' daysWorked propery should be updated
   let workPeriodsToUpdate = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
-  workPeriodsToUpdate = _.differenceWith(workPeriodsToUpdate, workPeriods, (a, b) => b.startDate === a.startDate && b.daysWorked === a.daysWorked)
+  // find which workperiods' daysWorked property is preset and exceeds the possible maximum
+  workPeriodsToUpdate = _.differenceWith(workPeriodsToUpdate, workPeriods, (a, b) => b.startDate === a.startDate && _.defaultTo(b.daysWorked, a.daysWorked) <= a.daysWorked)
   // include id
   workPeriodsToUpdate = _.map(workPeriodsToUpdate, wpu => {
     wpu.id = _.filter(workPeriods, ['startDate', wpu.startDate])[0].id
@@ -186,7 +187,7 @@ async function updateWorkPeriods (payload) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'updateWorkPeriods',
-      message: `id: ${payload.value.id} resource booking has no change in dates - ignored`
+      message: `id: ${payload.value.id} resource booking has no change in dates that affect work periods - ignored`
     })
     return
   }
@@ -248,8 +249,7 @@ async function deleteWorkPeriods (payload) {
 
 /**
  * Calls WorkPeriodService to create workPeriods
- * @param {Array<{startDate:Date,
- * endDate:Date, daysWorked:number}>} periods work period data
+ * @param {Array<{startDate:Date, endDate:Date}>} periods work period data
  * @param {string} resourceBookingId resourceBookingId of work period
  * @returns {undefined}
  */
@@ -259,7 +259,7 @@ async function _createWorkPeriods (periods, resourceBookingId) {
       resourceBookingId: resourceBookingId,
       startDate: period.startDate,
       endDate: period.endDate,
-      daysWorked: period.daysWorked,
+      daysWorked: null,
       paymentStatus: 'pending'
     })))
 }

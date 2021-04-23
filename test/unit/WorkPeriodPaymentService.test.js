@@ -6,7 +6,8 @@ const sinon = require('sinon')
 const models = require('../../src/models')
 const service = require('../../src/services/WorkPeriodPaymentService')
 const paymentService = require('../../src/services/PaymentService')
-const testData = require('./common/testData')
+const commonData = require('./common/CommonData')
+const testData = require('./common/WorkPeriodPaymentData')
 const helper = require('../../src/common/helper')
 // const esClient = helper.getESClient()
 const busApiClient = helper.getBusApiClient()
@@ -35,7 +36,7 @@ describe('workPeriod service test', () => {
     })
 
     it('create work period success', async () => {
-      const response = await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
+      const response = await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
       expect(stubGetUserId.calledOnce).to.be.true
       expect(stubEnsureWorkPeriodById.calledOnce).to.be.true
       expect(stubEnsureResourceBookingById.calledOnce).to.be.true
@@ -45,7 +46,7 @@ describe('workPeriod service test', () => {
     })
 
     it('create work period success - billingAccountId is set', async () => {
-      await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
+      await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
       expect(stubCreatePayment.calledOnce).to.be.true
       expect(stubCreatePayment.args[0][0]).to.include({
         billingAccountId: testData.workPeriodPayment01.ensureResourceBookingByIdResponse.billingAccountId
@@ -61,7 +62,7 @@ describe('workPeriod service test', () => {
       sinon.stub(helper, 'ensureResourceBookingById').callsFake(async () => testData.workPeriodPayment01.ensureResourceBookingByIdResponse02)
 
       try {
-        await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request)
+        await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request)
       } catch (err) {
         expect(err.message).to.include('"ResourceBooking" Billing account is not assigned to the resource booking')
       }
@@ -69,11 +70,11 @@ describe('workPeriod service test', () => {
 
     describe('when PAYMENT_PROCESSING_SWITCH is ON/OFF', async () => {
       it('do not create payment if PAYMENT_PROCESSING_SWITCH is OFF', async () => {
-        await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'OFF' })
+        await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'OFF' })
         expect(stubCreatePayment.calledOnce).to.be.false
       })
       it('create payment if PAYMENT_PROCESSING_SWITCH is ON', async () => {
-        await service.createWorkPeriodPayment(testData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
+        await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request, { paymentProcessingSwitch: 'ON' })
         expect(stubCreatePayment.calledOnce).to.be.true
       })
     })

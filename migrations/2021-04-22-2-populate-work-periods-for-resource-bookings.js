@@ -41,7 +41,7 @@ module.exports = {
               user_handle: user.handle,
               start_date: period.startDate,
               end_date: period.endDate,
-              days_worked: period.daysWorked,
+              days_worked: null,
               payment_status: 'pending',
               created_by: config.m2m.M2M_AUDIT_USER_ID,
               created_at: new Date()
