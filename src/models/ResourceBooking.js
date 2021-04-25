@@ -58,11 +58,11 @@ module.exports = (sequelize) => {
       },
       startDate: {
         field: 'start_date',
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       endDate: {
         field: 'end_date',
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       memberRate: {
         field: 'member_rate',
@@ -76,6 +76,10 @@ module.exports = (sequelize) => {
         field: 'rate_type',
         type: Sequelize.STRING(255),
         allowNull: false
+      },
+      billingAccountId: {
+        field: 'billing_account_id',
+        type: Sequelize.BIGINT
       },
       createdBy: {
         field: 'created_by',

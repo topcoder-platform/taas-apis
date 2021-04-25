@@ -18,7 +18,7 @@ const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
-const moment = require('moment-timezone')
+const moment = require('moment')
 
 const localLogger = {
   debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message }),
@@ -112,11 +112,12 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   userId: { type: 'keyword' },
   jobId: { type: 'keyword' },
   status: { type: 'keyword' },
-  startDate: { type: 'date' },
-  endDate: { type: 'date' },
+  startDate: { type: 'date', format: 'yyyy-MM-dd' },
+  endDate: { type: 'date', format: 'yyyy-MM-dd' },
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
   rateType: { type: 'keyword' },
+  billingAccountId: { type: 'integer' },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -141,6 +142,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
       challengeId: { type: 'keyword' },
       amount: { type: 'float' },
       status: { type: 'keyword' },
+      billingAccountId: { type: 'integer' },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
@@ -1323,12 +1325,10 @@ function extractWorkPeriods (start, end) {
     return periods
   }
   const startDate = moment(start)
-  startDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
   const startDay = startDate.get('day')
   startDate.set('day', 0).startOf('day')
 
   const endDate = moment(end)
-  endDate.tz(config.WORK_PERIOD_TIME_ZONE, false)
   const endDay = endDate.get('day')
   endDate.set('day', 6).endOf('day')
 

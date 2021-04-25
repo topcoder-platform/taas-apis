@@ -590,7 +590,16 @@ paths:
           required: false
           schema:
             type: string
-            enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
+            enum:
+              [
+                "open",
+                "selected",
+                "shortlist",
+                "rejected",
+                "cancelled",
+                "interview",
+                "topcoder-rejected",
+              ]
           description: The job candidate status.
         - in: query
           name: externalId
@@ -1303,14 +1312,14 @@ paths:
           required: false
           schema:
             type: string
-            format: date-time
+            format: date
           description: The resource booking start date.
         - in: query
           name: endDate
           required: false
           schema:
             type: string
-            format: date-time
+            format: date
           description: The resource booking end date.
         - in: query
           name: rateType
@@ -2170,13 +2179,7 @@ paths:
           schema:
             type: string
             default: createdAt
-            enum:
-              [
-                "status",
-                "amount",
-                "createdAt",
-                "updatedAt",
-              ]
+            enum: ["status", "amount", "createdAt", "updatedAt"]
           description: The sort by column.
         - in: query
           name: sortOrder
@@ -3277,7 +3280,16 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
+          enum:
+            [
+              "open",
+              "selected",
+              "shortlist",
+              "rejected",
+              "cancelled",
+              "interview",
+              "topcoder-rejected",
+            ]
           description: "The job candidate status."
         externalId:
           type: string
@@ -3395,7 +3407,16 @@ components:
       properties:
         status:
           type: string
-          enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
+          enum:
+            [
+              "open",
+              "selected",
+              "shortlist",
+              "rejected",
+              "cancelled",
+              "interview",
+              "topcoder-rejected",
+            ]
         externalId:
           type: string
           example: "1212"
@@ -3600,13 +3621,13 @@ components:
           description: "The job status."
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         endDate:
           type: string
-          format: date-time
-          example: "2020-09-28T04:17:23.131Z"
+          format: date
+          example: "2020-09-28"
           description: "The job end date."
         memberRate:
           type: integer
@@ -3622,6 +3643,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
         createdAt:
           type: string
           format: date-time
@@ -3664,13 +3689,13 @@ components:
           default: sourcing
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         endDate:
           type: string
-          format: date-time
-          example: "2020-09-28T04:17:23.131Z"
+          format: date
+          example: "2020-09-28"
           description: "The job end date."
         memberRate:
           type: number
@@ -3686,6 +3711,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
     ResourceBookingPatchRequestBody:
       properties:
         status:
@@ -3693,13 +3722,13 @@ components:
           enum: ["assigned", "closed", "cancelled"]
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         endDate:
           type: string
-          format: date-time
-          example: "2020-09-28T04:17:23.131Z"
+          format: date
+          example: "2020-09-28"
           description: "The job end date."
         memberRate:
           type: number
@@ -3715,6 +3744,10 @@ components:
           type: string
           enum: ["hourly", "daily", "weekly", "monthly"]
           description: "The rate type of the job."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
     WorkPeriod:
       required:
         - id
@@ -3895,6 +3928,10 @@ components:
           type: string
           enum: ["completed", "cancelled"]
           description: "The payment status."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: 'the billing account id for payments'
         createdAt:
           type: string
           format: date-time
@@ -4303,7 +4340,16 @@ components:
                 description: "The link for the resume that can be downloaded"
               status:
                 type: string
-                enum: ['open', 'selected', 'shortlist', 'rejected', 'cancelled', 'interview', 'topcoder-rejected']
+                enum:
+                  [
+                    "open",
+                    "selected",
+                    "shortlist",
+                    "rejected",
+                    "cancelled",
+                    "interview",
+                    "topcoder-rejected",
+                  ]
                 description: "The job candidate status."
               skills:
                 type: array

@@ -97,14 +97,24 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment, options 
   // check permission
   await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
-  const { projectId, userHandle, endDate } = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+  const { projectId, userHandle, endDate, resourceBookingId } = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+
+  // get billingAccountId from corresponding resource booking
+  const correspondingResourceBooking = await helper.ensureResourceBookingById(resourceBookingId)
+  if (!correspondingResourceBooking.billingAccountId) {
+    throw new errors.ConflictError(`id: ${resourceBookingId} "ResourceBooking" Billing account is not assigned to the resource booking`)
+  }
+  workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
+
   const paymentChallenge = options.paymentProcessingSwitch === constants.PaymentProcessingSwitch.ON ? (await PaymentService.createPayment({
     projectId,
     userHandle,
     amount: workPeriodPayment.amount,
     name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
-    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`
+    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
+    billingAccountId: correspondingResourceBooking.billingAccountId
   })) : ({ id: '00000000-0000-0000-0000-000000000000' })
+
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.challengeId = paymentChallenge.id
   workPeriodPayment.createdBy = await helper.getUserId(currentUser.userId)

@@ -80,7 +80,13 @@ async function createChallenge (challenge, token) {
     },
     tags: ['Other'],
     startDate: new Date(),
-    billing: { billingAccountId: challenge.billingAccountId }
+  }
+
+  if (challenge.billingAccountId) {
+    body.billing = {
+      billingAccountId: challenge.billingAccountId,
+      markup: 0, // for TaaS payments we always use 0 markup
+    }
   }
   try {
     const response = await helper.createChallenge(body, token)

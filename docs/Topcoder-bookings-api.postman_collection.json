@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2ec8ba88-98dd-4719-8e72-53ed706f071c",
+		"_postman_id": "f26164a2-4129-4e0a-89fb-75c6756b4a79",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3118,7 +3118,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+									"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -7435,7 +7435,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-10-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-10-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7574,7 +7574,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27\",\r\n  \"endDate\": \"2021-01-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7711,7 +7711,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7758,7 +7758,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7805,7 +7805,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7852,7 +7852,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8119,12 +8119,12 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
@@ -8202,12 +8202,12 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
@@ -8275,12 +8275,12 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
@@ -8345,12 +8345,12 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
@@ -8419,12 +8419,12 @@
 								},
 								{
 									"key": "startDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2020-09-27T04:17:23.131Z",
+									"value": "2020-09-27",
 									"disabled": true
 								},
 								{
@@ -8467,7 +8467,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26T04:17:23.131Z\",\r\n  \"endDate\": \"2020-11-29T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26\",\r\n  \"endDate\": \"2020-11-29\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8603,7 +8603,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27T04:17:23.131Z\",\r\n  \"endDate\": \"2021-01-10T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27\",\r\n  \"endDate\": \"2021-01-10\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8741,7 +8741,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8789,7 +8789,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8837,7 +8837,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8885,7 +8885,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8931,7 +8931,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-09-30T04:17:23.131Z\",\r\n    \"endDate\": \"2020-11-28T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-09-30\",\r\n    \"endDate\": \"2020-11-28\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8977,7 +8977,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-12-30T04:17:23.131Z\",\r\n    \"endDate\": \"2021-02-10T04:17:23.131Z\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-12-30\",\r\n    \"endDate\": \"2021-02-10\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9025,7 +9025,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9073,7 +9073,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9121,7 +9121,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-28T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9169,7 +9169,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9352,7 +9352,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n  \"status\": \"cancelled\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9398,7 +9398,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startDate\": \"2020-10-04T04:17:23.131Z\"\r\n}",
+							"raw": "{\r\n    \"startDate\": \"2020-10-04\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9741,7 +9741,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -13044,7 +13044,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-10-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+									"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-10-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -13094,6 +13094,55 @@
 								"body": {
 									"mode": "raw",
 									"raw": "{\r\n    \"resourceBookingId\": \"{{resourceBookingId}}\",\r\n    \"startDate\": \"2021-03-07\",\r\n    \"endDate\": \"2021-03-13\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/work-periods",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"work-periods"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create work period with m2m",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"workPeriodIdCreatedByM2M\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_create_work_period}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"resourceBookingId\": \"{{resourceBookingId}}\",\r\n    \"startDate\": \"2021-03-14\",\r\n    \"endDate\": \"2021-03-20\",\r\n    \"daysWorked\": 3,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"cancelled\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -19305,7 +19354,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -19552,6 +19601,60 @@
 							"name": "Resource Bookings",
 							"item": [
 								{
+									"name": "Before Test",
+									"item": [
+										{
+											"name": "✔ create job with administrator",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"job_id_created_by_administrator\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_administrator}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
 									"name": "✔ create resource booking with administrator",
 									"event": [
 										{
@@ -19576,7 +19679,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19661,12 +19764,12 @@
 												},
 												{
 													"key": "startDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
 													"key": "endDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
@@ -19702,7 +19805,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19735,7 +19838,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19875,7 +19978,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -20274,7 +20377,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21195,7 +21298,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21498,6 +21601,50 @@
 									"name": "Before Test",
 									"item": [
 										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_by_member\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_member_tester1234}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{project_id_16718}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
 											"name": "create resource booking",
 											"event": [
 												{
@@ -21522,7 +21669,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21568,7 +21715,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21653,12 +21800,12 @@
 												},
 												{
 													"key": "startDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
 													"key": "endDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
@@ -21698,7 +21845,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21731,7 +21878,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21871,7 +22018,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -22328,7 +22475,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_member}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23306,7 +23453,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"88774632\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23609,6 +23756,50 @@
 									"name": "Before Test",
 									"item": [
 										{
+											"name": "create job",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var data = JSON.parse(responseBody);\r",
+															"postman.setEnvironmentVariable(\"job_id_created_by_connect_manager\",data.id);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"projectId\": {{project_id_16843}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/jobs",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"jobs"
+													]
+												}
+											},
+											"response": []
+										},
+										{
 											"name": "create resource booking",
 											"event": [
 												{
@@ -23633,7 +23824,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23679,7 +23870,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23764,12 +23955,12 @@
 												},
 												{
 													"key": "startDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
 													"key": "endDate",
-													"value": "2020-09-27T04:17:23.131Z",
+													"value": "2020-09-27",
 													"disabled": true
 												},
 												{
@@ -23805,7 +23996,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\"\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23838,7 +24029,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23978,7 +24169,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -24429,7 +24620,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"endDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\"\r\n}",
+													"raw": "{\r\n  \"projectId\": {{project_id_17234}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_for_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
