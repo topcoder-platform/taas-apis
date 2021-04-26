@@ -5,7 +5,7 @@
 
 const config = require('config')
 
-const namespace = process.env.RCRM_IMPORT_CONFIG_NAMESAPCE || 'RCRM_IMPORT_'
+const namespace = process.env.RCRM_IMPORT_CONFIG_NAMESAPCE || ''
 
 module.exports = {
   SLEEP_TIME: process.env[`${namespace}SLEEP_TIME`] || 500,

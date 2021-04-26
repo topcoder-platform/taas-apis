@@ -33,11 +33,35 @@ const Scopes = {
   DELETE_RESOURCE_BOOKING: 'delete:taas-resourceBookings',
   ALL_RESOURCE_BOOKING: 'all:taas-resourceBookings',
   // taas-team
-  READ_TAAS_TEAM: 'read:taas-teams'
+  READ_TAAS_TEAM: 'read:taas-teams',
+  // work period
+  READ_WORK_PERIOD: 'read:taas-workPeriods',
+  CREATE_WORK_PERIOD: 'create:taas-workPeriods',
+  UPDATE_WORK_PERIOD: 'update:taas-workPeriods',
+  DELETE_WORK_PERIOD: 'delete:taas-workPeriods',
+  ALL_WORK_PERIOD: 'all:taas-workPeriods',
+  // work period payment
+  READ_WORK_PERIOD_PAYMENT: 'read:taas-workPeriodPayments',
+  CREATE_WORK_PERIOD_PAYMENT: 'create:taas-workPeriodPayments',
+  UPDATE_WORK_PERIOD_PAYMENT: 'update:taas-workPeriodPayments',
+  ALL_WORK_PERIOD_PAYMENT: 'all:taas-workPeriodPayments'
+}
+
+const ChallengeStatus = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed'
+}
+
+const PaymentProcessingSwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
 }
 
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
-  Scopes
+  Scopes,
+  ChallengeStatus,
+  PaymentProcessingSwitch
 }

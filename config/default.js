@@ -76,6 +76,8 @@ module.exports = {
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
     // the resource booking index
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
+    // the work period index
+    ES_INDEX_WORK_PERIOD: process.env.ES_INDEX_WORK_PERIOD || 'work_period',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
@@ -103,13 +105,27 @@ module.exports = {
   TAAS_JOB_CANDIDATE_UPDATE_TOPIC: process.env.TAAS_JOB_CANDIDATE_UPDATE_TOPIC || 'taas.jobcandidate.update',
   // the delete job candidate entity Kafka message topic
   TAAS_JOB_CANDIDATE_DELETE_TOPIC: process.env.TAAS_JOB_CANDIDATE_DELETE_TOPIC || 'taas.jobcandidate.delete',
-  // topics for job service
+  // topics for resource booking service
   // the create resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_CREATE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_CREATE_TOPIC || 'taas.resourcebooking.create',
   // the update resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_UPDATE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC || 'taas.resourcebooking.update',
   // the delete resource booking entity Kafka message topic
   TAAS_RESOURCE_BOOKING_DELETE_TOPIC: process.env.TAAS_RESOURCE_BOOKING_DELETE_TOPIC || 'taas.resourcebooking.delete',
+  // topics for work period service
+  // the create work period entity Kafka message topic
+  TAAS_WORK_PERIOD_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_CREATE_TOPIC || 'taas.workperiod.create',
+  // the update work period entity Kafka message topic
+  TAAS_WORK_PERIOD_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_UPDATE_TOPIC || 'taas.workperiod.update',
+  // the delete work period entity Kafka message topic
+  TAAS_WORK_PERIOD_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_DELETE_TOPIC || 'taas.workperiod.delete',
+  // topics for work period payment service
+  // the create work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC || 'taas.workperiodpayment.create',
+  // the update work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC || 'taas.workperiodpayment.update',
+  // the delete work period payment entity Kafka message topic
+  TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC || 'taas.workperiodpayment.delete',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
@@ -124,5 +140,12 @@ module.exports = {
   // SendGrid email template ID for requesting extension
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
   // the URL where TaaS App is hosted
-  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams'
+  TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // environment variables for Payment Service
+  ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
+  TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
+  DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
+  DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
+
+  PAYMENT_PROCESSING_SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF'
 }

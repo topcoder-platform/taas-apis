@@ -9,6 +9,8 @@ const logger = require('../common/logger')
 const helper = require('../common/helper')
 const JobService = require('../services/JobService')
 const JobCandidateService = require('../services/JobCandidateService')
+const WorkPeriodService = require('../services/WorkPeriodService')
+const WorkPeriod = models.WorkPeriod
 
 /**
  * When ResourceBooking's status is changed to `assigned`
@@ -125,6 +127,167 @@ async function assignJob (payload) {
 }
 
 /**
+ * When a ResourceBooking is created, workPeriods that cover each weeks
+ * of resource booking should be also created
+ * @param {object} payload the event payload
+ * @returns {undefined}
+ */
+async function createWorkPeriods (payload) {
+  // if startDate or endDate is not provided then we can't create work period
+  if (_.isNil(payload.value.startDate) || _.isNil(payload.value.endDate)) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'createWorkPeriods',
+      message: `id: ${payload.value.id} resource booking without endDate or startDate - ignored`
+    })
+    return
+  }
+  // collect dates of work periods
+  const workPeriodDates = helper.extractWorkPeriods(payload.value.startDate, payload.value.endDate)
+  await _createWorkPeriods(workPeriodDates, payload.value.id)
+  logger.debug({
+    component: 'ResourceBookingEventHandler',
+    context: 'createWorkPeriods',
+    message: `WorkPeriods created for resource booking with id: ${payload.value.id}`
+  })
+}
+
+/**
+ * When a ResourceBooking is updated, workPeriods related to
+ * that ResourceBooking should be updated also.
+ * This function finds aout which workPeriods should be deleted,
+ * which ones should be created and which ones should be updated
+ * @param {object} payload the event payload
+ * @returns {undefined}
+ */
+async function updateWorkPeriods (payload) {
+  // find related workPeriods to evaluate the changes
+  const workPeriods = await WorkPeriod.findAll({
+    where: {
+      resourceBookingId: payload.value.id
+    },
+    raw: true
+  })
+  // gather workPeriod dates
+  const newWorkPeriods = helper.extractWorkPeriods(payload.value.startDate || payload.options.oldValue.startDate, payload.value.endDate || payload.options.oldValue.endDate)
+  // find which workPeriods should be removed
+  const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
+  // find which workperiods should be created
+  const workPeriodsToAdd = _.differenceBy(newWorkPeriods, workPeriods, 'startDate')
+  // find which workperiods' daysWorked propery should be updated
+  let workPeriodsToUpdate = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
+  // find which workperiods' daysWorked property is preset and exceeds the possible maximum
+  workPeriodsToUpdate = _.differenceWith(workPeriodsToUpdate, workPeriods, (a, b) => b.startDate === a.startDate && _.defaultTo(b.daysWorked, a.daysWorked) <= a.daysWorked)
+  // include id
+  workPeriodsToUpdate = _.map(workPeriodsToUpdate, wpu => {
+    wpu.id = _.filter(workPeriods, ['startDate', wpu.startDate])[0].id
+    return wpu
+  })
+  if (workPeriodsToRemove.length === 0 && workPeriodsToAdd.length === 0 && workPeriodsToUpdate.length === 0) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'updateWorkPeriods',
+      message: `id: ${payload.value.id} resource booking has no change in dates that affect work periods - ignored`
+    })
+    return
+  }
+  if (workPeriodsToRemove.length > 0) {
+    await _deleteWorkPeriods(workPeriodsToRemove)
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'updateWorkPeriods',
+      message: `Old WorkPeriods deleted for resource booking with id: ${payload.value.id}`
+    })
+  }
+  if (workPeriodsToAdd.length > 0) {
+    await _createWorkPeriods(workPeriodsToAdd, payload.value.id)
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'updateWorkPeriods',
+      message: `New WorkPeriods created for resource booking with id: ${payload.value.id}`
+    })
+  }
+  if (workPeriodsToUpdate.length > 0) {
+    await _updateWorkPeriods(workPeriodsToUpdate)
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'updateWorkPeriods',
+      message: `WorkPeriods updated for resource booking with id: ${payload.value.id}`
+    })
+  }
+}
+
+/**
+ * When a ResourceBooking is deleted, workPeriods related to
+ * that ResourceBooking should also be deleted
+ * @param {object} payload the event payload
+ * @returns {undefined}
+ */
+async function deleteWorkPeriods (payload) {
+  // find related workPeriods to delete
+  const workPeriods = await WorkPeriod.findAll({
+    where: {
+      resourceBookingId: payload.value.id
+    },
+    raw: true
+  })
+  if (workPeriods.length === 0) {
+    logger.debug({
+      component: 'ResourceBookingEventHandler',
+      context: 'deleteWorkPeriods',
+      message: `id: ${payload.value.id} resource booking has no workPeriods - ignored`
+    })
+    return
+  }
+  await _deleteWorkPeriods(workPeriods)
+  logger.debug({
+    component: 'ResourceBookingEventHandler',
+    context: 'deleteWorkPeriods',
+    message: `WorkPeriods deleted for resource booking with id: ${payload.value.id}`
+  })
+}
+
+/**
+ * Calls WorkPeriodService to create workPeriods
+ * @param {Array<{startDate:Date, endDate:Date}>} periods work period data
+ * @param {string} resourceBookingId resourceBookingId of work period
+ * @returns {undefined}
+ */
+async function _createWorkPeriods (periods, resourceBookingId) {
+  await Promise.all(_.map(periods, async period => await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
+    {
+      resourceBookingId: resourceBookingId,
+      startDate: period.startDate,
+      endDate: period.endDate,
+      daysWorked: null,
+      paymentStatus: 'pending'
+    })))
+}
+
+/**
+ * Calls WorkPeriodService to update workPeriods
+ * @param {Array<{daysWorked:number}>} periods work period data
+ * @returns {undefined}
+ */
+async function _updateWorkPeriods (periods) {
+  await Promise.all(_.map(periods, async period => await WorkPeriodService.partiallyUpdateWorkPeriod(helper.getAuditM2Muser(),
+    period.id,
+    {
+      daysWorked: period.daysWorked
+    })))
+}
+
+/**
+ * Calls WorkPeriodService to delete workPeriods
+ * @param {Array<{id:string}>} workPeriods work period objects
+ * @returns {undefined}
+ */
+async function _deleteWorkPeriods (workPeriods) {
+  await Promise.all(_.map(workPeriods,
+    async workPeriod => await WorkPeriodService.deleteWorkPeriod(helper.getAuditM2Muser(), workPeriod.id)))
+}
+
+/**
  * Process resource booking create event.
  *
  * @param {Object} payload the event payload
@@ -133,6 +296,7 @@ async function assignJob (payload) {
 async function processCreate (payload) {
   await selectJobCandidate(payload)
   await assignJob(payload)
+  await createWorkPeriods(payload)
 }
 
 /**
@@ -144,9 +308,21 @@ async function processCreate (payload) {
 async function processUpdate (payload) {
   await selectJobCandidate(payload)
   await assignJob(payload)
+  await updateWorkPeriods(payload)
+}
+
+/**
+ * Process resource booking delete event.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function processDelete (payload) {
+  await deleteWorkPeriods(payload)
 }
 
 module.exports = {
   processCreate,
-  processUpdate
+  processUpdate,
+  processDelete
 }

@@ -513,6 +513,21 @@ deleteMember.schema = Joi.object().keys({
   projectMemberId: Joi.number().integer().required()
 }).required()
 
+/**
+ * Return details about the current user.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the user data for current user
+ */
+async function getMe (currentUser) {
+  return helper.getUserByExternalId(currentUser.userId)
+}
+
+getMe.schema = Joi.object().keys({
+  currentUser: Joi.object().required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -521,5 +536,6 @@ module.exports = {
   addMembers,
   searchMembers,
   searchInvites,
-  deleteMember
+  deleteMember,
+  getMe
 }

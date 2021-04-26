@@ -1,3 +1,5 @@
+const config = require('config')
+
 /*
  * Make some Job fields longer
  * title: 64 -> 128
@@ -5,16 +7,34 @@
  */
 
 module.exports = {
-  up: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(128)`),
-      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN description TYPE TEXT`)
-    ])
+  up: async (queryInterface, Sequelize) => {
+    const transaction = await queryInterface.sequelize.transaction()
+    try {
+      await queryInterface.changeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'title',
+        { type: Sequelize.STRING(128), allowNull: false },
+        { transaction })
+      await queryInterface.changeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'description',
+        { type: Sequelize.TEXT },
+        { transaction })
+      await transaction.commit()
+    } catch (err) {
+      await transaction.rollback()
+      throw err
+    }
   },
-  down: queryInterface => {
-    return Promise.all([
-      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN title TYPE VARCHAR(64)`),
-      queryInterface.sequelize.query(`ALTER TABLE bookings.jobs ALTER COLUMN description TYPE VARCHAR(255)`)
-    ])
+  down: async (queryInterface, Sequelize) => {
+    const transaction = await queryInterface.sequelize.transaction()
+    try {
+      await queryInterface.changeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'title',
+        { type: Sequelize.STRING(64), allowNull: false },
+        { transaction })
+      await queryInterface.changeColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'description',
+        { type: Sequelize.STRING(255) },
+        { transaction })
+      await transaction.commit()
+    } catch (err) {
+      await transaction.rollback()
+      throw err
+    }
   }
 }

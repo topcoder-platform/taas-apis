@@ -7,7 +7,7 @@ const helper = require('../../src/common/helper')
 
 const filePath = helper.getParamFromCliArgs() || config.DEFAULT_DATA_FILE_PATH
 const userPrompt = `WARNING: are you sure you want to export all data in the database to a json file with the path ${filePath}? This will overwrite the file.`
-const dataModels = ['Job', 'JobCandidate', 'ResourceBooking']
+const dataModels = ['Job', 'JobCandidate', 'ResourceBooking', 'WorkPeriod', 'WorkPeriodPayment']
 
 async function exportData () {
   await helper.promptUser(userPrompt, async () => {
