@@ -593,9 +593,11 @@ paths:
             enum:
               [
                 "open",
+                "placed",
                 "selected",
-                "shortlist",
-                "rejected",
+                "client rejected - screening",
+                "client rejected - interview",
+                "rejected - other",
                 "cancelled",
                 "interview",
                 "topcoder-rejected",
@@ -1305,7 +1307,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["assigned", "in-progress", "completed"]
+            enum: ["placed", "in-progress", "completed"]
           description: The status.
         - in: query
           name: startDate
@@ -3283,9 +3285,11 @@ components:
           enum:
             [
               "open",
+              "placed",
               "selected",
-              "shortlist",
-              "rejected",
+              "client rejected - screening",
+              "client rejected - interview",
+              "rejected - other",
               "cancelled",
               "interview",
               "topcoder-rejected",
@@ -3392,7 +3396,7 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ["open", "selected", "shortlist", "rejected", "cancelled"]
+          enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected"]
           description: "The job candidate status."
           default: open
         externalId:
@@ -3410,9 +3414,11 @@ components:
           enum:
             [
               "open",
+              "placed",
               "selected",
-              "shortlist",
-              "rejected",
+              "client rejected - screening",
+              "client rejected - interview",
+              "rejected - other",
               "cancelled",
               "interview",
               "topcoder-rejected",
@@ -3449,8 +3455,8 @@ components:
           description: "The google calendar id."
         xaiTemplate:
           type: string
-          example: "30-min-interview"
-          enum: ["30-min-interview", "60-min-interview"]
+          example: "30-minutes"
+          enum: ["30-minutes", "60-minutes"]
           description: "The x.ai template name"
         customMessage:
           type: string
@@ -3504,8 +3510,8 @@ components:
           description: "The custom message."
         xaiTemplate:
           type: string
-          enum: ["30-min-interview", "60-min-interview"]
-          example: "30-min-interview"
+          enum: ["30-minutes", "60-minutes"]
+          example: "30-minutes"
           description: "The x.ai template name"
         attendeesList:
           type: array
@@ -3529,8 +3535,8 @@ components:
           description: "The custom message."
         xaiTemplate:
           type: string
-          enum: ["30-min-interview", "60-min-interview"]
-          example: "30-min-interview"
+          enum: ["30-minutes", "60-minutes"]
+          example: "30-minutes"
           description: "The x.ai template name"
         attendeesList:
           type: array
@@ -3617,7 +3623,7 @@ components:
           description: "The external id."
         status:
           type: string
-          enum: ["assigned", "closed", "cancelled"]
+          enum: ["placed", "closed", "cancelled"]
           description: "The job status."
         startDate:
           type: string
@@ -3684,7 +3690,7 @@ components:
           description: "The job id."
         status:
           type: string
-          enum: ["assigned", "closed", "cancelled"]
+          enum: ["placed", "closed", "cancelled"]
           description: "The job status."
           default: sourcing
         startDate:
@@ -3719,7 +3725,7 @@ components:
       properties:
         status:
           type: string
-          enum: ["assigned", "closed", "cancelled"]
+          enum: ["placed", "closed", "cancelled"]
         startDate:
           type: string
           format: date
@@ -4338,14 +4344,20 @@ components:
                 type: string
                 format: url
                 description: "The link for the resume that can be downloaded"
+              interviews:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Interview"
               status:
                 type: string
                 enum:
                   [
                     "open",
+                    "placed",
                     "selected",
-                    "shortlist",
-                    "rejected",
+                    "client rejected - screening",
+                    "client rejected - interview",
+                    "rejected - other",
                     "cancelled",
                     "interview",
                     "topcoder-rejected",

@@ -125,10 +125,18 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   })
   interview.round = round + 1
 
-  // create
   try {
+    // create the interview
     const created = await Interview.create(interview)
     await helper.postEvent(config.TAAS_INTERVIEW_REQUEST_TOPIC, created.toJSON())
+    // update jobCandidate.status to Interview
+    const [, affectedRows] = await models.JobCandidate.update(
+      { status: 'interview' },
+      { where: { id: created.jobCandidateId }, returning: true }
+    )
+    const updatedJobCandidate = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
+    await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updatedJobCandidate)
+    // return created interview
     return created.dataValues
   } catch (err) {
     // gracefully handle if one of the common sequelize errors

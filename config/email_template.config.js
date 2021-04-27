@@ -63,17 +63,31 @@ module.exports = {
 
   /* Request interview for a job candidate
    *
-   * - interviewType: the x.ai interview type. Example: "30-min-interview"
+   * - interviewType: the x.ai interview type. Example: "30-minutes"
+   * - interviewRound: the round of the interview. Example: 2
+   * - interviewDuration: duration of the interview, in minutes. Example: 30
+   * - interviewerList: The list of interviewer email addresses. Example:  "first@attendee.com, second@attendee.com"
+   * - candidateId: the id of the jobCandidate. Example: "cc562545-7b75-48bf-87e7-50b3c57e41b1"
    * - candidateName: Full name of candidate. Example: "John Doe"
    * - jobName: The title of the job. Example: "TaaS API Misc Updates"
-   * - customMessage: if it's needed, a custom message can be added to the end of email. Example: "I would like to invite you for an interview..."
    *
    * Template (defined in SendGrid):
-   * Subject: '/{{interviewType}} tech interview with {{candidateName}} for {{jobName}} is requested by the Customer'
+   * Subject: '{{interviewType}} tech interview with {{candidateName}} for {{jobName}} is requested by the Customer'
    * Body:
-   * 'The customer has requested /{{interviewType}} with {{candidateName}} for {{jobName}}.'
-   * + 'In a few minutes you will receive an invitation from our scheduling tool. Please proceed with the invitation to agree on timing.'
-   * + '<br /><br />{{customMessage}}'
+   * 'Hello!
+   *  <br /><br />
+   *  Congratulations, you have been selected to participate in a Topcoder Gig Work Interview!
+   *  <br /><br />
+   *  Please monitor your email for a response to this where you can coordinate your availability.
+   *  <br /><br />
+   *  Interviewee: {{candidateName}}<br />
+   *  Interviewer(s): {{interviewerList}}<br />
+   *  Interview Length: {{interviewDuration}} minutes
+   *  <br /><br />
+   *  /{{interviewType}}
+   *  <br /><br />
+   *  Topcoder Info:<br />
+   *  Note: "id: {{candidateId}}, round: {{interviewRound}}"'
    *
    * Note, that the template should be defined in SendGrid.
    * The subject & body above (identical to actual SendGrid template) is for reference purposes.

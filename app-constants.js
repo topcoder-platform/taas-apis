@@ -62,9 +62,10 @@ const Interviews = {
     Completed: 'Completed',
     Cancelled: 'Cancelled'
   },
+  // key: template name in x.ai, value: duration
   XaiTemplate: {
-    '30MinInterview': '30-min-interview',
-    '60MinInterview': '60-min-interview'
+    '30-minutes': 30,
+    '60-minutes': 60
   }
 }
 
