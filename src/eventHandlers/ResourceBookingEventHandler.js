@@ -13,26 +13,26 @@ const WorkPeriodService = require('../services/WorkPeriodService')
 const WorkPeriod = models.WorkPeriod
 
 /**
- * When ResourceBooking's status is changed to `assigned`
+ * When ResourceBooking's status is changed to `placed`
  * the corresponding JobCandidate record (with the same userId and jobId)
- * should be updated with status `selected`
+ * should be updated with status `placed`
  *
  * @param {Object} payload the event payload
  * @returns {undefined}
  */
-async function selectJobCandidate (payload) {
+async function placeJobCandidate (payload) {
   if (_.get(payload, 'options.oldValue') && payload.value.status === payload.options.oldValue.status) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
+      context: 'placeJobCandidate',
       message: 'status not changed'
     })
     return
   }
-  if (payload.value.status !== 'assigned') {
+  if (payload.value.status !== 'placed') {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
+      context: 'placeJobCandidate',
       message: `not interested resource booking - status: ${payload.value.status}`
     })
     return
@@ -41,7 +41,7 @@ async function selectJobCandidate (payload) {
   if (!resourceBooking.jobId) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
+      context: 'placeJobCandidate',
       message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
     })
     return
@@ -51,42 +51,42 @@ async function selectJobCandidate (payload) {
       jobId: resourceBooking.jobId,
       userId: resourceBooking.userId,
       status: {
-        [Op.not]: 'selected'
+        [Op.not]: 'placed'
       }
     }
   })
   await Promise.all(candidates.map(candidate => JobCandidateService.partiallyUpdateJobCandidate(
     helper.getAuditM2Muser(),
     candidate.id,
-    { status: 'selected' }
+    { status: 'placed' }
   ).then(result => {
     logger.info({
       component: 'ResourceBookingEventHandler',
-      context: 'selectJobCandidate',
+      context: 'placeJobCandidate',
       message: `id: ${result.id} candidate got selected.`
     })
   })))
 }
 
 /**
- * Update the status of the Job to assigned when it positions requirement is fullfilled.
+ * Update the status of the Job to placed when it positions requirement is fullfilled.
  *
  * @param {Object} payload the event payload
  * @returns {undefined}
  */
-async function assignJob (payload) {
+async function placeJob (payload) {
   if (_.get(payload, 'options.oldValue') && payload.value.status === payload.options.oldValue.status) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'assignJob',
+      context: 'placeJob',
       message: 'status not changed'
     })
     return
   }
-  if (payload.value.status !== 'assigned') {
+  if (payload.value.status !== 'placed') {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'assignJob',
+      context: 'placeJob',
       message: `not interested resource booking - status: ${payload.value.status}`
     })
     return
@@ -95,34 +95,34 @@ async function assignJob (payload) {
   if (!resourceBooking.jobId) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'assignJob',
+      context: 'placeJob',
       message: `id: ${resourceBooking.id} resource booking without jobId - ignored`
     })
     return
   }
   const job = await models.Job.findById(resourceBooking.jobId)
-  if (job.status === 'assigned') {
+  if (job.status === 'placed') {
     logger.debug({
       component: 'ResourceBookingEventHandler',
-      context: 'assignJob',
-      message: `job with projectId ${job.projectId} is already assigned`
+      context: 'placeJob',
+      message: `job with projectId ${job.projectId} is already placed`
     })
     return
   }
   const resourceBookings = await models.ResourceBooking.findAll({
     where: {
       jobId: job.id,
-      status: 'assigned'
+      status: 'placed'
     }
   })
   logger.debug({
     component: 'ResourceBookingEventHandler',
-    context: 'assignJob',
-    message: `the number of assigned resource bookings is ${resourceBookings.length} - the numPositions of the job is ${job.numPositions}`
+    context: 'placeJob',
+    message: `the number of placed resource bookings is ${resourceBookings.length} - the numPositions of the job is ${job.numPositions}`
   })
   if (job.numPositions === resourceBookings.length) {
-    await JobService.partiallyUpdateJob(helper.getAuditM2Muser(), job.id, { status: 'assigned' })
-    logger.info({ component: 'ResourceBookingEventHandler', context: 'assignJob', message: `job ${job.id} is assigned` })
+    await JobService.partiallyUpdateJob(helper.getAuditM2Muser(), job.id, { status: 'placed' })
+    logger.info({ component: 'ResourceBookingEventHandler', context: 'placeJob', message: `job ${job.id} is placed` })
   }
 }
 
@@ -294,8 +294,8 @@ async function _deleteWorkPeriods (workPeriods) {
  * @returns {undefined}
  */
 async function processCreate (payload) {
-  await selectJobCandidate(payload)
-  await assignJob(payload)
+  await placeJobCandidate(payload)
+  await placeJob(payload)
   await createWorkPeriods(payload)
 }
 
@@ -306,8 +306,8 @@ async function processCreate (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  await selectJobCandidate(payload)
-  await assignJob(payload)
+  await placeJobCandidate(payload)
+  await placeJob(payload)
   await updateWorkPeriods(payload)
 }
 

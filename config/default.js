@@ -153,7 +153,7 @@ module.exports = {
   // SendGrid email template ID for interview invitation
   INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // The sender (aka `from`) email for invitation.
-  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL,
+  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'scheduler@topcoder.com',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // environment variables for Payment Service

@@ -23,13 +23,13 @@ const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
 })
 
 /**
- * Function to get assigned resource bookings with specific projectIds
+ * Function to get placed resource bookings with specific projectIds
  * @param {Object} currentUser the user who perform this operation.
  * @param {Array} projectIds project ids
  * @returns the request result
  */
-async function _getAssignedResourceBookingsByProjectIds (currentUser, projectIds) {
-  const criteria = { status: 'assigned', projectIds }
+async function _getPlacedResourceBookingsByProjectIds (currentUser, projectIds) {
+  const criteria = { status: 'placed', projectIds }
   const { result } = await ResourceBookingService.searchResourceBookings(currentUser, criteria, { returnAll: true })
   return result
 }
@@ -95,8 +95,8 @@ searchTeams.schema = Joi.object().keys({
  */
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
-  // Get all assigned resourceBookings filtered by projectIds
-  const resourceBookings = await _getAssignedResourceBookingsByProjectIds(currentUser, projectIds)
+  // Get all placed resourceBookings filtered by projectIds
+  const resourceBookings = await _getPlacedResourceBookingsByProjectIds(currentUser, projectIds)
   // Get all jobs filtered by projectIds
   const jobs = await _getJobsByProjectIds(currentUser, projectIds)
 
@@ -285,7 +285,7 @@ async function getTeamJob (currentUser, id, jobId) {
     const photoURLMap = _.groupBy(members, 'handleLower')
 
     result.candidates = _.map(job.candidates, candidate => {
-      const candidateData = _.pick(candidate, ['status', 'resume', 'userId', 'id'])
+      const candidateData = _.pick(candidate, ['status', 'resume', 'userId', 'interviews', 'id'])
       const userData = userMap[candidate.userId][0]
       // attach user data to the candidate
       Object.assign(candidateData, _.pick(userData, ['handle', 'firstName', 'lastName', 'skills']))

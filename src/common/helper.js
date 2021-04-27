@@ -679,6 +679,11 @@ function encodeQueryString (queryObj, nesting = '') {
  * @returns {Array} the users found
  */
 async function listUsersByExternalId (externalId) {
+  // return empty list if externalId is null or undefined
+  if (!!externalId !== true) {
+    return []
+  }
+
   const token = await getM2MUbahnToken()
   const q = {
     enrich: true,

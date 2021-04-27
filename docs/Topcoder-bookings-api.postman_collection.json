@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f26164a2-4129-4e0a-89fb-75c6756b4a79",
+		"_postman_id": "059739c9-5726-44b6-876d-6d87940c9aff",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2088,7 +2088,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2153,7 +2153,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2218,7 +2218,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2283,7 +2283,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2348,7 +2348,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2413,7 +2413,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2476,7 +2476,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2539,7 +2539,7 @@
 								},
 								{
 									"key": "status",
-									"value": "shortlist",
+									"value": "selected",
 									"disabled": true
 								},
 								{
@@ -2763,7 +2763,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2796,7 +2796,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2829,7 +2829,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2862,7 +2862,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2895,7 +2895,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2928,7 +2928,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"shortlist\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
+							"raw": "{\n  \"status\": \"selected\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3217,7 +3217,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"status\": \"Completed\"\r\n}",
+									"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"status\": \"Completed\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3270,7 +3270,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3321,7 +3321,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3373,7 +3373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3422,7 +3422,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"status\": \"xxxx\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"status\": \"xxxx\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3472,7 +3472,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3521,7 +3521,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"attendeesList\": \"asddd\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": \"asddd\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3570,7 +3570,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"attendeesList\": [\"asdas\"]\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": [\"asdas\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3619,7 +3619,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"round\": 1\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"round\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3668,7 +3668,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3748,7 +3748,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" must be one of [30-min-interview, 60-min-interview]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" must be one of [30-minutes, 60-minutes]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3815,7 +3815,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3864,7 +3864,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3911,7 +3911,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3958,7 +3958,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4005,7 +4005,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4052,7 +4052,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4101,7 +4101,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4150,7 +4150,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4199,7 +4199,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4248,7 +4248,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4297,7 +4297,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4340,7 +4340,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4389,7 +4389,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5312,7 +5312,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.xaiTemplate\\\" must be one of [30-min-interview, 60-min-interview]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.xaiTemplate\\\" must be one of [30-minutes, 60-minutes]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -8467,7 +8467,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26\",\r\n  \"endDate\": \"2020-11-29\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-26\",\r\n  \"endDate\": \"2020-11-29\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8603,7 +8603,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27\",\r\n  \"endDate\": \"2021-01-10\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-12-27\",\r\n  \"endDate\": \"2021-01-10\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8741,7 +8741,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8789,7 +8789,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8837,7 +8837,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8885,7 +8885,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8931,7 +8931,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-09-30\",\r\n    \"endDate\": \"2020-11-28\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n    \"status\": \"placed\",\r\n    \"startDate\": \"2020-09-30\",\r\n    \"endDate\": \"2020-11-28\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8977,7 +8977,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"assigned\",\r\n    \"startDate\": \"2020-12-30\",\r\n    \"endDate\": \"2021-02-10\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n    \"status\": \"placed\",\r\n    \"startDate\": \"2020-12-30\",\r\n    \"endDate\": \"2021-02-10\",\r\n    \"memberRate\": 13.23,\r\n    \"customerRate\": 13,\r\n    \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9025,7 +9025,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9073,7 +9073,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9121,7 +9121,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-28\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -9169,7 +9169,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -19214,7 +19214,7 @@
 												},
 												{
 													"key": "status",
-													"value": "shortlist",
+													"value": "selected",
 													"disabled": true
 												}
 											]
@@ -19235,7 +19235,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"status\": \"selected\"\r\n}",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"status\": \"placed\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19268,7 +19268,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"raw": "{\r\n  \"status\": \"selected\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19449,7 +19449,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19805,7 +19805,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{job_id_created_by_administrator}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19838,7 +19838,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21158,7 +21158,7 @@
 												},
 												{
 													"key": "status",
-													"value": "shortlist",
+													"value": "selected",
 													"disabled": true
 												}
 											]
@@ -21179,7 +21179,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"placed\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21212,7 +21212,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"raw": "{\r\n  \"status\": \"selected\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21389,7 +21389,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21440,7 +21440,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21845,7 +21845,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16718}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_member}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21878,7 +21878,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23313,7 +23313,7 @@
 												},
 												{
 													"key": "status",
-													"value": "shortlist",
+													"value": "selected",
 													"disabled": true
 												}
 											]
@@ -23334,7 +23334,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"selected\"\r\n}",
+											"raw": "{\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"status\": \"placed\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23367,7 +23367,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"shortlist\"\r\n}",
+											"raw": "{\r\n  \"status\": \"selected\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23544,7 +23544,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23595,7 +23595,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-min-interview\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23996,7 +23996,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"assigned\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"projectId\": {{project_id_16843}},\r\n  \"userId\": \"fe38eed1-af73-41fd-85a2-ac4da1ff09a3\",\r\n  \"jobId\": \"{{job_id_created_by_connect_manager}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"status\": \"placed\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -24029,7 +24029,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"status\": \"assigned\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+											"raw": "{\r\n  \"status\": \"placed\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-09-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
