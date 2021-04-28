@@ -327,9 +327,9 @@ async function sendEmail (currentUser, data) {
     cc: _.uniq([...dataCC, ...templateCC])
   };
   let emailStringProps = {
-    from: emailProps.from.join(','),
-    recipients: emailProps.recipients.join(','),
-    cc: emailProps.cc.join(',')
+    from: (emailProps.from).join(','),
+    recipients: (emailProps.recipients).join(','),
+    cc: (emailProps.cc).join(',')
   };
   let emailData = {
     data: { ...data.data, ...emailStringProps },
