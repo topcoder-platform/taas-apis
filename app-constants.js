@@ -64,8 +64,8 @@ const Interviews = {
   },
   // key: template name in x.ai, value: duration
   XaiTemplate: {
-    '30-minutes': 30,
-    '60-minutes': 60
+    'interview-30': 30,
+    'interview-60': 60
   }
 }
 

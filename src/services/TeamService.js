@@ -326,8 +326,13 @@ async function sendEmail (currentUser, data) {
     recipients: _.uniq([...dataRecipients, ...templateRecipients]),
     cc: _.uniq([...dataCC, ...templateCC])
   };
+  let emailStringProps = {
+    from: emailProps.from.join(','),
+    recipients: emailProps.recipients.join(','),
+    cc: emailProps.cc.join(',')
+  };
   let emailData = {
-    data: { ...data.data, ...emailProps },
+    data: { ...data.data, ...emailStringProps },
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3'
   }

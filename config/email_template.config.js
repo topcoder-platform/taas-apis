@@ -63,7 +63,7 @@ module.exports = {
 
   /* Request interview for a job candidate
    *
-   * - interviewType: the x.ai interview type. Example: "30-minutes"
+   * - interviewType: the x.ai interview type. Example: "interview-30"
    * - interviewRound: the round of the interview. Example: 2
    * - interviewDuration: duration of the interview, in minutes. Example: 30
    * - interviewerList: The list of interviewer email addresses. Example:  "first@attendee.com, second@attendee.com"

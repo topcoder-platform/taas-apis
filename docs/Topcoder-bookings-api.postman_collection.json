@@ -3217,7 +3217,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"status\": \"Completed\"\r\n}",
+									"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"status\": \"Completed\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3270,7 +3270,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3321,7 +3321,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3373,7 +3373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3422,7 +3422,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"status\": \"xxxx\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"status\": \"xxxx\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3472,7 +3472,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3521,7 +3521,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": \"asddd\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": \"asddd\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3570,7 +3570,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"attendeesList\": [\"asdas\"]\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": [\"asdas\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3619,7 +3619,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"round\": 1\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"round\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3668,7 +3668,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3748,7 +3748,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" must be one of [30-minutes, 60-minutes]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" must be one of [interview-30, interview-60]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3815,7 +3815,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3864,7 +3864,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3911,7 +3911,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3958,7 +3958,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4005,7 +4005,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4052,7 +4052,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4101,7 +4101,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4150,7 +4150,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4199,7 +4199,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4248,7 +4248,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4297,7 +4297,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4340,7 +4340,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4389,7 +4389,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\"\r\n}",
+							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5312,7 +5312,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.xaiTemplate\\\" must be one of [30-minutes, 60-minutes]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.xaiTemplate\\\" must be one of [interview-30, interview-60]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -19449,7 +19449,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21389,7 +21389,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21440,7 +21440,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23544,7 +23544,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23595,7 +23595,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"30-minutes\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"

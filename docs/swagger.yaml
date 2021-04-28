@@ -5,6 +5,7 @@ info:
   version: 1.0.0
 servers:
   - url: /api/{apiVersion}/
+  - url: https://api.topcoder-dev.com/{apiVersion}/
     variables:
       apiVersion:
         default: "v5"
@@ -3455,8 +3456,8 @@ components:
           description: "The google calendar id."
         xaiTemplate:
           type: string
-          example: "30-minutes"
-          enum: ["30-minutes", "60-minutes"]
+          example: "interview-30"
+          enum: ["interview-30", "interview-60"]
           description: "The x.ai template name"
         customMessage:
           type: string
@@ -3510,8 +3511,8 @@ components:
           description: "The custom message."
         xaiTemplate:
           type: string
-          enum: ["30-minutes", "60-minutes"]
-          example: "30-minutes"
+          enum: ["interview-30", "interview-60"]
+          example: "interview-30"
           description: "The x.ai template name"
         attendeesList:
           type: array
@@ -3535,8 +3536,8 @@ components:
           description: "The custom message."
         xaiTemplate:
           type: string
-          enum: ["30-minutes", "60-minutes"]
-          example: "30-minutes"
+          enum: ["interview-30", "interview-60"]
+          example: "interview-30"
           description: "The x.ai template name"
         attendeesList:
           type: array
