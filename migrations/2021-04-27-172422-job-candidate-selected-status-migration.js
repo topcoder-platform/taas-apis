@@ -8,11 +8,11 @@ const config = require('config')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const tableName = `${config.DB_SCHEMA_NAME}.job_candidates`
-    await queryInterface.sequelize.query(`UPDATE ${tableName} SET status = 'selected' WHERE status = 'shortlist'`)
+    await queryInterface.sequelize.query(`UPDATE ${tableName} SET status = 'interview' WHERE status = 'shortlist'`)
   },
 
   down: async (queryInterface, Sequelize) => {
     const tableName = `${config.DB_SCHEMA_NAME}.job_candidates`
-    await queryInterface.sequelize.query(`UPDATE ${tableName} SET status = 'shortlist' WHERE status = 'selected'`)
+    await queryInterface.sequelize.query(`UPDATE ${tableName} SET status = 'shortlist' WHERE status = 'interview'`)
   }
 };
