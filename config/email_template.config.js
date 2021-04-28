@@ -96,6 +96,7 @@ module.exports = {
   'interview-invitation': {
     from: config.INTERVIEW_INVITATION_SENDER_EMAIL,
     cc: config.INTERVIEW_INVITATION_CC_LIST,
+    recipients: config.INTERVIEW_INVITATION_RECIPIENTS_LIST,
     sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
   }
 }

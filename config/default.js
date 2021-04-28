@@ -144,8 +144,10 @@ module.exports = {
   REQUEST_EXTENSION_EMAILS: (process.env.REQUEST_EXTENSION_EMAILS || '').split(','),
   // the emails address for interview invitation
   // INTERVIEW_INVITATION_CC_LIST may contain comma-separated list of email which is converted to array
-  // scheduler@x.ai should be in the CC list
-  INTERVIEW_INVITATION_CC_LIST: (process.env.INTERVIEW_INVITATION_CC_LIST || 'scheduler@x.ai').split(','),
+  INTERVIEW_INVITATION_CC_LIST: (process.env.INTERVIEW_INVITATION_CC_LIST || '').split(','),
+  // INTERVIEW_INVITATION_RECIPIENTS_LIST may contain comma-separated list of email which is converted to array
+  // scheduler@x.ai should be in the RECIPIENTS list
+  INTERVIEW_INVITATION_RECIPIENTS_LIST: (process.env.INTERVIEW_INVITATION_RECIPIENTS_LIST || 'scheduler@topcoder.com').split(','),
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
@@ -153,7 +155,7 @@ module.exports = {
   // SendGrid email template ID for interview invitation
   INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // The sender (aka `from`) email for invitation.
-  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'scheduler@topcoder.com',
+  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'talent@topcoder.com',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // environment variables for Payment Service
