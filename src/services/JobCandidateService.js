@@ -8,6 +8,7 @@ const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
+const { Scopes } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -32,6 +33,24 @@ async function _checkUserPermissionForGetJobCandidate (currentUser, jobId) {
 }
 
 /**
+ * Returns field omit list, based on user access level.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @returns {Array} the field list to omit from the jobCandidate object
+ */
+function getJobCandidateOmitList (currentUser) {
+  // check M2M scopes for Interviews
+  if (currentUser.isMachine) {
+    const interviewsAllowedScopes = [Scopes.READ_INTERVIEW, Scopes.ALL_INTERVIEW]
+    if (!currentUser.scopes || !helper.checkIfExists(interviewsAllowedScopes, currentUser.scopes)) {
+      return ['interviews']
+    }
+    return []
+  }
+  return currentUser.hasManagePermission ? [] : ['interviews']
+}
+
+/**
  * Get jobCandidate by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the jobCandidate id
@@ -39,6 +58,7 @@ async function _checkUserPermissionForGetJobCandidate (currentUser, jobId) {
  * @returns {Object} the jobCandidate
  */
 async function getJobCandidate (currentUser, id, fromDb = false) {
+  const omitList = getJobCandidateOmitList(currentUser)
   if (!fromDb) {
     try {
       const jobCandidate = await esClient.get({
@@ -49,7 +69,7 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
       await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.body._source.jobId) // check user permisson
 
       const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
-      return jobCandidateRecord
+      return _.omit(jobCandidateRecord, omitList)
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
@@ -61,7 +81,13 @@ async function getJobCandidate (currentUser, id, fromDb = false) {
     }
   }
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
-  const jobCandidate = await JobCandidate.findById(id)
+  // include interviews if user has permission
+  const include = []
+  const hasInterviewPermision = !_.includes(omitList, 'interviews')
+  if (hasInterviewPermision) {
+    include.push({ model: models.Interview, as: 'interviews' })
+  }
+  const jobCandidate = await JobCandidate.findById(id, include)
 
   await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.jobId) // check user permission
 
@@ -215,6 +241,7 @@ async function searchJobCandidates (currentUser, criteria) {
     await JobService.getJob(currentUser, criteria.jobId) // check whether user can access the job associated with the jobCandidate
   }
 
+  const omitList = getJobCandidateOmitList(currentUser)
   const page = criteria.page > 0 ? criteria.page : 1
   const perPage = criteria.perPage > 0 ? criteria.perPage : 20
   if (!criteria.sortBy) {
@@ -260,7 +287,7 @@ async function searchJobCandidates (currentUser, criteria) {
       result: _.map(body.hits.hits, (hit) => {
         const obj = _.cloneDeep(hit._source)
         obj.id = hit._id
-        return obj
+        return _.omit(obj, omitList)
       })
     }
   } catch (err) {
@@ -271,8 +298,17 @@ async function searchJobCandidates (currentUser, criteria) {
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+
+  // include interviews if user has permission
+  const include = []
+  const hasInterviewPermision = !_.includes(omitList, 'interviews')
+  if (hasInterviewPermision) {
+    include.push({ model: models.Interview, as: 'interviews' })
+  }
+
   const jobCandidates = await JobCandidate.findAll({
     where: filter,
+    include,
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
@@ -282,7 +318,7 @@ async function searchJobCandidates (currentUser, criteria) {
     total: jobCandidates.length,
     page,
     perPage,
-    result: _.map(jobCandidates, jobCandidate => jobCandidate.dataValues)
+    result: _.map(jobCandidates, jobCandidate => _.omit(jobCandidate.dataValues, omitList))
   }
 }
 

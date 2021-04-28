@@ -126,6 +126,13 @@ module.exports = {
   TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC || 'taas.workperiodpayment.update',
   // the delete work period payment entity Kafka message topic
   TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC: process.env.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC || 'taas.workperiodpayment.delete',
+  // topics for interview service
+  // the request interview Kafka message topic
+  TAAS_INTERVIEW_REQUEST_TOPIC: process.env.TAAS_INTERVIEW_REQUEST_TOPIC || 'taas.interview.requested',
+  // the interview update Kafka message topic
+  TAAS_INTERVIEW_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_UPDATE_TOPIC || 'taas.interview.update',
+  // the interview bulk update Kafka message topic
+  TAAS_INTERVIEW_BULK_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_BULK_UPDATE_TOPIC || 'taas.interview.bulkUpdate',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
@@ -135,10 +142,18 @@ module.exports = {
   // the emails address for receiving the issue report
   // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
   REQUEST_EXTENSION_EMAILS: (process.env.REQUEST_EXTENSION_EMAILS || '').split(','),
+  // the emails address for interview invitation
+  // INTERVIEW_INVITATION_CC_LIST may contain comma-separated list of email which is converted to array
+  // scheduler@x.ai should be in the CC list
+  INTERVIEW_INVITATION_CC_LIST: (process.env.INTERVIEW_INVITATION_CC_LIST || 'scheduler@x.ai').split(','),
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
+  // SendGrid email template ID for interview invitation
+  INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
+  // The sender (aka `from`) email for invitation.
+  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'scheduler@topcoder.com',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // environment variables for Payment Service
