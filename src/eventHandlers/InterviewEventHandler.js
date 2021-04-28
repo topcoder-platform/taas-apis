@@ -31,7 +31,6 @@ async function sendInvitationEmail (payload) {
       interviewType: interview.xaiTemplate,
       interviewRound: interview.round,
       interviewDuration: Interviews.XaiTemplate[interview.xaiTemplate],
-      interviewerList,
       jobName: job.title,
       candidateName: `${jobCandidateUser.firstName} ${jobCandidateUser.lastName}`,
       candidateId: interview.jobCandidateId

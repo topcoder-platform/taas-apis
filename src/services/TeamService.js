@@ -315,22 +315,23 @@ getTeamJob.schema = Joi.object().keys({
  */
 async function sendEmail (currentUser, data) {
   const template = emailTemplates[data.template]
-
   const dataCC = data.cc || []
   const templateCC = template.cc || []
   const dataRecipients = data.recipients || []
   const templateRecipients = template.recipients || []
-
-  await helper.postEvent(config.EMAIL_TOPIC, {
-    data: data.data, // substitutions
-    sendgrid_template_id: template.sendgridTemplateId,
-    version: 'v3',
+  let emailProps = {
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
     // create a set of uniq. recipients & CCs, from both coming data & template
     recipients: _.uniq([...dataRecipients, ...templateRecipients]),
     cc: _.uniq([...dataCC, ...templateCC])
-  })
+  };
+  let emailData = {
+    data: { ...data.data, ...emailProps },
+    sendgrid_template_id: template.sendgridTemplateId,
+    version: 'v3'
+  }
+  await helper.postEvent(config.EMAIL_TOPIC, { ...emailData, ...emailProps })
 }
 
 sendEmail.schema = Joi.object().keys({
