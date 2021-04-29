@@ -1350,6 +1350,24 @@ function extractWorkPeriods (start, end) {
   return periods
 }
 
+/**
+ * Returns the email address of specified (via handle) user.
+ *
+ * @param {String} userHandle user handle
+ * @returns {String} email address of the user
+ */
+async function getUserEmailByHandle (userHandle) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/members/${userHandle}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getUserEmailByHandle', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res, 'body.email')
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1398,5 +1416,6 @@ module.exports = {
   createChallenge,
   updateChallenge,
   createChallengeResource,
-  extractWorkPeriods
+  extractWorkPeriods,
+  getUserEmailByHandle
 }
