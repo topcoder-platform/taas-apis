@@ -19,18 +19,19 @@ async function sendInvitationEmail (payload) {
 
   // get job candidate user details
   const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
-  const jobCandidateUser = await helper.getUserById(jobCandidate.userId, true)
+  const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
+  const jobCandidateUserEmail = await helper.getUserEmailByHandle(jobCandidateUser.handle)
   // get customer details
   const job = await jobCandidate.getJob()
-  const interviewerList = interview.attendeesList
 
   teamService.sendEmail({}, {
     template: 'interview-invitation',
-    cc: interview.attendeesList,
+    cc: [jobCandidateUserEmail, ...interview.attendeesList],
     data: {
       interviewType: interview.xaiTemplate,
       interviewRound: interview.round,
       interviewDuration: Interviews.XaiTemplate[interview.xaiTemplate],
+      interviewerList: interview.attendeesList,
       jobName: job.title,
       candidateName: `${jobCandidateUser.firstName} ${jobCandidateUser.lastName}`,
       candidateId: interview.jobCandidateId

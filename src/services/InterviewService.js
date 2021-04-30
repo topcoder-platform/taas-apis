@@ -20,12 +20,14 @@ const esClient = helper.getESClient()
   * Ensures user is permitted for the operation.
   *
   * @param {Object} currentUser the user who perform this operation.
+  * @param {String} jobCandidateId the job candidate id
   * @throws {errors.ForbiddenError}
   */
-function ensureUserIsPermitted (currentUser) {
-  const isUserPermitted = currentUser.hasManagePermission || currentUser.isMachine
-  if (isUserPermitted !== true) {
-    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+async function ensureUserIsPermitted (currentUser, jobCandidateId) {
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
+    const job = jobCandidate.getJob()
+    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 }
 
@@ -58,7 +60,7 @@ function handleSequelizeError (err, jobCandidateId) {
  */
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
   // check permission
-  ensureUserIsPermitted(currentUser)
+  await ensureUserIsPermitted(currentUser, jobCandidateId)
   if (!fromDb) {
     try {
       // get job candidate from ES
@@ -113,7 +115,7 @@ getInterviewByRound.schema = Joi.object().keys({
  */
 async function requestInterview (currentUser, jobCandidateId, interview) {
   // check permission
-  ensureUserIsPermitted(currentUser)
+  await ensureUserIsPermitted(currentUser, jobCandidateId)
 
   interview.id = uuid()
   interview.jobCandidateId = jobCandidateId
@@ -168,7 +170,7 @@ requestInterview.schema = Joi.object().keys({
  */
 async function partiallyUpdateInterview (currentUser, jobCandidateId, round, data) {
   // check permission
-  ensureUserIsPermitted(currentUser)
+  await ensureUserIsPermitted(currentUser, jobCandidateId)
 
   const interview = await Interview.findOne({
     where: {
@@ -234,7 +236,7 @@ partiallyUpdateInterview.schema = Joi.object().keys({
  */
 async function searchInterviews (currentUser, jobCandidateId, criteria) {
   // check permission
-  ensureUserIsPermitted(currentUser)
+  await ensureUserIsPermitted(currentUser, jobCandidateId)
 
   const { page, perPage } = criteria
 
