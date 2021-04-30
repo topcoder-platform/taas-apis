@@ -26,7 +26,7 @@ const esClient = helper.getESClient()
 async function ensureUserIsPermitted (currentUser, jobCandidateId) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
-    const job = jobCandidate.getJob()
+    const job = await jobCandidate.getJob()
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
   }
 }
