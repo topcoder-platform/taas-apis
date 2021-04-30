@@ -319,24 +319,17 @@ async function sendEmail (currentUser, data) {
   const templateCC = template.cc || []
   const dataRecipients = data.recipients || []
   const templateRecipients = template.recipients || []
-  let emailProps = {
+  let emailData = {
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
     // create a set of uniq. recipients & CCs, from both coming data & template
     recipients: _.uniq([...dataRecipients, ...templateRecipients]),
-    cc: _.uniq([...dataCC, ...templateCC])
-  };
-  let emailStringProps = {
-    from: emailProps.from,
-    recipients: (emailProps.recipients).join(','),
-    cc: (emailProps.cc).join(',')
-  };
-  let emailData = {
-    data: { ...data.data, ...emailStringProps },
+    cc: _.uniq([...dataCC, ...templateCC]),
+    data: data.data,
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3'
   }
-  await helper.postEvent(config.EMAIL_TOPIC, { ...emailData, ...emailProps })
+  await helper.postEvent(config.EMAIL_TOPIC, emailData)
 }
 
 sendEmail.schema = Joi.object().keys({
