@@ -7,6 +7,7 @@ const models = require('../models')
 const helper = require('../common/helper')
 const { Interviews } = require('../../app-constants')
 const teamService = require('../services/TeamService')
+const _ = require('lodash')
 
 /**
  * Once we request Interview for a JobCandidate, the invitation emails to be sent out.
