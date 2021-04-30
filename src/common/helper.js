@@ -1109,7 +1109,7 @@ async function _getMemberDetailsByEmail (token, email) {
     .get(config.TOPCODER_USERS_API)
     .query({
       filter: `email=${email}`,
-      fields: 'handle,id,email'
+      fields: 'handle,id,email,firstName,lastName'
     })
     .set('Authorization', `Bearer ${token}`)
     .set('Accept', 'application/json')

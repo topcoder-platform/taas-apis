@@ -16,27 +16,29 @@ const teamService = require('../services/TeamService')
  */
 async function sendInvitationEmail (payload) {
   const interview = payload.value
-
+  // get the Interviewer
+  const interviewerUser = await helper.getMemberDetailsByEmails(interview.attendeesList[0])
+    .then((members) => _.map(members, (member) => ({ ...member, emailLowerCase: member.email.toLowerCase() })))
   // get job candidate user details
   const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
   const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
-  const jobCandidateUserEmail = await helper.getUserByHandle(jobCandidateUser.handle)
+  const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
   // get customer details
   const job = await jobCandidate.getJob()
 
   teamService.sendEmail({}, {
     template: 'interview-invitation',
-    cc: [jobCandidateUserEmail.email, ...interview.attendeesList],
+    cc: [jobCandidateMember.email, ...interview.attendeesList],
     data: {
       job_candidate_id: interview.jobCandidateId,
       interview_round: interview.round,
-      interviewee_name: `${jobCandidateUser.firstName} ${jobCandidateUser.lastName}`,
-      interviewer_name: `${jobCandidateUserEmail.firstName} ${jobCandidateUserEmail.lastName}`,
-      xai_template: interview.xaiTemplate,
+      interviewee_name: `${jobCandidateMember.firstName} ${jobCandidateMember.lastName}`,
+      interviewer_name: `${interviewerUser.firstName} ${interviewerUser.lastName}`,
+      xai_template: '/' + interview.xaiTemplate,
       additional_interviewers: interview.attendeesList,
       interview_length: Interviews.XaiTemplate[interview.xaiTemplate],
       job_name: job.title,
-      interviewee_handle: jobCandidateUserEmail.handle
+      interviewee_handle: jobCandidateMember.handle
     }
   })
 }
