@@ -319,7 +319,7 @@ async function sendEmail (currentUser, data) {
   const templateCC = template.cc || []
   const dataRecipients = data.recipients || []
   const templateRecipients = template.recipients || []
-  let emailData = {
+  const emailData = {
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
     // create a set of uniq. recipients & CCs, from both coming data & template
