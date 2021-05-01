@@ -125,6 +125,11 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const round = await Interview.count({
     where: { jobCandidateId }
   })
+
+  // throw error if candidate has already had MaxAllowedCount interviews
+  if (round >= InterviewConstants.MaxAllowedCount) {
+    throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
+  }
   interview.round = round + 1
 
   try {
