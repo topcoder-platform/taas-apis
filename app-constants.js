@@ -66,7 +66,8 @@ const Interviews = {
   XaiTemplate: {
     'interview-30': 30,
     'interview-60': 60
-  }
+  },
+  MaxAllowedCount: 3
 }
 
 const ChallengeStatus = {
