@@ -15,6 +15,8 @@ const ResourceBookingService = require('./ResourceBookingService')
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
+    subject: template.subject,
+    body: template.body,
     from: template.from,
     recipients: template.recipients,
     cc: template.cc,
@@ -320,6 +322,8 @@ async function sendEmail (currentUser, data) {
   const dataRecipients = data.recipients || []
   const templateRecipients = template.recipients || []
   const emailData = {
+    subject: data.subject || template.subject,
+    body: data.body || template.body,
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
     // create a set of uniq. recipients & CCs, from both coming data & template
