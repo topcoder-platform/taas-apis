@@ -321,15 +321,17 @@ async function sendEmail (currentUser, data) {
   const templateCC = template.cc || []
   const dataRecipients = data.recipients || []
   const templateRecipients = template.recipients || []
-  const emailData = {
+  const subjectBody = {
     subject: data.subject || template.subject,
-    body: data.body || template.body,
+    body: data.body || template.body
+  }
+  const emailData = {
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
     // create a set of uniq. recipients & CCs, from both coming data & template
     recipients: _.uniq([...dataRecipients, ...templateRecipients]),
     cc: _.uniq([...dataCC, ...templateCC]),
-    data: data.data,
+    data: { ...data.data, ...subjectBody },
     sendgrid_template_id: template.sendgridTemplateId,
     version: 'v3'
   }
