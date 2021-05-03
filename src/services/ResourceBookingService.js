@@ -159,7 +159,7 @@ async function createResourceBooking (currentUser, resourceBooking) {
 createResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   resourceBooking: Joi.object().keys({
-    status: Joi.resourceBookingStatus().default('assigned'),
+    status: Joi.resourceBookingStatus().default('placed'),
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null),
