@@ -94,6 +94,8 @@ module.exports = {
    * We won't pass subject & body but only substitutions (replacements in template subject/body).
    */
   'interview-invitation': {
+    subject: '',
+    body: '',
     from: config.INTERVIEW_INVITATION_SENDER_EMAIL,
     cc: config.INTERVIEW_INVITATION_CC_LIST,
     recipients: config.INTERVIEW_INVITATION_RECIPIENTS_LIST,
