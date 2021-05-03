@@ -1368,6 +1368,22 @@ async function getUserByHandle (userHandle) {
   return _.get(res, 'body')
 }
 
+/**
+ * 
+ * @param {String} string that will be modifed 
+ * @param {*} object of json that would be replaced in string
+ * @returns 
+ */
+async function substituteStringByObject (string, object) {
+  for (var key in object) {
+    if (!object.hasOwnProperty(key)) {
+        continue;
+    }
+    string = string.replace(new RegExp("{{" + key + "}}", "g"), object[key]);
+  }
+  return string
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1417,5 +1433,6 @@ module.exports = {
   updateChallenge,
   createChallengeResource,
   extractWorkPeriods,
-  getUserByHandle
+  getUserByHandle,
+  substituteStringByObject
 }

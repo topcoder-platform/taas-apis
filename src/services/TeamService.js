@@ -325,6 +325,9 @@ async function sendEmail (currentUser, data) {
     subject: data.subject || template.subject,
     body: data.body || template.body
   }
+  for(var key in subjectBody) {
+    subjectBody[key] = await helper.substituteStringByObject(subjectBody[key], data.data)
+  }
   const emailData = {
     // override template if coming data already have the 'from' address
     from: data.from || template.from,
