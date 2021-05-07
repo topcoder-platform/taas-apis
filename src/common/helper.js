@@ -1369,17 +1369,17 @@ async function getUserByHandle (userHandle) {
 }
 
 /**
- * 
- * @param {String} string that will be modifed 
+ *
+ * @param {String} string that will be modifed
  * @param {*} object of json that would be replaced in string
- * @returns 
+ * @returns
  */
 async function substituteStringByObject (string, object) {
   for (var key in object) {
-    if (!object.hasOwnProperty(key)) {
-        continue;
+    if (!Object.prototype.hasOwnProperty.call(object, key)) {
+      continue
     }
-    string = string.replace(new RegExp("{{" + key + "}}", "g"), object[key]);
+    string = string.replace(new RegExp('{{' + key + '}}', 'g'), object[key])
   }
   return string
 }
