@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "059739c9-5726-44b6-876d-6d87940c9aff",
+		"_postman_id": "3f80d93d-6ca3-4645-970d-a9e533394e2e",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3187,6 +3187,202 @@
 							"response": []
 						},
 						{
+							"name": "create job candidate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobCandidateId_2\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\",\n  \"externalId\": \"88774631\",\n  \"resume\": \"http://example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job candidate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobCandidateId_3\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\",\n  \"externalId\": \"88774631\",\n  \"resume\": \"http://example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job candidate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobCandidateId_4\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\",\n  \"externalId\": \"88774631\",\n  \"resume\": \"http://example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create job candidate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobCandidateId_5\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"95e7970f-12b4-43b7-ab35-38c34bf033c7\",\n  \"externalId\": \"88774631\",\n  \"resume\": \"http://example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobCandidates",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobCandidates"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Create completed interview",
 							"event": [
 								{
@@ -3217,7 +3413,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"status\": \"Completed\"\r\n}",
+									"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Completed\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3251,6 +3447,7 @@
 									"    pm.response.to.have.status(200)\r",
 									"    if(pm.response.status === \"OK\"){\r",
 									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewId\", response.id);\r",
 									"        pm.environment.set(\"interviewRound\", response.round);\r",
 									"    }\r",
 									"});"
@@ -3270,7 +3467,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3304,6 +3501,7 @@
 									"    const lastRound = pm.environment.get(\"interviewRound\");\r",
 									"    pm.expect(response.round).to.eq(lastRound + 1);\r",
 									"    pm.environment.set(\"interviewRound\", response.round);\r",
+									"    pm.environment.set(\"interviewId\", response.id);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3321,7 +3519,56 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request 4th interview - should not allow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You've reached the maximum allowed number (3) of interviews for this candidate.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3373,7 +3620,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3381,13 +3628,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_2}}",
 								"requestInterview"
 							]
 						}
@@ -3422,7 +3669,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"status\": \"xxxx\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"status\": \"xxxx\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3444,7 +3691,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with attendeesList",
+					"name": "Request interview with guestEmails",
 					"event": [
 						{
 							"listen": "test",
@@ -3453,8 +3700,8 @@
 									"pm.test('Status code is 200', function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.attendeesList[0]).to.eq(\"attendee1@yopmail.com\")\r",
-									"    pm.expect(response.attendeesList[1]).to.eq(\"attendee2@yopmail.com\")\r",
+									"    pm.expect(response.guestEmails[0]).to.eq(\"attendee1@yopmail.com\")\r",
+									"    pm.expect(response.guestEmails[1]).to.eq(\"attendee2@yopmail.com\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3472,7 +3719,56 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_2}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with invalid guestEmails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.guestEmails\\\" must be an array\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": \"asddd\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3494,7 +3790,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with invalid attendeesList",
+					"name": "Request interview with invalid guest email",
 					"event": [
 						{
 							"listen": "test",
@@ -3503,7 +3799,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.attendeesList\\\" must be an array\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.guestEmails[0]\\\" must be a valid email\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3521,56 +3817,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": \"asddd\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"requestInterview"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request interview with invalid attendee email",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.attendeesList[0]\\\" must be a valid email\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"attendeesList\": [\"asdas\"]\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"asdas\"]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3619,7 +3866,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"round\": 1\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"round\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3668,7 +3915,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3690,7 +3937,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview without xaiTemplate - should fail",
+					"name": "Request interview without templateUrl - should fail",
 					"event": [
 						{
 							"listen": "test",
@@ -3699,7 +3946,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" is required\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.templateUrl\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3717,7 +3964,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"Requested\"\r\n}",
+							"raw": "{\r\n    \"status\": \"Scheduling\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3739,7 +3986,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with invalid xaiTemplate",
+					"name": "Request interview with invalid templateUrl",
 					"event": [
 						{
 							"listen": "test",
@@ -3748,7 +3995,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.xaiTemplate\\\" must be one of [interview-30, interview-60]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.templateUrl\\\" must be one of [interview-30, interview-60]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3766,7 +4013,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"asdas\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"asdas\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3815,7 +4062,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3864,7 +4111,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3872,13 +4119,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_2}}",
 								"requestInterview"
 							]
 						}
@@ -3911,7 +4158,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3919,13 +4166,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_3}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_3}}",
 								"requestInterview"
 							]
 						}
@@ -3958,7 +4205,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3966,13 +4213,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_3}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_3}}",
 								"requestInterview"
 							]
 						}
@@ -4005,7 +4252,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4013,13 +4260,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_3}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_3}}",
 								"requestInterview"
 							]
 						}
@@ -4052,7 +4299,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4060,13 +4307,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_4}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_4}}",
 								"requestInterview"
 							]
 						}
@@ -4101,7 +4348,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4150,7 +4397,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4199,7 +4446,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4207,13 +4454,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_4}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_4}}",
 								"requestInterview"
 							]
 						}
@@ -4248,7 +4495,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4256,13 +4503,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_4}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_4}}",
 								"requestInterview"
 							]
 						}
@@ -4297,7 +4544,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4305,13 +4552,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_5}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_5}}",
 								"requestInterview"
 							]
 						}
@@ -4340,7 +4587,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4389,7 +4636,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"interview-30\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4405,6 +4652,86 @@
 								"jobCandidates",
 								"{{jobCandidateId}}",
 								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/getInterview/{{interviewId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"getInterview",
+								"{{interviewId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by id fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/getInterview/{{interviewId}}?fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"getInterview",
+								"{{interviewId}}"
+							],
+							"query": [
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -5080,7 +5407,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"googleCalendarId\": \"dummyIdXX\",\r\n    \"customMessage\": \"This is the updated message\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"dummyIdXX\",\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5088,13 +5415,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_4}}/updateInterview/{{interviewRound}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_4}}",
 								"updateInterview",
 								"{{interviewRound}}"
 							]
@@ -5303,7 +5630,7 @@
 					"response": []
 				},
 				{
-					"name": "Update interview with invalid xaiTemplate",
+					"name": "Update interview with invalid templateUrl",
 					"event": [
 						{
 							"listen": "test",
@@ -5312,7 +5639,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.xaiTemplate\\\" must be one of [interview-30, interview-60]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.templateUrl\\\" must be one of [interview-30, interview-60]\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -5330,7 +5657,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiTemplate\": \"xxx\"\r\n}",
+							"raw": "{\r\n    \"templateUrl\": \"xxx\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5353,7 +5680,7 @@
 					"response": []
 				},
 				{
-					"name": "Update interview status to Scheduled without googleCalendarId",
+					"name": "Update interview status to Scheduled without calendarEventId",
 					"event": [
 						{
 							"listen": "test",
@@ -5362,7 +5689,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.googleCalendarId\\\" is required\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.calendarEventId\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -5430,7 +5757,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"googleCalendarId\": \"sdsds\",\r\n    \"status\": \"Scheduled\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Scheduled\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5453,7 +5780,7 @@
 					"response": []
 				},
 				{
-					"name": "Update interview status to Rescheduled without googleCalendarId",
+					"name": "Update interview status to Rescheduled without calendarEventId",
 					"event": [
 						{
 							"listen": "test",
@@ -5462,7 +5789,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.googleCalendarId\\\" is required\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.calendarEventId\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -5530,7 +5857,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"googleCalendarId\": \"sdsds\",\r\n    \"status\": \"Rescheduled\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Rescheduled\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5580,7 +5907,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"googleCalendarId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5630,7 +5957,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"googleCalendarId\": \"sdsds\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Scheduling\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5728,7 +6055,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5776,7 +6103,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5824,7 +6151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5872,7 +6199,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5922,7 +6249,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5972,7 +6299,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6022,7 +6349,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6072,7 +6399,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6122,7 +6449,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6233,6 +6560,178 @@
 								"{{jobCandidateId}}",
 								"updateInterview",
 								"{{interviewRound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by xaiId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/getInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"getInterview",
+								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get interview by xaiId fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/getInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab?fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"getInterview",
+								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
+							],
+							"query": [
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update interview by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/updateInterview/{{interviewId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"updateInterview",
+								"{{interviewId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update interview by xaiId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\",\r\n    \"calendarEventId\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/updateInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"updateInterview",
+								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
 							]
 						}
 					},
@@ -19431,6 +19930,7 @@
 													"    if(pm.response.status === \"OK\"){\r",
 													"        const response = pm.response.json()\r",
 													"        pm.environment.set(\"interview_round_created_by_administrator\", response.round);\r",
+													"        pm.environment.set(\"interview_id_created_by_administrator\", response.id);\r",
 													"    }\r",
 													"});"
 												],
@@ -19449,7 +19949,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19471,7 +19971,7 @@
 									"response": []
 								},
 								{
-									"name": "✔ get interview with administrator",
+									"name": "✔ get interview by round with administrator",
 									"event": [
 										{
 											"listen": "test",
@@ -19510,7 +20010,44 @@
 									"response": []
 								},
 								{
-									"name": "✔ update interview with administrator",
+									"name": "✔ get interview by id with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/getInterview/{{interview_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"getInterview",
+												"{{interview_id_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ update interview by round with administrator",
 									"event": [
 										{
 											"listen": "test",
@@ -19535,7 +20072,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"customMessage\": \"updated\"\r\n}",
+											"raw": "{\r\n    \"calendarEventId\": \"updated\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -19552,6 +20089,52 @@
 												"{{job_candidate_id_created_by_administrator}}",
 												"updateInterview",
 												"{{interview_round_created_by_administrator}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ update interview by id with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_administrator}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\",\r\n    \"calendarEventId\": \"updated\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/updateInterview/{{interview_id_created_by_administrator}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"updateInterview",
+												"{{interview_id_created_by_administrator}}"
 											]
 										}
 									},
@@ -21372,6 +21955,7 @@
 															"    pm.response.to.have.status(200);\r",
 															"    const response = pm.response.json()\r",
 															"    pm.environment.set(\"interview_round_created_for_member\", response.round)\r",
+															"    pm.environment.set(\"interview_id_created_for_member\", response.id)\r",
 															"});"
 														],
 														"type": "text/javascript"
@@ -21389,7 +21973,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -21419,10 +22003,10 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -21440,7 +22024,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21462,16 +22046,16 @@
 									"response": []
 								},
 								{
-									"name": "✘ get interview with member",
+									"name": "✘ get interview by round with member",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -21503,16 +22087,55 @@
 									"response": []
 								},
 								{
-									"name": "✘ update interview with member",
+									"name": "✘ get interview by id with member",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/getInterview/{{interview_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"getInterview",
+												"{{interview_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ update interview by round with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -21530,7 +22153,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"customMessage\": \"updated\"\r\n}",
+											"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -21553,16 +22176,64 @@
 									"response": []
 								},
 								{
+									"name": "✘ update interview by id with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_member}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/updateInterview/{{interview_id_created_for_member}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"updateInterview",
+												"{{interview_id_created_for_member}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "✘ search interviews with member",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 8547899 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -23526,7 +24197,8 @@
 															"pm.test('Status code is 200', function () {\r",
 															"    pm.response.to.have.status(200);\r",
 															"    const response = pm.response.json()\r",
-															"    pm.environment.set(\"interview_round_created_for_connect_manager\", response.round)\r",
+															"    pm.environment.set(\"interview_round_created_for_connect_manager\", response.round);\r",
+															"    pm.environment.set(\"interview_id_created_for_connect_manager\", response.id);\r",
 															"});"
 														],
 														"type": "text/javascript"
@@ -23544,7 +24216,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+													"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Scheduling\"\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -23574,10 +24246,10 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -23595,7 +24267,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"xaiTemplate\": \"interview-30\",\r\n    \"googleCalendarId\": \"dummyId\",\r\n    \"customMessage\": \"This is a custom message\",\r\n    \"status\": \"Scheduling\"\r\n}",
+											"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Scheduling\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23617,16 +24289,16 @@
 									"response": []
 								},
 								{
-									"name": "✘ get interview with connect manager",
+									"name": "✘ get interview by round with connect manager",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -23658,16 +24330,55 @@
 									"response": []
 								},
 								{
-									"name": "✘ update interview with connect manager",
+									"name": "✘ get interview by id with connect manager",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/getInterview/{{interview_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"getInterview",
+												"{{interview_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ update interview by round with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -23685,7 +24396,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"customMessage\": \"updated\"\r\n}",
+											"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -23708,16 +24419,64 @@
 									"response": []
 								},
 								{
+									"name": "✘ update interview by id with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/updateInterview/{{interview_id_created_for_connect_manager}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"updateInterview",
+												"{{interview_id_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "✘ search interviews with member",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test('Status code is 403', function () {\r",
-													"    pm.response.to.have.status(403);\r",
+													"pm.test('Status code is 401', function () {\r",
+													"    pm.response.to.have.status(401);\r",
 													"    const response = pm.response.json()\r",
-													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"    pm.expect(response.message).to.eq(\"userId: 88774489 the user is not a member of project 111\")\r",
 													"});"
 												],
 												"type": "text/javascript"

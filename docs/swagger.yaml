@@ -1029,6 +1029,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /updateInterview/{id}:
+    patch:
+      tags:
+        - Interviews
+      description: |
+        Partially update interview.
+
+        **Authorization** Topcoder token with update interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The interview or xai id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInterviewRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /jobCandidates/{jobCandidateId}/interviews:
     get:
       tags:
@@ -1160,6 +1220,67 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /getInterview/{id}:
+    get:
+      tags:
+        - Interviews
+      description: |
+        Get interview by id.
+
+        **Authorization** Topcoder token with read interview scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The interview or xai id.
+          required: true
+          schema:
+            type: string
+            format: uuid
         - in: query
           name: fromDb
           description: get data from db or not.
@@ -3436,7 +3557,7 @@ components:
       required:
         - id
         - jobCandidateId
-        - xaiTemplate
+        - templateUrl
         - round
         - status
         - createdAt
@@ -3446,41 +3567,79 @@ components:
           type: string
           format: uuid
           description: "The interview id."
+        xaiId:
+          type: string
+          format: uuid
+          description: "The x.ai id."
         jobCandidateId:
           type: string
           format: uuid
           description: "The job candidate id."
-        googleCalendarId:
+        calendarEventId:
           type: string
           example: "dummyId"
-          description: "The google calendar id."
-        xaiTemplate:
+          description: "The calendar event id."
+        templateUrl:
           type: string
           example: "interview-30"
           enum: ["interview-30", "interview-60"]
           description: "The x.ai template name"
-        customMessage:
+        templateId:
           type: string
-          example: "This is a custom message"
-          description: "The custom message."
+          format: uuid
+          description: "The x.ai template id"
+        templateType:
+          type: string
+          description: "The x.ai template type"
+        title:
+          type: string
+          description: "The x.ai template title"
+        locationDetails:
+          type: string
+          example: "Location TBD."
+          description: "The x.ai meeting location."
         round:
           type: integer
           example: 1
           description: "The interview round."
-        attendeesList:
+        duration:
+          type: integer
+          example: 30
+          description: "The interview duration (in minutes)."
+        hostEmail:
+          type: string
+          format: email
+          description: "The interview host email."
+        hostName:
+          type: string
+          description: "The interview host name."
+        guestEmails:
           type: array
           description: "Attendee list for this interview."
           items:
             type: string
             format: email
+        guestNames:
+          type: array
+          description: "Names of guests."
+          items:
+            type: string
         startTimestamp:
           type: string
           format: date-time
           description: "Interview start time."
+        endTimestamp:
+          type: string
+          format: date-time
+          description: "Interview end time."
         status:
           type: string
           enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
           description: "The interview status."
+        rescheduleUrl:
+          type: string
+          format: url
+          description: "x.ai reschedule url."
         createdAt:
           type: string
           format: date-time
@@ -3499,22 +3658,22 @@ components:
           description: "The user who updated the interview last time.(Will get the user info from the token)"
     RequestInterviewBody:
       required:
-        - xaiTemplate
+        - templateUrl
+        - hostEmail
       properties:
-        googleCalendarId:
+        calendarEventId:
           type: string
           example: "dummyId"
-          description: "The google calendar id."
-        customMessage:
-          type: string
-          example: "This is a custom message"
-          description: "The custom message."
-        xaiTemplate:
+          description: "The calendar event id."
+        templateUrl:
           type: string
           enum: ["interview-30", "interview-60"]
           example: "interview-30"
           description: "The x.ai template name"
-        attendeesList:
+        hostEmail:
+          type: string
+          format: email
+        guestEmails:
           type: array
           items:
             type: string
@@ -3526,31 +3685,67 @@ components:
           description: "The interview status."
     UpdateInterviewRequestBody:
       properties:
-        googleCalendarId:
+        xaiId:
+          type: string
+          format: uuid
+          description: "The x.ai meeting id"
+        calendarEventId:
           type: string
           example: "dummyId"
           description: "The google calendar id."
-        customMessage:
-          type: string
-          example: "This is a custom message"
-          description: "The custom message."
-        xaiTemplate:
+        templateUrl:
           type: string
           enum: ["interview-30", "interview-60"]
           example: "interview-30"
           description: "The x.ai template name"
-        attendeesList:
+        templateId:
+          type: string
+          format: uuid
+          description: "The x.ai template id"
+        templateType:
+          type: string
+          description: "The x.ai template type"
+        title:
+          type: string
+          description: "The x.ai meeting title"
+        locationDetails:
+          type: string
+          example: "Location TBD."
+          description: "The x.ai location details"
+        hostName:
+          type: string
+          description: "The host name"
+        hostEmail:
+          type: string
+          format: email
+          description: "The host email"
+        guestNames:
+          type: array
+          items:
+            type: string
+          description: "The guest names"
+        guestEmails:
           type: array
           items:
             type: string
             format: email
+          description: "The guest emails"
         startTimestamp:
           type: string
           format: date-time
+          description: "Interview start time."
+        endTimestamp:
+          type: string
+          format: date-time
+          description: "Interview end time."
         status:
           type: string
           enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
           description: "The interview status."
+        rescheduleUrl:
+          type: string
+          format: url
+          description: "The x.ai reschedule url"
     JobPatchRequestBody:
       properties:
         status:

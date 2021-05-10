@@ -4,6 +4,7 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const moment = require('moment')
 const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
 const { v4: uuid } = require('uuid')
@@ -86,7 +87,7 @@ async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb =
     }
   }
   // either ES query failed or `fromDb` is set - fallback to DB
-  logger.info({ component: 'InterviewService', context: 'getInterview', message: 'try to query db for data' })
+  logger.info({ component: 'InterviewService', context: 'getInterviewByRound', message: 'try to query db for data' })
 
   const interview = await Interview.findOne({
     where: { jobCandidateId, round }
@@ -107,6 +108,94 @@ getInterviewByRound.schema = Joi.object().keys({
 }).required()
 
 /**
+ * Get interview by id
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {String} id the interview or xai id
+ * @param {Boolean} fromDb flag if query db for data or not
+ * @returns {Object} the interview
+ */
+async function getInterviewById (currentUser, id, fromDb = false) {
+  if (!fromDb) {
+    try {
+      // construct query for nested search
+      const esQueryBody = {
+        _source: false,
+        query: {
+          nested: {
+            path: 'interviews',
+            query: {
+              bool: {
+                should: []
+              }
+            },
+            inner_hits: {}
+          }
+        }
+      }
+      // add filtering terms
+      // interviewId
+      esQueryBody.query.nested.query.bool.should.push({
+        term: {
+          'interviews.id': {
+            value: id
+          }
+        }
+      })
+      // xaiId
+      esQueryBody.query.nested.query.bool.should.push({
+        term: {
+          'interviews.xaiId': {
+            value: id
+          }
+        }
+      })
+      // search
+      const { body } = await esClient.search({
+        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
+        body: esQueryBody
+      })
+      // extract inner interview hit from body - there's always one jobCandidate & interview hit as we search with IDs
+      const interview = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits[0]._source')
+      if (interview) {
+        // check permission before returning
+        await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+        return interview
+      }
+      // if reaches here, the interview with this IDs is not found
+      throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+    } catch (err) {
+      logger.logFullError(err, { component: 'InterviewService', context: 'getInterviewById' })
+      throw err
+    }
+  }
+  // either ES query failed or `fromDb` is set - fallback to DB
+  logger.info({ component: 'InterviewService', context: 'getInterviewById', message: 'try to query db for data' })
+
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id },
+        { xaiId: id }
+      ]
+    }
+  })
+  // throw NotFound error if doesn't exist
+  if (!!interview !== true) {
+    throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+  }
+  // check permission before returning
+  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+
+  return interview.dataValues
+}
+
+getInterviewById.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.string().uuid().required(),
+  fromDb: Joi.boolean()
+}).required()
+
+/**
  * Request interview
  * @param {Object} currentUser the user who perform this operation
  * @param {String} jobCandidateId the job candidate id
@@ -117,10 +206,6 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   // check permission
   await ensureUserIsPermitted(currentUser, jobCandidateId)
 
-  interview.id = uuid()
-  interview.jobCandidateId = jobCandidateId
-  interview.createdBy = await helper.getUserId(currentUser.userId)
-
   // find the round count
   const round = await Interview.count({
     where: { jobCandidateId }
@@ -130,7 +215,18 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   if (round >= InterviewConstants.MaxAllowedCount) {
     throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
   }
+
+  // pre-populate fields
+  interview.id = uuid()
+  interview.jobCandidateId = jobCandidateId
   interview.round = round + 1
+  interview.duration = InterviewConstants.XaiTemplate[interview.templateUrl]
+  interview.createdBy = await helper.getUserId(currentUser.userId)
+  // pre-populate hostName & guestNames
+  const hostMembers = await helper.getMemberDetailsByEmails([interview.hostEmail])
+  const guestMembers = await helper.getMemberDetailsByEmails(interview.guestEmails)
+  interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
+  interview.guestNames = _.map(guestMembers, (guestMember) => `${guestMember.firstName} ${guestMember.lastName}`)
 
   try {
     // create the interview
@@ -157,26 +253,58 @@ requestInterview.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidateId: Joi.string().uuid().required(),
   interview: Joi.object().keys({
-    googleCalendarId: Joi.string().allow(null),
-    customMessage: Joi.string().allow(null),
-    xaiTemplate: Joi.xaiTemplate().required(),
-    attendeesList: Joi.array().items(Joi.string().email()).allow(null),
+    calendarEventId: Joi.string().allow(null),
+    templateUrl: Joi.xaiTemplate().required(),
+    hostEmail: Joi.string().email().required(),
+    guestEmails: Joi.array().items(Joi.string().email()).default([]),
     status: Joi.interviewStatus().default(InterviewConstants.Status.Scheduling)
   }).required()
 }).required()
 
 /**
- * Patch (partially update) interview
+ * Updates interview
+ *
+ * @param {Object} currentUser user who performs the operation
+ * @param {Object} interview the existing interview object
+ * @param {Object} data object containing updated fields
+ * @returns {Object} updated interview
+ */
+async function partiallyUpdateInterview (currentUser, interview, data) {
+  // only status can be updated for Completed interviews
+  if (interview.status === InterviewConstants.Status.Completed) {
+    const updatedFields = _.keys(data)
+    if (updatedFields.length !== 1 || !_.includes(updatedFields, 'status')) {
+      throw new errors.BadRequestError('Only the "status" can be updated for Completed interviews.')
+    }
+  }
+
+  // automatically set endTimestamp if startTimestamp is provided
+  if (data.startTimestamp && !!data.endTimestamp !== true) {
+    data.endTimestamp = moment(data.startTimestamp).add(interview.duration, 'minutes').toDate()
+  }
+
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+  try {
+    const updated = await interview.update(data)
+    await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, updated.toJSON(), { oldValue: interview.toJSON() })
+    return updated.dataValues
+  } catch (err) {
+    // gracefully handle if one of the common sequelize errors
+    handleSequelizeError(err, interview.jobCandidateId)
+    // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
+    throw err
+  }
+}
+
+/**
+ * Patch (partially update) interview by round
  * @param {Object} currentUser the user who perform this operation
  * @param {String} jobCandidateId the job candidate id
  * @param {Number} round the interview round
  * @param {Object} data object containing patched fields
  * @returns {Object} the patched interview object
  */
-async function partiallyUpdateInterview (currentUser, jobCandidateId, round, data) {
-  // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateId)
-
+async function partiallyUpdateInterviewByRound (currentUser, jobCandidateId, round, data) {
   const interview = await Interview.findOne({
     where: {
       jobCandidateId, round
@@ -186,49 +314,104 @@ async function partiallyUpdateInterview (currentUser, jobCandidateId, round, dat
   if (!!interview !== true) {
     throw new errors.NotFoundError(`Interview doesn't exist with jobCandidateId: ${jobCandidateId} and round: ${round}`)
   }
+  // check permission
+  await ensureUserIsPermitted(currentUser, jobCandidateId)
 
-  const oldValue = interview.toJSON()
-
-  // only status can be updated for Completed interviews
-  if (oldValue.status === InterviewConstants.Status.Completed) {
-    const updatedFields = _.keys(data)
-    if (updatedFields.length !== 1 || !_.includes(updatedFields, 'status')) {
-      throw new errors.BadRequestError('Only the "status" can be updated for Completed interviews.')
-    }
-  }
-
-  data.updatedBy = await helper.getUserId(currentUser.userId)
-  try {
-    const updated = await interview.update(data)
-    await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-    return updated.dataValues
-  } catch (err) {
-    // gracefully handle if one of the common sequelize errors
-    handleSequelizeError(err, jobCandidateId)
-    // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
-    throw err
-  }
+  return await partiallyUpdateInterview(currentUser, interview, data)
 }
 
-partiallyUpdateInterview.schema = Joi.object().keys({
+partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidateId: Joi.string().uuid().required(),
   round: Joi.number().integer().positive().required(),
   data: Joi.object().keys({
-    googleCalendarId: Joi.string().when('status', {
+    xaiId: Joi.string().uuid().allow(null),
+    calendarEventId: Joi.string().when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    customMessage: Joi.string().allow(null),
-    xaiTemplate: Joi.xaiTemplate(),
+    templateUrl: Joi.xaiTemplate(),
+    templateId: Joi.string().uuid().allow(null),
+    templateType: Joi.string().allow(null),
+    title: Joi.string().allow(null),
+    locationDetails: Joi.string().allow(null),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    attendeesList: Joi.array().items(Joi.string().email()).allow(null),
-    status: Joi.interviewStatus()
+    endTimestamp: Joi.date().greater('now').when('startTimestamp', {
+      is: Joi.required(),
+      then: Joi.date().greater(Joi.ref('startTimestamp')),
+      otherwise: Joi.allow(null)
+    }),
+    hostName: Joi.string(),
+    hostEmail: Joi.string().email(),
+    guestNames: Joi.array().items(Joi.string()).allow(null),
+    guestEmails: Joi.array().items(Joi.string().email()).allow(null),
+    status: Joi.interviewStatus(),
+    rescheduleUrl: Joi.string().allow(null)
+  }).required().min(1) // at least one key - i.e. don't allow empty object
+}).required()
+
+/**
+ * Patch (partially update) interview by id
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the interview or x.ai meeting id
+ * @param {Object} data object containing patched fields
+ * @returns {Object} the patched interview object
+ */
+async function partiallyUpdateInterviewById (currentUser, id, data) {
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id },
+        { xaiId: id }
+      ]
+    }
+  })
+  // throw NotFound error if doesn't exist
+  if (!!interview !== true) {
+    throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+  }
+  // check permission
+  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+
+  return await partiallyUpdateInterview(currentUser, interview, data)
+}
+
+partiallyUpdateInterviewById.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.string().uuid().required(),
+  data: Joi.object().keys({
+    xaiId: Joi.string().uuid().required(),
+    calendarEventId: Joi.string().when('status', {
+      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
+      then: Joi.required(),
+      otherwise: Joi.allow(null)
+    }),
+    templateUrl: Joi.xaiTemplate(),
+    templateId: Joi.string().uuid().allow(null),
+    templateType: Joi.string().allow(null),
+    title: Joi.string().allow(null),
+    locationDetails: Joi.string().allow(null),
+    startTimestamp: Joi.date().greater('now').when('status', {
+      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
+      then: Joi.required(),
+      otherwise: Joi.allow(null)
+    }),
+    endTimestamp: Joi.date().greater('now').when('startTimestamp', {
+      is: Joi.required(),
+      then: Joi.date().greater(Joi.ref('startTimestamp')),
+      otherwise: Joi.allow(null)
+    }),
+    hostName: Joi.string(),
+    hostEmail: Joi.string().email(),
+    guestNames: Joi.array().items(Joi.string()).allow(null),
+    guestEmails: Joi.array().items(Joi.string().email()).allow(null),
+    status: Joi.interviewStatus(),
+    rescheduleUrl: Joi.string().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
 
@@ -395,8 +578,10 @@ async function updateCompletedInterviews () {
 
 module.exports = {
   getInterviewByRound,
+  getInterviewById,
   requestInterview,
-  partiallyUpdateInterview,
+  partiallyUpdateInterviewByRound,
+  partiallyUpdateInterviewById,
   searchInterviews,
   updateCompletedInterviews
 }
