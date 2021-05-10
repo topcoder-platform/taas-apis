@@ -17,6 +17,12 @@
 
 ### Steps to run locally
 
+0. Make sure to use Node v12+ by command `node -v`. We recommend using [NVM](https://github.com/nvm-sh/nvm) to quickly switch to the right version:
+
+   ```bash
+   nvm use
+   ```
+
 1. 📦 Install npm dependencies
 
    ```bash
@@ -38,7 +44,7 @@
       INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID=
       INTERVIEW_INVITATION_SENDER_EMAIL=
       # Locally deployed services (via docker-compose)
-      ES_HOST=dockerhost:9200
+      ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
       BUSAPI_URL=http://dockerhost:8002/v5
       ```
