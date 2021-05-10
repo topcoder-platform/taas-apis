@@ -325,7 +325,7 @@ async function sendEmail (currentUser, data) {
     subject: data.subject || template.subject,
     body: data.body || template.body
   }
-  for(var key in subjectBody) {
+  for (var key in subjectBody) {
     subjectBody[key] = await helper.substituteStringByObject(subjectBody[key], data.data)
   }
   const emailData = {

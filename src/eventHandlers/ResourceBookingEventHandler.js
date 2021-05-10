@@ -155,7 +155,7 @@ async function createWorkPeriods (payload) {
 /**
  * When a ResourceBooking is updated, workPeriods related to
  * that ResourceBooking should be updated also.
- * This function finds aout which workPeriods should be deleted,
+ * This function finds out which workPeriods should be deleted,
  * which ones should be created and which ones should be updated
  * @param {object} payload the event payload
  * @returns {undefined}

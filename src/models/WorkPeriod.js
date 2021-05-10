@@ -20,11 +20,14 @@ module.exports = (sequelize) => {
      * @param {Object} options { withPayments: true/false } whether contains payments
      * @returns {WorkPeriod} the work period instance
      */
-    static async findById (id, options = { withPayments: false }) {
+    static async findById (id, options = { withPayments: false, exclude: [] }) {
       const criteria = {
         where: {
           id
         }
+      }
+      if (options.exclude && options.exclude.length > 0) {
+        criteria.attributes = { exclude: options.exclude }
       }
       if (options.withPayments) {
         criteria.include = [{

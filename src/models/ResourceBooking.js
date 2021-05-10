@@ -1,5 +1,6 @@
 const { Sequelize, Model } = require('sequelize')
 const config = require('config')
+const _ = require('lodash')
 const errors = require('../common/errors')
 
 module.exports = (sequelize) => {
@@ -9,8 +10,9 @@ module.exports = (sequelize) => {
      * @param {Object} models the database models
      */
     static associate (models) {
+      ResourceBooking._models = models
       ResourceBooking.belongsTo(models.Job, { foreignKey: 'jobId' })
-      ResourceBooking.hasMany(models.WorkPeriod, { foreignKey: 'resourceBookingId' })
+      ResourceBooking.hasMany(models.WorkPeriod, { as: 'workPeriods', foreignKey: 'resourceBookingId' })
     }
 
     /**
@@ -18,12 +20,36 @@ module.exports = (sequelize) => {
      * @param {String} id the resource booking id
      * @returns {ResourceBooking} the resource booking instance
      */
-    static async findById (id) {
-      const resourceBooking = await ResourceBooking.findOne({
+    static async findById (id, options) {
+      const criteria = {
         where: {
           id
         }
-      })
+      }
+      if (!_.isUndefined(options)) {
+        // Select ResourceBooking fields
+        if (options.include && options.include.length > 0) {
+          criteria.attributes = options.fieldsRB
+        } else if (options.excludeRB && options.excludeRB.length > 0) {
+          criteria.attributes = { exclude: options.excludeRB }
+        }
+        // include WorkPeriod model
+        if (options.withWorkPeriods) {
+          criteria.include = [{
+            model: ResourceBooking._models.WorkPeriod,
+            as: 'workPeriods',
+            required: false
+          }]
+          // Select WorkPeriod fields
+          if (!options.allWorkPeriods) {
+            criteria.include[0].attributes = _.map(options.fieldsWP, f => _.split(f, '.')[1])
+          } else if (options.excludeWP && options.excludeWP.length > 0) {
+            criteria.include[0].attributes = { exclude: _.map(options.excludeWP, f => _.split(f, '.')[1]) }
+          }
+        }
+      }
+
+      const resourceBooking = await ResourceBooking.findOne(criteria)
       if (!resourceBooking) {
         throw new errors.NotFoundError(`id: ${id} "ResourceBooking" doesn't exists.`)
       }
