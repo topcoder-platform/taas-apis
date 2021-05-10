@@ -153,7 +153,7 @@ async function activateChallenge (id, token) {
 async function closeChallenge (id, userHandle, token) {
   localLogger.info({ context: 'closeChallenge', message: `Closing challenge ${id}` })
   try {
-    const [ { userId } ] = await helper.getMemberDetailsByHandles([ userHandle ])
+    const { userId } = await helper.getV3MemberDetailsByHandle(userHandle)
     const body = {
       status: constants.ChallengeStatus.COMPLETED,
       winners: [{
