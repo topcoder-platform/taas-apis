@@ -165,12 +165,12 @@
 
 ### Working on `taas-es-processor` locally
 
-When you run `taas-apis` locally as per "[Steps to run locally](#steps-to-run-locally)" the `taas-es-processor` would be run for you automatically together with other services inside the docker container when you run `npm run services:up`.
+When you run `taas-apis` locally as per "[Steps to run locally](#steps-to-run-locally)" the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) would be run for you automatically together with other services inside the docker container via `npm run services:up`.
 
 To be able to change and test `taas-es-processor` locally you can follow the next steps:
 
 1. Stop `taas-es-processor` inside docker by running `docker-compose -f local/docker-compose.yml stop taas-es-processor`
-2. Run `taas-es-processor` separately from the [source code](https://github.com/topcoder-platform/taas-es-processor). As `npm run services:up` already run all the dependencies for both `taas-apis` and for `taas-es-processor`. The only thing you need to do for running `taas-es-processor` locally is:
+2. Run `taas-es-processor` separately from the source code. As `npm run services:up` already run all the dependencies for both `taas-apis` and for `taas-es-processor`. The only thing you need to do for running `taas-es-processor` locally is clone the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) repository and inside `taas-es-processor` folder run:
    - `nvm use` - to use correct Node version
    - `npm run install`
    - `npm run start`
