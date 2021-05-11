@@ -24,7 +24,7 @@ async function sendInvitationEmail (payload) {
 
   teamService.sendEmail({}, {
     template: 'interview-invitation',
-    cc: [jobCandidateMember.email, ...interview.guestEmails],
+    cc: [interview.hostEmail, jobCandidateMember.email, ...interview.guestEmails],
     data: {
       interview_id: interview.id,
       interviewee_name: `${jobCandidateMember.firstName} ${jobCandidateMember.lastName}`,
