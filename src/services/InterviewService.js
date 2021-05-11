@@ -383,7 +383,7 @@ async function partiallyUpdateInterviewById (currentUser, id, data) {
 
 partiallyUpdateInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  id: Joi.string().uuid().required(),
+  id: Joi.string().required(),
   data: Joi.object().keys({
     xaiId: Joi.string().required(),
     calendarEventId: Joi.string().when('status', {
