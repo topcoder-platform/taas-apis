@@ -1108,6 +1108,22 @@ async function getMemberDetailsByHandles (handles) {
 }
 
 /**
+ * Get topcoder member details by handle.
+ *
+ * @param {String} handle the user handle
+ * @returns {Object} the member details
+ */
+ async function getV3MemberDetailsByHandle (handle) {
+  const token = await getM2MToken()
+  const res = await request
+    .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getV3MemberDetailsByHandle', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
  * Find topcoder members by email.
  *
  * @param {String} token the auth token
@@ -1433,6 +1449,7 @@ module.exports = {
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
+  getV3MemberDetailsByHandle,
   getMemberDetailsByEmails,
   createProjectMember,
   listProjectMembers,
