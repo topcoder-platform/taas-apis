@@ -332,7 +332,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
       otherwise: Joi.allow(null)
     }),
     templateUrl: Joi.xaiTemplate(),
-    templateId: Joi.string().uuid().allow(null),
+    templateId: Joi.string().allow(null),
     templateType: Joi.string().allow(null),
     title: Joi.string().allow(null),
     locationDetails: Joi.string().allow(null),
@@ -392,7 +392,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
       otherwise: Joi.allow(null)
     }),
     templateUrl: Joi.xaiTemplate(),
-    templateId: Joi.string().uuid().allow(null),
+    templateId: Joi.string().allow(null),
     templateType: Joi.string().allow(null),
     title: Joi.string().allow(null),
     locationDetails: Joi.string().allow(null),

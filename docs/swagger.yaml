@@ -3586,7 +3586,6 @@ components:
           description: "The x.ai template name"
         templateId:
           type: string
-          format: uuid
           description: "The x.ai template id"
         templateType:
           type: string
@@ -3699,7 +3698,6 @@ components:
           description: "The x.ai template name"
         templateId:
           type: string
-          format: uuid
           description: "The x.ai template id"
         templateType:
           type: string

@@ -62,7 +62,7 @@ module.exports = (sequelize) => {
       },
       templateId: {
         field: 'template_id',
-        type: Sequelize.UUID
+        type: Sequelize.STRING(255)
       },
       templateType: {
         field: 'template_type',

@@ -25,7 +25,7 @@ module.exports = {
       queryInterface.addColumn(table, 'xai_id', { type: Sequelize.STRING(255) }),
       queryInterface.addColumn(table, 'duration', { type: Sequelize.INTEGER }),
       queryInterface.addColumn(table, 'end_timestamp', { type: Sequelize.DATE }),
-      queryInterface.addColumn(table, 'template_id', { type: Sequelize.UUID }),
+      queryInterface.addColumn(table, 'template_id', { type: Sequelize.STRING(255) }),
       queryInterface.addColumn(table, 'template_type', { type: Sequelize.STRING(255) }),
       queryInterface.addColumn(table, 'location_details', { type: Sequelize.STRING(255) }),
       queryInterface.addColumn(table, 'title', { type: Sequelize.STRING(255) }),
