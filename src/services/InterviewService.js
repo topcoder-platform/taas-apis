@@ -191,7 +191,7 @@ async function getInterviewById (currentUser, id, fromDb = false) {
 
 getInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  id: Joi.string().uuid().required(),
+  id: Joi.string().required(),
   fromDb: Joi.boolean()
 }).required()
 
