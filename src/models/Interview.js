@@ -44,7 +44,7 @@ module.exports = (sequelize) => {
       },
       xaiId: {
         field: 'xai_id',
-        type: Sequelize.UUID
+        type: Sequelize.STRING(255)
       },
       jobCandidateId: {
         field: 'job_candidate_id',

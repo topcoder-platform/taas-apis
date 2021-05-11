@@ -325,7 +325,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   jobCandidateId: Joi.string().uuid().required(),
   round: Joi.number().integer().positive().required(),
   data: Joi.object().keys({
-    xaiId: Joi.string().uuid().allow(null),
+    xaiId: Joi.string().allow(null),
     calendarEventId: Joi.string().when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
@@ -385,7 +385,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    xaiId: Joi.string().uuid().required(),
+    xaiId: Joi.string().required(),
     calendarEventId: Joi.string().when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),

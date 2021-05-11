@@ -5,6 +5,7 @@ info:
   version: 1.0.0
 servers:
   - url: /api/{apiVersion}/
+  - url: http://localhost:3000/v5/
   - url: https://api.topcoder-dev.com/{apiVersion}/
     variables:
       apiVersion:
@@ -3569,7 +3570,6 @@ components:
           description: "The interview id."
         xaiId:
           type: string
-          format: uuid
           description: "The x.ai id."
         jobCandidateId:
           type: string
@@ -3687,7 +3687,6 @@ components:
       properties:
         xaiId:
           type: string
-          format: uuid
           description: "The x.ai meeting id"
         calendarEventId:
           type: string

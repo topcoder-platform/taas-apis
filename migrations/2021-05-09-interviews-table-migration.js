@@ -22,7 +22,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const table = { tableName: 'interviews', schema: config.DB_SCHEMA_NAME }
     await Promise.all([
-      queryInterface.addColumn(table, 'xai_id', { type: Sequelize.UUID }),
+      queryInterface.addColumn(table, 'xai_id', { type: Sequelize.STRING(255) }),
       queryInterface.addColumn(table, 'duration', { type: Sequelize.INTEGER }),
       queryInterface.addColumn(table, 'end_timestamp', { type: Sequelize.DATE }),
       queryInterface.addColumn(table, 'template_id', { type: Sequelize.UUID }),
