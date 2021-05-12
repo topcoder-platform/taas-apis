@@ -15,7 +15,8 @@ const teamService = require('../services/TeamService')
  */
 async function sendInvitationEmail (payload) {
   const interview = payload.value
-  // get customer details
+  // get customer details via job candidate user
+  const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
   const job = await jobCandidate.getJob()
   teamService.sendEmail({}, {
     template: 'interview-invitation',
