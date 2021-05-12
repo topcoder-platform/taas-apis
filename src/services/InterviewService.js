@@ -225,17 +225,26 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
     throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
   }
 
+  // get job candidate user details
+  const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
+  const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
+  const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
   // pre-populate fields
   interview.id = uuid()
   interview.jobCandidateId = jobCandidateId
   interview.round = round + 1
   interview.duration = InterviewConstants.XaiTemplate[interview.templateUrl]
   interview.createdBy = await helper.getUserId(currentUser.userId)
+  interview.guestEmails = [jobCandidateMember.email, ...interview.guestEmails]
   // pre-populate hostName & guestNames
   const hostMembers = await helper.getMemberDetailsByEmails([interview.hostEmail])
   const guestMembers = await helper.getMemberDetailsByEmails(interview.guestEmails)
   interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
-  interview.guestNames = _.map(guestMembers, (guestMember) => `${guestMember.firstName} ${guestMember.lastName}`)
+  interview.guestNames = _.flatten(_.map(interview.guestEmails, (guestEmail) => {
+    return _.map(guestMembers, (guestMember) => {
+      return (guestEmail == guestMember.email) ? `${guestMember.firstName} ${guestMember.lastName}` : guestEmail.split("@")[0]
+    })
+  }))
 
   try {
     // create the interview

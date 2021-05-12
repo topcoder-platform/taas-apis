@@ -1047,7 +1047,6 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
       requestBody:
         content:
           application/json:
@@ -1281,7 +1280,6 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
         - in: query
           name: fromDb
           description: get data from db or not.
@@ -3586,6 +3584,7 @@ components:
           description: "The x.ai template name"
         templateId:
           type: string
+          format: uuid
           description: "The x.ai template id"
         templateType:
           type: string
@@ -3698,6 +3697,7 @@ components:
           description: "The x.ai template name"
         templateId:
           type: string
+          format: uuid
           description: "The x.ai template id"
         templateType:
           type: string

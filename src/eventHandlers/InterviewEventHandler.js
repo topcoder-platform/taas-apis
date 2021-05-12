@@ -15,25 +15,19 @@ const teamService = require('../services/TeamService')
  */
 async function sendInvitationEmail (payload) {
   const interview = payload.value
-  // get job candidate user details
-  const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
-  const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
-  const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
   // get customer details
   const job = await jobCandidate.getJob()
-
   teamService.sendEmail({}, {
     template: 'interview-invitation',
-    cc: [interview.hostEmail, jobCandidateMember.email, ...interview.guestEmails],
+    cc: [interview.hostEmail, ...interview.guestEmails],
     data: {
       interview_id: interview.id,
-      interviewee_name: `${jobCandidateMember.firstName} ${jobCandidateMember.lastName}`,
+      interviewee_name: interview.guestNames,
       interviewer_name: interview.hostName,
       xai_template: '/' + interview.templateUrl,
       additional_interviewers: (interview.guestEmails).join(','),
       interview_length: interview.duration,
-      job_name: job.title,
-      interviewee_handle: jobCandidateMember.handle
+      job_name: job.title
     }
   })
 }
