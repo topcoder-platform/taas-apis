@@ -341,9 +341,9 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    endTimestamp: Joi.date().greater('now').when('startTimestamp', {
-      is: Joi.required(),
-      then: Joi.date().greater(Joi.ref('startTimestamp')),
+    endTimestamp: Joi.date().greater(Joi.ref('startTimestamp')).when('status', {
+      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
+      then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
     hostName: Joi.string(),
@@ -401,9 +401,9 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    endTimestamp: Joi.date().greater('now').when('startTimestamp', {
-      is: Joi.required(),
-      then: Joi.date().greater(Joi.ref('startTimestamp')),
+    endTimestamp: Joi.date().greater(Joi.ref('startTimestamp')).when('status', {
+      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
+      then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
     hostName: Joi.string(),
