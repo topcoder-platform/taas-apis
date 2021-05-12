@@ -7,7 +7,7 @@ const Joi = require('joi')
 const moment = require('moment')
 const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
-const { v4: uuid } = require('uuid')
+const { v4: uuid, validate: uuidValidate } = require('uuid')
 const { Interviews: InterviewConstants } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
@@ -170,15 +170,24 @@ async function getInterviewById (currentUser, id, fromDb = false) {
   }
   // either ES query failed or `fromDb` is set - fallback to DB
   logger.info({ component: 'InterviewService', context: 'getInterviewById', message: 'try to query db for data' })
-
-  const interview = await Interview.findOne({
-    where: {
-      [Op.or]: [
-        { id },
-        { xaiId: id }
-      ]
-    }
-  })
+  var interview
+  if (uuidValidate(id)) {
+    interview = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { id }
+        ]
+      }
+    })
+  } else {
+    interview = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { xaiId: id }
+        ]
+      }
+    })
+  }
   // throw NotFound error if doesn't exist
   if (!!interview !== true) {
     throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
@@ -363,14 +372,24 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
  * @returns {Object} the patched interview object
  */
 async function partiallyUpdateInterviewById (currentUser, id, data) {
-  const interview = await Interview.findOne({
-    where: {
-      [Op.or]: [
-        { id },
-        { xaiId: id }
-      ]
-    }
-  })
+  var interview
+  if (uuidValidate(id)) {
+    interview = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { id }
+        ]
+      }
+    })
+  } else {
+    interview = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { xaiId: id }
+        ]
+      }
+    })
+  }
   // throw NotFound error if doesn't exist
   if (!!interview !== true) {
     throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
