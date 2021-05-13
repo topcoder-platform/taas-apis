@@ -23,7 +23,7 @@ async function sendInvitationEmail (payload) {
     cc: [interview.hostEmail, ...interview.guestEmails],
     data: {
       interview_id: interview.id,
-      interviewee_name: interview.guestNames,
+      interviewee_name: (interview.guestNames).join(','),
       interviewer_name: interview.hostName,
       xai_template: '/' + interview.templateUrl,
       additional_interviewers: (interview.guestEmails).join(','),
