@@ -254,7 +254,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       { status: 'interview' },
       { where: { id: created.jobCandidateId }, returning: true }
     )
-    const updatedJobCandidate = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
+    const updatedJobCandidate = _.get(affectedRows, '0.dataValues')
     await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updatedJobCandidate)
     // return created interview
     return created.dataValues
