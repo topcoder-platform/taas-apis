@@ -146,17 +146,7 @@ module.exports = (sequelize) => {
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
-      timestamps: true,
-      defaultScope: {
-        attributes: {
-          exclude: ['deletedAt']
-        }
-      },
-      hooks: {
-        afterCreate: (interview) => {
-          delete interview.dataValues.deletedAt
-        }
-      }
+      timestamps: true
     }
   )
 
