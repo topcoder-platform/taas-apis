@@ -142,7 +142,7 @@ module.exports = (sequelize) => {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
       tableName: 'interviews',
-      paranoid: true,
+      paranoid: false,
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
