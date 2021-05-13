@@ -368,7 +368,8 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
     guestNames: Joi.array().items(Joi.string()).allow(null),
     guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null)
+    rescheduleUrl: Joi.string().allow(null),
+    deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
 
@@ -438,7 +439,8 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
     guestNames: Joi.array().items(Joi.string()).allow(null),
     guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null)
+    rescheduleUrl: Joi.string().allow(null),
+    deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
 
