@@ -240,11 +240,10 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const hostMembers = await helper.getMemberDetailsByEmails([interview.hostEmail])
   const guestMembers = await helper.getMemberDetailsByEmails(interview.guestEmails)
   interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
-  interview.guestNames = _.flatten(_.map(interview.guestEmails, (guestEmail) => {
-    return _.map(guestMembers, (guestMember) => {
-      return (guestEmail === guestMember.email) ? `${guestMember.firstName} ${guestMember.lastName}` : guestEmail.split('@')[0]
-    })
-  }))
+  interview.guestNames = _.map(interview.guestEmails, (guestEmail) => {
+    var foundGuestMember = _.find(guestMembers, function(guestMember) { return guestEmail == guestMember.email });
+    return (foundGuestMember != undefined) ? `${foundGuestMember.firstName} ${foundGuestMember.lastName}` : guestEmail.split("@")[0]
+  })
 
   try {
     // create the interview
@@ -369,7 +368,8 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
     guestNames: Joi.array().items(Joi.string()).allow(null),
     guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null)
+    rescheduleUrl: Joi.string().allow(null),
+    deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
 
@@ -439,7 +439,8 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
     guestNames: Joi.array().items(Joi.string()).allow(null),
     guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null)
+    rescheduleUrl: Joi.string().allow(null),
+    deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
 

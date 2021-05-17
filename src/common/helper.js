@@ -109,7 +109,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' }
+      updatedBy: { type: 'keyword' },
+      deletedAt: { type: 'date' }
     }
   },
   createdAt: { type: 'date' },
