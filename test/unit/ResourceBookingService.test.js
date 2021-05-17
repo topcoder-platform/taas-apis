@@ -8,6 +8,7 @@ const workPeriodService = require('../../src/services/WorkPeriodService')
 const commonData = require('./common/CommonData')
 const testData = require('./common/ResourceBookingData')
 const helper = require('../../src/common/helper')
+const errors = require('../../src/common/errors')
 const busApiClient = helper.getBusApiClient()
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
@@ -351,6 +352,227 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+  })
+  describe('Get resource booking with/without nested fields', () => {
+    it('T17:Get resource booking from ES', async () => {
+      const data = testData.T17
+      const ESClient = commonData.ESClient
+      ESClient.get = () => {}
+      const esClientGet = sinon.stub(ESClient, 'get').callsFake(() => data.esClientGet)
+      const result = await service.getResourceBooking(commonData.userWithManagePermission, data.esClientGet.body._source.id, data.criteria)
+      expect(esClientGet.calledOnce).to.be.true
+      expect(result).to.deep.eq(data.esClientGet.body._source)
+    })
+    it('T18:Get resource booking from DB', async () => {
+      const data = testData.T18
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const result = await service.getResourceBooking(commonData.userWithManagePermission, data.resourceBooking.value.dataValues.id, data.criteria)
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(result).to.deep.eq(data.resourceBooking.value.dataValues)
+    })
+    it('T19:Fail to get resource booking with not allowed fields', async () => {
+      const data = testData.T19
+      let error
+      try {
+        await service.getResourceBooking(commonData.userWithManagePermission, data.id, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T20:Fail to get resource booking with memberRate', async () => {
+      const data = testData.T20
+      let error
+      try {
+        await service.getResourceBooking(commonData.regularUser, data.id, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T21:Fail to get resource booking with nested workPeriods', async () => {
+      const data = testData.T21
+      let error
+      try {
+        await service.getResourceBooking(commonData.currentUser, data.id, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T22:Fail to get resource booking without including projectId as a regularUser', async () => {
+      const data = testData.T22
+      let error
+      try {
+        await service.getResourceBooking(commonData.regularUser, data.id, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T23:Fail to get resource booking as a regularUser who is not member of project', async () => {
+      const data = testData.T23
+      const ESClient = commonData.ESClient
+      ESClient.get = () => {}
+      const esClientGet = sinon.stub(ESClient, 'get').callsFake(() => data.esClientGet)
+      const checkIsMemberOfProject = sinon.stub(helper, 'checkIsMemberOfProject').callsFake(() => {
+        throw new errors.UnauthorizedError(data.error.message)
+      })
+      let error
+      try {
+        await service.getResourceBooking(commonData.regularUser, data.id, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(esClientGet.calledOnce).to.be.true
+      expect(checkIsMemberOfProject.calledOnce).to.be.true
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+  })
+  describe('Search resource booking with/without nested fields', () => {
+    it('T24:Search resource booking from ES', async () => {
+      const data = testData.T24
+      const ESClient = commonData.ESClient
+      ESClient.search = () => {}
+      const esClientSearch = sinon.stub(ESClient, 'search').callsFake(() => data.esClientSearch)
+      const result = await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      expect(esClientSearch.calledOnce).to.be.true
+      expect(result).to.deep.eq(data.result)
+    })
+    it('T25:Search resource bookin from DB', async () => {
+      const data = testData.T25
+      const ESClient = commonData.ESClient
+      ESClient.search = () => {}
+      const esClientSearch = sinon.stub(ESClient, 'search').callsFake(() => { throw new Error() })
+      const stubResourceBookingFindAll = sinon.stub(ResourceBooking, 'findAll').callsFake(async () => {
+        return data.resourceBookingFindAll
+      })
+      const result = await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      expect(esClientSearch.calledOnce).to.be.true
+      expect(stubResourceBookingFindAll.calledOnce).to.be.true
+      expect(result).to.deep.eq(data.result)
+    })
+    it('T26:Fail to search resource booking with not allowed fields', async () => {
+      const data = testData.T26
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T27:Fail to search resource booking with memberRate', async () => {
+      const data = testData.T27
+      let error
+      try {
+        await service.searchResourceBookings(commonData.regularUser, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T28:Fail to search resource booking with nested workPeriods', async () => {
+      const data = testData.T28
+      let error
+      try {
+        await service.searchResourceBookings(commonData.currentUser, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T29:Fail to search resource booking without filtering by projectId as a regularUser', async () => {
+      const data = testData.T29
+      let error
+      try {
+        await service.searchResourceBookings(commonData.regularUser, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T30:Fail to search resource booking as a regularUser who is not member of project', async () => {
+      const data = testData.T30
+      const checkIsMemberOfProject = sinon.stub(helper, 'checkIsMemberOfProject').callsFake(() => {
+        throw new errors.UnauthorizedError(data.error.message)
+      })
+      let error
+      try {
+        await service.searchResourceBookings(commonData.regularUser, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(checkIsMemberOfProject.calledOnce).to.be.true
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T31:Fail to search resource booking with filtering by nested field', async () => {
+      const data = testData.T31
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T32:Fail to search resource booking with sorting by not included field', async () => {
+      const data = testData.T32
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T33:Fail to search resource booking with sorting by nested field', async () => {
+      const data = testData.T33
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T34:Fail to search resource booking with filtering by not included field', async () => {
+      const data = testData.T34
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+    })
+    it('T35:Fail to search resource booking with filtering by not included nested field', async () => {
+      const data = testData.T35
+      let error
+      try {
+        await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
     })
   })
 })

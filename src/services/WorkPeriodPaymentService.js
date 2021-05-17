@@ -44,25 +44,36 @@ async function getWorkPeriodPayment (currentUser, id, fromDb = false) {
   await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
   if (!fromDb) {
     try {
-      const workPeriod = await esClient.search({
-        index: config.esConfig.ES_INDEX_WORK_PERIOD,
-        _source: 'payments',
+      const resourceBooking = await esClient.search({
+        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
+        _source: 'workPeriods.payments',
         body: {
           query: {
             nested: {
-              path: 'payments',
+              path: 'workPeriods.payments',
               query: {
-                match: { 'payments.id': id }
+                match: { 'workPeriods.payments.id': id }
               }
             }
           }
         }
       })
 
-      if (!workPeriod.body.hits.total.value) {
+      if (!resourceBooking.body.hits.total.value) {
         throw new errors.NotFoundError()
       }
-      const workPeriodPaymentRecord = _.find(workPeriod.body.hits.hits[0]._source.payments, { id })
+      let workPeriodPaymentRecord = null
+      _.forEach(resourceBooking.body.hits.hits[0]._source.workPeriods, wp => {
+        _.forEach(wp.payments, p => {
+          if (p.id === id) {
+            workPeriodPaymentRecord = p
+            return false
+          }
+        })
+        if (workPeriodPaymentRecord) {
+          return false
+        }
+      })
       return workPeriodPaymentRecord
     } catch (err) {
       if (err.httpStatus === HttpStatus.NOT_FOUND) {
@@ -244,12 +255,12 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
   const perPage = criteria.perPage
   try {
     const esQuery = {
-      index: config.get('esConfig.ES_INDEX_WORK_PERIOD'),
-      _source: 'payments',
+      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+      _source: 'workPeriods.payments',
       body: {
         query: {
           nested: {
-            path: 'payments',
+            path: 'workPeriods.payments',
             query: { bool: { must: [] } }
           }
         },
@@ -263,7 +274,7 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     _.each(_.pick(criteria, ['status', 'workPeriodId']), (value, key) => {
       esQuery.body.query.nested.query.bool.must.push({
         term: {
-          [`payments.${key}`]: {
+          [`workPeriods.payments.${key}`]: {
             value
           }
         }
@@ -272,14 +283,20 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     if (criteria.workPeriodIds) {
       esQuery.body.query.nested.query.bool.filter = [{
         terms: {
-          'payments.workPeriodId': criteria.workPeriodIds
+          'workPeriods.payments.workPeriodId': criteria.workPeriodIds
         }
       }]
     }
     logger.debug({ component: 'WorkPeriodPaymentService', context: 'searchWorkPeriodPayment', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
-    let payments = _.reduce(body.hits.hits, (acc, workPeriod) => _.concat(acc, workPeriod._source.payments), [])
+    const workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
+    let payments = _.reduce(workPeriods, (acc, workPeriod) => _.concat(acc, workPeriod.payments), [])
+    if (criteria.workPeriodId) {
+      payments = _.filter(payments, { workPeriodId: criteria.workPeriodId })
+    } else if (criteria.workPeriodIds) {
+      payments = _.filter(payments, p => _.includes(criteria.workPeriodIds, p.workPeriodId))
+    }
     if (criteria.status) {
       payments = _.filter(payments, { status: criteria.status })
     }
@@ -320,9 +337,7 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     total: workPeriodPayments.length,
     page,
     perPage,
-    result: _.map(workPeriodPayments, workPeriodPayment => {
-      return workPeriodPayment.dataValues
-    })
+    result: workPeriodPayments
   }
 }
 

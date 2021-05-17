@@ -76,8 +76,6 @@ module.exports = {
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
     // the resource booking index
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
-    // the work period index
-    ES_INDEX_WORK_PERIOD: process.env.ES_INDEX_WORK_PERIOD || 'work_period',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
