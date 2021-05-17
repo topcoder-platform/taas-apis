@@ -88,18 +88,29 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
     type: 'nested',
     properties: {
       id: { type: 'keyword' },
+      xaiId: { type: 'keyword' },
       jobCandidateId: { type: 'keyword' },
-      googleCalendarId: { type: 'keyword' },
-      customMessage: { type: 'text' },
-      xaiTemplate: { type: 'keyword' },
+      calendarEventId: { type: 'keyword' },
+      templateUrl: { type: 'keyword' },
+      templateId: { type: 'keyword' },
+      templateType: { type: 'keyword' },
+      title: { type: 'keyword' },
+      locationDetails: { type: 'keyword' },
+      duration: { type: 'integer' },
       startTimestamp: { type: 'date' },
-      attendeesList: [],
+      endTimestamp: { type: 'date' },
+      hostName: { type: 'keyword' },
+      hostEmail: { type: 'keyword' },
+      guestNames: { type: 'keyword' },
+      guestEmails: { type: 'keyword' },
       round: { type: 'integer' },
       status: { type: 'keyword' },
+      rescheduleUrl: { type: 'keyword' },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' }
+      updatedBy: { type: 'keyword' },
+      deletedAt: { type: 'date' }
     }
   },
   createdAt: { type: 'date' },
@@ -1098,6 +1109,22 @@ async function getMemberDetailsByHandles (handles) {
 }
 
 /**
+ * Get topcoder member details by handle.
+ *
+ * @param {String} handle the user handle
+ * @returns {Object} the member details
+ */
+ async function getV3MemberDetailsByHandle (handle) {
+  const token = await getM2MToken()
+  const res = await request
+    .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getV3MemberDetailsByHandle', message: `response body: ${JSON.stringify(res.body)}` })
+  return _.get(res.body, 'result.content')
+}
+
+/**
  * Find topcoder members by email.
  *
  * @param {String} token the auth token
@@ -1369,17 +1396,17 @@ async function getUserByHandle (userHandle) {
 }
 
 /**
- * 
- * @param {String} string that will be modifed 
+ *
+ * @param {String} string that will be modifed
  * @param {*} object of json that would be replaced in string
- * @returns 
+ * @returns
  */
 async function substituteStringByObject (string, object) {
   for (var key in object) {
-    if (!object.hasOwnProperty(key)) {
-        continue;
+    if (!Object.prototype.hasOwnProperty.call(object, key)) {
+      continue
     }
-    string = string.replace(new RegExp("{{" + key + "}}", "g"), object[key]);
+    string = string.replace(new RegExp('{{' + key + '}}', 'g'), object[key])
   }
   return string
 }
@@ -1423,6 +1450,7 @@ module.exports = {
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
+  getV3MemberDetailsByHandle,
   getMemberDetailsByEmails,
   createProjectMember,
   listProjectMembers,
