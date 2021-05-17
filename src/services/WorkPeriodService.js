@@ -83,16 +83,27 @@ function _checkUserScopesForGetPayments (currentUser) {
 }
 
 /**
-  * filter fields of work period by user role.
+  * Get which fields to be excluded from result
   * @param {Object} currentUser the user who perform this operation.
-  * @param {Object} workPeriod the workPeriod with all fields
-  * @returns {Object} the workPeriod
+  * @returns {Object} queryOpt
+  * @returns {Object} queryOpt.excludeES excluded fields for ES query
+  * @returns {Object} queryOpt.excludeDB excluded fields for DB query
+  * @returns {Object} queryOpt.withPayments is payments field included?
   */
-async function _getWorkPeriodFilteringFields (currentUser, workPeriod) {
-  if (currentUser.hasManagePermission || _checkUserScopesForGetPayments(currentUser)) {
-    return workPeriod
+function _getWorkPeriodFilteringFields (currentUser) {
+  const queryOpt = {
+    excludeES: [],
+    excludeDB: [],
+    withPayments: false
   }
-  return _.omit(workPeriod, ['memberRate', 'payments'])
+  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
+    queryOpt.excludeES.push('workPeriods.memberRate')
+    queryOpt.excludeDB.push('memberRate')
+  }
+  if (currentUser.hasManagePermission || _checkUserScopesForGetPayments(currentUser)) {
+    queryOpt.withPayments = true
+  } else { queryOpt.excludeES.push('workPeriods.payments') }
+  return queryOpt
 }
 
 /**
@@ -144,33 +155,45 @@ function _autoCalculateDates (data) {
   * @returns {Object} the workPeriod
   */
 async function getWorkPeriod (currentUser, id, fromDb = false) {
+  // get query options according to currentUser
+  const queryOpt = _getWorkPeriodFilteringFields(currentUser)
   if (!fromDb) {
     try {
-      const workPeriod = await esClient.get({
-        index: config.esConfig.ES_INDEX_WORK_PERIOD,
-        id
+      const resourceBooking = await esClient.search({
+        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
+        _source_includes: 'workPeriods',
+        _source_excludes: queryOpt.excludeES,
+        body: {
+          query: {
+            nested: {
+              path: 'workPeriods',
+              query: {
+                match: { 'workPeriods.id': id }
+              }
+            }
+          }
+        }
       })
-
-      await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.body._source.projectId) // check user permission
-
-      const workPeriodRecord = { id: workPeriod.body._id, ...workPeriod.body._source }
-      return _getWorkPeriodFilteringFields(currentUser, workPeriodRecord)
+      if (!resourceBooking.body.hits.total.value) {
+        throw new errors.NotFoundError()
+      }
+      await _checkUserPermissionForGetWorkPeriod(currentUser, resourceBooking.body.hits.hits[0]._source.workPeriods.projectId) // check user permission
+      return _.find(resourceBooking.body.hits.hits[0]._source.workPeriods, { id })
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "WorkPeriod" not found`)
       }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+      if (err.httpStatus === HttpStatus.UNAUTHORIZED) {
         throw err
       }
       logger.logFullError(err, { component: 'WorkPeriodService', context: 'getWorkPeriod' })
     }
   }
   logger.info({ component: 'WorkPeriodService', context: 'getWorkPeriod', message: 'try to query db for data' })
-  const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
+  const workPeriod = await WorkPeriod.findById(id, { withPayments: queryOpt.withPayments, exclude: queryOpt.excludeDB })
 
   await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.projectId) // check user permission
-  // We should only return "memberRate" to Booking Manager, Administrator or M2M
-  return _getWorkPeriodFilteringFields(currentUser, workPeriod.dataValues)
+  return workPeriod.dataValues
 }
 
 getWorkPeriod.schema = Joi.object().keys({
@@ -364,7 +387,7 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     }
     await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
   }
-
+  const queryOpt = _getWorkPeriodFilteringFields(currentUser)
   // `criteria.resourceBookingIds` could be array of ids, or comma separated string of ids
   // in case it's comma separated string of ids we have to convert it to an array of ids
   if ((typeof criteria.resourceBookingIds) === 'string') {
@@ -377,17 +400,7 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     })
   }
   const page = criteria.page
-  let perPage
-  if (options.returnAll) {
-    // To simplify the logic we are use a very large number for perPage
-    // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
-    // the number is limited by `index.max_result_window`, its default value is 10000, see
-    // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
-    perPage = 10000
-  } else {
-    perPage = criteria.perPage
-  }
-
+  const perPage = criteria.perPage
   if (!criteria.sortBy) {
     criteria.sortBy = 'id'
   }
@@ -395,19 +408,22 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     criteria.sortOrder = 'desc'
   }
   try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
     const esQuery = {
-      index: config.get('esConfig.ES_INDEX_WORK_PERIOD'),
+      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+      _source_includes: 'workPeriods',
+      _source_excludes: queryOpt.excludeES,
       body: {
         query: {
-          bool: {
-            must: []
+          nested: {
+            path: 'workPeriods',
+            query: { bool: { must: [] } }
           }
         },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort
+        size: 10000
+        // We use a very large number for size, because we can't paginate nested documents
+        // and in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
+        // the number is limited by `index.max_result_window`, its default value is 10000, see
+        // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
       }
     }
     // change the date format to match with database model
@@ -417,10 +433,11 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     if (criteria.endDate) {
       criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
     }
+    // Apply filters
     _.each(_.pick(criteria, ['resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate', 'paymentStatus']), (value, key) => {
-      esQuery.body.query.bool.must.push({
+      esQuery.body.query.nested.query.bool.must.push({
         term: {
-          [key]: {
+          [`workPeriods.${key}`]: {
             value
           }
         }
@@ -428,30 +445,34 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     })
     // if criteria contains resourceBookingIds, filter resourceBookingId with this value
     if (criteria.resourceBookingIds) {
-      esQuery.body.query.bool.filter = [{
+      esQuery.body.query.nested.query.bool.filter = [{
         terms: {
-          resourceBookingId: criteria.resourceBookingIds
+          'workPeriods.resourceBookingId': criteria.resourceBookingIds
         }
       }]
     }
     logger.debug({ component: 'WorkPeriodService', context: 'searchWorkPeriods', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
-
+    let workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
+    // ESClient will return ResourceBookings with it's all nested WorkPeriods
+    // We re-apply WorkPeriod filters
+    _.each(_.pick(criteria, ['startDate', 'endDate', 'paymentStatus']), (value, key) => {
+      workPeriods = _.filter(workPeriods, { [key]: value })
+    })
+    workPeriods = _.sortBy(workPeriods, [criteria.sortBy])
+    if (criteria.sortOrder === 'desc') {
+      workPeriods = _.reverse(workPeriods)
+    }
+    const total = workPeriods.length
+    if (!options.returnAll) {
+      workPeriods = _.slice(workPeriods, (page - 1) * perPage, page * perPage)
+    }
     return {
-      total: body.hits.total.value,
+      total,
       page,
       perPage,
-      result: _.map(body.hits.hits, (hit) => {
-        const obj = _.cloneDeep(hit._source)
-        obj.id = hit._id
-        // We should only return "memberRate" to Booking Manager, Administrator or M2M
-        if (!currentUser.hasManagePermission && !_checkUserScopesForGetPayments(currentUser)) {
-          delete obj.memberRate
-          delete obj.payments
-        }
-        return obj
-      })
+      result: workPeriods
     }
   } catch (err) {
     logger.logFullError(err, { component: 'WorkPeriodService', context: 'searchWorkPeriods' })
@@ -464,30 +485,31 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
   if (criteria.resourceBookingIds) {
     filter[Op.and].push({ resourceBookingId: criteria.resourceBookingIds })
   }
-  const workPeriods = await WorkPeriod.findAll({
+  const queryCriteria = {
     where: filter,
-    include: [{
-      model: models.WorkPeriodPayment,
-      as: 'payments',
-      required: false
-    }],
     offset: ((page - 1) * perPage),
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
-  })
+  }
+  // add excluded fields criteria
+  if (queryOpt.excludeDB.length > 0) {
+    queryCriteria.attributes = { exclude: queryOpt.excludeDB }
+  }
+  // include WorkPeriodPayment model
+  if (queryOpt.withPayments) {
+    queryCriteria.include = [{
+      model: models.WorkPeriodPayment,
+      as: 'payments',
+      required: false
+    }]
+  }
+  const workPeriods = await WorkPeriod.findAll(queryCriteria)
   return {
     fromDb: true,
     total: workPeriods.length,
     page,
     perPage,
-    result: _.map(workPeriods, workPeriod => {
-      // We should only return "memberRate" to Booking Manager, Administrator or M2M
-      if (!currentUser.hasManagePermission && !_checkUserScopesForGetPayments(currentUser)) {
-        delete workPeriod.dataValues.memberRate
-        delete workPeriod.dataValues.payments
-      }
-      return workPeriod.dataValues
-    })
+    result: workPeriods
   }
 }
 

@@ -984,6 +984,371 @@ const T16 = {
   }
 }
 T16.resourceBooking.value.toJSON = () => T16.resourceBooking.value.dataValues
+const T17 = {
+  esClientGet: {
+    body: {
+      _source: {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:47:37.268Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: '60e99790-8da0-4596-badc-29a06feb78a0',
+        projectId: 17234,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:47:37.268Z'
+      }
+    }
+  },
+  criteria: {}
+}
+const T18 = {
+  resourceBooking: {
+    value: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: '2021-04-05',
+        endDate: '2021-04-17',
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    }
+  },
+  criteria: { fromDb: true }
+}
+const T19 = {
+  id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+  criteria: {
+    fields: 'other'
+  },
+  error: {
+    httpStatus: 400,
+    message: 'other are not allowed'
+  }
+}
+const T20 = {
+  id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+  criteria: {
+    fields: 'memberRate'
+  },
+  error: {
+    httpStatus: 403,
+    message: 'You don\'t have access to view memberRate'
+  }
+}
+const T21 = {
+  id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+  criteria: {
+    fields: 'workPeriods'
+  },
+  error: {
+    httpStatus: 403,
+    message: 'You don\'t have access to view workPeriods'
+  }
+}
+const T22 = {
+  id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+  criteria: {
+    fields: 'id'
+  },
+  error: {
+    httpStatus: 403,
+    message: 'Not allowed without including "projectId"'
+  }
+}
+const T23 = {
+  id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+  criteria: {},
+  esClientGet: {
+    body: {
+      _source: {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:47:37.268Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 111,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:47:37.268Z'
+      }
+    }
+  },
+  error: {
+    httpStatus: 401,
+    message: 'userId: 222 the user is not a member of project 111'
+  }
+}
+const T24 = {
+  esClientSearch: {
+    body: {
+      hits: {
+        total: {
+          value: 2
+        },
+        hits: [
+          {
+            _source: {
+              updatedBy: null,
+              endDate: '2020-10-27',
+              billingAccountId: 80000071,
+              userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+              jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+              rateType: 'hourly',
+              createdAt: '2021-05-08T18:35:16.368Z',
+              memberRate: 13.23,
+              createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+              customerRate: 13,
+              id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
+              projectId: 17234,
+              startDate: '2020-09-27',
+              status: 'placed',
+              updatedAt: '2021-05-08T18:35:16.368Z'
+            }
+          },
+          {
+            _source: {
+              updatedBy: null,
+              endDate: '2020-10-27',
+              billingAccountId: 80000071,
+              userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+              jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+              rateType: 'hourly',
+              createdAt: '2021-05-08T18:47:37.268Z',
+              memberRate: 13.23,
+              createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+              customerRate: 13,
+              id: '60e99790-8da0-4596-badc-29a06feb78a0',
+              projectId: 17234,
+              startDate: '2020-09-27',
+              status: 'placed',
+              updatedAt: '2021-05-08T18:47:37.268Z'
+            }
+          }
+        ]
+      }
+    }
+  },
+  criteria: {},
+  result: {
+    total: 2,
+    page: 1,
+    perPage: 20,
+    result: [
+      {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:35:16.368Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
+        projectId: 17234,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:35:16.368Z'
+      },
+      {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:47:37.268Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: '60e99790-8da0-4596-badc-29a06feb78a0',
+        projectId: 17234,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:47:37.268Z'
+      }
+    ]
+  }
+}
+const T25 = {
+  resourceBookingFindAll: [
+    {
+      updatedBy: null,
+      endDate: '2020-10-27',
+      billingAccountId: 80000071,
+      userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+      jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+      rateType: 'hourly',
+      createdAt: '2021-05-08T18:35:16.368Z',
+      memberRate: 13.23,
+      createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+      customerRate: 13,
+      id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
+      projectId: 17234,
+      startDate: '2020-09-27',
+      status: 'placed',
+      updatedAt: '2021-05-08T18:35:16.368Z'
+    },
+    {
+      updatedBy: null,
+      endDate: '2020-10-27',
+      billingAccountId: 80000071,
+      userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+      jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+      rateType: 'hourly',
+      createdAt: '2021-05-08T18:47:37.268Z',
+      memberRate: 13.23,
+      createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+      customerRate: 13,
+      id: '60e99790-8da0-4596-badc-29a06feb78a0',
+      projectId: 17234,
+      startDate: '2020-09-27',
+      status: 'placed',
+      updatedAt: '2021-05-08T18:47:37.268Z'
+    }
+  ],
+  criteria: {},
+  result: {
+    fromDb: true,
+    total: 2,
+    page: 1,
+    perPage: 20,
+    result: [
+      {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:35:16.368Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
+        projectId: 17234,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:35:16.368Z'
+      },
+      {
+        updatedBy: null,
+        endDate: '2020-10-27',
+        billingAccountId: 80000071,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+        rateType: 'hourly',
+        createdAt: '2021-05-08T18:47:37.268Z',
+        memberRate: 13.23,
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        customerRate: 13,
+        id: '60e99790-8da0-4596-badc-29a06feb78a0',
+        projectId: 17234,
+        startDate: '2020-09-27',
+        status: 'placed',
+        updatedAt: '2021-05-08T18:47:37.268Z'
+      }
+    ]
+  }
+}
+const T26 = {
+  criteria: {
+    fields: 'other'
+  },
+  error: {
+    httpStatus: 400,
+    message: 'other are not allowed'
+  }
+}
+const T27 = {
+  criteria: {
+    fields: 'memberRate'
+  },
+  error: {
+    httpStatus: 403,
+    message: 'You don\'t have access to view memberRate'
+  }
+}
+const T28 = {
+  criteria: {
+    fields: 'workPeriods'
+  },
+  error: {
+    httpStatus: 403,
+    message: 'You don\'t have access to view workPeriods'
+  }
+}
+const T29 = {
+  criteria: {},
+  error: {
+    httpStatus: 403,
+    message: 'Not allowed without filtering by "projectId"'
+  }
+}
+const T30 = {
+  criteria: { projectId: 111 },
+  error: {
+    httpStatus: 401,
+    message: 'userId: 222 the user is not a member of project 111'
+  }
+}
+const T31 = {
+  criteria: { 'workPeriods.startDate': '2021-05-10' },
+  error: {
+    httpStatus: 400,
+    message: 'Can not filter or sort by some field which is not included in fields'
+  }
+}
+const T32 = {
+  criteria: { sortBy: 'workPeriods.daysWorked' },
+  error: {
+    httpStatus: 400,
+    message: 'Can not filter or sort by some field which is not included in fields'
+  }
+}
+const T33 = {
+  criteria: { fields: 'workPeriods', sortBy: 'workPeriods.daysWorked' },
+  error: {
+    httpStatus: 400,
+    message: 'Can not sort by workPeriod field without filtering by workPeriods.startDate or workPeriods.endDate'
+  }
+}
+const T34 = {
+  criteria: { fields: 'id,startDate,endDate,workPeriods', status: 'closed' },
+  error: {
+    httpStatus: 400,
+    message: 'Can not filter or sort by some field which is not included in fields'
+  }
+}
+const T35 = {
+  criteria: { fields: 'id,startDate,endDate', 'workPeriods.paymentStatus': 'completed' },
+  error: {
+    httpStatus: 400,
+    message: 'Can not filter or sort by some field which is not included in fields'
+  }
+}
 module.exports = {
   T01,
   T02,
@@ -1000,5 +1365,24 @@ module.exports = {
   T13,
   T14,
   T15,
-  T16
+  T16,
+  T17,
+  T18,
+  T19,
+  T20,
+  T21,
+  T22,
+  T23,
+  T24,
+  T25,
+  T26,
+  T27,
+  T28,
+  T29,
+  T30,
+  T31,
+  T32,
+  T33,
+  T34,
+  T35
 }

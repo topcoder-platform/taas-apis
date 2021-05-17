@@ -12,23 +12,138 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const constants = require('../../app-constants')
 const moment = require('moment')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
 const esClient = helper.getESClient()
+const cachedModelFields = _cacheModelFields()
 
 /**
- * filter fields of resource booking by user role.
- * @param {Object} currentUser the user who perform this operation.
- * @param {Object} resourceBooking the resourceBooking with all fields
- * @returns {Object} the resourceBooking
+ * Get the fields of the ResourceBooking model and the nested WorkPeriod model
+ * @returns {Array<string>} array of field names
  */
-async function _getResourceBookingFilteringFields (currentUser, resourceBooking) {
-  if (currentUser.hasManagePermission || currentUser.isMachine) {
-    return resourceBooking
+function _cacheModelFields () {
+  const resourceBookingFields = _.keys(ResourceBooking.rawAttributes)
+  const workPeriodFields = _.map(_.keys(WorkPeriod.rawAttributes), key => `workPeriods.${key}`)
+  return [...resourceBookingFields, 'workPeriods', ...workPeriodFields]
+}
+
+/**
+ * Check user scopes for getting workPeriods
+ * @param {Object} currentUser the user who perform this operation.
+ * @returns {Boolean} true if user is machine and has read/all workPeriod scopes
+ */
+function _checkUserScopesForGetWorkPeriods (currentUser) {
+  const getWorkPeriodsScopes = [constants.Scopes.READ_WORK_PERIOD, constants.Scopes.ALL_WORK_PERIOD]
+  return currentUser.isMachine && helper.checkIfExists(getWorkPeriodsScopes, currentUser.scopes)
+}
+
+/**
+ * Evaluates the criterias and returns the fields
+ * to be returned as a result of GET endpoints
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} criteria the query criterias
+ * @returns {Object} result
+ * @returns {Array<string>} result.include field names to include
+ * @returns {Array<string>} result.fieldsRB ResourceBooking field names to include
+ * @returns {Array<string>} result.fieldsWP WorkPeriod field names to include
+ * @returns {Array<string>} result.excludeRB ResourceBooking field names to exclude
+ * @returns {Array<string>} result.excludeWP WorkPeriod field names to exclude
+ * @returns {Boolean} result.regularUser is current user a regular user?
+ * @returns {Boolean} result.allWorkPeriods will all WorkPeriod fields be returned?
+ * @returns {Boolean} result.withWorkPeriods does fields include any WorkPeriod field?
+ * @returns {Boolean} result.sortByWP will the sorting be done by WorkPeriod field?
+ */
+function _checkCriteriaAndGetFields (currentUser, criteria) {
+  const result = {
+    include: [],
+    fieldsRB: [],
+    fieldsWP: [],
+    excludeRB: [],
+    excludeWP: []
   }
-  return _.omit(resourceBooking, 'memberRate')
+  const fields = criteria.fields
+  const sort = criteria.sortBy
+  const onlyResourceBooking = _.isUndefined(fields)
+  const query = onlyResourceBooking ? [] : _.split(fields, ',')
+  const notAllowedFields = _.difference(query, cachedModelFields)
+  // Check if fields criteria has a field name that RB or WP models don't have
+  if (notAllowedFields.length > 0) {
+    throw new errors.BadRequestError(`${notAllowedFields} are not allowed`)
+  }
+  // Check if user is a regular user. Regular users can't get ResourceBookings for which they are not a member
+  result.regularUser = !currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager
+  // Check if all WorkPeriod fields will be returned
+  result.allWorkPeriods = _.some(query, q => q === 'workPeriods')
+  // Split the fields criteria into ResourceBooking and WorkPeriod fields
+  _.forEach(query, q => {
+    if (_.includes(q, '.')) { result.fieldsWP.push(q) } else if (q !== 'workPeriods') { result.fieldsRB.push(q) }
+  })
+  // Check if any WorkPeriod field will be returned
+  result.withWorkPeriods = result.allWorkPeriods || result.fieldsWP.length > 0
+  // Extract the filters from criteria parameter
+  let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder'], key) === -1)
+  filters = _.map(filters, f => {
+    if (f === 'projectIds') {
+      return 'projectId'
+    } return f
+  })
+  const filterRB = []
+  const filterWP = []
+  // Split the filters criteria into ResourceBooking and WorkPeriod filters
+  _.forEach(filters, q => { if (_.includes(q, '.')) { filterWP.push(q) } else { filterRB.push(q) } })
+  // Check if filter criteria has any WorkPeriod filter
+  const filterHasWorkPeriods = filterWP.length > 0
+  // Check if sorting will be done by WorkPeriod field
+  result.sortByWP = _.split(sort, '.')[0] === 'workPeriods'
+  // Check if the current user has the right to see the memberRate
+  const canSeeMemberRate = currentUser.hasManagePermission || currentUser.isMachine
+  // If current user has no right to see the memberRate then it's excluded
+  // "currentUser.isMachine" to be true is not enough to return "workPeriods.memberRate"
+  // but returning "workPeriod" will be evaluated later
+  if (!canSeeMemberRate) {
+    result.excludeRB.push('memberRate')
+    result.excludeWP.push('workPeriods.memberRate')
+  }
+  // if "fields" is not included in cretia, then only ResourceBooking model will be returned
+  // No further evaluation is required as long as the criteria does not include a WorkPeriod filter or a WorkPeriod sorting condition
+  if (onlyResourceBooking) {
+    if (filterHasWorkPeriods || result.sortByWP) {
+      throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
+    }
+    result.excludeWP.push('workPeriods')
+    return result
+  }
+  // Include sorting condition in filters
+  if (result.sortByWP) {
+    // It is required to filter by "workPeriods.startDate" or "workPeriods.endDate" if sorting will be done by WorkPeriod field
+    if (!_.some(filterWP, f => _.includes(['workPeriods.startDate', 'workPeriods.endDate'], f))) {
+      throw new errors.BadRequestError('Can not sort by workPeriod field without filtering by workPeriods.startDate or workPeriods.endDate')
+    }
+    filterWP.push(sort)
+  } else if (!_.isUndefined(sort) && sort !== 'id') {
+    filterRB.push(sort)
+  }
+  // Check If it's tried to filter or sort by some field which should not be included as per rules of fields param
+  if (_.difference(filterRB, result.fieldsRB).length > 0) {
+    throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
+  }
+  // Check If it's tried to filter or sort by some field which should not be included as per rules of fields param
+  if (!result.allWorkPeriods && _.difference(filterWP, result.fieldsWP).length > 0) {
+    throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
+  }
+  // Check if the current user has no right to see the memberRate and memberRate is included in fields parameter
+  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.memberRate'], q))) {
+    throw new errors.ForbiddenError('You don\'t have access to view memberRate')
+  }
+  // Check if the current user has no right to see the workPeriods and workPeriods is included in fields parameter
+  if (currentUser.isMachine && result.withWorkPeriods && !_checkUserScopesForGetWorkPeriods(currentUser)) {
+    throw new errors.ForbiddenError('You don\'t have access to view workPeriods')
+  }
+  result.include.push(...query)
+  return result
 }
 
 /**
@@ -39,9 +154,7 @@ async function _getResourceBookingFilteringFields (currentUser, resourceBooking)
  * @returns {undefined}
  */
 async function _checkUserPermissionForGetResourceBooking (currentUser, projectId) {
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
-    await helper.checkIsMemberOfProject(currentUser.userId, projectId)
-  }
+  await helper.checkIsMemberOfProject(currentUser.userId, projectId)
 }
 
 /**
@@ -92,43 +205,53 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
  * Get resourceBooking by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the resourceBooking id
- * @param {Boolean} fromDb flag if query db for data or not
+ * @param {Object} criteria object including fields and fromDb criteria
  * @returns {Object} the resourceBooking
  */
-async function getResourceBooking (currentUser, id, fromDb = false) {
-  if (!fromDb) {
+async function getResourceBooking (currentUser, id, criteria) {
+  // Evaluate criteria and extract the fields to be included or excluded
+  const queryOpt = _checkCriteriaAndGetFields(currentUser, criteria)
+  // We don't allow regular user to exclude projectId from result
+  if (queryOpt.regularUser && queryOpt.include.length > 0 && !_.includes(queryOpt.include, 'projectId')) {
+    throw new errors.ForbiddenError('Not allowed without including "projectId"')
+  }
+  if (!criteria.fromDb) {
     try {
       const resourceBooking = await esClient.get({
         index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
-        id
+        id,
+        _source_includes: [...queryOpt.include],
+        _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP]
       })
-
-      await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
-
-      const resourceBookingRecord = { id: resourceBooking.body._id, ...resourceBooking.body._source }
-      return _getResourceBookingFilteringFields(currentUser, resourceBookingRecord)
+      if (queryOpt.regularUser) {
+        await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
+      }
+      return resourceBooking.body._source
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "ResourceBooking" not found`)
       }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
+      if (err.httpStatus === HttpStatus.UNAUTHORIZED) {
         throw err
       }
       logger.logFullError(err, { component: 'ResourceBookingService', context: 'getResourceBooking' })
     }
   }
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
-  const resourceBooking = await ResourceBooking.findById(id)
-
-  await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.projectId) // check user permission
-
-  return _getResourceBookingFilteringFields(currentUser, resourceBooking.dataValues)
+  const resourceBooking = await ResourceBooking.findById(id, queryOpt)
+  if (queryOpt.regularUser) {
+    await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.projectId) // check user permission
+  }
+  return resourceBooking.dataValues
 }
 
 getResourceBooking.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().guid().required(),
-  fromDb: Joi.boolean()
+  criteria: Joi.object().keys({
+    fromDb: Joi.boolean().default(false),
+    fields: Joi.string()
+  })
 }).required()
 
 /**
@@ -306,12 +429,14 @@ deleteResourceBooking.schema = Joi.object().keys({
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
 async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
+  // Evaluate criteria and extract the fields to be included or excluded
+  const queryOpt = _checkCriteriaAndGetFields(currentUser, criteria)
   // check user permission
-  if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
+  if (queryOpt.regularUser && !options.returnAll) {
     if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
       throw new errors.ForbiddenError('Not allowed without filtering by "projectId"')
     }
-    await helper.checkIsMemberOfProject(currentUser.userId, criteria.projectId)
+    await _checkUserPermissionForGetResourceBooking(currentUser, criteria.projectId)
   }
 
   // `criteria`.projectIds` could be array of ids, or comma separated string of ids
@@ -326,7 +451,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       return projectId
     })
   }
-  const page = criteria.page > 0 ? criteria.page : 1
+  const page = criteria.page
   let perPage
   if (options.returnAll) {
     // To simplify the logic we are use a very large number for perPage
@@ -335,7 +460,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
     perPage = 10000
   } else {
-    perPage = criteria.perPage > 0 ? criteria.perPage : 20
+    perPage = criteria.perPage
   }
 
   if (!criteria.sortBy) {
@@ -345,20 +470,29 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     criteria.sortOrder = 'desc'
   }
   try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
     const esQuery = {
       index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+      _source_includes: queryOpt.include,
+      _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP],
       body: {
         query: {
           bool: {
-            must: []
+            must: [
+              {
+                nested: {
+                  path: 'workPeriods',
+                  query: { bool: { must: [] } }
+                }
+              }
+            ]
           }
         },
         from: (page - 1) * perPage,
-        size: perPage,
-        sort
+        size: perPage
       }
+    }
+    if (!queryOpt.sortByWP) {
+      esQuery.body.sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
     }
     // change the date format to match with index schema
     if (criteria.startDate) {
@@ -367,6 +501,13 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     if (criteria.endDate) {
       criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
     }
+    if (criteria['workPeriods.startDate']) {
+      criteria['workPeriods.startDate'] = moment(criteria['workPeriods.startDate']).format('YYYY-MM-DD')
+    }
+    if (criteria['workPeriods.endDate']) {
+      criteria['workPeriods.endDate'] = moment(criteria['workPeriods.endDate']).format('YYYY-MM-DD')
+    }
+    // Apply ResourceBooking filters
     _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
@@ -384,52 +525,110 @@ async function searchResourceBookings (currentUser, criteria, options = { return
         }
       }]
     }
+    // Apply WorkPeriod filters
+    _.each(_.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle']), (value, key) => {
+      esQuery.body.query.bool.must[0].nested.query.bool.must.push({
+        term: {
+          [key]: {
+            value
+          }
+        }
+      })
+    })
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
-
+    let resourceBookings = _.map(body.hits.hits, '_source')
+    // ESClient will return ResourceBookings with it's all nested WorkPeriods
+    // We re-apply WorkPeriod filters
+    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle', 'workPeriods.paymentStatus']), (value, key) => {
+      key = key.split('.')[1]
+      _.each(resourceBookings, r => {
+        r.workPeriods = _.filter(r.workPeriods, { [key]: value })
+      })
+    })
+    // If sorting criteria is WorkPeriod field, we have to sort manually
+    if (queryOpt.sortByWP) {
+      const sorts = criteria.sortBy.split('.')
+      resourceBookings = _.sortBy(resourceBookings, [`${sorts[0]}[0].${sorts[1]}`])
+      if (criteria.sortOrder === 'desc') {
+        resourceBookings = _.reverse(resourceBookings)
+      }
+    }
     return {
       total: body.hits.total.value,
       page,
       perPage,
-      result: _.map(body.hits.hits, (hit) => {
-        const obj = _.cloneDeep(hit._source)
-        obj.id = hit._id
-        return obj
-      })
+      result: resourceBookings
     }
   } catch (err) {
     logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
+  // Apply ResourceBooking filters
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.projectIds) {
     filter[Op.and].push({ projectId: criteria.projectIds })
   }
-  const resourceBookings = await ResourceBooking.findAll({
+  const queryCriteria = {
     where: filter,
     offset: ((page - 1) * perPage),
-    limit: perPage,
-    order: [[criteria.sortBy, criteria.sortOrder]]
-  })
+    limit: perPage
+  }
+  // Select ResourceBooking fields
+  if (queryOpt.include.length > 0) {
+    queryCriteria.attributes = queryOpt.fieldsRB
+  } else if (queryOpt.excludeRB && queryOpt.excludeRB.length > 0) {
+    queryCriteria.attributes = { exclude: queryOpt.excludeRB }
+  }
+  // Include WorkPeriod Model
+  if (queryOpt.withWorkPeriods) {
+    queryCriteria.include = [{
+      model: WorkPeriod,
+      as: 'workPeriods',
+      required: false,
+      where: { [Op.and]: [] }
+    }]
+    // Select WorkPeriod fields
+    if (!queryOpt.allWorkPeriods) {
+      queryCriteria.include[0].attributes = _.map(queryOpt.fieldsWP, f => _.split(f, '.')[1])
+    } else if (queryOpt.excludeWP && queryOpt.excludeWP.length > 0) {
+      queryCriteria.include[0].attributes = { exclude: _.map(queryOpt.excludeWP, f => _.split(f, '.')[1]) }
+    }
+    // Apply WorkPeriod filters
+    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle', 'workPeriods.paymentStatus']), (value, key) => {
+      key = key.split('.')[1]
+      queryCriteria.include[0].where[Op.and].push({ [key]: value })
+      queryCriteria.include[0].required = true
+    })
+  }
+  // Apply sorting criteria
+  if (!queryOpt.sortByWP) {
+    queryCriteria.order = [[criteria.sortBy, criteria.sortOrder]]
+  } else {
+    queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], criteria.sortOrder]]
+  }
+  const resourceBookings = await ResourceBooking.findAll(queryCriteria)
   return {
     fromDb: true,
     total: resourceBookings.length,
     page,
     perPage,
-    result: _.map(resourceBookings, resourceBooking => resourceBooking.dataValues)
+    result: resourceBookings
   }
 }
 
 searchResourceBookings.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
-    page: Joi.number().integer(),
-    perPage: Joi.number().integer(),
-    sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status'),
+    fields: Joi.string(),
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status',
+      'workPeriods.userHandle', 'workPeriods.daysWorked', 'workPeriods.customerRate', 'workPeriods.memberRate', 'workPeriods.paymentStatus'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     status: Joi.resourceBookingStatus(),
     startDate: Joi.date().format('YYYY-MM-DD'),
@@ -441,7 +640,11 @@ searchResourceBookings.schema = Joi.object().keys({
     projectIds: Joi.alternatives(
       Joi.string(),
       Joi.array().items(Joi.number().integer())
-    )
+    ),
+    'workPeriods.paymentStatus': Joi.paymentStatus(),
+    'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
+    'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
+    'workPeriods.userHandle': Joi.string()
   }).required(),
   options: Joi.object()
 }).required()

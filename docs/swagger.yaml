@@ -1386,6 +1386,12 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: fields
+          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          required: false
+          schema:
+            type: string
+        - in: query
           name: page
           required: false
           schema:
@@ -1414,6 +1420,11 @@ paths:
                 "rateType",
                 "customerRate",
                 "memberRate",
+                "workPeriods.userHandle",
+                "workPeriods.daysWorked",
+                "workPeriods.customerRate",
+                "workPeriods.memberRate",
+                "workPeriods.paymentStatus",
               ]
           description: The sort by column.
         - in: query
@@ -1477,6 +1488,35 @@ paths:
           schema:
             type: string
           description: comma separated project ids.
+        - in: query
+          name: workPeriods.paymentStatus
+          required: false
+          schema:
+            type: string
+            enum: ["pending", "partially-completed", "completed", "cancelled"]
+          description: The payment status.
+        - in: query
+          name: workPeriods.startDate
+          required: false
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period start date.
+        - in: query
+          name: workPeriods.endDate
+          required: false
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period end date.
+        - in: query
+          name: workPeriods.userHandle
+          required: false
+          schema:
+            type: string
+          description: The user handle.
 
       responses:
         "200":
@@ -1565,6 +1605,12 @@ paths:
           required: false
           schema:
             type: boolean
+        - in: query
+          name: fields
+          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -3517,7 +3563,18 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected"]
+          enum:
+            [
+              "open",
+              "placed",
+              "selected",
+              "client rejected - screening",
+              "client rejected - interview",
+              "rejected - other",
+              "cancelled",
+              "interview",
+              "topcoder-rejected",
+            ]
           description: "The job candidate status."
           default: open
         externalId:
@@ -3632,7 +3689,15 @@ components:
           description: "Interview end time."
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           description: "The interview status."
         rescheduleUrl:
           type: string
@@ -3678,7 +3743,15 @@ components:
             format: email
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           default: "Scheduling"
           description: "The interview status."
     UpdateInterviewRequestBody:
@@ -3737,7 +3810,15 @@ components:
           description: "Interview end time."
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           description: "The interview status."
         rescheduleUrl:
           type: string
@@ -3845,7 +3926,12 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
+        workPeriods:
+          type: array
+          description: "The work periods related with resource booking"
+          items:
+            $ref: "#/components/schemas/WorkPeriod"
         createdAt:
           type: string
           format: date-time
@@ -3913,7 +3999,7 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
     ResourceBookingPatchRequestBody:
       properties:
         status:
@@ -3946,7 +4032,7 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
     WorkPeriod:
       required:
         - id
@@ -4130,7 +4216,7 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
         createdAt:
           type: string
           format: date-time

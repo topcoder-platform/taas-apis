@@ -129,31 +129,35 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   customerRate: { type: 'float' },
   rateType: { type: 'keyword' },
   billingAccountId: { type: 'integer' },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_WORK_PERIOD')] = {
-  resourceBookingId: { type: 'keyword' },
-  userHandle: { type: 'keyword' },
-  projectId: { type: 'integer' },
-  userId: { type: 'keyword' },
-  startDate: { type: 'date', format: 'yyyy-MM-dd' },
-  endDate: { type: 'date', format: 'yyyy-MM-dd' },
-  daysWorked: { type: 'integer' },
-  memberRate: { type: 'float' },
-  customerRate: { type: 'float' },
-  paymentStatus: { type: 'keyword' },
-  payments: {
+  workPeriods: {
     type: 'nested',
     properties: {
       id: { type: 'keyword' },
-      workPeriodId: { type: 'keyword' },
-      challengeId: { type: 'keyword' },
-      amount: { type: 'float' },
-      status: { type: 'keyword' },
-      billingAccountId: { type: 'integer' },
+      resourceBookingId: { type: 'keyword' },
+      userHandle: { type: 'keyword' },
+      projectId: { type: 'integer' },
+      userId: { type: 'keyword' },
+      startDate: { type: 'date', format: 'yyyy-MM-dd' },
+      endDate: { type: 'date', format: 'yyyy-MM-dd' },
+      daysWorked: { type: 'integer' },
+      memberRate: { type: 'float' },
+      customerRate: { type: 'float' },
+      paymentStatus: { type: 'keyword' },
+      payments: {
+        type: 'nested',
+        properties: {
+          id: { type: 'keyword' },
+          workPeriodId: { type: 'keyword' },
+          challengeId: { type: 'keyword' },
+          amount: { type: 'float' },
+          status: { type: 'keyword' },
+          billingAccountId: { type: 'integer' },
+          createdAt: { type: 'date' },
+          createdBy: { type: 'keyword' },
+          updatedAt: { type: 'date' },
+          updatedBy: { type: 'keyword' }
+        }
+      },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
@@ -430,17 +434,20 @@ async function importData (pathToFile, dataModels, logger) {
       as: 'interviews'
     }]
   }
-  const workPeriodModelOpts = {
-    modelName: 'WorkPeriod',
+  const resourceBookingModelOpts = {
+    modelName: 'ResourceBooking',
     include: [{
-      model: models.WorkPeriodPayment,
-      as: 'payments'
+      model: models.WorkPeriod,
+      as: 'workPeriods',
+      include: [{
+        model: models.WorkPeriodPayment,
+        as: 'payments'
+      }]
     }]
   }
   await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
   await indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
-  await indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
-  await indexBulkDataToES(workPeriodModelOpts, config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
+  await indexBulkDataToES(resourceBookingModelOpts, config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
 }
 
 /**
