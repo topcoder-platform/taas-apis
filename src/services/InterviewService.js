@@ -242,7 +242,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
   interview.guestNames = _.flatten(_.map(interview.guestEmails, (guestEmail) => {
     return _.map(guestMembers, (guestMember) => {
-      return (guestEmail == guestMember.email) ? `${guestMember.firstName} ${guestMember.lastName}` : guestEmail.split("@")[0]
+      return (guestEmail === guestMember.email) ? `${guestMember.firstName} ${guestMember.lastName}` : guestEmail.split('@')[0]
     })
   }))
 
