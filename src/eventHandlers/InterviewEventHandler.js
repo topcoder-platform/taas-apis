@@ -4,7 +4,6 @@
 
 const models = require('../models')
 // const logger = require('../common/logger')
-const helper = require('../common/helper')
 const teamService = require('../services/TeamService')
 
 /**
@@ -23,6 +22,7 @@ async function sendInvitationEmail (payload) {
     cc: [interview.hostEmail, ...interview.guestEmails],
     data: {
       interview_id: interview.id,
+      interview_round: interview.round,
       interviewee_name: interview.guestNames[0],
       interviewer_name: interview.hostName,
       xai_template: '/' + interview.templateUrl,

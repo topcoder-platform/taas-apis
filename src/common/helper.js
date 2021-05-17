@@ -1114,7 +1114,7 @@ async function getMemberDetailsByHandles (handles) {
  * @param {String} handle the user handle
  * @returns {Object} the member details
  */
- async function getV3MemberDetailsByHandle (handle) {
+async function getV3MemberDetailsByHandle (handle) {
   const token = await getM2MToken()
   const res = await request
     .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
