@@ -15,6 +15,15 @@ async function getInterviewByRound (req, res) {
 }
 
 /**
+ * Get interview by id
+ * @param req the request
+ * @param res the response
+ */
+async function getInterviewById (req, res) {
+  res.send(await service.getInterviewById(req.authUser, req.params.id, req.query.fromDb))
+}
+
+/**
  * Request interview
  * @param req the request
  * @param res the response
@@ -24,13 +33,22 @@ async function requestInterview (req, res) {
 }
 
 /**
- * Patch (partially update) interview
+ * Patch (partially update) interview by round
  * @param req the request
  * @param res the response
  */
-async function partiallyUpdateInterview (req, res) {
+async function partiallyUpdateInterviewByRound (req, res) {
   const { jobCandidateId, round } = req.params
-  res.send(await service.partiallyUpdateInterview(req.authUser, jobCandidateId, round, req.body))
+  res.send(await service.partiallyUpdateInterviewByRound(req.authUser, jobCandidateId, round, req.body))
+}
+
+/**
+ * Patch (partially update) interview by id
+ * @param req the request
+ * @param res the response
+ */
+async function partiallyUpdateInterviewById (req, res) {
+  res.send(await service.partiallyUpdateInterviewById(req.authUser, req.params.id, req.body))
 }
 
 /**
@@ -46,7 +64,9 @@ async function searchInterviews (req, res) {
 
 module.exports = {
   getInterviewByRound,
+  getInterviewById,
   requestInterview,
-  partiallyUpdateInterview,
+  partiallyUpdateInterviewByRound,
+  partiallyUpdateInterviewById,
   searchInterviews
 }

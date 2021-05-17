@@ -42,23 +42,43 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
       },
+      xaiId: {
+        field: 'xai_id',
+        type: Sequelize.STRING(255)
+      },
       jobCandidateId: {
         field: 'job_candidate_id',
         type: Sequelize.UUID,
         allowNull: false
       },
-      googleCalendarId: {
-        field: 'google_calendar_id',
+      calendarEventId: {
+        field: 'calendar_event_id',
         type: Sequelize.STRING(255)
       },
-      customMessage: {
-        field: 'custom_message',
-        type: Sequelize.TEXT
-      },
-      xaiTemplate: {
-        field: 'xai_template',
+      templateUrl: {
+        field: 'template_url',
         type: Sequelize.STRING(255),
         allowNull: false
+      },
+      templateId: {
+        field: 'template_id',
+        type: Sequelize.STRING(255)
+      },
+      templateType: {
+        field: 'template_type',
+        type: Sequelize.STRING(255)
+      },
+      title: {
+        field: 'title',
+        type: Sequelize.STRING(255)
+      },
+      locationDetails: {
+        field: 'location_details',
+        type: Sequelize.STRING(255)
+      },
+      duration: {
+        field: 'duration',
+        type: Sequelize.INTEGER
       },
       round: {
         type: Sequelize.INTEGER,
@@ -68,13 +88,33 @@ module.exports = (sequelize) => {
         field: 'start_timestamp',
         type: Sequelize.DATE
       },
-      attendeesList: {
-        field: 'attendees_list',
+      endTimestamp: {
+        field: 'end_timestamp',
+        type: Sequelize.DATE
+      },
+      hostName: {
+        field: 'host_name',
+        type: Sequelize.STRING(255)
+      },
+      hostEmail: {
+        field: 'host_email',
+        type: Sequelize.STRING(255)
+      },
+      guestNames: {
+        field: 'guest_names',
+        type: Sequelize.ARRAY(Sequelize.STRING)
+      },
+      guestEmails: {
+        field: 'guest_emails',
         type: Sequelize.ARRAY(Sequelize.STRING)
       },
       status: {
         type: Sequelize.ENUM(statuses),
         allowNull: false
+      },
+      rescheduleUrl: {
+        field: 'reschedule_url',
+        type: Sequelize.STRING(255)
       },
       createdBy: {
         field: 'created_by',
@@ -102,21 +142,11 @@ module.exports = (sequelize) => {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
       tableName: 'interviews',
-      paranoid: true,
+      paranoid: false,
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
-      timestamps: true,
-      defaultScope: {
-        attributes: {
-          exclude: ['deletedAt']
-        }
-      },
-      hooks: {
-        afterCreate: (interview) => {
-          delete interview.dataValues.deletedAt
-        }
-      }
+      timestamps: true
     }
   )
 

@@ -39,7 +39,7 @@ async function createPayment (options) {
   const challengeId = await createChallenge(options, token)
   await addResourceToChallenge(challengeId, options.userHandle, token)
   await activateChallenge(challengeId, token)
-  const completedChallenge = await closeChallenge(challengeId, token)
+  const completedChallenge = await closeChallenge(challengeId, options.userHandle, token)
   return completedChallenge
 }
 
@@ -146,14 +146,21 @@ async function activateChallenge (id, token) {
 /**
   * closes the topcoder challenge
   * @param {String} id the challenge id
+  * @param {String} userHandle the user handle
   * @param {String} token m2m token
   * @returns {Object} the closed challenge
   */
-async function closeChallenge (id, token) {
+async function closeChallenge (id, userHandle, token) {
   localLogger.info({ context: 'closeChallenge', message: `Closing challenge ${id}` })
   try {
+    const { userId } = await helper.getV3MemberDetailsByHandle(userHandle)
     const body = {
-      status: constants.ChallengeStatus.COMPLETED
+      status: constants.ChallengeStatus.COMPLETED,
+      winners: [{
+        userId,
+        handle: userHandle,
+        placement: 1
+      }]
     }
     const response = await helper.updateChallenge(id, body, token)
     localLogger.info({ context: 'closeChallenge', message: `Challenge ${id} is closed successfully.` })

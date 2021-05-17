@@ -2,7 +2,7 @@ version: "3"
 services:
   postgres:
     container_name: tc-taas-postgres
-    image: postgres
+    image: postgres:11.8
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

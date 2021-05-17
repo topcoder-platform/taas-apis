@@ -4,10 +4,7 @@
 
 const models = require('../models')
 // const logger = require('../common/logger')
-const helper = require('../common/helper')
-const { Interviews } = require('../../app-constants')
 const teamService = require('../services/TeamService')
-const _ = require('lodash')
 
 /**
  * Once we request Interview for a JobCandidate, the invitation emails to be sent out.
@@ -17,29 +14,21 @@ const _ = require('lodash')
  */
 async function sendInvitationEmail (payload) {
   const interview = payload.value
-  // get the Interviewer
-  const interviewerUsers = await helper.getMemberDetailsByEmails(interview.attendeesList)
-    .then((members) => _.map(members, (member) => ({ ...member, emailLowerCase: member.email.toLowerCase() })))
-  // get job candidate user details
+  // get customer details via job candidate user
   const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
-  const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
-  const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
-  // get customer details
   const job = await jobCandidate.getJob()
-
   teamService.sendEmail({}, {
     template: 'interview-invitation',
-    cc: [jobCandidateMember.email, ...interview.attendeesList],
+    cc: [interview.hostEmail, ...interview.guestEmails],
     data: {
-      job_candidate_id: interview.jobCandidateId,
+      interview_id: interview.id,
       interview_round: interview.round,
-      interviewee_name: `${jobCandidateMember.firstName} ${jobCandidateMember.lastName}`,
-      interviewer_name: `${interviewerUsers[0].firstName} ${interviewerUsers[0].lastName}`,
-      xai_template: '/' + interview.xaiTemplate,
-      additional_interviewers: (interview.attendeesList).join(','),
-      interview_length: Interviews.XaiTemplate[interview.xaiTemplate],
-      job_name: job.title,
-      interviewee_handle: jobCandidateMember.handle
+      interviewee_name: interview.guestNames[0],
+      interviewer_name: interview.hostName,
+      xai_template: '/' + interview.templateUrl,
+      additional_interviewers_name: (interview.guestNames.slice(1)).join(','),
+      interview_length: interview.duration,
+      job_name: job.title
     }
   })
 }
