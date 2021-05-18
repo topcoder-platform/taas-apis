@@ -169,7 +169,9 @@ async function updateWorkPeriods (payload) {
     raw: true
   })
   // gather workPeriod dates
-  const newWorkPeriods = helper.extractWorkPeriods(payload.value.startDate || payload.options.oldValue.startDate, payload.value.endDate || payload.options.oldValue.endDate)
+  const newWorkPeriods = helper.extractWorkPeriods(
+    _.isUndefined(payload.value.startDate) ? payload.options.oldValue.startDate : payload.value.startDate,
+    _.isUndefined(payload.value.endDate) ? payload.options.oldValue.endDate : payload.value.endDate)
   // find which workPeriods should be removed
   const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
   // find which workperiods should be created
