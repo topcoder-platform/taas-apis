@@ -520,25 +520,27 @@ async function searchResourceBookings (currentUser, criteria, options = { return
         }
       }]
     }
+    // Apply WorkPeriod filters
     const workPeriodFilters = ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle']
-    if (_.includes(criteria, workPeriodFilters)) {
+    if (_.intersection(criteria, workPeriodFilters).length > 0) {
+      const workPeriodsMust = []
+      _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
+        workPeriodsMust.push({
+          term: {
+            [key]: {
+              value
+            }
+          }
+        })
+      })
+
       esQuery.body.query.bool.must.push({
         nested: {
           path: 'workPeriods',
-          query: { bool: { must: [] } }
+          query: { bool: { must: workPeriodsMust } }
         }
       })
     }
-    // Apply WorkPeriod filters
-    _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
-      esQuery.body.query.bool.must[esQuery.body.query.bool.must.length - 1].nested.query.bool.must.push({
-        term: {
-          [key]: {
-            value
-          }
-        }
-      })
-    })
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
