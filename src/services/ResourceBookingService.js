@@ -618,10 +618,11 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   } else {
     queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], criteria.sortOrder]]
   }
-  const resourceBookings = await ResourceBooking.findAll(_.omit(queryCriteria, ['limit', 'offset']))
+  const resourceBookings = await ResourceBooking.findAll(queryCriteria)
+  const total = await ResourceBooking.count(_.omit(queryCriteria, ['limit', 'offset', 'attributes', 'order']))
   return {
     fromDb: true,
-    total: resourceBookings.length,
+    total,
     page,
     perPage,
     result: resourceBookings
