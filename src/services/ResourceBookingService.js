@@ -618,7 +618,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   } else {
     queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], criteria.sortOrder]]
   }
-  const resourceBookings = await ResourceBooking.findAll(queryCriteria)
+  const resourceBookings = await ResourceBooking.findAll(_.omit(queryCriteria, ['limit', 'offset']))
   return {
     fromDb: true,
     total: resourceBookings.length,
