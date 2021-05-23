@@ -472,6 +472,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     criteria.sortOrder = 'desc'
   }
   try {
+    throw new Error('fallback to DB')
     const esQuery = {
       index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
       _source_includes: queryOpt.include,
