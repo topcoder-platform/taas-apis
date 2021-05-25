@@ -194,7 +194,9 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
     return
   }
   // gather workPeriod dates from provided dates
-  const newWorkPeriods = helper.extractWorkPeriods(newValue.startDate || oldValue.startDate, newValue.endDate || oldValue.endDate)
+  const newWorkPeriods = helper.extractWorkPeriods(
+    _.isUndefined(newValue.startDate) ? oldValue.startDate : newValue.startDate,
+    _.isUndefined(newValue.endDate) ? oldValue.endDate : newValue.endDate)
   // find which workPeriods should be removed
   const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
   // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
@@ -470,6 +472,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     criteria.sortOrder = 'desc'
   }
   try {
+    throw new Error('fallback to DB')
     const esQuery = {
       index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
       _source_includes: queryOpt.include,
@@ -477,14 +480,7 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       body: {
         query: {
           bool: {
-            must: [
-              {
-                nested: {
-                  path: 'workPeriods',
-                  query: { bool: { must: [] } }
-                }
-              }
-            ]
+            must: []
           }
         },
         from: (page - 1) * perPage,
@@ -526,22 +522,33 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       }]
     }
     // Apply WorkPeriod filters
-    _.each(_.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle']), (value, key) => {
-      esQuery.body.query.bool.must[0].nested.query.bool.must.push({
-        term: {
-          [key]: {
-            value
+    const workPeriodFilters = ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle']
+    if (_.intersection(criteria, workPeriodFilters).length > 0) {
+      const workPeriodsMust = []
+      _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
+        workPeriodsMust.push({
+          term: {
+            [key]: {
+              value
+            }
           }
+        })
+      })
+
+      esQuery.body.query.bool.must.push({
+        nested: {
+          path: 'workPeriods',
+          query: { bool: { must: workPeriodsMust } }
         }
       })
-    })
+    }
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
     let resourceBookings = _.map(body.hits.hits, '_source')
     // ESClient will return ResourceBookings with it's all nested WorkPeriods
     // We re-apply WorkPeriod filters
-    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle', 'workPeriods.paymentStatus']), (value, key) => {
+    _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
       key = key.split('.')[1]
       _.each(resourceBookings, r => {
         r.workPeriods = _.filter(r.workPeriods, { [key]: value })
@@ -612,9 +619,10 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], criteria.sortOrder]]
   }
   const resourceBookings = await ResourceBooking.findAll(queryCriteria)
+  const total = await ResourceBooking.count(_.omit(queryCriteria, ['limit', 'offset', 'attributes', 'order']))
   return {
     fromDb: true,
-    total: resourceBookings.length,
+    total,
     page,
     perPage,
     result: resourceBookings

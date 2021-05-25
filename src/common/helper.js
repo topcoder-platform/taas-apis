@@ -725,9 +725,6 @@ function getPageLink(req, page) {
  * @param {Object} result the operation result
  */
 function setResHeaders(req, res, result) {
-  if (result.fromDb) {
-    return;
-  }
   const totalPages = Math.ceil(result.total / result.perPage);
   if (result.page > 1) {
     res.set('X-Prev-Page', result.page - 1);
