@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
       templateUrl: {
         field: 'template_url',
         type: Sequelize.STRING(255),
-        allowNull: false
+        allowNull: true
       },
       templateId: {
         field: 'template_id',

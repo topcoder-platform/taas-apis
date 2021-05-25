@@ -36,5 +36,6 @@ module.exports = {
   ForbiddenError: createError('ForbiddenError', 403),
   NotFoundError: createError('NotFoundError', 404),
   ConflictError: createError('ConflictError', 409),
-  InternalServerError: createError('InternalServerError', 500)
+  InternalServerError: createError('InternalServerError', 500),
+  UnprocessableEntityError: createError('UnprocessableEntityError', 422)
 }

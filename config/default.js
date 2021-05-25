@@ -96,6 +96,13 @@ module.exports = {
   TAAS_JOB_UPDATE_TOPIC: process.env.TAAS_JOB_UPDATE_TOPIC || 'taas.job.update',
   // the delete job entity Kafka message topic
   TAAS_JOB_DELETE_TOPIC: process.env.TAAS_JOB_DELETE_TOPIC || 'taas.job.delete',
+  // topics for role service
+  // the create role entity Kafka message topic
+  TAAS_ROLE_CREATE_TOPIC: process.env.TAAS_ROLE_CREATE_TOPIC || 'taas.role.create',
+  // the update role entity Kafka message topic
+  TAAS_ROLE_UPDATE_TOPIC: process.env.TAAS_ROLE_UPDATE_TOPIC || 'taas.role.update',
+  // the delete role entity Kafka message topic
+  TAAS_ROLE_DELETE_TOPIC: process.env.TAAS_ROLE_DELETE_TOPIC || 'taas.role.delete',
   // topics for jobcandidate service
   // the create job candidate entity Kafka message topic
   TAAS_JOB_CANDIDATE_CREATE_TOPIC: process.env.TAAS_JOB_CANDIDATE_CREATE_TOPIC || 'taas.jobcandidate.create',

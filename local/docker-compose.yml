@@ -79,7 +79,7 @@ services:
     environment:
       - PORT=8002
       - KAFKA_URL=kafka:9093
-      - JWT_TOKEN_SECRET=secret
+      - JWT_TOKEN_SECRET
       - VALID_ISSUERS="[\"https:\/\/topcoder-newauth.auth0.com\/\",\"https:\/\/api.topcoder-dev.com\",\"https:\/\/topcoder-dev.auth0.com\/\"]"
       - AUTH0_URL
       - AUTH0_AUDIENCE

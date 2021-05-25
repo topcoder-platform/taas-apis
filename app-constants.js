@@ -20,6 +20,12 @@ const Scopes = {
   UPDATE_JOB: 'update:taas-jobs',
   DELETE_JOB: 'delete:taas-jobs',
   ALL_JOB: 'all:taas-jobs',
+  // Role
+  READ_Role: 'read:taas-roles',
+  CREATE_Role: 'create:taas-roles',
+  UPDATE_Role: 'update:taas-roles',
+  DELETE_Role: 'delete:taas-roles',
+  ALL_Role: 'all:taas-roles',
   // job candidate
   READ_JOB_CANDIDATE: 'read:taas-jobCandidates',
   CREATE_JOB_CANDIDATE: 'create:taas-jobCandidates',

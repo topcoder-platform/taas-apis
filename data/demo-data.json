@@ -2052,5 +2052,149 @@
                 }
             ]
         }
+    ],
+    "Role": [
+        {
+            "id": "c3ee89a6-daa1-4902-adfb-bab9d7eff442",
+            "name": "Dev Ops Engineer",
+            "skills": [
+                "Python",
+                "Puppet",
+                "Ansible",
+                "aws"
+            ],
+            "description": "Dummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        },
+        {
+            "id": "914e202f-b3bf-4ef0-8c71-c5b543073b63",
+            "name": "Angular Developer",
+            "skills": [
+                "Python",
+                "Puppet",
+                "Ansible",
+                "aws"
+            ],
+            "description": "Angular Developer Dummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        },
+        {
+            "id": "4eb2bd03-060e-4feb-bf66-d767321aea64",
+            "name": "React Developer",
+            "skills": [
+                "Python",
+                "Puppet",
+                "Ansible",
+                "aws"
+            ],
+            "description": "React Developer Dummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        },
+        {
+            "id": "404f8d1e-1a22-4e6d-a1f0-5ce4a6795b0f",
+            "name": "Salesforce Developer",
+            "skills": [
+                "Python",
+                "Puppet",
+                "Ansible",
+                "aws"
+            ],
+            "description": "Salesforce Developer Dummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        },
+        {
+            "id": "0d5144a4-1b18-4ba6-b91b-d512acc2a864",
+            "name": "Data Engineer",
+            "skills": [
+                "Python",
+                "Puppet",
+                "Ansible",
+                "aws"
+            ],
+            "description": "Data Engineer Dummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        },
+        {
+            "id": "99efd816-18ad-49a9-a6f4-c78e0d87f3ed",
+            "name": "Java / Spring Developer",
+            "skills": [
+                "ruby",
+                "aws"
+            ],
+            "description": "Java / Spring DeveloperDummy Description",
+            "rates": [ {
+                "global":60 ,
+                "inCountry":50,
+                "offShore":40
+                } ],
+            "numMembers": 50,
+            "imageUrl": "https://angular.io/assets/images/logos/angular/angular.png",
+            "timeToCandidate": 13,
+            "timeToInterview": 23,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "createdAt": "2021-05-25T09:42:06.786Z",
+            "updatedAt": "2021-05-25T10:54:55.075Z"
+        }
     ]
 }
