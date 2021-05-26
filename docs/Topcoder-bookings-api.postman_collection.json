@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4b866040-1336-427b-9e20-56d809b87519",
+		"_postman_id": "58b277bb-0d1d-4bbf-919f-c5951ba0e1c0",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -7972,8 +7972,13 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var data = JSON.parse(responseBody);\r",
-											"postman.setEnvironmentVariable(\"jobIdCreatedByM2M\",data.id);"
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"jobIdCreatedByM2M\", response.id);\r",
+											"    }\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -8284,6 +8289,55 @@
 									"value": "16843",
 									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create resource booking with m2m all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingIdCreatedByM2M\", response.id);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_resource_booking}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobIdCreatedByM2M}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-10-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 10,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
 							]
 						}
 					},
@@ -8671,6 +8725,500 @@
 					"response": []
 				},
 				{
+					"name": "get resource booking with parameters 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 1 fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt&fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								},
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt','workPeriods'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','paymentStatus','startDate','endDate','userHandle','resourceBookingId','daysWorked','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response.workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 2 fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt','workPeriods'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','paymentStatus','startDate','endDate','userHandle','resourceBookingId','daysWorked','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response.workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt&fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								},
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','startDate','endDate','daysWorked'], field => {\r",
+									"        pm.expect(response.workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 3 fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate'], field => {\r",
+									"        pm.expect(response).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','startDate','endDate','daysWorked'], field => {\r",
+									"        pm.expect(response.workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate&fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate"
+								},
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=memberRate",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "memberRate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 4 fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=memberRate&fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "memberRate"
+								},
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view workPeriods\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_resource_booking}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get resource booking with parameters 5 fromDb",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view workPeriods\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_resource_booking}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}?fields=workPeriods&fromDb=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods"
+								},
+								{
+									"key": "fromDb",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "search resource bookings with booking manager",
 					"event": [
 						{
@@ -9041,6 +9589,596 @@
 								{
 									"key": "sortOrder",
 									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate','billingAccountId','userId','jobId','rateType','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt','workPeriods'], field => {\r",
+									"        pm.expect(response[0]).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','paymentStatus','startDate','endDate','userHandle','resourceBookingId','daysWorked','memberRate','customerRate','createdBy','updatedBy','createdAt','updatedAt'], field => {\r",
+									"        pm.expect(response[0].workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods,id,projectId,status,startDate,endDate,billingAccountId,userId,jobId,rateType,memberRate,customerRate,createdBy,updatedBy,createdAt,updatedAt,deletedAt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json()\r",
+									"    _.each(['id','projectId','status','startDate','endDate'], field => {\r",
+									"        pm.expect(response[0]).to.have.property(field)\r",
+									"    })\r",
+									"    _.each(['id','projectId','startDate','endDate','daysWorked'], field => {\r",
+									"        pm.expect(response[0].workPeriods[0]).to.have.property(field)\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate&workPeriods.startDate=2020-10-25&sortBy=customerRate&sortOrder=asc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate"
+								},
+								{
+									"key": "workPeriods.startDate",
+									"value": "2020-10-25"
+								},
+								{
+									"key": "sortBy",
+									"value": "customerRate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate,memberRate&workPeriods.startDate=2020-10-25&sortBy=workPeriods.daysWorked&sortOrder=desc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate,memberRate"
+								},
+								{
+									"key": "workPeriods.startDate",
+									"value": "2020-10-25"
+								},
+								{
+									"key": "sortBy",
+									"value": "workPeriods.daysWorked"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods.id,workPeriods.projectId,workPeriods.userHandle,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate,memberRate&projectId=111&workPeriods.startDate=2020-10-18&sortBy=workPeriods.userHandle&sortOrder=desc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods.id,workPeriods.projectId,workPeriods.userHandle,workPeriods.startDate,workPeriods.endDate,workPeriods.daysWorked,id,projectId,status,startDate,endDate,customerRate,memberRate"
+								},
+								{
+									"key": "projectId",
+									"value": "111"
+								},
+								{
+									"key": "workPeriods.startDate",
+									"value": "2020-10-18"
+								},
+								{
+									"key": "sortBy",
+									"value": "workPeriods.userHandle"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 7",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Can not filter or sort by some field which is not included in fields\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=id&projectId=111",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id"
+								},
+								{
+									"key": "projectId",
+									"value": "111"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 8",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Can not filter or sort by some field which is not included in fields\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods&sortBy=customerRate",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods"
+								},
+								{
+									"key": "sortBy",
+									"value": "customerRate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 9",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Can not filter or sort by some field which is not included in fields\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?sortBy=workPeriods.paymentStatus",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "workPeriods.paymentStatus"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 10",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Can not sort by workPeriod field without filtering by workPeriods.startDate or workPeriods.endDate\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods&sortBy=workPeriods.paymentStatus",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods"
+								},
+								{
+									"key": "sortBy",
+									"value": "workPeriods.paymentStatus"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 11",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_connectUser}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=memberRate,projectId&projectId=111",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "memberRate,projectId"
+								},
+								{
+									"key": "projectId",
+									"value": "111"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view workPeriods\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_m2m_all_resource_booking}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=workPeriods",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "workPeriods"
 								}
 							]
 						}

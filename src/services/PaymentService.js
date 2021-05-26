@@ -84,8 +84,8 @@ async function createChallenge (challenge, token) {
 
   if (challenge.billingAccountId) {
     body.billing = {
-      billingAccountId: challenge.billingAccountId,
-      markup: 0 // for TaaS payments we always use 0 markup
+      billingAccountId: _.toString(challenge.billingAccountId),
+      markup: 0 //  for TaaS payments we always use 0 markup
     }
   }
   try {
