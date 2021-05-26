@@ -2,63 +2,103 @@
  * This file defines helper methods
  */
 
-const fs = require('fs')
-const querystring = require('querystring')
-const Confirm = require('prompt-confirm')
-const Bottleneck = require('bottleneck')
-const AWS = require('aws-sdk')
-const config = require('config')
-const HttpStatus = require('http-status-codes')
-const _ = require('lodash')
-const request = require('superagent')
-const elasticsearch = require('@elastic/elasticsearch')
-const { ResponseError: ESResponseError } = require('@elastic/elasticsearch/lib/errors')
-const errors = require('../common/errors')
-const logger = require('./logger')
-const models = require('../models')
-const eventDispatcher = require('./eventDispatcher')
-const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
-const moment = require('moment')
+const fs = require('fs');
+const querystring = require('querystring');
+const Confirm = require('prompt-confirm');
+const Bottleneck = require('bottleneck');
+const AWS = require('aws-sdk');
+const config = require('config');
+const HttpStatus = require('http-status-codes');
+const _ = require('lodash');
+const request = require('superagent');
+const elasticsearch = require('@elastic/elasticsearch');
+const {
+  ResponseError: ESResponseError,
+} = require('@elastic/elasticsearch/lib/errors');
+const errors = require('../common/errors');
+const logger = require('./logger');
+const models = require('../models');
+const eventDispatcher = require('./eventDispatcher');
+const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper');
+const moment = require('moment');
 
 const localLogger = {
-  debug: (message) => logger.debug({ component: 'helper', context: message.context, message: message.message }),
-  error: (message) => logger.error({ component: 'helper', context: message.context, message: message.message }),
-  info: (message) => logger.info({ component: 'helper', context: message.context, message: message.message })
-}
+  debug: (message) =>
+    logger.debug({
+      component: 'helper',
+      context: message.context,
+      message: message.message,
+    }),
+  error: (message) =>
+    logger.error({
+      component: 'helper',
+      context: message.context,
+      message: message.message,
+    }),
+  info: (message) =>
+    logger.info({
+      component: 'helper',
+      context: message.context,
+      message: message.message,
+    }),
+};
 
-AWS.config.region = config.esConfig.AWS_REGION
+AWS.config.region = config.esConfig.AWS_REGION;
 
-const m2mAuth = require('tc-core-library-js').auth.m2m
+const m2mAuth = require('tc-core-library-js').auth.m2m;
 
-const m2m = m2mAuth(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL']))
+const m2m = m2mAuth(
+  _.pick(config, [
+    'AUTH0_URL',
+    'AUTH0_AUDIENCE',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'AUTH0_PROXY_SERVER_URL',
+  ])
+);
 
 const m2mForUbahn = m2mAuth({
   AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_UBAHN,
-  ..._.pick(config, ['AUTH0_URL', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'AUTH0_PROXY_SERVER_URL'])
-}
-)
+  ..._.pick(config, [
+    'AUTH0_URL',
+    'TOKEN_CACHE_TIME',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'AUTH0_PROXY_SERVER_URL',
+  ]),
+});
 
-let busApiClient
+let busApiClient;
 
 /**
  * Get bus api client.
  *
  * @returns {Object} the bus api client
  */
-function getBusApiClient () {
+function getBusApiClient() {
   if (busApiClient) {
-    return busApiClient
+    return busApiClient;
   }
-  busApiClient = busApi(_.pick(config, ['AUTH0_URL', 'AUTH0_AUDIENCE', 'TOKEN_CACHE_TIME', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'BUSAPI_URL', 'KAFKA_ERROR_TOPIC', 'AUTH0_PROXY_SERVER_URL'])
-  )
-  return busApiClient
+  busApiClient = busApi(
+    _.pick(config, [
+      'AUTH0_URL',
+      'AUTH0_AUDIENCE',
+      'TOKEN_CACHE_TIME',
+      'AUTH0_CLIENT_ID',
+      'AUTH0_CLIENT_SECRET',
+      'BUSAPI_URL',
+      'KAFKA_ERROR_TOPIC',
+      'AUTH0_PROXY_SERVER_URL',
+    ])
+  );
+  return busApiClient;
 }
 
 // ES Client mapping
-const esClients = {}
+const esClients = {};
 
 // The es index property mapping
-const esIndexPropertyMapping = {}
+const esIndexPropertyMapping = {};
 esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   projectId: { type: 'integer' },
   externalId: { type: 'keyword' },
@@ -76,8 +116,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
+  updatedBy: { type: 'keyword' },
+};
 esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
   jobId: { type: 'keyword' },
   userId: { type: 'keyword' },
@@ -110,14 +150,14 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
       updatedBy: { type: 'keyword' },
-      deletedAt: { type: 'date' }
-    }
+      deletedAt: { type: 'date' },
+    },
   },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
+  updatedBy: { type: 'keyword' },
+};
 esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   projectId: { type: 'integer' },
   userId: { type: 'keyword' },
@@ -155,32 +195,32 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
           createdAt: { type: 'date' },
           createdBy: { type: 'keyword' },
           updatedAt: { type: 'date' },
-          updatedBy: { type: 'keyword' }
-        }
+          updatedBy: { type: 'keyword' },
+        },
       },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' }
-    }
+      updatedBy: { type: 'keyword' },
+    },
   },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
+  updatedBy: { type: 'keyword' },
+};
 
 /**
  * Get the first parameter from cli arguments
  */
-function getParamFromCliArgs () {
-  const filteredArgs = process.argv.filter(arg => !arg.includes('--'))
+function getParamFromCliArgs() {
+  const filteredArgs = process.argv.filter((arg) => !arg.includes('--'));
 
   if (filteredArgs.length > 2) {
-    return filteredArgs[2]
+    return filteredArgs[2];
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -188,18 +228,18 @@ function getParamFromCliArgs () {
  * @param {string} promptQuery the query to ask the user
  * @param {function} cb the callback function
  */
-async function promptUser (promptQuery, cb) {
+async function promptUser(promptQuery, cb) {
   if (process.argv.includes('--force')) {
-    await cb()
-    return
+    await cb();
+    return;
   }
 
-  const prompt = new Confirm(promptQuery)
+  const prompt = new Confirm(promptQuery);
   prompt.ask(async (answer) => {
     if (answer) {
-      await cb()
+      await cb();
     }
-  })
+  });
 }
 
 /**
@@ -208,20 +248,23 @@ async function promptUser (promptQuery, cb) {
  * @param {Object} logger the logger object
  * @param {Object} esClient the elasticsearch client (optional, will create if not given)
  */
-async function createIndex (index, logger, esClient = null) {
+async function createIndex(index, logger, esClient = null) {
   if (!esClient) {
-    esClient = getESClient()
+    esClient = getESClient();
   }
 
   await esClient.indices.create({
     index,
     body: {
       mappings: {
-        properties: esIndexPropertyMapping[index]
-      }
-    }
-  })
-  logger.info({ component: 'createIndex', message: `ES Index ${index} creation succeeded!` })
+        properties: esIndexPropertyMapping[index],
+      },
+    },
+  });
+  logger.info({
+    component: 'createIndex',
+    message: `ES Index ${index} creation succeeded!`,
+  });
 }
 
 /**
@@ -230,105 +273,133 @@ async function createIndex (index, logger, esClient = null) {
  * @param {Object} logger the logger object
  * @param {Object} esClient the elasticsearch client (optional, will create if not given)
  */
-async function deleteIndex (index, logger, esClient = null) {
+async function deleteIndex(index, logger, esClient = null) {
   if (!esClient) {
-    esClient = getESClient()
+    esClient = getESClient();
   }
 
-  await esClient.indices.delete({ index })
-  logger.info({ component: 'deleteIndex', message: `ES Index ${index} deletion succeeded!` })
+  await esClient.indices.delete({ index });
+  logger.info({
+    component: 'deleteIndex',
+    message: `ES Index ${index} deletion succeeded!`,
+  });
 }
 
 /**
  * Split data into bulks
  * @param {Array} data the array of data to split
  */
-function getBulksFromDocuments (data) {
-  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6
-  const bulks = []
-  let documentIndex = 0
-  let currentBulkSize = 0
-  let currentBulk = []
+function getBulksFromDocuments(data) {
+  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6;
+  const bulks = [];
+  let documentIndex = 0;
+  let currentBulkSize = 0;
+  let currentBulk = [];
 
   while (true) {
     // break loop when parsed all documents
     if (documentIndex >= data.length) {
-      bulks.push(currentBulk)
-      break
+      bulks.push(currentBulk);
+      break;
     }
 
     // check if current document size is greater than the max bulk size, if so, throw error
-    const currentDocumentSize = Buffer.byteLength(JSON.stringify(data[documentIndex]), 'utf-8')
+    const currentDocumentSize = Buffer.byteLength(
+      JSON.stringify(data[documentIndex]),
+      'utf-8'
+    );
     if (maxBytes < currentDocumentSize) {
-      throw new Error(`Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`)
+      throw new Error(
+        `Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`
+      );
     }
 
-    if (currentBulkSize + currentDocumentSize > maxBytes ||
-        currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')) {
+    if (
+      currentBulkSize + currentDocumentSize > maxBytes ||
+      currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')
+    ) {
       // if adding the current document goes over the max bulk size OR goes over max number of docs
       // then push the current bulk to bulks array and reset the current bulk
-      bulks.push(currentBulk)
-      currentBulk = []
-      currentBulkSize = 0
+      bulks.push(currentBulk);
+      currentBulk = [];
+      currentBulkSize = 0;
     } else {
       // otherwise, add document to current bulk
-      currentBulk.push(data[documentIndex])
-      currentBulkSize += currentDocumentSize
-      documentIndex++
+      currentBulk.push(data[documentIndex]);
+      currentBulkSize += currentDocumentSize;
+      documentIndex++;
     }
   }
-  return bulks
+  return bulks;
 }
 
 /**
-* Index records in bulk
-* @param {Object | String} modelOpts the model name in db, or model options
-* @param {Object} indexName the index name
-* @param {Object} logger the logger object
-*/
-async function indexBulkDataToES (modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
+ * Index records in bulk
+ * @param {Object | String} modelOpts the model name in db, or model options
+ * @param {Object} indexName the index name
+ * @param {Object} logger the logger object
+ */
+async function indexBulkDataToES(modelOpts, indexName, logger) {
+  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName;
+  const include = _.get(modelOpts, 'include', []);
 
-  logger.info({ component: 'indexBulkDataToES', message: `Reindexing of ${modelName}s started!` })
+  logger.info({
+    component: 'indexBulkDataToES',
+    message: `Reindexing of ${modelName}s started!`,
+  });
 
-  const esClient = getESClient()
+  const esClient = getESClient();
 
   // clear index
-  const indexExistsRes = await esClient.indices.exists({ index: indexName })
+  const indexExistsRes = await esClient.indices.exists({ index: indexName });
   if (indexExistsRes.statusCode !== 404) {
-    await deleteIndex(indexName, logger, esClient)
+    await deleteIndex(indexName, logger, esClient);
   }
-  await createIndex(indexName, logger, esClient)
+  await createIndex(indexName, logger, esClient);
 
   // get data from db
-  logger.info({ component: 'indexBulkDataToES', message: 'Getting data from database' })
-  const model = models[modelName]
-  const data = await model.findAll({ include })
-  const rawObjects = _.map(data, r => r.toJSON())
+  logger.info({
+    component: 'indexBulkDataToES',
+    message: 'Getting data from database',
+  });
+  const model = models[modelName];
+  const data = await model.findAll({ include });
+  const rawObjects = _.map(data, (r) => r.toJSON());
   if (_.isEmpty(rawObjects)) {
-    logger.info({ component: 'indexBulkDataToES', message: `No data in database for ${modelName}` })
-    return
-  }
-  const bulks = getBulksFromDocuments(rawObjects)
-
-  const startTime = Date.now()
-  let doneCount = 0
-  for (const bulk of bulks) {
-    // send bulk to esclient
-    const body = bulk.flatMap(doc => [{ index: { _index: indexName, _id: doc.id } }, doc])
-    await esClient.bulk({ refresh: true, body })
-    doneCount += bulk.length
-
-    // log metrics
-    const timeSpent = Date.now() - startTime
-    const avgTimePerDocument = timeSpent / doneCount
-    const estimatedLength = (avgTimePerDocument * data.length)
-    const timeLeft = (startTime + estimatedLength) - Date.now()
     logger.info({
       component: 'indexBulkDataToES',
-      message: `Processed ${doneCount} of ${data.length} documents, average time per document ${formatTime(avgTimePerDocument)}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(timeLeft)}`
-    })
+      message: `No data in database for ${modelName}`,
+    });
+    return;
+  }
+  const bulks = getBulksFromDocuments(rawObjects);
+
+  const startTime = Date.now();
+  let doneCount = 0;
+  for (const bulk of bulks) {
+    // send bulk to esclient
+    const body = bulk.flatMap((doc) => [
+      { index: { _index: indexName, _id: doc.id } },
+      doc,
+    ]);
+    await esClient.bulk({ refresh: true, body });
+    doneCount += bulk.length;
+
+    // log metrics
+    const timeSpent = Date.now() - startTime;
+    const avgTimePerDocument = timeSpent / doneCount;
+    const estimatedLength = avgTimePerDocument * data.length;
+    const timeLeft = startTime + estimatedLength - Date.now();
+    logger.info({
+      component: 'indexBulkDataToES',
+      message: `Processed ${doneCount} of ${
+        data.length
+      } documents, average time per document ${formatTime(
+        avgTimePerDocument
+      )}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(
+        timeLeft
+      )}`,
+    });
   }
 }
 
@@ -339,24 +410,36 @@ async function indexBulkDataToES (modelOpts, indexName, logger) {
  * @param {string} id the job id
  * @param {Object} logger the logger object
  */
-async function indexDataToEsById (id, modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
+async function indexDataToEsById(id, modelOpts, indexName, logger) {
+  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName;
+  const include = _.get(modelOpts, 'include', []);
 
-  logger.info({ component: 'indexDataToEsById', message: `Reindexing of ${modelName} with id ${id} started!` })
-  const esClient = getESClient()
+  logger.info({
+    component: 'indexDataToEsById',
+    message: `Reindexing of ${modelName} with id ${id} started!`,
+  });
+  const esClient = getESClient();
 
-  logger.info({ component: 'indexDataToEsById', message: 'Getting data from database' })
-  const model = models[modelName]
+  logger.info({
+    component: 'indexDataToEsById',
+    message: 'Getting data from database',
+  });
+  const model = models[modelName];
 
-  const data = await model.findById(id, include)
-  logger.info({ component: 'indexDataToEsById', message: 'Indexing data into Elasticsearch' })
+  const data = await model.findById(id, include);
+  logger.info({
+    component: 'indexDataToEsById',
+    message: 'Indexing data into Elasticsearch',
+  });
   await esClient.index({
     index: indexName,
     id: id,
-    body: data.dataValues
-  })
-  logger.info({ component: 'indexDataToEsById', message: 'Indexing complete!' })
+    body: data.dataValues,
+  });
+  logger.info({
+    component: 'indexDataToEsById',
+    message: 'Indexing complete!',
+  });
 }
 
 /**
@@ -365,50 +448,68 @@ async function indexDataToEsById (id, modelOpts, indexName, logger) {
  * @param {Array} dataModels the data models to import
  * @param {Object} logger the logger object
  */
-async function importData (pathToFile, dataModels, logger) {
+async function importData(pathToFile, dataModels, logger) {
   // check if file exists
   if (!fs.existsSync(pathToFile)) {
-    throw new Error(`File with path ${pathToFile} does not exist`)
+    throw new Error(`File with path ${pathToFile} does not exist`);
   }
 
   // clear database
-  logger.info({ component: 'importData', message: 'Clearing database...' })
-  await models.sequelize.sync({ force: true })
+  logger.info({ component: 'importData', message: 'Clearing database...' });
+  await models.sequelize.sync({ force: true });
 
-  let transaction = null
-  let currentModelName = null
+  let transaction = null;
+  let currentModelName = null;
   try {
     // Start a transaction
-    transaction = await models.sequelize.transaction()
-    const jsonData = JSON.parse(fs.readFileSync(pathToFile).toString())
+    transaction = await models.sequelize.transaction();
+    const jsonData = JSON.parse(fs.readFileSync(pathToFile).toString());
 
     for (let index = 0; index < dataModels.length; index += 1) {
-      const modelOpts = dataModels[index]
-      const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-      const include = _.get(modelOpts, 'include', [])
+      const modelOpts = dataModels[index];
+      const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName;
+      const include = _.get(modelOpts, 'include', []);
 
-      currentModelName = modelName
-      const model = models[modelName]
-      const modelRecords = jsonData[modelName]
+      currentModelName = modelName;
+      const model = models[modelName];
+      const modelRecords = jsonData[modelName];
 
       if (modelRecords && modelRecords.length > 0) {
-        logger.info({ component: 'importData', message: `Importing data for model: ${modelName}` })
+        logger.info({
+          component: 'importData',
+          message: `Importing data for model: ${modelName}`,
+        });
 
-        await model.bulkCreate(modelRecords, { include, transaction })
-        logger.info({ component: 'importData', message: `Records imported for model: ${modelName} = ${modelRecords.length}` })
+        await model.bulkCreate(modelRecords, { include, transaction });
+        logger.info({
+          component: 'importData',
+          message: `Records imported for model: ${modelName} = ${modelRecords.length}`,
+        });
       } else {
-        logger.info({ component: 'importData', message: `No records to import for model: ${modelName}` })
+        logger.info({
+          component: 'importData',
+          message: `No records to import for model: ${modelName}`,
+        });
       }
     }
     // commit transaction only if all things went ok
-    logger.info({ component: 'importData', message: 'committing transaction to database...' })
-    await transaction.commit()
+    logger.info({
+      component: 'importData',
+      message: 'committing transaction to database...',
+    });
+    await transaction.commit();
   } catch (error) {
-    logger.error({ component: 'importData', message: `Error while writing data of model: ${currentModelName}` })
+    logger.error({
+      component: 'importData',
+      message: `Error while writing data of model: ${currentModelName}`,
+    });
     // rollback all insert operations
     if (transaction) {
-      logger.info({ component: 'importData', message: 'rollback database transaction...' })
-      transaction.rollback()
+      logger.info({
+        component: 'importData',
+        message: 'rollback database transaction...',
+      });
+      transaction.rollback();
     }
     if (error.name && error.errors && error.fields) {
       // For sequelize validation errors, we throw only fields with data that helps in debugging error,
@@ -418,36 +519,50 @@ async function importData (pathToFile, dataModels, logger) {
           modelName: currentModelName,
           name: error.name,
           errors: error.errors,
-          fields: error.fields
+          fields: error.fields,
         })
-      )
+      );
     } else {
-      throw error
+      throw error;
     }
   }
 
   // after importing, index data
   const jobCandidateModelOpts = {
     modelName: 'JobCandidate',
-    include: [{
-      model: models.Interview,
-      as: 'interviews'
-    }]
-  }
+    include: [
+      {
+        model: models.Interview,
+        as: 'interviews',
+      },
+    ],
+  };
   const resourceBookingModelOpts = {
     modelName: 'ResourceBooking',
-    include: [{
-      model: models.WorkPeriod,
-      as: 'workPeriods',
-      include: [{
-        model: models.WorkPeriodPayment,
-        as: 'payments'
-      }]
-    }]
-  }
-  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
-  await indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
-  await indexBulkDataToES(resourceBookingModelOpts, config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+    include: [
+      {
+        model: models.WorkPeriod,
+        as: 'workPeriods',
+        include: [
+          {
+            model: models.WorkPeriodPayment,
+            as: 'payments',
+          },
+        ],
+      },
+    ],
+  };
+  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger);
+  await indexBulkDataToES(
+    jobCandidateModelOpts,
+    config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
+    logger
+  );
+  await indexBulkDataToES(
+    resourceBookingModelOpts,
+    config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+    logger
+  );
 }
 
 /**
@@ -456,65 +571,74 @@ async function importData (pathToFile, dataModels, logger) {
  * @param {Array} dataModels the data models to export
  * @param {Object} logger the logger object
  */
-async function exportData (pathToFile, dataModels, logger) {
-  logger.info({ component: 'exportData', message: `Start Saving data to file with path ${pathToFile}....` })
+async function exportData(pathToFile, dataModels, logger) {
+  logger.info({
+    component: 'exportData',
+    message: `Start Saving data to file with path ${pathToFile}....`,
+  });
 
-  const allModelsRecords = {}
+  const allModelsRecords = {};
   for (let index = 0; index < dataModels.length; index += 1) {
-    const modelOpts = dataModels[index]
-    const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-    const include = _.get(modelOpts, 'include', [])
-    const modelRecords = await models[modelName].findAll({ include })
-    const rawRecords = _.map(modelRecords, r => r.toJSON())
-    allModelsRecords[modelName] = rawRecords
-    logger.info({ component: 'exportData', message: `Records loaded for model: ${modelName} = ${rawRecords.length}` })
+    const modelOpts = dataModels[index];
+    const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName;
+    const include = _.get(modelOpts, 'include', []);
+    const modelRecords = await models[modelName].findAll({ include });
+    const rawRecords = _.map(modelRecords, (r) => r.toJSON());
+    allModelsRecords[modelName] = rawRecords;
+    logger.info({
+      component: 'exportData',
+      message: `Records loaded for model: ${modelName} = ${rawRecords.length}`,
+    });
   }
 
-  fs.writeFileSync(pathToFile, JSON.stringify(allModelsRecords))
-  logger.info({ component: 'exportData', message: 'End Saving data to file....' })
+  fs.writeFileSync(pathToFile, JSON.stringify(allModelsRecords));
+  logger.info({
+    component: 'exportData',
+    message: 'End Saving data to file....',
+  });
 }
 
 /**
  * Format a time in milliseconds into a human readable format
  * @param {Date} milliseconds the number of milliseconds
  */
-function formatTime (millisec) {
-  const ms = Math.floor(millisec % 1000)
-  const secs = Math.floor((millisec / 1000) % 60)
-  const mins = Math.floor((millisec / (1000 * 60)) % 60)
-  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24)
-  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7)
-  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4)
-  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12)
-  const yrs = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12)))
+function formatTime(millisec) {
+  const ms = Math.floor(millisec % 1000);
+  const secs = Math.floor((millisec / 1000) % 60);
+  const mins = Math.floor((millisec / (1000 * 60)) % 60);
+  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24);
+  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7);
+  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4);
+  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12);
+  const yrs = Math.floor(millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12));
 
-  let formattedTime = '0 milliseconds'
+  let formattedTime = '0 milliseconds';
   if (ms > 0) {
-    formattedTime = `${ms} milliseconds`
+    formattedTime = `${ms} milliseconds`;
   }
   if (secs > 0) {
-    formattedTime = `${secs} seconds ${formattedTime}`
+    formattedTime = `${secs} seconds ${formattedTime}`;
   }
   if (mins > 0) {
-    formattedTime = `${mins} minutes ${formattedTime}`
+    formattedTime = `${mins} minutes ${formattedTime}`;
   }
   if (hrs > 0) {
-    formattedTime = `${hrs} hours ${formattedTime}`
+    formattedTime = `${hrs} hours ${formattedTime}`;
   }
   if (days > 0) {
-    formattedTime = `${days} days ${formattedTime}`
+    formattedTime = `${days} days ${formattedTime}`;
   }
   if (weeks > 0) {
-    formattedTime = `${weeks} weeks ${formattedTime}`
+    formattedTime = `${weeks} weeks ${formattedTime}`;
   }
   if (mnths > 0) {
-    formattedTime = `${mnths} months ${formattedTime}`
+    formattedTime = `${mnths} months ${formattedTime}`;
   }
   if (yrs > 0) {
-    formattedTime = `${yrs} years ${formattedTime}`
+    formattedTime = `${yrs} years ${formattedTime}`;
   }
 
-  return formattedTime.trim()
+  return formattedTime.trim();
 }
 
 /**
@@ -523,30 +647,30 @@ function formatTime (millisec) {
  * @param {Array} source the array in which to search for the term
  * @param {Array | String} term the term to search
  */
-function checkIfExists (source, term) {
-  let terms
+function checkIfExists(source, term) {
+  let terms;
 
   if (!_.isArray(source)) {
-    throw new Error('Source argument should be an array')
+    throw new Error('Source argument should be an array');
   }
 
-  source = source.map(s => s.toLowerCase())
+  source = source.map((s) => s.toLowerCase());
 
   if (_.isString(term)) {
-    terms = term.toLowerCase().split(' ')
+    terms = term.toLowerCase().split(' ');
   } else if (_.isArray(term)) {
-    terms = term.map(t => t.toLowerCase())
+    terms = term.map((t) => t.toLowerCase());
   } else {
-    throw new Error('Term argument should be either a string or an array')
+    throw new Error('Term argument should be either a string or an array');
   }
 
   for (let i = 0; i < terms.length; i++) {
     if (source.includes(terms[i])) {
-      return true
+      return true;
     }
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -554,10 +678,10 @@ function checkIfExists (source, term) {
  * @param {Function} fn the async function
  * @returns {Function} the wrapped function
  */
-function wrapExpress (fn) {
+function wrapExpress(fn) {
   return function (req, res, next) {
-    fn(req, res, next).catch(next)
-  }
+    fn(req, res, next).catch(next);
+  };
 }
 
 /**
@@ -565,20 +689,20 @@ function wrapExpress (fn) {
  * @param obj the object (controller exports)
  * @returns {Object|Array} the wrapped object
  */
-function autoWrapExpress (obj) {
+function autoWrapExpress(obj) {
   if (_.isArray(obj)) {
-    return obj.map(autoWrapExpress)
+    return obj.map(autoWrapExpress);
   }
   if (_.isFunction(obj)) {
     if (obj.constructor.name === 'AsyncFunction') {
-      return wrapExpress(obj)
+      return wrapExpress(obj);
     }
-    return obj
+    return obj;
   }
   _.each(obj, (value, key) => {
-    obj[key] = autoWrapExpress(value)
-  })
-  return obj
+    obj[key] = autoWrapExpress(value);
+  });
+  return obj;
 }
 
 /**
@@ -587,9 +711,11 @@ function autoWrapExpress (obj) {
  * @param {Number} page the page number
  * @returns {String} link for the page
  */
-function getPageLink (req, page) {
-  const q = _.assignIn({}, req.query, { page })
-  return `${req.protocol}://${req.get('Host')}${req.baseUrl}${req.path}?${querystring.stringify(q)}`
+function getPageLink(req, page) {
+  const q = _.assignIn({}, req.query, { page });
+  return `${req.protocol}://${req.get('Host')}${req.baseUrl}${
+    req.path
+  }?${querystring.stringify(q)}`;
 }
 
 /**
@@ -598,28 +724,31 @@ function getPageLink (req, page) {
  * @param {Object} res the HTTP response
  * @param {Object} result the operation result
  */
-function setResHeaders (req, res, result) {
-  const totalPages = Math.ceil(result.total / result.perPage)
+function setResHeaders(req, res, result) {
+  const totalPages = Math.ceil(result.total / result.perPage);
   if (result.page > 1) {
-    res.set('X-Prev-Page', result.page - 1)
+    res.set('X-Prev-Page', result.page - 1);
   }
   if (result.page < totalPages) {
-    res.set('X-Next-Page', result.page + 1)
+    res.set('X-Next-Page', result.page + 1);
   }
-  res.set('X-Page', result.page)
-  res.set('X-Per-Page', result.perPage)
-  res.set('X-Total', result.total)
-  res.set('X-Total-Pages', totalPages)
+  res.set('X-Page', result.page);
+  res.set('X-Per-Page', result.perPage);
+  res.set('X-Total', result.total);
+  res.set('X-Total-Pages', totalPages);
   // set Link header
   if (totalPages > 0) {
-    let link = `<${getPageLink(req, 1)}>; rel="first", <${getPageLink(req, totalPages)}>; rel="last"`
+    let link = `<${getPageLink(req, 1)}>; rel="first", <${getPageLink(
+      req,
+      totalPages
+    )}>; rel="last"`;
     if (result.page > 1) {
-      link += `, <${getPageLink(req, result.page - 1)}>; rel="prev"`
+      link += `, <${getPageLink(req, result.page - 1)}>; rel="prev"`;
     }
     if (result.page < totalPages) {
-      link += `, <${getPageLink(req, result.page + 1)}>; rel="next"`
+      link += `, <${getPageLink(req, result.page + 1)}>; rel="next"`;
     }
-    res.set('Link', link)
+    res.set('Link', link);
   }
 }
 
@@ -627,30 +756,30 @@ function setResHeaders (req, res, result) {
  * Get ES Client
  * @return {Object} Elastic Host Client Instance
  */
-function getESClient () {
+function getESClient() {
   if (esClients.client) {
-    return esClients.client
+    return esClients.client;
   }
 
-  const host = config.esConfig.HOST
-  const cloudId = config.esConfig.ELASTICCLOUD.id
+  const host = config.esConfig.HOST;
+  const cloudId = config.esConfig.ELASTICCLOUD.id;
   if (cloudId) {
     // Elastic Cloud configuration
     esClients.client = new elasticsearch.Client({
       cloud: {
-        id: cloudId
+        id: cloudId,
       },
       auth: {
         username: config.esConfig.ELASTICCLOUD.username,
-        password: config.esConfig.ELASTICCLOUD.password
-      }
-    })
+        password: config.esConfig.ELASTICCLOUD.password,
+      },
+    });
   } else {
     esClients.client = new elasticsearch.Client({
-      node: host
-    })
+      node: host,
+    });
   }
-  return esClients.client
+  return esClients.client;
 }
 
 /*
@@ -658,16 +787,22 @@ function getESClient () {
  * @returns {Promise}
  */
 const getM2MToken = async () => {
-  return await m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
-}
+  return await m2m.getMachineToken(
+    config.AUTH0_CLIENT_ID,
+    config.AUTH0_CLIENT_SECRET
+  );
+};
 
 /*
  * Function to get M2M token for U-Bahn
  * @returns {Promise}
  */
 const getM2MUbahnToken = async () => {
-  return await m2mForUbahn.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
-}
+  return await m2mForUbahn.getMachineToken(
+    config.AUTH0_CLIENT_ID,
+    config.AUTH0_CLIENT_SECRET
+  );
+};
 
 /**
  * Function to encode query string
@@ -675,17 +810,17 @@ const getM2MUbahnToken = async () => {
  * @param {String} nesting the nesting string
  * @returns {String} query string
  */
-function encodeQueryString (queryObj, nesting = '') {
+function encodeQueryString(queryObj, nesting = '') {
   const pairs = Object.entries(queryObj).map(([key, val]) => {
     // Handle the nested, recursive case, where the value to encode is an object itself
     if (typeof val === 'object') {
-      return encodeQueryString(val, nesting + `${key}.`)
+      return encodeQueryString(val, nesting + `${key}.`);
     } else {
       // Handle base case, where the value to encode is simply a string.
-      return [nesting + key, val].map(querystring.escape).join('=')
+      return [nesting + key, val].map(querystring.escape).join('=');
     }
-  })
-  return pairs.join('&')
+  });
+  return pairs.join('&');
 }
 
 /**
@@ -693,28 +828,31 @@ function encodeQueryString (queryObj, nesting = '') {
  * @param {Integer} externalId the legacy user id
  * @returns {Array} the users found
  */
-async function listUsersByExternalId (externalId) {
+async function listUsersByExternalId(externalId) {
   // return empty list if externalId is null or undefined
   if (!!externalId !== true) {
-    return []
+    return [];
   }
 
-  const token = await getM2MUbahnToken()
+  const token = await getM2MUbahnToken();
   const q = {
     enrich: true,
     externalProfile: {
       organizationId: config.ORG_ID,
-      externalId
-    }
-  }
-  const url = `${config.TC_API}/users?${encodeQueryString(q)}`
+      externalId,
+    },
+  };
+  const url = `${config.TC_API}/users?${encodeQueryString(q)}`;
   const res = await request
     .get(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'listUserByExternalId', message: `response body: ${JSON.stringify(res.body)}` })
-  return res.body
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'listUserByExternalId',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return res.body;
 }
 
 /**
@@ -722,12 +860,14 @@ async function listUsersByExternalId (externalId) {
  * @param {Integer} externalId the legacy user id
  * @returns {Object} the user
  */
-async function getUserByExternalId (externalId) {
-  const users = await listUsersByExternalId(externalId)
+async function getUserByExternalId(externalId) {
+  const users = await listUsersByExternalId(externalId);
   if (_.isEmpty(users)) {
-    throw new errors.NotFoundError(`externalId: ${externalId} "user" not found`)
+    throw new errors.NotFoundError(
+      `externalId: ${externalId} "user" not found`
+    );
   }
-  return users[0]
+  return users[0];
 }
 
 /**
@@ -736,18 +876,24 @@ async function getUserByExternalId (externalId) {
  * @params {Object} payload the payload
  * @params {Object} options the extra options to control the function
  */
-async function postEvent (topic, payload, options = {}) {
-  logger.debug({ component: 'helper', context: 'postEvent', message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(payload)}` })
-  const client = getBusApiClient()
+async function postEvent(topic, payload, options = {}) {
+  logger.debug({
+    component: 'helper',
+    context: 'postEvent',
+    message: `Posting event to Kafka topic ${topic}, ${JSON.stringify(
+      payload
+    )}`,
+  });
+  const client = getBusApiClient();
   const message = {
     topic,
     originator: config.KAFKA_MESSAGE_ORIGINATOR,
     timestamp: new Date().toISOString(),
     'mime-type': 'application/json',
-    payload
-  }
-  await client.postEvent(message)
-  await eventDispatcher.handleEvent(topic, { value: payload, options })
+    payload,
+  };
+  await client.postEvent(message);
+  await eventDispatcher.handleEvent(topic, { value: payload, options });
 }
 
 /**
@@ -756,11 +902,11 @@ async function postEvent (topic, payload, options = {}) {
  * @param {Object} err the err
  * @returns {Boolean} the result
  */
-function isDocumentMissingException (err) {
+function isDocumentMissingException(err) {
   if (err.statusCode === 404 && err instanceof ESResponseError) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }
 
 /**
@@ -769,31 +915,34 @@ function isDocumentMissingException (err) {
  * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getProjects (currentUser, criteria = {}) {
-  let token
+async function getProjects(currentUser, criteria = {}) {
+  let token;
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2MToken()
-    token = `Bearer ${m2mToken}`
+    const m2mToken = await getM2MToken();
+    token = `Bearer ${m2mToken}`;
   } else {
-    token = currentUser.jwtToken
+    token = currentUser.jwtToken;
   }
-  const url = `${config.TC_API}/projects?type=talent-as-a-service`
+  const url = `${config.TC_API}/projects?type=talent-as-a-service`;
   const res = await request
     .get(url)
     .query(criteria)
     .set('Authorization', token)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getProjects', message: `response body: ${JSON.stringify(res.body)}` })
-  const result = _.map(res.body, item => {
-    return _.pick(item, ['id', 'name', 'invites', 'members'])
-  })
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getProjects',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  const result = _.map(res.body, (item) => {
+    return _.pick(item, ['id', 'name', 'invites', 'members']);
+  });
   return {
     total: Number(_.get(res.headers, 'x-total')),
     page: Number(_.get(res.headers, 'x-page')),
     perPage: Number(_.get(res.headers, 'x-per-page')),
-    result
-  }
+    result,
+  };
 }
 
 /**
@@ -802,19 +951,24 @@ async function getProjects (currentUser, criteria = {}) {
  * @param {String} userId the legacy user id
  * @returns {Object} the user
  */
-async function getTopcoderUserById (userId) {
-  const token = await getM2MToken()
+async function getTopcoderUserById(userId) {
+  const token = await getM2MToken();
   const res = await request
     .get(config.TOPCODER_USERS_API)
     .query({ filter: `id=${userId}` })
     .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getTopcoderUserById', message: `response body: ${JSON.stringify(res.body)}` })
-  const user = _.get(res.body, 'result.content[0]')
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getTopcoderUserById',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  const user = _.get(res.body, 'result.content[0]');
   if (!user) {
-    throw new errors.NotFoundError(`userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`)
+    throw new errors.NotFoundError(
+      `userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`
+    );
   }
-  return user
+  return user;
 }
 
 /**
@@ -822,24 +976,31 @@ async function getTopcoderUserById (userId) {
  * @param {String} userId the user id
  * @returns the request result
  */
-async function getUserById (userId, enrich) {
-  const token = await getM2MUbahnToken()
+async function getUserById(userId, enrich) {
+  const token = await getM2MUbahnToken();
   const res = await request
     .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getUserById', message: `response body: ${JSON.stringify(res.body)}` })
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getUserById',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
 
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
+  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName']);
 
   if (enrich) {
-    user.skills = (res.body.skills || []).map((skillObj) => _.pick(skillObj.skill, ['id', 'name']))
-    const attributes = _.get(res, 'body.attributes', [])
-    user.attributes = _.map(attributes, attr => _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name']))
+    user.skills = (res.body.skills || []).map((skillObj) =>
+      _.pick(skillObj.skill, ['id', 'name'])
+    );
+    const attributes = _.get(res, 'body.attributes', []);
+    user.attributes = _.map(attributes, (attr) =>
+      _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
+    );
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -847,16 +1008,19 @@ async function getUserById (userId, enrich) {
  * @param {Object} data the user data
  * @returns the request result
  */
-async function createUbahnUser ({ handle, firstName, lastName }) {
-  const token = await getM2MUbahnToken()
+async function createUbahnUser({ handle, firstName, lastName }) {
+  const token = await getM2MUbahnToken();
   const res = await request
     .post(`${config.TC_API}/users`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .send({ handle, firstName, lastName })
-  localLogger.debug({ context: 'createUbahnUser', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.pick(res.body, ['id'])
+    .send({ handle, firstName, lastName });
+  localLogger.debug({
+    context: 'createUbahnUser',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.pick(res.body, ['id']);
 }
 
 /**
@@ -864,15 +1028,21 @@ async function createUbahnUser ({ handle, firstName, lastName }) {
  * @param {String} userId the user id(with uuid format)
  * @param {Object} data the profile data
  */
-async function createUserExternalProfile (userId, { organizationId, externalId }) {
-  const token = await getM2MUbahnToken()
+async function createUserExternalProfile(
+  userId,
+  { organizationId, externalId }
+) {
+  const token = await getM2MUbahnToken();
   const res = await request
     .post(`${config.TC_API}/users/${userId}/externalProfiles`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .send({ organizationId, externalId: String(externalId) })
-  localLogger.debug({ context: 'createUserExternalProfile', message: `response body: ${JSON.stringify(res.body)}` })
+    .send({ organizationId, externalId: String(externalId) });
+  localLogger.debug({
+    context: 'createUserExternalProfile',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
 }
 
 /**
@@ -880,20 +1050,23 @@ async function createUserExternalProfile (userId, { organizationId, externalId }
  * @param {Array} handles the handle array
  * @returns the request result
  */
-async function getMembers (handles) {
-  const token = await getM2MToken()
-  const handlesStr = _.map(handles, handle => {
-    return '%22' + handle.toLowerCase() + '%22'
-  }).join(',')
-  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`
+async function getMembers(handles) {
+  const token = await getM2MToken();
+  const handlesStr = _.map(handles, (handle) => {
+    return '%22' + handle.toLowerCase() + '%22';
+  }).join(',');
+  const url = `${config.TC_API}/members?fields=userId,handleLower,photoURL&handlesLower=[${handlesStr}]`;
 
   const res = await request
     .get(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getMembers', message: `response body: ${JSON.stringify(res.body)}` })
-  return res.body
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getMembers',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return res.body;
 }
 
 /**
@@ -902,31 +1075,36 @@ async function getMembers (handles) {
  * @param {Number} id project id
  * @returns the request result
  */
-async function getProjectById (currentUser, id) {
-  let token
+async function getProjectById(currentUser, id) {
+  let token;
   if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2MToken()
-    token = `Bearer ${m2mToken}`
+    const m2mToken = await getM2MToken();
+    token = `Bearer ${m2mToken}`;
   } else {
-    token = currentUser.jwtToken
+    token = currentUser.jwtToken;
   }
-  const url = `${config.TC_API}/projects/${id}`
+  const url = `${config.TC_API}/projects/${id}`;
   try {
     const res = await request
       .get(url)
       .set('Authorization', token)
       .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({ context: 'getProjectById', message: `response body: ${JSON.stringify(res.body)}` })
-    return _.pick(res.body, ['id', 'name', 'invites', 'members'])
+      .set('Accept', 'application/json');
+    localLogger.debug({
+      context: 'getProjectById',
+      message: `response body: ${JSON.stringify(res.body)}`,
+    });
+    return _.pick(res.body, ['id', 'name', 'invites', 'members']);
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
-      throw new errors.ForbiddenError(`You are not allowed to access the project with id ${id}`)
+      throw new errors.ForbiddenError(
+        `You are not allowed to access the project with id ${id}`
+      );
     }
     if (err.status === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`id: ${id} project not found`)
+      throw new errors.NotFoundError(`id: ${id} project not found`);
     }
-    throw err
+    throw err;
   }
 }
 
@@ -937,30 +1115,33 @@ async function getProjectById (currentUser, id) {
  * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getTopcoderSkills (criteria) {
-  const token = await getM2MUbahnToken()
+async function getTopcoderSkills(criteria) {
+  const token = await getM2MUbahnToken();
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
       .query({
         skillProviderId: config.TOPCODER_SKILL_PROVIDER_ID,
-        ...criteria
+        ...criteria,
       })
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({ context: 'getTopcoderSkills', message: `response body: ${JSON.stringify(res.body)}` })
+      .set('Accept', 'application/json');
+    localLogger.debug({
+      context: 'getTopcoderSkills',
+      message: `response body: ${JSON.stringify(res.body)}`,
+    });
     return {
       total: Number(_.get(res.headers, 'x-total')),
       page: Number(_.get(res.headers, 'x-page')),
       perPage: Number(_.get(res.headers, 'x-per-page')),
-      result: res.body
-    }
+      result: res.body,
+    };
   } catch (err) {
     if (err.status === HttpStatus.BAD_REQUEST) {
-      throw new errors.BadRequestError(err.response.body.message)
+      throw new errors.BadRequestError(err.response.body.message);
     }
-    throw err
+    throw err;
   }
 }
 
@@ -969,15 +1150,18 @@ async function getTopcoderSkills (criteria) {
  * @param {String} skillId the skill Id
  * @returns the request result
  */
-async function getSkillById (skillId) {
-  const token = await getM2MUbahnToken()
+async function getSkillById(skillId) {
+  const token = await getM2MUbahnToken();
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getSkillById', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.pick(res.body, ['id', 'name'])
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getSkillById',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.pick(res.body, ['id', 'name']);
 }
 
 /**
@@ -990,17 +1174,22 @@ async function getSkillById (skillId) {
  * @params {Object} currentUser the user who perform this operation
  * @returns {String} the ubahn user id
  */
-async function ensureUbahnUserId (currentUser) {
+async function ensureUbahnUserId(currentUser) {
   try {
-    return (await getUserByExternalId(currentUser.userId)).id
+    return (await getUserByExternalId(currentUser.userId)).id;
   } catch (err) {
     if (!(err instanceof errors.NotFoundError)) {
-      throw err
+      throw err;
     }
-    const topcoderUser = await getTopcoderUserById(currentUser.userId)
-    const user = await createUbahnUser(_.pick(topcoderUser, ['handle', 'firstName', 'lastName']))
-    await createUserExternalProfile(user.id, { organizationId: config.ORG_ID, externalId: currentUser.userId })
-    return user.id
+    const topcoderUser = await getTopcoderUserById(currentUser.userId);
+    const user = await createUbahnUser(
+      _.pick(topcoderUser, ['handle', 'firstName', 'lastName'])
+    );
+    await createUserExternalProfile(user.id, {
+      organizationId: config.ORG_ID,
+      externalId: currentUser.userId,
+    });
+    return user.id;
   }
 }
 
@@ -1010,8 +1199,8 @@ async function ensureUbahnUserId (currentUser) {
  * @param {String} jobId the job id
  * @returns {Object} the job data
  */
-async function ensureJobById (jobId) {
-  return models.Job.findById(jobId)
+async function ensureJobById(jobId) {
+  return models.Job.findById(jobId);
 }
 
 /**
@@ -1020,8 +1209,8 @@ async function ensureJobById (jobId) {
  * @param {String} resourceBookingId the resourceBooking id
  * @returns {Object} the resourceBooking data
  */
-async function ensureResourceBookingById (resourceBookingId) {
-  return models.ResourceBooking.findById(resourceBookingId)
+async function ensureResourceBookingById(resourceBookingId) {
+  return models.ResourceBooking.findById(resourceBookingId);
 }
 
 /**
@@ -1029,8 +1218,8 @@ async function ensureResourceBookingById (resourceBookingId) {
  * @param {String} workPeriodId the workPeriod id
  * @returns the workPeriod data
  */
-async function ensureWorkPeriodById (workPeriodId) {
-  return models.WorkPeriod.findById(workPeriodId)
+async function ensureWorkPeriodById(workPeriodId) {
+  return models.WorkPeriod.findById(workPeriodId);
 }
 
 /**
@@ -1039,21 +1228,24 @@ async function ensureWorkPeriodById (workPeriodId) {
  * @param {String} jobId the user id
  * @returns {Object} the user data
  */
-async function ensureUserById (userId) {
-  const token = await getM2MUbahnToken()
+async function ensureUserById(userId) {
+  const token = await getM2MUbahnToken();
   try {
     const res = await request
       .get(`${config.TC_API}/users/${userId}`)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({ context: 'ensureUserById', message: `response body: ${JSON.stringify(res.body)}` })
-    return res.body
+      .set('Accept', 'application/json');
+    localLogger.debug({
+      context: 'ensureUserById',
+      message: `response body: ${JSON.stringify(res.body)}`,
+    });
+    return res.body;
   } catch (err) {
     if (err.status === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`id: ${userId} "user" not found`)
+      throw new errors.NotFoundError(`id: ${userId} "user" not found`);
     }
-    throw err
+    throw err;
   }
 }
 
@@ -1062,8 +1254,12 @@ async function ensureUserById (userId) {
  *
  * @returns {Object} the M2M auth user
  */
-function getAuditM2Muser () {
-  return { isMachine: true, userId: config.m2m.M2M_AUDIT_USER_ID, handle: config.m2m.M2M_AUDIT_HANDLE }
+function getAuditM2Muser() {
+  return {
+    isMachine: true,
+    userId: config.m2m.M2M_AUDIT_USER_ID,
+    handle: config.m2m.M2M_AUDIT_HANDLE,
+  };
 }
 
 /**
@@ -1075,17 +1271,24 @@ function getAuditM2Muser () {
  * @param {Number} projectId project id
  * @returns the result
  */
-async function checkIsMemberOfProject (userId, projectId) {
-  const m2mToken = await getM2MToken()
+async function checkIsMemberOfProject(userId, projectId) {
+  const m2mToken = await getM2MToken();
   const res = await request
     .get(`${config.TC_API}/projects/${projectId}`)
     .set('Authorization', `Bearer ${m2mToken}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  const memberIdList = _.map(res.body.members, 'userId')
-  localLogger.debug({ context: 'checkIsMemberOfProject', message: `the members of project ${projectId}: ${JSON.stringify(memberIdList)}, authUserId: ${JSON.stringify(userId)}` })
+    .set('Accept', 'application/json');
+  const memberIdList = _.map(res.body.members, 'userId');
+  localLogger.debug({
+    context: 'checkIsMemberOfProject',
+    message: `the members of project ${projectId}: ${JSON.stringify(
+      memberIdList
+    )}, authUserId: ${JSON.stringify(userId)}`,
+  });
   if (!memberIdList.includes(userId)) {
-    throw new errors.UnauthorizedError(`userId: ${userId} the user is not a member of project ${projectId}`)
+    throw new errors.UnauthorizedError(
+      `userId: ${userId} the user is not a member of project ${projectId}`
+    );
   }
 }
 
@@ -1095,21 +1298,27 @@ async function checkIsMemberOfProject (userId, projectId) {
  * @param {Array} handles the array of handles
  * @returns {Array} the member details
  */
-async function getMemberDetailsByHandles (handles) {
+async function getMemberDetailsByHandles(handles) {
   if (!handles.length) {
-    return []
+    return [];
   }
-  const token = await getM2MToken()
+  const token = await getM2MToken();
   const res = await request
     .get(`${config.TOPCODER_MEMBERS_API}/_search`)
     .query({
-      query: _.map(handles, handle => `handleLower:${handle.toLowerCase()}`).join(' OR '),
-      fields: 'userId,handle,firstName,lastName,email'
+      query: _.map(
+        handles,
+        (handle) => `handleLower:${handle.toLowerCase()}`
+      ).join(' OR '),
+      fields: 'userId,handle,firstName,lastName,email',
     })
     .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getMemberDetailsByHandles', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.get(res.body, 'result.content')
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getMemberDetailsByHandles',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.get(res.body, 'result.content');
 }
 
 /**
@@ -1118,14 +1327,17 @@ async function getMemberDetailsByHandles (handles) {
  * @param {String} handle the user handle
  * @returns {Object} the member details
  */
-async function getV3MemberDetailsByHandle (handle) {
-  const token = await getM2MToken()
+async function getV3MemberDetailsByHandle(handle) {
+  const token = await getM2MToken();
   const res = await request
     .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
     .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getV3MemberDetailsByHandle', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.get(res.body, 'result.content')
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getV3MemberDetailsByHandle',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.get(res.body, 'result.content');
 }
 
 /**
@@ -1135,17 +1347,20 @@ async function getV3MemberDetailsByHandle (handle) {
  * @param {String} email the email
  * @returns {Array} the member details
  */
-async function _getMemberDetailsByEmail (token, email) {
+async function _getMemberDetailsByEmail(token, email) {
   const res = await request
     .get(config.TOPCODER_USERS_API)
     .query({
       filter: `email=${email}`,
-      fields: 'handle,id,email,firstName,lastName'
+      fields: 'handle,id,email,firstName,lastName',
     })
     .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: '_getMemberDetailsByEmail', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.get(res.body, 'result.content')
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: '_getMemberDetailsByEmail',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.get(res.body, 'result.content');
 }
 
 /**
@@ -1155,16 +1370,25 @@ async function _getMemberDetailsByEmail (token, email) {
  * @param {Array} emails the array of emails
  * @returns {Array} the member details
  */
-async function getMemberDetailsByEmails (emails) {
-  const token = await getM2MToken()
-  const limiter = new Bottleneck({ maxConcurrent: config.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API })
-  const membersArray = await Promise.all(emails.map(email => limiter.schedule(() => _getMemberDetailsByEmail(token, email)
-    .catch((error) => {
-      localLogger.error({ context: 'getMemberDetailsByEmails', message: error.message })
-      return []
-    })
-  )))
-  return _.flatten(membersArray)
+async function getMemberDetailsByEmails(emails) {
+  const token = await getM2MToken();
+  const limiter = new Bottleneck({
+    maxConcurrent: config.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API,
+  });
+  const membersArray = await Promise.all(
+    emails.map((email) =>
+      limiter.schedule(() =>
+        _getMemberDetailsByEmail(token, email).catch((error) => {
+          localLogger.error({
+            context: 'getMemberDetailsByEmails',
+            message: error.message,
+          });
+          return [];
+        })
+      )
+    )
+  );
+  return _.flatten(membersArray);
 }
 
 /**
@@ -1175,17 +1399,20 @@ async function getMemberDetailsByEmails (emails) {
  * @param {Object} criteria the filtering criteria
  * @returns {Object} the member created
  */
-async function createProjectMember (projectId, data, criteria) {
-  const m2mToken = await getM2MToken()
+async function createProjectMember(projectId, data, criteria) {
+  const m2mToken = await getM2MToken();
   const { body: member } = await request
     .post(`${config.TC_API}/projects/${projectId}/members`)
     .set('Authorization', `Bearer ${m2mToken}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .query(criteria)
-    .send(data)
-  localLogger.debug({ context: 'createProjectMember', message: `response body: ${JSON.stringify(member)}` })
-  return member
+    .send(data);
+  localLogger.debug({
+    context: 'createProjectMember',
+    message: `response body: ${JSON.stringify(member)}`,
+  });
+  return member;
 }
 
 /**
@@ -1195,17 +1422,21 @@ async function createProjectMember (projectId, data, criteria) {
  * @param {Object} criteria the search criteria
  * @returns {Array} the project members
  */
-async function listProjectMembers (currentUser, projectId, criteria = {}) {
-  const token = (currentUser.hasManagePermission || currentUser.isMachine)
-    ? `Bearer ${await getM2MToken()}`
-    : currentUser.jwtToken
+async function listProjectMembers(currentUser, projectId, criteria = {}) {
+  const token =
+    currentUser.hasManagePermission || currentUser.isMachine
+      ? `Bearer ${await getM2MToken()}`
+      : currentUser.jwtToken;
   const { body: members } = await request
     .get(`${config.TC_API}/projects/${projectId}/members`)
     .query(criteria)
     .set('Authorization', token)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'listProjectMembers', message: `response body: ${JSON.stringify(members)}` })
-  return members
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'listProjectMembers',
+    message: `response body: ${JSON.stringify(members)}`,
+  });
+  return members;
 }
 
 /**
@@ -1215,17 +1446,21 @@ async function listProjectMembers (currentUser, projectId, criteria = {}) {
  * @param {Object} criteria the search criteria
  * @returns {Array} the member invites
  */
-async function listProjectMemberInvites (currentUser, projectId, criteria = {}) {
-  const token = (currentUser.hasManagePermission || currentUser.isMachine)
-    ? `Bearer ${await getM2MToken()}`
-    : currentUser.jwtToken
+async function listProjectMemberInvites(currentUser, projectId, criteria = {}) {
+  const token =
+    currentUser.hasManagePermission || currentUser.isMachine
+      ? `Bearer ${await getM2MToken()}`
+      : currentUser.jwtToken;
   const { body: invites } = await request
     .get(`${config.TC_API}/projects/${projectId}/invites`)
     .query(criteria)
     .set('Authorization', token)
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'listProjectMemberInvites', message: `response body: ${JSON.stringify(invites)}` })
-  return invites
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'listProjectMemberInvites',
+    message: `response body: ${JSON.stringify(invites)}`,
+  });
+  return invites;
 }
 
 /**
@@ -1235,19 +1470,24 @@ async function listProjectMemberInvites (currentUser, projectId, criteria = {}) 
  * @param {String} projectMemberId the id of the project member
  * @returns {undefined}
  */
-async function deleteProjectMember (currentUser, projectId, projectMemberId) {
-  const token = (currentUser.hasManagePermission || currentUser.isMachine)
-    ? `Bearer ${await getM2MToken()}`
-    : currentUser.jwtToken
+async function deleteProjectMember(currentUser, projectId, projectMemberId) {
+  const token =
+    currentUser.hasManagePermission || currentUser.isMachine
+      ? `Bearer ${await getM2MToken()}`
+      : currentUser.jwtToken;
   try {
     await request
-      .delete(`${config.TC_API}/projects/${projectId}/members/${projectMemberId}`)
-      .set('Authorization', token)
+      .delete(
+        `${config.TC_API}/projects/${projectId}/members/${projectMemberId}`
+      )
+      .set('Authorization', token);
   } catch (err) {
     if (err.status === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`projectMemberId: ${projectMemberId} "member" doesn't exist in project ${projectId}`)
+      throw new errors.NotFoundError(
+        `projectMemberId: ${projectMemberId} "member" doesn't exist in project ${projectId}`
+      );
     }
-    throw err
+    throw err;
   }
 }
 
@@ -1257,10 +1497,13 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
  * @param {String} attributeName Requested attribute name, e.g. "email"
  * @returns attribute value
  */
-function getUserAttributeValue (user, attributeName) {
-  const attributes = _.get(user, 'attributes', [])
-  const targetAttribute = _.find(attributes, a => a.attribute.name === attributeName)
-  return _.get(targetAttribute, 'value')
+function getUserAttributeValue(user, attributeName) {
+  const attributes = _.get(user, 'attributes', []);
+  const targetAttribute = _.find(
+    attributes,
+    (a) => a.attribute.name === attributeName
+  );
+  return _.get(targetAttribute, 'value');
 }
 
 /**
@@ -1270,22 +1513,34 @@ function getUserAttributeValue (user, attributeName) {
  * @param {String} token m2m token
  * @returns {Object} the challenge created
  */
-async function createChallenge (data, token) {
+async function createChallenge(data, token) {
   if (!token) {
-    token = await getM2MToken()
+    token = await getM2MToken();
   }
-  const url = `${config.TC_API}/challenges`
-  localLogger.debug({ context: 'createChallenge', message: `EndPoint: POST ${url}` })
-  localLogger.debug({ context: 'createChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const url = `${config.TC_API}/challenges`;
+  localLogger.debug({
+    context: 'createChallenge',
+    message: `EndPoint: POST ${url}`,
+  });
+  localLogger.debug({
+    context: 'createChallenge',
+    message: `Request Body: ${JSON.stringify(data)}`,
+  });
   const { body: challenge, status: httpStatus } = await request
     .post(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .send(data)
-  localLogger.debug({ context: 'createChallenge', message: `Status Code: ${httpStatus}` })
-  localLogger.debug({ context: 'createChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
-  return challenge
+    .send(data);
+  localLogger.debug({
+    context: 'createChallenge',
+    message: `Status Code: ${httpStatus}`,
+  });
+  localLogger.debug({
+    context: 'createChallenge',
+    message: `Response Body: ${JSON.stringify(challenge)}`,
+  });
+  return challenge;
 }
 
 /**
@@ -1296,22 +1551,34 @@ async function createChallenge (data, token) {
  * @param {String} token m2m token
  * @returns {Object} the challenge updated
  */
-async function updateChallenge (challengeId, data, token) {
+async function updateChallenge(challengeId, data, token) {
   if (!token) {
-    token = await getM2MToken()
+    token = await getM2MToken();
   }
-  const url = `${config.TC_API}/challenges/${challengeId}`
-  localLogger.debug({ context: 'updateChallenge', message: `EndPoint: PATCH ${url}` })
-  localLogger.debug({ context: 'updateChallenge', message: `Request Body: ${JSON.stringify(data)}` })
+  const url = `${config.TC_API}/challenges/${challengeId}`;
+  localLogger.debug({
+    context: 'updateChallenge',
+    message: `EndPoint: PATCH ${url}`,
+  });
+  localLogger.debug({
+    context: 'updateChallenge',
+    message: `Request Body: ${JSON.stringify(data)}`,
+  });
   const { body: challenge, status: httpStatus } = await request
     .patch(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .send(data)
-  localLogger.debug({ context: 'updateChallenge', message: `Status Code: ${httpStatus}` })
-  localLogger.debug({ context: 'updateChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
-  return challenge
+    .send(data);
+  localLogger.debug({
+    context: 'updateChallenge',
+    message: `Status Code: ${httpStatus}`,
+  });
+  localLogger.debug({
+    context: 'updateChallenge',
+    message: `Response Body: ${JSON.stringify(challenge)}`,
+  });
+  return challenge;
 }
 
 /**
@@ -1321,22 +1588,34 @@ async function updateChallenge (challengeId, data, token) {
  * @param {String} token m2m token
  * @returns {Object} the resource created
  */
-async function createChallengeResource (data, token) {
+async function createChallengeResource(data, token) {
   if (!token) {
-    token = await getM2MToken()
+    token = await getM2MToken();
   }
-  const url = `${config.TC_API}/resources`
-  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
-  localLogger.debug({ context: 'createChallengeResource', message: `Request Body: ${JSON.stringify(data)}` })
+  const url = `${config.TC_API}/resources`;
+  localLogger.debug({
+    context: 'createChallengeResource',
+    message: `EndPoint: POST ${url}`,
+  });
+  localLogger.debug({
+    context: 'createChallengeResource',
+    message: `Request Body: ${JSON.stringify(data)}`,
+  });
   const { body: resource, status: httpStatus } = await request
     .post(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-    .send(data)
-  localLogger.debug({ context: 'createChallengeResource', message: `Status Code: ${httpStatus}` })
-  localLogger.debug({ context: 'createChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
-  return resource
+    .send(data);
+  localLogger.debug({
+    context: 'createChallengeResource',
+    message: `Status Code: ${httpStatus}`,
+  });
+  localLogger.debug({
+    context: 'createChallengeResource',
+    message: `Response Body: ${JSON.stringify(resource)}`,
+  });
+  return resource;
 }
 
 /**
@@ -1345,40 +1624,40 @@ async function createChallengeResource (data, token) {
  * @param {Date} end end date of the resource booking
  * @returns {Array<{startDate:Date, endDate:Date, daysWorked:number}>} information about workPeriods
  */
-function extractWorkPeriods (start, end) {
+function extractWorkPeriods(start, end) {
   // calculate maximum possible daysWorked for a week
-  function getDaysWorked (week) {
+  function getDaysWorked(week) {
     if (weeks === 1) {
-      return Math.min(endDay, 5) - Math.max(startDay, 1) + 1
+      return Math.min(endDay, 5) - Math.max(startDay, 1) + 1;
     } else if (week === 0) {
-      return Math.min(6 - startDay, 5)
-    } else if (week === (weeks - 1)) {
-      return Math.min(endDay, 5)
-    } else return 5
+      return Math.min(6 - startDay, 5);
+    } else if (week === weeks - 1) {
+      return Math.min(endDay, 5);
+    } else return 5;
   }
-  const periods = []
+  const periods = [];
   if (_.isNil(start) || _.isNil(end)) {
-    return periods
+    return periods;
   }
-  const startDate = moment(start)
-  const startDay = startDate.get('day')
-  startDate.set('day', 0).startOf('day')
+  const startDate = moment(start);
+  const startDay = startDate.get('day');
+  startDate.set('day', 0).startOf('day');
 
-  const endDate = moment(end)
-  const endDay = endDate.get('day')
-  endDate.set('day', 6).endOf('day')
+  const endDate = moment(end);
+  const endDay = endDate.get('day');
+  endDate.set('day', 6).endOf('day');
 
-  const weeks = Math.round(moment.duration(endDate - startDate).asDays()) / 7
+  const weeks = Math.round(moment.duration(endDate - startDate).asDays()) / 7;
 
   for (let i = 0; i < weeks; i++) {
     periods.push({
       startDate: startDate.format('YYYY-MM-DD'),
       endDate: startDate.add(6, 'day').format('YYYY-MM-DD'),
-      daysWorked: getDaysWorked(i)
-    })
-    startDate.add(1, 'day')
+      daysWorked: getDaysWorked(i),
+    });
+    startDate.add(1, 'day');
   }
-  return periods
+  return periods;
 }
 
 /**
@@ -1387,16 +1666,19 @@ function extractWorkPeriods (start, end) {
  * @param {String} userHandle user handle
  * @returns {String} email address of the user
  */
-async function getUserByHandle (userHandle) {
-  const token = await getM2MToken()
-  const url = `${config.TC_API}/members/${userHandle}`
+async function getUserByHandle(userHandle) {
+  const token = await getM2MToken();
+  const url = `${config.TC_API}/members/${userHandle}`;
   const res = await request
     .get(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({ context: 'getUserByHandle', message: `response body: ${JSON.stringify(res.body)}` })
-  return _.get(res, 'body')
+    .set('Accept', 'application/json');
+  localLogger.debug({
+    context: 'getUserByHandle',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.get(res, 'body');
 }
 
 /**
@@ -1405,14 +1687,34 @@ async function getUserByHandle (userHandle) {
  * @param {*} object of json that would be replaced in string
  * @returns
  */
-async function substituteStringByObject (string, object) {
+async function substituteStringByObject(string, object) {
   for (var key in object) {
     if (!Object.prototype.hasOwnProperty.call(object, key)) {
-      continue
+      continue;
     }
-    string = string.replace(new RegExp('{{' + key + '}}', 'g'), object[key])
+    string = string.replace(new RegExp('{{' + key + '}}', 'g'), object[key]);
   }
-  return string
+  return string;
+}
+
+/**
+ * @param {Object} currentUser the user performing the action
+ * @param {Object} data title of project and any other info
+ * @returns {Object} the project created
+ */
+async function createProject(currentUser, data) {
+  const token = currentUser.jwtToken;
+  const res = await request
+    .post(`${config.TC_API}/projects/`)
+    .set('Authorization', token)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(data);
+  localLogger.debug({
+    context: 'createProject',
+    message: `response body: ${JSON.stringify(res)}`,
+  });
+  return _.get(res, 'body');
 }
 
 module.exports = {
@@ -1431,9 +1733,9 @@ module.exports = {
   getUserId: async (userId) => {
     // check m2m user id
     if (userId === config.m2m.M2M_AUDIT_USER_ID) {
-      return config.m2m.M2M_AUDIT_USER_ID
+      return config.m2m.M2M_AUDIT_USER_ID;
     }
-    return ensureUbahnUserId({ userId })
+    return ensureUbahnUserId({ userId });
   },
   getUserByExternalId,
   getM2MToken,
@@ -1466,5 +1768,6 @@ module.exports = {
   createChallengeResource,
   extractWorkPeriods,
   getUserByHandle,
-  substituteStringByObject
-}
+  substituteStringByObject,
+  createProject,
+};
