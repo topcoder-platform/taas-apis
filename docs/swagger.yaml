@@ -608,6 +608,12 @@ paths:
                 "cancelled",
                 "interview",
                 "topcoder-rejected",
+                "applied",
+                "rejected-pre-screen",
+                "skills-test",
+                "phone-screen",
+                "job-closed",
+                "offered"
               ]
           description: The job candidate status.
         - in: query
