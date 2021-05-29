@@ -111,6 +111,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   rateType: { type: 'keyword' },
   workload: { type: 'keyword' },
   skills: { type: 'keyword' },
+  roles: { type: 'keyword' },
   status: { type: 'keyword' },
   isApplicationPageActive: { type: 'boolean' },
   createdAt: { type: 'date' },
