@@ -111,6 +111,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   rateType: { type: 'keyword' },
   workload: { type: 'keyword' },
   skills: { type: 'keyword' },
+  roles: { type: 'keyword' },
   status: { type: 'keyword' },
   isApplicationPageActive: { type: 'boolean' },
   createdAt: { type: 'date' },
@@ -1304,13 +1305,10 @@ async function getMemberDetailsByHandles(handles) {
   }
   const token = await getM2MToken();
   const res = await request
-    .get(`${config.TOPCODER_MEMBERS_API}/_search`)
+    .get(`${config.TOPCODER_MEMBERS_API}/`)
     .query({
-      query: _.map(
-        handles,
-        (handle) => `handleLower:${handle.toLowerCase()}`
-      ).join(' OR '),
-      fields: 'userId,handle,firstName,lastName,email',
+      'handlesLower[]': handles.map(handle => handle.toLowerCase()),
+      fields: 'userId,handle,handleLower,firstName,lastName,email',
     })
     .set('Authorization', `Bearer ${token}`)
     .set('Accept', 'application/json');
@@ -1318,7 +1316,7 @@ async function getMemberDetailsByHandles(handles) {
     context: 'getMemberDetailsByHandles',
     message: `response body: ${JSON.stringify(res.body)}`,
   });
-  return _.get(res.body, 'result.content');
+  return res.body;
 }
 
 /**
@@ -1327,17 +1325,14 @@ async function getMemberDetailsByHandles(handles) {
  * @param {String} handle the user handle
  * @returns {Object} the member details
  */
-async function getV3MemberDetailsByHandle(handle) {
-  const token = await getM2MToken();
-  const res = await request
-    .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json');
-  localLogger.debug({
-    context: 'getV3MemberDetailsByHandle',
-    message: `response body: ${JSON.stringify(res.body)}`,
-  });
-  return _.get(res.body, 'result.content');
+async function getMemberDetailsByHandle(handle) {
+  const [memberDetails] = await getMemberDetailsByHandles([handle])
+
+  if (!memberDetails) {
+    throw new errors.NotFoundError(`Member details are not found by handle "${handle}".`)
+  }
+
+  return memberDetails
 }
 
 /**
@@ -1756,7 +1751,7 @@ module.exports = {
   getAuditM2Muser,
   checkIsMemberOfProject,
   getMemberDetailsByHandles,
-  getV3MemberDetailsByHandle,
+  getMemberDetailsByHandle,
   getMemberDetailsByEmails,
   createProjectMember,
   listProjectMembers,

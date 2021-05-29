@@ -177,6 +177,7 @@ createJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
+    roles: Joi.array().items(Joi.string().uuid()).allow(null),
     isApplicationPageActive: Joi.boolean()
   }).required()
 }).required()
@@ -245,6 +246,7 @@ partiallyUpdateJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()),
+    roles: Joi.array().items(Joi.string().uuid()).allow(null),
     isApplicationPageActive: Joi.boolean()
   }).required()
 }).required()
@@ -344,7 +346,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       body: {
         query: {
           bool: {
-            must: []
+            must: [],
+            filter: []
           }
         },
         from: (page - 1) * perPage,
@@ -360,6 +363,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'startDate',
       'resourceType',
       'skill',
+      'role',
       'rateType',
       'workload',
       'title',
@@ -374,10 +378,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         }
-      } else if (key === 'skill') {
+      } else if (key === 'skill' || key === 'role') {
         must = {
           terms: {
-            skills: [value]
+            [`${key}s`]: [value]
           }
         }
       } else {
@@ -393,11 +397,19 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     })
     // If criteria contains projectIds, filter projectId with this value
     if (criteria.projectIds) {
-      esQuery.body.query.bool.filter = [{
+      esQuery.body.query.bool.filter.push({
         terms: {
           projectId: criteria.projectIds
         }
-      }]
+      })
+    }
+    // if criteria contains jobIds, filter jobIds with this value
+    if (criteria.jobIds && criteria.jobIds.length > 0) {
+      esQuery.body.query.bool.filter.push({
+        terms: {
+          _id: criteria.jobIds
+        }
+      })
     }
     logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
 
@@ -422,7 +434,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
-  const filter = {}
+  const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, [
     'projectId',
     'externalId',
@@ -444,10 +456,18 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.title}%`
     }
   }
-  if (criteria.skills) {
+  if (criteria.skill) {
     filter.skills = {
-      [Op.contains]: [criteria.skills]
+      [Op.contains]: [criteria.skill]
     }
+  }
+  if (criteria.role) {
+    filter.roles = {
+      [Op.contains]: [criteria.role]
+    }
+  }
+  if (criteria.jobIds && criteria.jobIds.length > 0) {
+    filter[Op.and].push({ id: criteria.jobIds })
   }
   const jobs = await Job.findAll({
     where: filter,
@@ -483,10 +503,12 @@ searchJobs.schema = Joi.object().keys({
     startDate: Joi.date(),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
+    role: Joi.string().uuid(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     status: Joi.jobStatus(),
-    projectIds: Joi.array().items(Joi.number().integer()).single()
+    projectIds: Joi.array().items(Joi.number().integer()).single(),
+    jobIds: Joi.array().items(Joi.string().uuid())
   }).required(),
   options: Joi.object()
 }).required()

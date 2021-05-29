@@ -94,6 +94,9 @@ module.exports = (sequelize) => {
         type: Sequelize.JSONB,
         allowNull: false
       },
+      roles: {
+        type: Sequelize.ARRAY(Sequelize.UUID)
+      },
       status: {
         type: Sequelize.STRING(255),
         allowNull: false
