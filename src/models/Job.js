@@ -104,6 +104,36 @@ module.exports = (sequelize) => {
         defaultValue: false,
         allowNull: false
       },
+      minSalary: {
+        field: 'min_salary',
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      maxSalary: {
+        field: 'max_salary',
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      hoursPerWeek: {
+        field: 'hours_per_week',
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      jobLocation: {
+        field: 'job_location',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      jobTimezone: {
+        field: 'job_timezone',
+        type: Sequelize.STRING(128),
+        allowNull: false
+      },
+      currency: {
+        field: 'currency',
+        type: Sequelize.STRING(30),
+        allowNull: false
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

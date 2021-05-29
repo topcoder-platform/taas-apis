@@ -177,7 +177,13 @@ createJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().required(),
+    maxSalary: Joi.number().integer().required(),
+    hoursPerWeek: Joi.number().integer().required(),
+    jobLocation: Joi.string().required(),
+    jobTimezone: Joi.string().required(),
+    currency: Joi.string().required()
   }).required()
 }).required()
 
@@ -245,7 +251,13 @@ partiallyUpdateJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer(),
+    hoursPerWeek: Joi.number().integer(),
+    jobLocation: Joi.string(),
+    jobTimezone: Joi.string(),
+    currency: Joi.string()
   }).required()
 }).required()
 
@@ -276,7 +288,13 @@ fullyUpdateJob.schema = Joi.object().keys({
     workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus().default('sourcing'),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().required(),
+    maxSalary: Joi.number().integer().required(),
+    hoursPerWeek: Joi.number().integer().required(),
+    jobLocation: Joi.string().required(),
+    jobTimezone: Joi.string().required(),
+    currency: Joi.string().required()
   }).required()
 }).required()
 
