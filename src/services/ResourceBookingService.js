@@ -472,7 +472,6 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     criteria.sortOrder = 'desc'
   }
   try {
-    throw new Error('fallback to DB')
     const esQuery = {
       index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
       _source_includes: queryOpt.include,
@@ -484,11 +483,9 @@ async function searchResourceBookings (currentUser, criteria, options = { return
           }
         },
         from: (page - 1) * perPage,
-        size: perPage
+        size: perPage,
+        sort: []
       }
-    }
-    if (!queryOpt.sortByWP) {
-      esQuery.body.sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
     }
     // change the date format to match with index schema
     if (criteria.startDate) {
@@ -503,6 +500,17 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     if (criteria['workPeriods.endDate']) {
       criteria['workPeriods.endDate'] = moment(criteria['workPeriods.endDate']).format('YYYY-MM-DD')
     }
+    const sort = { [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }
+    if (queryOpt.sortByWP) {
+      const nestedSortFilter = {}
+      if (criteria['workPeriods.startDate']) {
+        nestedSortFilter.term = { 'workPeriods.startDate': criteria['workPeriods.startDate'] }
+      } else if (criteria['workPeriods.endDate']) {
+        nestedSortFilter.term = { 'workPeriods.endDate': criteria['workPeriods.endDate'] }
+      }
+      sort[criteria.sortBy].nested = { path: 'workPeriods', filter: nestedSortFilter }
+    }
+    esQuery.body.sort.push(sort)
     // Apply ResourceBooking filters
     _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
       esQuery.body.query.bool.must.push({
@@ -522,10 +530,10 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       }]
     }
     // Apply WorkPeriod filters
-    const workPeriodFilters = ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle']
-    if (_.intersection(criteria, workPeriodFilters).length > 0) {
+    const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
+    if (!_.isEmpty(workPeriodFilters)) {
       const workPeriodsMust = []
-      _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
+      _.each(workPeriodFilters, (value, key) => {
         workPeriodsMust.push({
           term: {
             [key]: {
@@ -545,23 +553,16 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
-    let resourceBookings = _.map(body.hits.hits, '_source')
+    const resourceBookings = _.map(body.hits.hits, '_source')
     // ESClient will return ResourceBookings with it's all nested WorkPeriods
     // We re-apply WorkPeriod filters
-    _.each(_.pick(criteria, workPeriodFilters), (value, key) => {
+    _.each(workPeriodFilters, (value, key) => {
       key = key.split('.')[1]
       _.each(resourceBookings, r => {
         r.workPeriods = _.filter(r.workPeriods, { [key]: value })
       })
     })
-    // If sorting criteria is WorkPeriod field, we have to sort manually
-    if (queryOpt.sortByWP) {
-      const sorts = criteria.sortBy.split('.')
-      resourceBookings = _.sortBy(resourceBookings, [`${sorts[0]}[0].${sorts[1]}`])
-      if (criteria.sortOrder === 'desc') {
-        resourceBookings = _.reverse(resourceBookings)
-      }
-    }
+
     return {
       total: body.hits.total.value,
       page,
@@ -614,18 +615,26 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   }
   // Apply sorting criteria
   if (!queryOpt.sortByWP) {
-    queryCriteria.order = [[criteria.sortBy, criteria.sortOrder]]
+    queryCriteria.order = [[criteria.sortBy, `${criteria.sortOrder} NULLS LAST`]]
   } else {
-    queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], criteria.sortOrder]]
+    queryCriteria.subQuery = false
+    queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], `${criteria.sortOrder} NULLS LAST`]]
   }
-  const resourceBookings = await ResourceBooking.findAll(queryCriteria)
-  const total = await ResourceBooking.count(_.omit(queryCriteria, ['limit', 'offset', 'attributes', 'order']))
+  const result = await ResourceBooking.findAll(queryCriteria)
+  let countQuery
+  countQuery = _.omit(queryCriteria, ['limit', 'offset', 'attributes', 'order'])
+  if (queryOpt.withWorkPeriods && !queryCriteria.include[0].required) {
+    countQuery = _.omit(countQuery, ['include'])
+  }
+  countQuery.subQuery = false
+  countQuery.group = ['ResourceBooking.id']
+  const total = await ResourceBooking.count(countQuery)
   return {
     fromDb: true,
-    total,
+    total: total.length,
     page,
     perPage,
-    result: resourceBookings
+    result
   }
 }
 
