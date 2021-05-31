@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /**
  * This service provides operations of ResourceBooking.
  */

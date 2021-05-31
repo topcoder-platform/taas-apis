@@ -20,6 +20,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:21:10.394Z",
@@ -45,6 +46,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:11:26.934Z",
@@ -70,6 +72,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:23:18.595Z",
@@ -95,6 +98,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "00000000-0000-0000-0000-000000000000",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:12:09.293Z",
@@ -7196,6 +7200,128 @@
             "createdAt": "2021-05-17T13:43:44.675Z",
             "updatedAt": "2021-05-30T11:48:16.870Z",
             "workPeriods": []
+        }
+    ],
+    "Role": [
+        {
+            "id": "c145247d-5757-463d-9317-ff9e7026d403",
+            "name": "Angular Developer",
+            "description": "Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.",
+            "listOfSkills": [
+                "database",
+                "winforms",
+                "user interface (ui)",
+                "photoshop"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 8,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:08.201Z",
+            "updatedAt": "2021-05-27T21:43:08.201Z"
+        },
+        {
+            "id": "d7ff0289-d3ea-44d8-b39a-53bba5b5b309",
+            "name": "Dev Ops Engineer",
+            "description": "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.",
+            "listOfSkills": [
+                "dropwizard",
+                "nginx",
+                "machine learning",
+                "force.com"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 8,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:04.717Z",
+            "updatedAt": "2021-05-27T21:43:04.717Z"
+        },
+        {
+            "id": "e7b7e818-40d4-4102-b486-09bdd21400b8",
+            "name": "Salesforce Developer",
+            "description": "A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.",
+            "listOfSkills": [
+                "docker",
+                ".net",
+                "appcelerator",
+                "flux"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 6,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:09.342Z",
+            "updatedAt": "2021-05-27T21:43:09.342Z"
         }
     ]
 }
