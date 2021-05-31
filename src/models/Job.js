@@ -104,6 +104,12 @@ module.exports = (sequelize) => {
         defaultValue: false,
         allowNull: false
       },
+      roleIds: {
+        field: 'role_ids',
+        type: Sequelize.ARRAY({
+          type: Sequelize.UUID
+        })
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

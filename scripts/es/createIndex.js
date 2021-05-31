@@ -8,7 +8,8 @@ const helper = require('../../src/common/helper')
 const indices = [
   config.get('esConfig.ES_INDEX_JOB'),
   config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-  config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')
+  config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+  config.get('esConfig.ES_INDEX_ROLE')
 ]
 const userPrompt = `WARNING: Are you sure want to create the following elasticsearch indices: ${indices}?`
 
