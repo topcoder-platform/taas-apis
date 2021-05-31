@@ -183,6 +183,11 @@ paths:
             type: string
             enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
           description: The rate type.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobSearchBody"
       responses:
         "200":
           description: OK
@@ -605,6 +610,12 @@ paths:
                 "cancelled",
                 "interview",
                 "topcoder-rejected",
+                "applied",
+                "rejected-pre-screen",
+                "skills-test",
+                "phone-screen",
+                "job-closed",
+                "offered"
               ]
           description: The job candidate status.
         - in: query
@@ -3633,6 +3644,15 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobSearchBody:
+      properties:
+        jobIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of job ids"
+
     JobRequestBody:
       required:
         - projectId

@@ -492,6 +492,113 @@
 					"response": []
 				},
 				{
+					"name": "search jobs with request body",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jobIds\": [\"{{jobId}}\",\"{{jobIdCreatedByM2M}}\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "perPage",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc",
+									"disabled": true
+								},
+								{
+									"key": "projectId",
+									"value": "21",
+									"disabled": true
+								},
+								{
+									"key": "externalId",
+									"value": "1212",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "Dummy",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "2020-09-27T04:17:23.131Z",
+									"disabled": true
+								},
+								{
+									"key": "resourceType",
+									"value": "Dummy Resource Type",
+									"disabled": true
+								},
+								{
+									"key": "skill",
+									"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+									"disabled": true
+								},
+								{
+									"key": "rateType",
+									"value": "hourly",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "sourcing",
+									"disabled": true
+								},
+								{
+									"key": "workload",
+									"value": "full-time",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "dummy",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "search jobs with with m2m all",
 					"request": {
 						"method": "GET",
