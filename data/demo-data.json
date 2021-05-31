@@ -20,6 +20,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:21:10.394Z",
@@ -45,6 +46,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:11:26.934Z",
@@ -70,6 +72,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:23:18.595Z",
@@ -95,6 +98,7 @@
             ],
             "status": "in-review",
             "isApplicationPageActive": false,
+            "roleIds": null,
             "createdBy": "00000000-0000-0000-0000-000000000000",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:12:09.293Z",
@@ -181,18 +185,29 @@
             "interviews": [
                 {
                     "id": "077aa2ca-5b60-4ad9-a965-1b37e08a5046",
+                    "xaiId": null,
                     "jobCandidateId": "881a19de-2b0c-4bb9-b36a-4cb5e223bdb5",
-                    "googleCalendarId": null,
-                    "customMessage": null,
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 1,
                     "startTimestamp": null,
-                    "attendeesList": null,
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Completed",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:16:10.887Z",
-                    "updatedAt": "2021-05-09T21:16:10.887Z"
+                    "updatedAt": "2021-05-09T21:16:10.887Z",
+                    "deletedAt": null
                 }
             ]
         },
@@ -210,33 +225,55 @@
             "interviews": [
                 {
                     "id": "b1f7ba76-640f-47e2-9463-59e51b51ec60",
+                    "xaiId": null,
                     "jobCandidateId": "827ee401-df04-42e1-abbe-7b97ce7937ff",
-                    "googleCalendarId": "dummyId",
-                    "customMessage": "This is a custom message",
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 2,
                     "startTimestamp": null,
-                    "attendeesList": null,
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Scheduling",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:17:23.517Z",
-                    "updatedAt": "2021-05-09T21:17:23.517Z"
+                    "updatedAt": "2021-05-09T21:17:23.517Z",
+                    "deletedAt": null
                 },
                 {
                     "id": "3144fa65-ea1a-4bec-81b0-7cb1c8845826",
+                    "xaiId": null,
                     "jobCandidateId": "827ee401-df04-42e1-abbe-7b97ce7937ff",
-                    "googleCalendarId": null,
-                    "customMessage": null,
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 1,
                     "startTimestamp": null,
-                    "attendeesList": null,
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Completed",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:16:39.019Z",
-                    "updatedAt": "2021-05-09T21:16:39.019Z"
+                    "updatedAt": "2021-05-09T21:16:39.019Z",
+                    "deletedAt": null
                 }
             ]
         },
@@ -254,54 +291,81 @@
             "interviews": [
                 {
                     "id": "976d23a9-5710-453f-99d9-f57a588bb610",
+                    "xaiId": null,
                     "jobCandidateId": "a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
-                    "googleCalendarId": "dummyId",
-                    "customMessage": "This is a custom message",
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 3,
                     "startTimestamp": null,
-                    "attendeesList": [
-                        "attendee1@yopmail.com",
-                        "attendee2@yopmail.com"
-                    ],
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Scheduling",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:21:28.713Z",
-                    "updatedAt": "2021-05-09T21:21:28.713Z"
+                    "updatedAt": "2021-05-09T21:21:28.713Z",
+                    "deletedAt": null
                 },
                 {
                     "id": "a23e1bf2-1084-4cfe-a0d8-d83bc6fec655",
+                    "xaiId": null,
                     "jobCandidateId": "a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
-                    "googleCalendarId": "dummyId",
-                    "customMessage": "This is a custom message",
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 2,
                     "startTimestamp": null,
-                    "attendeesList": [
-                        "attendee1@yopmail.com",
-                        "attendee2@yopmail.com"
-                    ],
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Scheduling",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:21:22.428Z",
-                    "updatedAt": "2021-05-09T21:21:22.428Z"
+                    "updatedAt": "2021-05-09T21:21:22.428Z",
+                    "deletedAt": null
                 },
                 {
                     "id": "9efd72c3-1dc7-4ce2-9869-8cca81d0adeb",
+                    "xaiId": null,
                     "jobCandidateId": "a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
-                    "googleCalendarId": null,
-                    "customMessage": null,
-                    "xaiTemplate": "interview-30",
+                    "calendarEventId": null,
+                    "templateUrl": "interview-30",
+                    "templateId": null,
+                    "templateType": null,
+                    "title": null,
+                    "locationDetails": null,
+                    "duration": null,
                     "round": 1,
                     "startTimestamp": null,
-                    "attendeesList": null,
+                    "endTimestamp": null,
+                    "hostName": null,
+                    "hostEmail": null,
+                    "guestNames": null,
+                    "guestEmails": null,
                     "status": "Completed",
+                    "rescheduleUrl": null,
                     "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
                     "updatedBy": null,
                     "createdAt": "2021-05-09T21:21:17.346Z",
-                    "updatedAt": "2021-05-09T21:21:17.346Z"
+                    "updatedAt": "2021-05-09T21:21:17.346Z",
+                    "deletedAt": null
                 }
             ]
         },
@@ -2051,6 +2115,128 @@
                     ]
                 }
             ]
+        }
+    ],
+    "Role": [
+        {
+            "id": "c145247d-5757-463d-9317-ff9e7026d403",
+            "name": "Angular Developer",
+            "description": "Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.",
+            "listOfSkills": [
+                "database",
+                "winforms",
+                "user interface (ui)",
+                "photoshop"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 8,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:08.201Z",
+            "updatedAt": "2021-05-27T21:43:08.201Z"
+        },
+        {
+            "id": "d7ff0289-d3ea-44d8-b39a-53bba5b5b309",
+            "name": "Dev Ops Engineer",
+            "description": "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.",
+            "listOfSkills": [
+                "dropwizard",
+                "nginx",
+                "machine learning",
+                "force.com"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 8,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:04.717Z",
+            "updatedAt": "2021-05-27T21:43:04.717Z"
+        },
+        {
+            "id": "e7b7e818-40d4-4102-b486-09bdd21400b8",
+            "name": "Salesforce Developer",
+            "description": "A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.",
+            "listOfSkills": [
+                "docker",
+                ".net",
+                "appcelerator",
+                "flux"
+            ],
+            "rates": [
+                {
+                    "global": 50,
+                    "offShore": 10,
+                    "inCountry": 20,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                },
+                {
+                    "global": 25,
+                    "offShore": 5,
+                    "inCountry": 15,
+                    "rate20Global": 20,
+                    "rate30Global": 20,
+                    "rate20OffShore": 35,
+                    "rate30OffShore": 35,
+                    "rate20InCountry": 15,
+                    "rate30InCountry": 15
+                }
+            ],
+            "numberOfMembers": "10",
+            "numberOfMembersAvailable": 6,
+            "imageUrl": "http://images.topcoder.com/member",
+            "timeToCandidate": 105,
+            "timeToInterview": 100,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:09.342Z",
+            "updatedAt": "2021-05-27T21:43:09.342Z"
         }
     ]
 }

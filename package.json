@@ -15,6 +15,7 @@
     "index:jobs": "node scripts/es/reIndexJobs.js",
     "index:job-candidates": "node scripts/es/reIndexJobCandidates.js",
     "index:resource-bookings": "node scripts/es/reIndexResourceBookings.js",
+    "index:roles": "node scripts/es/reIndexRoles.js",
     "data:export": "node scripts/data/exportData.js",
     "data:import": "node scripts/data/importData.js",
     "migrate": "npx sequelize db:migrate",

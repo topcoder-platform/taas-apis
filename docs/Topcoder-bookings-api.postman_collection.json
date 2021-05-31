@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "58b277bb-0d1d-4bbf-919f-c5951ba0e1c0",
+		"_postman_id": "82ad9051-0f67-46dd-8875-cce9979a22f4",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -17817,6 +17817,2970 @@
 			]
 		},
 		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Create Role",
+					"item": [
+						{
+							"name": "create role with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleId-1\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 8,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with booking manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleId-2\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Angular Developer\",\n    \"description\": \"Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.\",\n    \"listOfSkills\": [\n        \"Database\",\n        \"Winforms\",\n        \"User Interface (Ui)\",\n        \"Photoshop\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 8,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with m2m create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleId-3\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_create_role}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Salesforce Developer\",\n    \"description\": \"A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\",\n        \"appcelerator\",\n        \"Flux\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 6,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with connect user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connectUser}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid_token"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with existent name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Role: \\\"Dev Ops Engineer\\\" is already exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.name\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates\\\" does not contain 1 required value(s)\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates[0].global\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates[0].inCountry\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with missing parameter 6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates[0].offShore\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.name\\\" length must be less than or equal to 50 characters long\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.listOfSkills[0]\\\" length must be less than or equal to 50 characters long\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard Dropwizard\",\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.listOfSkills\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\":\"Dropwizard\",\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": {\n        \"global\": 50,\n        \"inCountry\": 20,\n        \"offShore\": 10\n    },\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates[0].global\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": \"first\",\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.rates[0].inCountry\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": \"fifty\",\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.numberOfMembers\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": null,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.imageUrl\\\" must be a valid uri\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"role.timeToCandidate\\\" must be less than or equal to 32767\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 99999,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role with invalid parameter 10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"skills: \\\"teamworking,communication,problem-solving\\\" are not valid\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer 2\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Teamworking\",\n        \"Communication\",\n        \"Problem-Solving\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 55,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Role",
+					"item": [
+						{
+							"name": "get role with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with booking manager fromDb",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-2}}?fromDb=true",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-2}}"
+									],
+									"query": [
+										{
+											"key": "fromDb",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with m2m read",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_read_role}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-3}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with connect user fromDb",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connectUser}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}?fromDb=true",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									],
+									"query": [
+										{
+											"key": "fromDb",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid token"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"id\\\" must be a valid GUID\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"invalid"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get role with missing id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"id: 00000000-0000-0000-0000-000000000000 \\\"Role\\\" not found\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"00000000-0000-0000-0000-000000000000"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with booking manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles?skillsList=dropwizard,  nginx,, machine learning , FORce.com &keyword=ops e",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									],
+									"query": [
+										{
+											"key": "skillsList",
+											"value": "dropwizard,  nginx,, machine learning , FORce.com "
+										},
+										{
+											"key": "keyword",
+											"value": "ops e"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with connect user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connectUser}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles?skillsList=dataBase,        ,Photoshop&keyword=sale",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									],
+									"query": [
+										{
+											"key": "skillsList",
+											"value": "dataBase,        ,Photoshop"
+										},
+										{
+											"key": "keyword",
+											"value": "sale"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with m2m read",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_read_role}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles?skillsList=DOCKER,.NET&keyword=dev",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									],
+									"query": [
+										{
+											"key": "skillsList",
+											"value": "DOCKER,.NET"
+										},
+										{
+											"key": "keyword",
+											"value": "dev"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles?keyword=dev",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									],
+									"query": [
+										{
+											"key": "keyword",
+											"value": "dev"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search roles with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid token"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Role",
+					"item": [
+						{
+							"name": "update role with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer edit\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with booking manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Angular Developer edit\",\n    \"description\": \"Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.\",\n    \"listOfSkills\": [\n        \"Database\",\n        \"Winforms\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with m2m update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_update_role}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Salesforce Developer edit\",\n    \"description\": \"A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-3}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with connect user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connectUser}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid_token"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"id\\\" must be a valid GUID\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"invalid"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with missing id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"id: 00000000-0000-0000-0000-000000000000 \\\"Role\\\" doesn't exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"00000000-0000-0000-0000-000000000000"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with existent name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Role: \\\"Angular Developer edit\\\" is already exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Angular Developer edit\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.name\\\" length must be less than or equal to 50 characters long\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.listOfSkills[0]\\\" length must be less than or equal to 50 characters long\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking Teamworking\",\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.listOfSkills\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\":\"Teamworking\",\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.rates\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": {\n        \"global\": 50,\n        \"inCountry\": 20,\n        \"offShore\": 10\n    },\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.rates[0].global\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": \"first\",\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.rates[0].inCountry\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": \"fifty\",\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.numberOfMembers\\\" must be a number\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": \"hundred\",\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.imageUrl\\\" must be a valid uri\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 9",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.timeToCandidate\\\" must be less than or equal to 32767\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 99999,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update role with invalid parameter 10",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"skills: \\\"teamworking\\\" are not valid\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Teamworking\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        }\n    ],\n    \"numberOfMembers\": 55,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 66,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete Role",
+					"item": [
+						{
+							"name": "delete role with connect user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connectUser}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid_token"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"teamworking\",\n        \"communication\",\n        \"problem-solving\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"id\\\" must be a valid GUID\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"invalid"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with missing id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"id: 00000000-0000-0000-0000-000000000000 \\\"Role\\\" doesn't exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"00000000-0000-0000-0000-000000000000"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with booking manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete role with m2m delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_delete_role}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"roles",
+										"{{roleId-3}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "health check",
 			"item": [
 				{
@@ -22420,6 +25384,225 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "Roles",
+							"item": [
+								{
+									"name": "✔ create role with admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"    if(pm.response.status === \"OK\"){\r",
+													"        const response = pm.response.json()\r",
+													"        pm.environment.set(\"roleId-1\", response.id);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get role with admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search roles with admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ update role with admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer edit\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ delete role with admin",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 204', function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -24661,6 +27844,287 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "Roles",
+							"item": [
+								{
+									"name": "Before Start",
+									"item": [
+										{
+											"name": "✔ create role with admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"roleId-1\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/roles",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✘ create role with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get role with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search roles with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles?keyword=Dev",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											],
+											"query": [
+												{
+													"key": "keyword",
+													"value": "Dev"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ update role with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Teamworking\",\n        \"Communication\",\n        \"Problem-Solving\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete role with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -26888,6 +30352,291 @@
 											"path": [
 												"work-period-payments",
 												"{{workPeriodPaymentId_created_for_connect_manager}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Roles",
+							"item": [
+								{
+									"name": "Before Start",
+									"item": [
+										{
+											"name": "✔ create role with admin",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test('Status code is 200', function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"    if(pm.response.status === \"OK\"){\r",
+															"        const response = pm.response.json()\r",
+															"        pm.environment.set(\"roleId-1\", response.id);\r",
+															"    }\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Authorization",
+														"type": "text",
+														"value": "Bearer {{token_administrator}}"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"Dev Ops Engineer 2\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{URL}}/roles",
+													"host": [
+														"{{URL}}"
+													],
+													"path": [
+														"roles"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "✘ create role with connect user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ get role with connect user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✔ search roles with connect user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"url": {
+											"raw": "{{URL}}/roles?skillsList=Dropwizard,        ,NGINX&keyword=Dev",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles"
+											],
+											"query": [
+												{
+													"key": "skillsList",
+													"value": "Dropwizard,        ,NGINX"
+												},
+												{
+													"key": "keyword",
+													"value": "Dev"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ update role with connect user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Teamworking\",\n        \"Communication\",\n        \"Problem-Solving\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ delete role with connect user",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connectUser}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"roles",
+												"{{roleId-1}}"
 											]
 										}
 									},
