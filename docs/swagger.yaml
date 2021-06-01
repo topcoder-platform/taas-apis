@@ -3258,7 +3258,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /roles/new:
+  /taas-roles/new:
     post:
       tags:
         - Roles
@@ -3304,7 +3304,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /roles:
+  /taas-roles:
     get:
       tags:
         - Roles
@@ -3354,7 +3354,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /roles/{id}:
+  /taas-roles/{id}:
     get:
       tags:
         - Roles

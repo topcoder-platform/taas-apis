@@ -4,7 +4,7 @@
 const constants = require('../../app-constants')
 
 module.exports = {
-  '/roles': {
+  '/taas-roles': {
     post: {
       controller: 'RoleController',
       method: 'createRole',
@@ -18,7 +18,7 @@ module.exports = {
       scopes: [constants.Scopes.READ_ROLE, constants.Scopes.ALL_ROLE]
     }
   },
-  '/roles/:id': {
+  '/taas-roles/:id': {
     get: {
       controller: 'RoleController',
       method: 'getRole',

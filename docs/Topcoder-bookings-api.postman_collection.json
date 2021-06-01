@@ -17966,12 +17966,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18015,12 +18015,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18064,12 +18064,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18111,12 +18111,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18158,12 +18158,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18205,12 +18205,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18252,12 +18252,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18299,12 +18299,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18346,12 +18346,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18393,12 +18393,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18440,12 +18440,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18487,12 +18487,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18534,12 +18534,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18581,12 +18581,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18628,12 +18628,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18675,12 +18675,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18722,12 +18722,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18769,12 +18769,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18816,12 +18816,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18863,12 +18863,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18910,12 +18910,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -18957,12 +18957,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -19004,12 +19004,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -19045,12 +19045,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -19082,12 +19082,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-2}}?fromDb=true",
+									"raw": "{{URL}}/taas-roles/{{roleId-2}}?fromDb=true",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-2}}"
 									],
 									"query": [
@@ -19125,12 +19125,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-3}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-3}}"
 									]
 								}
@@ -19162,12 +19162,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}?fromDb=true",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}?fromDb=true",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									],
 									"query": [
@@ -19205,12 +19205,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-2}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-2}}"
 									]
 								}
@@ -19244,12 +19244,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-2}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-2}}"
 									]
 								}
@@ -19283,12 +19283,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/invalid",
+									"raw": "{{URL}}/taas-roles/invalid",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"invalid"
 									]
 								}
@@ -19322,12 +19322,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"raw": "{{URL}}/taas-roles/00000000-0000-0000-0000-000000000000",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"00000000-0000-0000-0000-000000000000"
 									]
 								}
@@ -19359,12 +19359,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -19395,12 +19395,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles?skillsList=dropwizard,  nginx,, machine learning , FORce.com &keyword=ops e",
+									"raw": "{{URL}}/taas-roles?skillsList=dropwizard,  nginx,, machine learning , FORce.com &keyword=ops e",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									],
 									"query": [
 										{
@@ -19441,12 +19441,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles?skillsList=dataBase,        ,Photoshop&keyword=sale",
+									"raw": "{{URL}}/taas-roles?skillsList=dataBase,        ,Photoshop&keyword=sale",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									],
 									"query": [
 										{
@@ -19487,12 +19487,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles?skillsList=DOCKER,.NET&keyword=dev",
+									"raw": "{{URL}}/taas-roles?skillsList=DOCKER,.NET&keyword=dev",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									],
 									"query": [
 										{
@@ -19533,12 +19533,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles?keyword=dev",
+									"raw": "{{URL}}/taas-roles?keyword=dev",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									],
 									"query": [
 										{
@@ -19577,12 +19577,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/roles",
+									"raw": "{{URL}}/taas-roles",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles"
+										"taas-roles"
 									]
 								}
 							},
@@ -19627,12 +19627,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -19673,12 +19673,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-2}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-2}}"
 									]
 								}
@@ -19719,12 +19719,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-3}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-3}}"
 									]
 								}
@@ -19767,12 +19767,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -19815,12 +19815,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -19863,12 +19863,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -19911,12 +19911,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/invalid",
+									"raw": "{{URL}}/taas-roles/invalid",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"invalid"
 									]
 								}
@@ -19959,12 +19959,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"raw": "{{URL}}/taas-roles/00000000-0000-0000-0000-000000000000",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"00000000-0000-0000-0000-000000000000"
 									]
 								}
@@ -20007,12 +20007,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20055,12 +20055,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20103,12 +20103,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20151,12 +20151,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20199,12 +20199,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20247,12 +20247,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20295,12 +20295,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20343,12 +20343,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20391,12 +20391,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20439,12 +20439,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20487,12 +20487,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20540,12 +20540,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20588,12 +20588,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20636,12 +20636,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20684,12 +20684,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/invalid",
+									"raw": "{{URL}}/taas-roles/invalid",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"invalid"
 									]
 								}
@@ -20732,12 +20732,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/00000000-0000-0000-0000-000000000000",
+									"raw": "{{URL}}/taas-roles/00000000-0000-0000-0000-000000000000",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"00000000-0000-0000-0000-000000000000"
 									]
 								}
@@ -20778,12 +20778,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-1}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-1}}"
 									]
 								}
@@ -20824,12 +20824,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-2}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-2}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-2}}"
 									]
 								}
@@ -20870,12 +20870,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/roles/{{roleId-3}}",
+									"raw": "{{URL}}/taas-roles/{{roleId-3}}",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
-										"roles",
+										"taas-roles",
 										"{{roleId-3}}"
 									]
 								}
@@ -25532,12 +25532,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles",
+											"raw": "{{URL}}/taas-roles",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											]
 										}
 									},
@@ -25568,12 +25568,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -25605,12 +25605,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles",
+											"raw": "{{URL}}/taas-roles",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											]
 										}
 									},
@@ -25650,12 +25650,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -25696,12 +25696,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -27995,12 +27995,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/roles",
+													"raw": "{{URL}}/taas-roles",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"roles"
+														"taas-roles"
 													]
 												}
 											},
@@ -28044,12 +28044,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles",
+											"raw": "{{URL}}/taas-roles",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											]
 										}
 									},
@@ -28080,12 +28080,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -28117,12 +28117,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles?keyword=Dev",
+											"raw": "{{URL}}/taas-roles?keyword=Dev",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											],
 											"query": [
 												{
@@ -28170,12 +28170,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -28218,12 +28218,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -30509,12 +30509,12 @@
 													}
 												},
 												"url": {
-													"raw": "{{URL}}/roles",
+													"raw": "{{URL}}/taas-roles",
 													"host": [
 														"{{URL}}"
 													],
 													"path": [
-														"roles"
+														"taas-roles"
 													]
 												}
 											},
@@ -30558,12 +30558,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles",
+											"raw": "{{URL}}/taas-roles",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											]
 										}
 									},
@@ -30594,12 +30594,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -30631,12 +30631,12 @@
 											}
 										],
 										"url": {
-											"raw": "{{URL}}/roles?skillsList=Dropwizard,        ,NGINX&keyword=Dev",
+											"raw": "{{URL}}/taas-roles?skillsList=Dropwizard,        ,NGINX&keyword=Dev",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles"
+												"taas-roles"
 											],
 											"query": [
 												{
@@ -30688,12 +30688,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
@@ -30736,12 +30736,12 @@
 											}
 										},
 										"url": {
-											"raw": "{{URL}}/roles/{{roleId-1}}",
+											"raw": "{{URL}}/taas-roles/{{roleId-1}}",
 											"host": [
 												"{{URL}}"
 											],
 											"path": [
-												"roles",
+												"taas-roles",
 												"{{roleId-1}}"
 											]
 										}
