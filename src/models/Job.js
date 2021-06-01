@@ -94,9 +94,6 @@ module.exports = (sequelize) => {
         type: Sequelize.JSONB,
         allowNull: false
       },
-      roles: {
-        type: Sequelize.ARRAY(Sequelize.UUID)
-      },
       status: {
         type: Sequelize.STRING(255),
         allowNull: false
@@ -106,6 +103,42 @@ module.exports = (sequelize) => {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
         allowNull: false
+      },
+      minSalary: {
+        field: 'min_salary',
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      maxSalary: {
+        field: 'max_salary',
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      hoursPerWeek: {
+        field: 'hours_per_week',
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      jobLocation: {
+        field: 'job_location',
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
+      jobTimezone: {
+        field: 'job_timezone',
+        type: Sequelize.STRING(128),
+        allowNull: true
+      },
+      currency: {
+        field: 'currency',
+        type: Sequelize.STRING(30),
+        allowNull: true
+      },
+      roleIds: {
+        field: 'role_ids',
+        type: Sequelize.ARRAY({
+          type: Sequelize.UUID
+        })
       },
       createdBy: {
         field: 'created_by',

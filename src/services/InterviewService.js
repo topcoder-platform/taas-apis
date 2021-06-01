@@ -241,8 +241,8 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const guestMembers = await helper.getMemberDetailsByEmails(interview.guestEmails)
   interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
   interview.guestNames = _.map(interview.guestEmails, (guestEmail) => {
-    var foundGuestMember = _.find(guestMembers, function(guestMember) { return guestEmail == guestMember.email });
-    return (foundGuestMember != undefined) ? `${foundGuestMember.firstName} ${foundGuestMember.lastName}` : guestEmail.split("@")[0]
+    var foundGuestMember = _.find(guestMembers, function (guestMember) { return guestEmail === guestMember.email })
+    return (foundGuestMember !== undefined) ? `${foundGuestMember.firstName} ${foundGuestMember.lastName}` : guestEmail.split('@')[0]
   })
 
   try {
