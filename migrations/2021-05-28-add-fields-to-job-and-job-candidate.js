@@ -10,22 +10,22 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction()
     try {
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'min_salary',
-        { type: Sequelize.INTEGER, allowNull: false },
+        { type: Sequelize.INTEGER, allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'max_salary',
-        { type: Sequelize.INTEGER, allowNull: false },
+        { type: Sequelize.INTEGER, allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'hours_per_week',
-        { type: Sequelize.INTEGER, allowNull: false },
+        { type: Sequelize.INTEGER, allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'job_location',
-        { type: Sequelize.STRING(255), allowNull: false },
+        { type: Sequelize.STRING(255), allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'job_timezone',
-        { type: Sequelize.STRING(128), allowNull: false },
+        { type: Sequelize.STRING(128), allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'jobs', schema: config.DB_SCHEMA_NAME }, 'currency',
-        { type: Sequelize.STRING(30), allowNull: false },
+        { type: Sequelize.STRING(30), allowNull: true },
         { transaction })
       await queryInterface.addColumn({ tableName: 'job_candidates', schema: config.DB_SCHEMA_NAME }, 'remark',
         { type: Sequelize.STRING(255) },
