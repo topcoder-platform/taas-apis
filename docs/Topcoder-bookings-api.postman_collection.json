@@ -8016,6 +8016,2058 @@
 					]
 				},
 				{
+					"name": "Extended Search Scenarios",
+					"item": [
+						{
+							"name": "search RB sortBy id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=id&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "id"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=status&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "status"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,status,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy rateType",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=rateType&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "rateType"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,rateType,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy startDate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=startDate&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										},
+										{
+											"key": "sortBy",
+											"value": "startDate"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,startDate,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy endDate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=endDate&sortOrder=asc&fields=id,endDate,workPeriods",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										},
+										{
+											"key": "sortBy",
+											"value": "endDate"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,endDate,workPeriods"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy customerRate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=customerRate&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "customerRate"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,customerRate,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy memberRate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=memberRate&sortOrder=asc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "memberRate"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-11",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,workPeriods.id,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,workPeriods.id,workPeriods.startDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,workPeriods.id,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,workPeriods.id,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,memberRate,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy workPeriods.userHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=workPeriods.userHandle&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										},
+										{
+											"key": "sortBy",
+											"value": "workPeriods.userHandle"
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle"
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy workPeriods.daysWorked",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=workPeriods.daysWorked&workPeriods.startDate=2021-01-10&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										},
+										{
+											"key": "sortBy",
+											"value": "workPeriods.daysWorked"
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-10"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked"
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-16",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy workPeriods.customerRate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.customerRate&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "workPeriods.customerRate"
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate"
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy workPeriods.memberRate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.memberRate&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "workPeriods.memberRate"
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate"
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search RB sortBy workPeriods.paymentStatus",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.paymentStatus&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"resourceBookings"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "5"
+										},
+										{
+											"key": "sortBy",
+											"value": "workPeriods.paymentStatus"
+										},
+										{
+											"key": "workPeriods.startDate",
+											"value": "2021-01-03"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus"
+										},
+										{
+											"key": "status",
+											"value": "placed",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,status",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2021-01-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,startDate",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2021-02-01",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,endDate",
+											"disabled": true
+										},
+										{
+											"key": "rateType",
+											"value": "weekly",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,rateType",
+											"disabled": true
+										},
+										{
+											"key": "jobId",
+											"value": "fc58382a-31d7-44b7-bfe5-2d671300f8d9",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,jobId",
+											"disabled": true
+										},
+										{
+											"key": "projectId",
+											"value": "16870",
+											"disabled": true
+										},
+										{
+											"key": "projectIds",
+											"value": "16870,16805,16739,17091",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,projectId",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.paymentStatus",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.paymentStatus",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.endDate",
+											"value": "2021-01-09",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.endDate",
+											"disabled": true
+										},
+										{
+											"key": "workPeriods.userHandle",
+											"value": "GunaK-TopCoder",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.userHandle",
+											"disabled": true
+										},
+										{
+											"key": "fields",
+											"value": "id,workPeriods",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "create resource booking with booking manager",
 					"event": [
 						{

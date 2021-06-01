@@ -182,7 +182,10 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
     properties: {
       id: { type: 'keyword' },
       resourceBookingId: { type: 'keyword' },
-      userHandle: { type: 'keyword' },
+      userHandle: {
+        type: 'keyword',
+        normalizer: 'lowercaseNormalizer'
+      },
       projectId: { type: 'integer' },
       userId: { type: 'keyword' },
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
@@ -288,12 +291,27 @@ async function createIndex (index, logger, esClient = null) {
     esClient = getESClient()
   }
 
-  await esClient.indices.create({
+  await esClient.indices.create({ index })
+  await esClient.indices.close({ index })
+  await esClient.indices.putSettings({
+    index: index,
+    body: {
+      settings: {
+        analysis: {
+          normalizer: {
+            lowercaseNormalizer: {
+              filter: ['lowercase']
+            }
+          }
+        }
+      }
+    }
+  })
+  await esClient.indices.open({ index })
+  await esClient.indices.putMapping({
     index,
     body: {
-      mappings: {
-        properties: esIndexPropertyMapping[index]
-      }
+      properties: esIndexPropertyMapping[index]
     }
   })
   logger.info({
