@@ -208,7 +208,7 @@ createJob.schema = Joi.object().keys({
     hoursPerWeek: Joi.number().integer().allow(null),
     jobLocation: Joi.string().allow(null),
     jobTimezone: Joi.string().allow(null),
-    currency: Joi.string().allow(null)
+    currency: Joi.string().allow(null),
     roleIds: Joi.array().items(Joi.string().uuid().required())
   }).required()
 }).required()
