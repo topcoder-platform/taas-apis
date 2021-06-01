@@ -108,6 +108,16 @@ async function getMe(req, res) {
   res.send(await service.getMe(req.authUser));
 }
 
+
+/**
+ * Return skills by job description.
+ * @param req the request
+ * @param res the response
+ */
+async function getSkillsByJobDescription(req, res) {
+  res.send(await service.getSkillsByJobDescription(req.authUser, req.body));
+}
+
 /**
  *
  * @param req the request
@@ -127,5 +137,6 @@ module.exports = {
   searchInvites,
   deleteMember,
   getMe,
+  getSkillsByJobDescription,
   createProj,
 };

@@ -3170,6 +3170,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /taas-teams/getSkillsByJobDescription:
+    post:
+      tags:
+        - Teams
+      description: |
+        Get skill list by Job Description
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamJobDescriptionRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type : array
+                items : {
+                  $ref: "#/components/schemas/SkillItem"
+                }
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams/email:
     post:
       tags:
@@ -3282,6 +3330,15 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    SkillItem:
+      properties:
+        tag:
+          type: string
+        type:
+          type: string
+        source:
+          type: string
+
     Job:
       required:
         - id
@@ -4666,6 +4723,14 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Skill"
+    TeamJobDescriptionRequestBody:
+      type: object
+      properties:
+        description:
+          type: string
+          description: "job description"
+          example: "nodejs and java"
+
     TeamEmailRequestBody:
       type: object
       properties:

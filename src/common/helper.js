@@ -1691,6 +1691,29 @@ async function substituteStringByObject(string, object) {
   return string;
 }
 
+
+/**
+ * Get tags from tagging service
+ * @param {String} description The challenge description
+ * @returns {Array} array of tags
+ */
+async function getTags (description) {
+  const data = { text: description, extract_confidence: false}
+  const type = "emsi/internal_no_refresh"
+  const url = `${config.TC_API}/contest-tagging/${type}`;
+  const res = await request
+    .post(url)
+    .set('Accept', 'application/json')
+    .send(querystring.stringify(data))
+
+  localLogger.debug({
+    context: 'getTags',
+    message: `response body: ${JSON.stringify(res.body)}`,
+  });
+  return _.get(res, 'body');
+}
+
+
 /**
  * @param {Object} currentUser the user performing the action
  * @param {Object} data title of project and any other info
@@ -1752,6 +1775,7 @@ module.exports = {
   getMemberDetailsByHandles,
   getMemberDetailsByHandle,
   getMemberDetailsByEmails,
+  getTags,
   createProjectMember,
   listProjectMembers,
   listProjectMemberInvites,

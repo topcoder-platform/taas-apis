@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "58b277bb-0d1d-4bbf-919f-c5951ba0e1c0",
+		"_postman_id": "b25dc4fc-ac96-49a5-b8b0-7700c625d4d0",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -17642,6 +17642,44 @@
 							"path": [
 								"taas-teams",
 								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /taas-teams/getSkillsByJobDescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_member}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"nodejs react c++ hello\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"getSkillsByJobDescription"
 							]
 						}
 					},
