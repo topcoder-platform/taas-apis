@@ -670,6 +670,29 @@ getMe.schema = Joi.object()
   .required();
 
 /**
+ * Return skills by job description.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @params {Object} criteria the search criteria
+ * @returns {Object} the user data for current user
+ */
+async function getSkillsByJobDescription(currentUser,data) {
+  return helper.getTags(data.description)
+}
+
+getSkillsByJobDescription.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object()
+      .keys({
+        description: Joi.string().required(),
+      })
+      .required(),
+  })
+  .required();
+
+
+/**
  * @param {Object} currentUser the user performing the operation.
  * @param {Object} data project data
  * @returns {Object} the created project
@@ -695,5 +718,6 @@ module.exports = {
   searchInvites,
   deleteMember,
   getMe,
+  getSkillsByJobDescription,
   createProj,
 };
