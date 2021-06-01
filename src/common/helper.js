@@ -119,6 +119,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   jobLocation: { type: 'keyword' },
   jobTimezone: { type: 'keyword' },
   currency: { type: 'keyword' },
+  roleIds: { type: 'keyword' },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -211,6 +212,33 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       updatedBy: { type: 'keyword' }
     }
   },
+  createdAt: { type: 'date' },
+  createdBy: { type: 'keyword' },
+  updatedAt: { type: 'date' },
+  updatedBy: { type: 'keyword' }
+}
+esIndexPropertyMapping[config.get('esConfig.ES_INDEX_ROLE')] = {
+  name: { type: 'keyword' },
+  description: { type: 'keyword' },
+  listOfSkills: { type: 'keyword' },
+  rates: {
+    properties: {
+      global: { type: 'integer' },
+      inCountry: { type: 'integer' },
+      offShore: { type: 'integer' },
+      rate30Global: { type: 'integer' },
+      rate30InCountry: { type: 'integer' },
+      rate30OffShore: { type: 'integer' },
+      rate20Global: { type: 'integer' },
+      rate20InCountry: { type: 'integer' },
+      rate20OffShore: { type: 'integer' }
+    }
+  },
+  numberOfMembers: { type: 'integer' },
+  numberOfMembersAvailable: { type: 'integer' },
+  imageUrl: { type: 'keyword' },
+  timeToCandidate: { type: 'integer' },
+  timeToInterview: { type: 'integer' },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
   updatedAt: { type: 'date' },
@@ -570,6 +598,7 @@ async function importData (pathToFile, dataModels, logger) {
     config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
     logger
   )
+  await indexBulkDataToES('Role', config.get('esConfig.ES_INDEX_ROLE'), logger)
 }
 
 /**

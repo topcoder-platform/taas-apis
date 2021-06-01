@@ -18,6 +18,8 @@ tags:
   - name: ResourceBookings
   - name: Teams
   - name: WorkPeriods
+  - name: WorkPeriodPayments
+  - name: Roles
 paths:
   /jobs:
     post:
@@ -3256,6 +3258,267 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /roles/new:
+    post:
+      tags:
+        - Roles
+      description: |
+        Create Role.
+
+        **Authorization** Topcoder m2m token with create scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /roles:
+    get:
+      tags:
+        - Roles
+      description: |
+        Search roles.
+
+        **Authorization** Topcoder m2m token with read scope is allowed. Topcoder user token with any role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skillsList
+          required: false
+          schema:
+            type: string
+          description: comma separated skill names. case-insensitive.
+        - in: query
+          name: keyword
+          required: false
+          schema:
+            type: string
+          description: role name. case-insensitive. partial match allowed
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /roles/{id}:
+    get:
+      tags:
+        - Roles
+      description: |
+        Get role by id.
+
+        **Authorization** Topcoder m2m token with read scope is allowed. Topcoder user token with any role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The role id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - Roles
+      description: |
+        Partial Update role.
+
+        **Authorization** Topcoder m2m token with update scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolePatchRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - Roles
+      description: |
+        Delete the role.
+
+        **Authorization** Topcoder m2m token with delete scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /health:
     get:
       tags:
@@ -3352,6 +3615,13 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         status:
           type: string
           enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
@@ -3480,6 +3750,13 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         isApplicationPageActive:
           type: boolean
           default: false
@@ -3961,6 +4238,13 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         isApplicationPageActive:
           type: boolean
           default: false
@@ -4834,6 +5118,198 @@ components:
                     type: string
                     description: "the email of a member"
                     example: "xxx@xxx.com"
+    Role:
+      required:
+        - id
+        - name
+        - rates
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The role id."
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: integer
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The role created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user Id who created the role.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The role last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user Id who updated the role last time.(Will get the user info from the token)"
+    RoleRequestBody:
+      required:
+        - name
+        - rates
+      properties:
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: number
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+    RolePatchRequestBody:
+      properties:
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: number
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+    RoleRates:
+      required:
+        - global
+        - inCountry
+        - offShore
+      type: object
+      properties:
+        global:
+          type: integer
+          example: 10
+        inCountry:
+          type: integer
+          example: 20
+        offShore:
+          type: integer
+          example: 30
+        rate30Global:
+          type: integer
+          example: 10
+        rate30InCountry:
+          type: integer
+          example: 20
+        rate30OffShore:
+          type: integer
+          example: 30
+        rate20Global:
+          type: integer
+          example: 10
+        rate20InCountry:
+          type: integer
+          example: 20
+        rate20OffShore:
+          type: integer
+          example: 30
     ProjectMember:
       type: object
       example:
