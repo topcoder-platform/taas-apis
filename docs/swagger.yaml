@@ -615,7 +615,7 @@ paths:
                 "skills-test",
                 "phone-screen",
                 "job-closed",
-                "offered"
+                "offered",
               ]
           description: The job candidate status.
         - in: query
@@ -3553,6 +3553,12 @@ components:
         - numPositions
         - skills
         - status
+        - minSalary
+        - maxSalary
+        - hoursPerWeek
+        - jobLocation
+        - jobTimezone
+        - currency
         - createdAt
         - createdBy
       properties:
@@ -3628,6 +3634,30 @@ components:
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
         createdAt:
           type: string
           format: date-time
@@ -3659,6 +3689,12 @@ components:
         - title
         - numPositions
         - skills
+        - minSalary
+        - maxSalary
+        - hoursPerWeek
+        - jobLocation
+        - jobTimezone
+        - currency
       properties:
         projectId:
           type: integer
@@ -3724,6 +3760,30 @@ components:
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
     JobCandidate:
       required:
         - id
@@ -3767,6 +3827,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
         createdAt:
           type: string
           format: date-time
@@ -3823,6 +3887,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
         interviews:
           type: array
           description: "Interviews associated to this job candidate."
@@ -3882,6 +3950,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
     JobCandidatePatchRequestBody:
       properties:
         status:
@@ -3906,6 +3978,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
     Interview:
       required:
         - id
@@ -4172,6 +4248,30 @@ components:
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
     ResourceBooking:
       required:
         - id
@@ -4927,6 +5027,10 @@ components:
                 type: string
                 format: url
                 description: "The link for the resume that can be downloaded"
+              remark:
+                type: string
+                example: "excellent"
+                description: "The remark of candidate"
               interviews:
                 type: array
                 items:

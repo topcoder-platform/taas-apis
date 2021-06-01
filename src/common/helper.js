@@ -113,6 +113,12 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   skills: { type: 'keyword' },
   status: { type: 'keyword' },
   isApplicationPageActive: { type: 'boolean' },
+  minSalary: { type: 'integer' },
+  maxSalary: { type: 'integer' },
+  hoursPerWeek: { type: 'integer' },
+  jobLocation: { type: 'keyword' },
+  jobTimezone: { type: 'keyword' },
+  currency: { type: 'keyword' },
   roleIds: { type: 'keyword' },
   createdAt: { type: 'date' },
   createdBy: { type: 'keyword' },
@@ -125,6 +131,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
   status: { type: 'keyword' },
   externalId: { type: 'keyword' },
   resume: { type: 'text' },
+  remark: { type: 'keyword' },
   interviews: {
     type: 'nested',
     properties: {

@@ -203,6 +203,12 @@ createJob.schema = Joi.object().keys({
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().allow(null),
+    maxSalary: Joi.number().integer().allow(null),
+    hoursPerWeek: Joi.number().integer().allow(null),
+    jobLocation: Joi.string().allow(null),
+    jobTimezone: Joi.string().allow(null),
+    currency: Joi.string().allow(null)
     roleIds: Joi.array().items(Joi.string().uuid().required())
   }).required()
 }).required()
@@ -276,6 +282,12 @@ partiallyUpdateJob.schema = Joi.object().keys({
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()),
     isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer(),
+    hoursPerWeek: Joi.number().integer(),
+    jobLocation: Joi.string(),
+    jobTimezone: Joi.string(),
+    currency: Joi.string(),
     roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
   }).required()
 }).required()
@@ -308,6 +320,12 @@ fullyUpdateJob.schema = Joi.object().keys({
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus().default('sourcing'),
     isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().allow(null),
+    maxSalary: Joi.number().integer().allow(null),
+    hoursPerWeek: Joi.number().integer().allow(null),
+    jobLocation: Joi.string().allow(null),
+    jobTimezone: Joi.string().allow(null),
+    currency: Joi.string().allow(null)
     roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
   }).required()
 }).required()
