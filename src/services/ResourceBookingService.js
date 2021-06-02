@@ -556,8 +556,8 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     const { body } = await esClient.search(esQuery)
     const resourceBookings = _.map(body.hits.hits, '_source')
     // ESClient will return ResourceBookings with it's all nested WorkPeriods
-    // We re-apply WorkPeriod filters
-    _.each(workPeriodFilters, (value, key) => {
+    // We re-apply WorkPeriod filters except userHandle because all WPs share same userHandle
+    _.each(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
       key = key.split('.')[1]
       _.each(resourceBookings, r => {
         r.workPeriods = _.filter(r.workPeriods, { [key]: value })
@@ -608,11 +608,16 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       queryCriteria.include[0].attributes = { exclude: _.map(queryOpt.excludeWP, f => _.split(f, '.')[1]) }
     }
     // Apply WorkPeriod filters
-    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle', 'workPeriods.paymentStatus']), (value, key) => {
+    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.paymentStatus']), (value, key) => {
       key = key.split('.')[1]
       queryCriteria.include[0].where[Op.and].push({ [key]: value })
-      queryCriteria.include[0].required = true
     })
+    if (criteria['workPeriods.userHandle']) {
+      queryCriteria.include[0].where[Op.and].push({ userHandle: { [Op.iLike]: criteria['workPeriods.userHandle'] } })
+    }
+    if (queryCriteria.include[0].where[Op.and].length > 0) {
+      queryCriteria.include[0].required = true
+    }
   }
   // Apply sorting criteria
   if (!queryOpt.sortByWP) {
