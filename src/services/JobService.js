@@ -75,6 +75,27 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Validate if all roles exist.
+ *
+ * @param {Array} roles the list of roles
+ * @returns {undefined}
+ */
+async function _validateRoles (roles) {
+  const foundRolesObj = await models.Role.findAll({
+    where: {
+      id: roles
+    },
+    attributes: ['id'],
+    raw: true
+  })
+  const foundRoles = _.map(foundRolesObj, 'id')
+  const nonexistentRoles = _.difference(roles, foundRoles)
+  if (nonexistentRoles.length > 0) {
+    throw new errors.BadRequestError(`Invalid roles: [${nonexistentRoles}]`)
+  }
+}
+
+/**
  * Check user permission for getting job.
  *
  * @param {Object} currentUser the user who perform this operation.
@@ -154,6 +175,10 @@ async function createJob (currentUser, job) {
   }
 
   await _validateSkills(job.skills)
+  if (job.roleIds) {
+    job.roleIds = _.uniq(job.roleIds)
+    await _validateRoles(job.roleIds)
+  }
   job.id = uuid()
   job.createdBy = await helper.getUserId(currentUser.userId)
 
@@ -177,7 +202,14 @@ createJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().allow(null),
+    maxSalary: Joi.number().integer().allow(null),
+    hoursPerWeek: Joi.number().integer().allow(null),
+    jobLocation: Joi.string().allow(null),
+    jobTimezone: Joi.string().allow(null),
+    currency: Joi.string().allow(null),
+    roleIds: Joi.array().items(Joi.string().uuid().required())
   }).required()
 }).required()
 
@@ -191,6 +223,10 @@ createJob.schema = Joi.object().keys({
 async function updateJob (currentUser, id, data) {
   if (data.skills) {
     await _validateSkills(data.skills)
+  }
+  if (data.roleIds) {
+    data.roleIds = _.uniq(data.roleIds)
+    await _validateRoles(data.roleIds)
   }
   let job = await Job.findById(id)
   const oldValue = job.toJSON()
@@ -245,7 +281,14 @@ partiallyUpdateJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer(),
+    hoursPerWeek: Joi.number().integer(),
+    jobLocation: Joi.string(),
+    jobTimezone: Joi.string(),
+    currency: Joi.string(),
+    roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
   }).required()
 }).required()
 
@@ -276,7 +319,14 @@ fullyUpdateJob.schema = Joi.object().keys({
     workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus().default('sourcing'),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().allow(null),
+    maxSalary: Joi.number().integer().allow(null),
+    hoursPerWeek: Joi.number().integer().allow(null),
+    jobLocation: Joi.string().allow(null),
+    jobTimezone: Joi.string().allow(null),
+    currency: Joi.string().allow(null),
+    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
   }).required()
 }).required()
 
@@ -361,6 +411,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'startDate',
       'resourceType',
       'skill',
+      'role',
       'rateType',
       'workload',
       'title',
@@ -375,10 +426,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         }
-      } else if (key === 'skill') {
+      } else if (key === 'skill' || key === 'role') {
         must = {
           terms: {
-            skills: [value]
+            [`${key}s`]: [value]
           }
         }
       } else {
@@ -453,9 +504,14 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.title}%`
     }
   }
-  if (criteria.skills) {
+  if (criteria.skill) {
     filter.skills = {
-      [Op.contains]: [criteria.skills]
+      [Op.contains]: [criteria.skill]
+    }
+  }
+  if (criteria.role) {
+    filter.roles = {
+      [Op.contains]: [criteria.role]
     }
   }
   if (criteria.jobIds && criteria.jobIds.length > 0) {
@@ -495,6 +551,7 @@ searchJobs.schema = Joi.object().keys({
     startDate: Joi.date(),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
+    role: Joi.string().uuid(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     status: Joi.jobStatus(),
