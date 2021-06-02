@@ -2280,14 +2280,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
+              oneOf:
+                - $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WorkPeriodPayment"
+                oneOf:
+                  - $ref: "#/components/schemas/WorkPeriodPayment"
+                  - type: array
+                    items:
+                      oneOf:
+                        - $ref: "#/components/schemas/WorkPeriodPayment"
+                        - $ref: "#/components/schemas/WorkPeriodPaymentCreatedError"
         "400":
           description: Bad request
           content:
@@ -2380,7 +2390,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["completed", "cancelled"]
+            enum: ["completed", "scheduled", "cancelled"]
           description: The payment status.
       responses:
         "200":
@@ -2444,6 +2454,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /work-period-payments/query:
+    post:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Create Multiple Work Period Payments for all the pages at once.
+
+        **Authorization** Topcoder token with write Work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    
   /work-period-payments/{id}:
     get:
       tags:
@@ -4211,7 +4274,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "cancelled"]
           description: "The payment status."
         billingAccountId:
           type: integer
@@ -4233,6 +4296,28 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the work period payment last time.(Will get the user info from the token)"
+    WorkPeriodPaymentCreatedError:
+      required:
+        - workPeriodId
+      properties:
+        workPeriodId:
+          type: string
+          format: uuid
+          description: "The work period id."
+        amount:
+          type: integer
+          example: 2
+          description: "The amount to be paid."
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: "The error message"
+            code:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
     WorkPeriodPaymentRequestBody:
       required:
         - workPeriodId
@@ -4247,8 +4332,85 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "cancelled"]
           description: "The payment status."
+    WorkPeriodPaymentCreateRequestBody:
+      required:
+        - workPeriodId
+      properties:
+        workPeriodId:
+          type: string
+          format: uuid
+          description: "The work period id."
+        amount:
+          type: integer
+          example: 2
+          description: "The amount to be paid."
+    WorkPeriodPaymentQueryCreateRequestBody:
+      properties:
+        status:
+          type: string
+          enum: ["placed", "in-progress", "completed"]
+          description: The resource booking status.
+        startDate:
+          type: string
+          format: date
+          description: The resource booking start date.
+        endDate:
+          type: string
+          format: date
+          description: The resource booking end date.
+        rateType:
+          type: string
+          enum: ["hourly", "daily", "weekly", "monthly"]
+          description: The resource booking rate type.
+        jobId:
+          type: string
+          format: uuid
+          description: The job id.
+        userId:
+          type: string
+          format: uuid
+          description: The user id.
+        projectId:
+          type: integer
+          description: The project id.
+        projectIds:
+          oneOf:
+            - type: string
+              description: comma separated project ids.
+            - type: array
+              items:
+                type: integer
+        workPeriods.paymentStatus:
+          type: string
+          enum: ["pending", "partially-completed", "completed", "cancelled"]
+        workPeriods.startDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period start date.
+        workPeriods.endDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period end date.
+        workPeriods.userHandle:
+          type: string
+          description: The user handle.
+    WorkPeriodPaymentQueryCreateResult:
+      properties:
+        total:
+          type: integer
+          description: The total Work Periods found.
+        totalSuccess:
+          type: integer
+          description: The total payments scheduled successfully.
+        totalError:
+          type: integer
+          description: The total payments which failed to get scheduled.
+        query:
+          $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateRequestBody"
     WorkPeriodPaymentPatchRequestBody:
       properties:
         workPeriodId:
@@ -4261,7 +4423,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object
