@@ -177,8 +177,9 @@ async function getWorkPeriod (currentUser, id, fromDb = false) {
       if (!resourceBooking.body.hits.total.value) {
         throw new errors.NotFoundError()
       }
-      await _checkUserPermissionForGetWorkPeriod(currentUser, resourceBooking.body.hits.hits[0]._source.workPeriods.projectId) // check user permission
-      return _.find(resourceBooking.body.hits.hits[0]._source.workPeriods, { id })
+      const workPeriod = _.find(resourceBooking.body.hits.hits[0]._source.workPeriods, { id })
+      await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.projectId) // check user permission
+      return workPeriod
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`id: ${id} "WorkPeriod" not found`)
