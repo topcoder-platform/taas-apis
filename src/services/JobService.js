@@ -411,6 +411,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'startDate',
       'resourceType',
       'skill',
+      'role',
       'rateType',
       'workload',
       'title',
@@ -425,10 +426,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         }
-      } else if (key === 'skill') {
+      } else if (key === 'skill' || key === 'role') {
         must = {
           terms: {
-            skills: [value]
+            [`${key}s`]: [value]
           }
         }
       } else {
@@ -508,6 +509,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.contains]: [criteria.skill]
     }
   }
+  if (criteria.role) {
+    filter.roles = {
+      [Op.contains]: [criteria.role]
+    }
+  }
   if (criteria.jobIds && criteria.jobIds.length > 0) {
     filter[Op.and].push({ id: criteria.jobIds })
   }
@@ -545,6 +551,7 @@ searchJobs.schema = Joi.object().keys({
     startDate: Joi.date(),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
+    role: Joi.string().uuid(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     status: Joi.jobStatus(),
