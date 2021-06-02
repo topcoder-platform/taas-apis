@@ -221,9 +221,15 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   updatedBy: { type: 'keyword' }
 }
 esIndexPropertyMapping[config.get('esConfig.ES_INDEX_ROLE')] = {
-  name: { type: 'keyword' },
+  name: {
+    type: 'keyword',
+    normalizer: 'lowercaseNormalizer'
+  },
   description: { type: 'keyword' },
-  listOfSkills: { type: 'keyword' },
+  listOfSkills: {
+    type: 'keyword',
+    normalizer: 'lowercaseNormalizer'
+  },
   rates: {
     properties: {
       global: { type: 'integer' },
@@ -1200,6 +1206,24 @@ async function getTopcoderSkills (criteria) {
 }
 
 /**
+ * Function to search and retrive all skills from v5/skills
+ * - only returns skills from Topcoder Skills Provider defined by `TOPCODER_SKILL_PROVIDER_ID`
+ *
+ * @param {Object} criteria the search criteria
+ * @returns the request result
+ */
+async function getAllTopcoderSkills (criteria) {
+  const skills = await getTopcoderSkills(_.assign(criteria, { page: 1, perPage: 100 }))
+  while (skills.page * skills.perPage <= skills.total) {
+    const newSkills = await getTopcoderSkills(_.assign(criteria, { page: skills.page + 1, perPage: 100 }))
+    skills.result = [...skills.result, ...newSkills.result]
+    skills.page = newSkills.page
+    skills.total = newSkills.total
+  }
+  return skills.result
+}
+
+/**
  * Function to get skill by id
  * @param {String} skillId the skill Id
  * @returns the request result
@@ -1745,16 +1769,15 @@ async function substituteStringByObject (string, object) {
   return string
 }
 
-
 /**
  * Get tags from tagging service
  * @param {String} description The challenge description
  * @returns {Array} array of tags
  */
 async function getTags (description) {
-  const data = { text: description, extract_confidence: false}
-  const type = "emsi/internal_no_refresh"
-  const url = `${config.TC_API}/contest-tagging/${type}`;
+  const data = { text: description, extract_confidence: false }
+  const type = 'emsi/internal_no_refresh'
+  const url = `${config.TC_API}/contest-tagging/${type}`
   const res = await request
     .post(url)
     .set('Accept', 'application/json')
@@ -1762,11 +1785,10 @@ async function getTags (description) {
 
   localLogger.debug({
     context: 'getTags',
-    message: `response body: ${JSON.stringify(res.body)}`,
-  });
-  return _.get(res, 'body');
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  return _.get(res, 'body')
 }
-
 
 /**
  * @param {Object} currentUser the user performing the action
@@ -1819,6 +1841,7 @@ module.exports = {
   getMembers,
   getProjectById,
   getTopcoderSkills,
+  getAllTopcoderSkills,
   getSkillById,
   ensureJobById,
   ensureResourceBookingById,
