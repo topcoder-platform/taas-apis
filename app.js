@@ -13,6 +13,7 @@ const schedule = require('node-schedule')
 const logger = require('./src/common/logger')
 const eventHandlers = require('./src/eventHandlers')
 const interviewService = require('./src/services/InterviewService')
+const { processScheduler } = require('./src/services/PaymentSchedulerService')
 
 // setup express app
 const app = express()
@@ -97,6 +98,9 @@ const server = app.listen(app.get('port'), () => {
   eventHandlers.init()
   // schedule updateCompletedInterviews to run every hour
   schedule.scheduleJob('0 0 * * * *', interviewService.updateCompletedInterviews)
+
+  // schedule payment processing
+  schedule.scheduleJob(config.PAYMENT_PROCESSING.CRON, processScheduler)
 })
 
 if (process.env.NODE_ENV === 'test') {

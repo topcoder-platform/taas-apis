@@ -2380,7 +2380,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["completed", "cancelled"]
+            enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: The payment status.
       responses:
         "200":
@@ -4211,8 +4211,22 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
+        statusDetails:
+          type: object
+          properties:
+            errorMessage:
+              type: string
+            errorCode:
+              type: integer
+            retry:
+              type: integer
+            step:
+              type: string
+            challengeId:
+              type: string
+              format: uuid
         billingAccountId:
           type: integer
           example: 80000071
@@ -4247,7 +4261,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
     WorkPeriodPaymentPatchRequestBody:
       properties:
@@ -4261,7 +4275,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object

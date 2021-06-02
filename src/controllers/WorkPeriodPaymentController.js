@@ -20,7 +20,7 @@ async function getWorkPeriodPayment (req, res) {
  * @param res the response
  */
 async function createWorkPeriodPayment (req, res) {
-  res.send(await service.createWorkPeriodPayment(req.authUser, req.body, { paymentProcessingSwitch: config.PAYMENT_PROCESSING_SWITCH }))
+  res.send(await service.createWorkPeriodPayment(req.authUser, req.body, { paymentProcessingSwitch: config.PAYMENT_PROCESSING.SWITCH }))
 }
 
 /**

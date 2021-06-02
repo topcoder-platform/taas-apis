@@ -202,6 +202,7 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
+| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                                         |
 
 ## Import and Export data
 

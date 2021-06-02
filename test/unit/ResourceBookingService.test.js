@@ -455,6 +455,9 @@ describe('resourceBooking service test', () => {
       const stubResourceBookingFindAll = sinon.stub(ResourceBooking, 'findAll').callsFake(async () => {
         return data.resourceBookingFindAll
       })
+      sinon.stub(ResourceBooking, 'count').callsFake(async () => {
+        return data.resourceBookingFindAll.length
+      })
       const result = await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
       expect(esClientSearch.calledOnce).to.be.true
       expect(stubResourceBookingFindAll.calledOnce).to.be.true

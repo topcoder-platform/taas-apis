@@ -162,5 +162,38 @@ module.exports = {
   DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
   DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
 
-  PAYMENT_PROCESSING_SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF'
+  PAYMENT_PROCESSING: {
+    // switch off actual API calls in Payment Scheduler
+    SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF',
+    // the payment scheduler cron config
+    CRON: process.env.PAYMENT_PROCESSING_CRON || '0 */5 * * * *',
+    // the number of records processed by one time
+    BATCH_SIZE: parseInt(process.env.PAYMENT_PROCESSING_BATCH_SIZE || 50),
+    // in-progress expired to determine whether a record has been processed abnormally, moment duration format
+    IN_PROGRESS_EXPIRED: process.env.IN_PROGRESS_EXPIRED || 'PT1H',
+    // the number of max retry config
+    MAX_RETRY_COUNT: parseInt(process.env.PAYMENT_PROCESSING_MAX_RETRY_COUNT || 10),
+    // the time of retry base delay, unit: ms
+    RETRY_BASE_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_BASE_DELAY || 100),
+    // the time of retry max delay, unit: ms
+    RETRY_MAX_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_MAX_DELAY || 10000),
+    // the max time of one request, unit: ms
+    PER_REQUEST_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_REQUEST_MAX_TIME || 30000),
+    // the max time of one payment record, unit: ms
+    PER_PAYMENT_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_PAYMENT_MAX_TIME || 60000),
+    // the max records of payment of a minute
+    PER_MINUTE_PAYMENT_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_PAYMENT_MAX_COUNT || 12),
+    // the max requests of challenge of a minute
+    PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 60),
+    // the max requests of resource of a minute
+    PER_MINUTE_RESOURCE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 20),
+    // the default step fix delay, unit: ms
+    FIX_DELAY_STEP: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay between step one and step two, unit: ms
+    FIX_DELAY_STEP_1_2: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_1_2 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay between step two and step three, unit: ms
+    FIX_DELAY_STEP_2_3: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_2_3 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay between step three and step four, unit: ms
+    FIX_DELAY_STEP_3_4: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_3_4 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
+  }
 }
