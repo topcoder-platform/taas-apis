@@ -1,14 +1,13 @@
 const workPeriodPayment01 = {
   request: {
     workPeriodId: '467b4df7-ced4-41b9-9710-b83808cddaf4',
-    amount: 600,
-    status: 'completed'
+    amount: 600
   },
   response: {
     dataValues: {
       workPeriodId: '467b4df7-ced4-41b9-9710-b83808cddaf4',
       amount: 600,
-      status: 'completed',
+      status: 'scheduled',
       id: '01971e6f-0f09-4a2a-bc2e-2adac0f00622',
       challengeId: '00000000-0000-0000-0000-000000000000',
       createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
