@@ -32,18 +32,18 @@ async function _checkUserPermissionForWriteDeleteRole (currentUser) {
   * @returns {undefined}
   */
 async function _cleanAndValidateSkillNames (skills) {
-  // remove duplicates, leading and trailing whitespaces, remove empties and convert to lowercase.
-  const cleanedSkills = _.uniq(_.filter(_.map(skills, skill => _.toLower(_.trim(skill))), skill => !_.isEmpty(skill)))
+  // remove duplicates, leading and trailing whitespaces, empties.
+  const cleanedSkills = _.uniq(_.filter(_.map(skills, skill => _.trim(skill)), skill => !_.isEmpty(skill)))
   if (cleanedSkills.length > 0) {
     // search skills if they are exists
-    const { result } = await helper.getTopcoderSkills({ name: _.join(cleanedSkills, ',') })
+    const result = await helper.getAllTopcoderSkills({ name: _.join(cleanedSkills, ',') })
     const skillNames = _.map(result, 'name')
     // find skills that not valid
-    const unValidSkills = _.differenceWith(cleanedSkills, skillNames, (a, b) => _.toLower(a) === _.toLower(b))
+    const unValidSkills = _.differenceBy(cleanedSkills, skillNames, _.toLower)
     if (unValidSkills.length > 0) {
       throw new errors.BadRequestError(`skills: "${unValidSkills}" are not valid`)
     }
-    return cleanedSkills
+    return _.intersectionBy(skillNames, cleanedSkills, _.toLower)
   } else {
     return null
   }
@@ -232,7 +232,7 @@ deleteRole.schema = Joi.object().keys({
   */
 async function searchRoles (currentUser, criteria) {
   // clean skill names and convert into an array
-  criteria.skillsList = _.filter(_.map(_.split(_.trim(criteria.skillsList), ','), skill => _.toLower(_.trim(skill))), skill => !_.isEmpty(skill))
+  criteria.skillsList = _.filter(_.map(_.split(criteria.skillsList, ','), skill => _.trim(skill)), skill => !_.isEmpty(skill))
   try {
     const esQuery = {
       index: config.get('esConfig.ES_INDEX_ROLE'),
@@ -274,7 +274,9 @@ async function searchRoles (currentUser, criteria) {
   const filter = { [Op.and]: [] }
   // Apply skill name filters. listOfSkills array should include all skills provided in criteria.
   if (criteria.skillsList) {
-    filter[Op.and].push({ listOfSkills: { [Op.contains]: criteria.skillsList } })
+    _.each(criteria.skillsList, skill => {
+      filter[Op.and].push(models.Sequelize.literal(`LOWER('${skill}') in (SELECT lower(x) FROM unnest("list_of_skills"::text[]) x)`))
+    })
   }
   // Apply name filter, allow partial match and ignore case
   if (criteria.keyword) {
