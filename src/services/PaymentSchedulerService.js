@@ -170,7 +170,9 @@ async function processStep (paymentScheduler) {
  */
 async function setPaymentSchedulerStep (paymentScheduler) {
   const challenge = await getChallenge(paymentScheduler.challengeId)
-  if (challenge.status === ChallengeStatus.COMPLETED) {
+  if (SWITCH === PaymentProcessingSwitch.OFF) {
+    paymentScheduler.step = 5
+  } else if (challenge.status === ChallengeStatus.COMPLETED) {
     paymentScheduler.step = 5
   } else if (challenge.status === ChallengeStatus.ACTIVE) {
     paymentScheduler.step = 3
@@ -301,6 +303,8 @@ async function withRetry (func, argArr, predictFunc, step) {
     try {
       // mock code
       if (SWITCH === PaymentProcessingSwitch.OFF) {
+        // without actual API calls by adding delay (for example 1 second for each step), to simulate the act
+        sleep(1000)
         if (step === stepEnum[1]) {
           return '00000000-0000-0000-0000-000000000000'
         } else if (step === stepEnum[4]) {
@@ -316,7 +320,7 @@ async function withRetry (func, argArr, predictFunc, step) {
       const now = Date.now()
       // The following is the case of not retrying:
       // 1. The number of retries exceeds the configured number
-      // 2. The thrown error does not meet the retry conditions
+      // 2. The thrown error does not match the retry conditions
       // 3. The request execution time exceeds the configured time
       // 4. The processing time of the payment record exceeds the configured time
       if (tryCount > MAX_RETRY_COUNT || !predictFunc(err) || now - processStatus.requestStartTime > PER_REQUEST_MAX_TIME || now - processStatus.paymentStartTime > PER_PAYMENT_MAX_TIME) {
