@@ -22,7 +22,7 @@ module.exports = {
   },
   '/taas-teams/skills': {
     get: {
-      controller: 'SkillController',
+      controller: 'TeamController',
       method: 'searchSkills',
       auth: 'jwt',
       scopes: [constants.Scopes.READ_TAAS_TEAM]
@@ -41,8 +41,8 @@ module.exports = {
       controller: 'TeamController',
       method: 'getSkillsByJobDescription',
       auth: 'jwt',
-      scopes: [constants.Scopes.READ_TAAS_TEAM],
-    },
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
   },
   '/taas-teams/:id': {
     get: {
@@ -90,12 +90,20 @@ module.exports = {
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
-  '/taas-teams/createTeamRequest': {
+  '/taas-teams/sendRoleSearchRequest': {
     post: {
       controller: 'TeamController',
-      method: 'createProj',
+      method: 'roleSearchRequest',
       auth: 'jwt',
-      scopes: [constants.Scopes.READ_TAAS_TEAM]
+      scopes: [constants.Scopes.CREATE_ROLE_SEARCH_REQUEST]
+    }
+  },
+  '/taas-teams/submitTeamRequest': {
+    post: {
+      controller: 'TeamController',
+      method: 'createTeam',
+      auth: 'jwt',
+      scopes: [constants.Scopes.CREATE_TAAS_TEAM]
     }
   }
 }

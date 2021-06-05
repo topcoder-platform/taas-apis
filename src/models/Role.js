@@ -5,6 +5,15 @@ const errors = require('../common/errors')
 module.exports = (sequelize) => {
   class Role extends Model {
     /**
+     * Create association between models
+     * @param {Object} models the database models
+     */
+    static associate (models) {
+      Role._models = models
+      Role.hasMany(models.RoleSearchRequest, { foreignKey: 'roleId' })
+    }
+
+    /**
      * Get role by id
      * @param {String} id the role id
      * @returns {Role} the role instance
