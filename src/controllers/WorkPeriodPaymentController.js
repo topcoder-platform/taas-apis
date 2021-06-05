@@ -3,7 +3,6 @@
  */
 const service = require('../services/WorkPeriodPaymentService')
 const helper = require('../common/helper')
-const config = require('config')
 
 /**
  * Get workPeriodPayment by id
@@ -20,7 +19,7 @@ async function getWorkPeriodPayment (req, res) {
  * @param res the response
  */
 async function createWorkPeriodPayment (req, res) {
-  res.send(await service.createWorkPeriodPayment(req.authUser, req.body, { paymentProcessingSwitch: config.PAYMENT_PROCESSING.SWITCH }))
+  res.send(await service.createWorkPeriodPayment(req.authUser, req.body))
 }
 
 /**
@@ -52,9 +51,19 @@ async function searchWorkPeriodPayments (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Create all query workPeriodPayments
+ * @param req the request
+ * @param res the response
+ */
+async function createQueryWorkPeriodPayments (req, res) {
+  res.send(await service.createQueryWorkPeriodPayments(req.authUser, req.body))
+}
+
 module.exports = {
   getWorkPeriodPayment,
   createWorkPeriodPayment,
+  createQueryWorkPeriodPayments,
   partiallyUpdateWorkPeriodPayment,
   fullyUpdateWorkPeriodPayment,
   searchWorkPeriodPayments

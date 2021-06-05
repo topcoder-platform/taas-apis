@@ -49,7 +49,13 @@ const Scopes = {
   READ_INTERVIEW: 'read:taas-interviews',
   CREATE_INTERVIEW: 'create:taas-interviews',
   UPDATE_INTERVIEW: 'update:taas-interviews',
-  ALL_INTERVIEW: 'all:taas-interviews'
+  ALL_INTERVIEW: 'all:taas-interviews',
+  // role
+  READ_ROLE: 'read:taas-roles',
+  CREATE_ROLE: 'create:taas-roles',
+  UPDATE_ROLE: 'update:taas-roles',
+  DELETE_ROLE: 'delete:taas-roles',
+  ALL_ROLE: 'all:taas-roles'
 }
 
 // Interview related constants

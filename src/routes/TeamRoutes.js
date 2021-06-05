@@ -36,6 +36,14 @@ module.exports = {
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
+  '/taas-teams/getSkillsByJobDescription': {
+    post: {
+      controller: 'TeamController',
+      method: 'getSkillsByJobDescription',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM],
+    },
+  },
   '/taas-teams/:id': {
     get: {
       controller: 'TeamController',
@@ -78,6 +86,14 @@ module.exports = {
     delete: {
       controller: 'TeamController',
       method: 'deleteMember',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_TAAS_TEAM]
+    }
+  },
+  '/taas-teams/createTeamRequest': {
+    post: {
+      controller: 'TeamController',
+      method: 'createProj',
       auth: 'jwt',
       scopes: [constants.Scopes.READ_TAAS_TEAM]
     }

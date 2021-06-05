@@ -52,7 +52,7 @@ module.exports = (sequelize) => {
         type: Sequelize.DOUBLE
       },
       status: {
-        type: Sequelize.ENUM(..._.values(WorkPeriodPaymentStatus)),
+        type: Sequelize.ENUM(_.values(WorkPeriodPaymentStatus)),
         allowNull: false
       },
       statusDetails: {
