@@ -16908,6 +16908,55 @@
 							"response": []
 						},
 						{
+							"name": "create work period2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"workPeriodId2\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"resourceBookingId\": \"{{resourceBookingId}}\",\r\n    \"startDate\": \"2021-03-14\",\r\n    \"endDate\": \"2021-03-20\",\r\n    \"daysWorked\": 2,\r\n    \"memberRate\": 13.13,\r\n    \"customerRate\": 13.13,\r\n    \"paymentStatus\": \"pending\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/work-periods",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"work-periods"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "create work period with m2m",
 							"event": [
 								{
@@ -17002,6 +17051,97 @@
 							],
 							"path": [
 								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create multiple work period payments with boooking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[{\r\n    \"workPeriodId\": \"{{workPeriodId}}\",\r\n    \"amount\": 600\r\n},{\r\n    \"workPeriodId\": \"{{workPeriodId2}}\",\r\n    \"amount\": 900\r\n}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create query work period payments with boooking manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\": { \"workPeriods.paymentStatus\": \"pending\" } }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/query",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"query"
 							]
 						}
 					},
@@ -29067,6 +29207,52 @@
 									"response": []
 								},
 								{
+									"name": "✔ create multiple work period payment with administrator",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 200', function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_administrator}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"query\": { \"workPeriods.paymentStatus\": \"pending\" } }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/query",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"query"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "✔ get work period payment with administrator",
 									"event": [
 										{
@@ -31513,6 +31699,54 @@
 											],
 											"path": [
 												"work-period-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ create query work period payment with member",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_member_tester1234}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"query\": { \"workPeriods.paymentStatus\": \"pending\" } }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/query",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"query"
 											]
 										}
 									},
@@ -34027,6 +34261,54 @@
 											],
 											"path": [
 												"work-period-payments"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "✘ create query work period payment with connect manager",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Status code is 403', function () {\r",
+													"    pm.response.to.have.status(403);\r",
+													"    const response = pm.response.json()\r",
+													"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"query\": { \"workPeriods.paymentStatus\": \"pending\" } }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/work-period-payments/query",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"work-period-payments",
+												"query"
 											]
 										}
 									},

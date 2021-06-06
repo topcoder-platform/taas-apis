@@ -1,6 +1,8 @@
 const { Sequelize, Model } = require('sequelize')
+const _ = require('lodash')
 const config = require('config')
 const errors = require('../common/errors')
+const { WorkPeriodPaymentStatus } = require('../../app-constants')
 
 module.exports = (sequelize) => {
   class WorkPeriodPayment extends Model {
@@ -44,17 +46,13 @@ module.exports = (sequelize) => {
       },
       challengeId: {
         field: 'challenge_id',
-        type: Sequelize.UUID,
-        allowNull: false
+        type: Sequelize.UUID
       },
       amount: {
         type: Sequelize.DOUBLE
       },
       status: {
-        type: Sequelize.ENUM(
-          'completed',
-          'cancelled'
-        ),
+        type: Sequelize.ENUM(_.values(WorkPeriodPaymentStatus)),
         allowNull: false
       },
       billingAccountId: {
