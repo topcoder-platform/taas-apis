@@ -84,9 +84,10 @@ const ChallengeStatus = {
   COMPLETED: 'Completed'
 }
 
-const PaymentProcessingSwitch = {
-  ON: 'ON',
-  OFF: 'OFF'
+const WorkPeriodPaymentStatus = {
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  SCHEDULED: 'scheduled'
 }
 
 module.exports = {
@@ -95,5 +96,5 @@ module.exports = {
   Scopes,
   Interviews,
   ChallengeStatus,
-  PaymentProcessingSwitch
+  WorkPeriodPaymentStatus
 }

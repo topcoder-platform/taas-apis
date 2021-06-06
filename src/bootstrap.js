@@ -2,10 +2,8 @@ const fs = require('fs')
 const Joi = require('joi')
 const path = require('path')
 const _ = require('lodash')
-const { Interviews } = require('../app-constants')
+const { Interviews, WorkPeriodPaymentStatus } = require('../app-constants')
 const logger = require('./common/logger')
-const constants = require('../app-constants')
-const config = require('config')
 
 const allowedInterviewStatuses = _.values(Interviews.Status)
 const allowedXAITemplate = _.keys(Interviews.XaiTemplate)
@@ -21,7 +19,7 @@ Joi.title = () => Joi.string().max(128)
 Joi.paymentStatus = () => Joi.string().valid('pending', 'partially-completed', 'completed', 'cancelled')
 Joi.xaiTemplate = () => Joi.string().valid(...allowedXAITemplate)
 Joi.interviewStatus = () => Joi.string().valid(...allowedInterviewStatuses)
-Joi.workPeriodPaymentStatus = () => Joi.string().valid('completed', 'cancelled')
+Joi.workPeriodPaymentStatus = () => Joi.string().valid(..._.values(WorkPeriodPaymentStatus))
 // Empty string is not allowed by Joi by default and must be enabled with allow('').
 // See https://joi.dev/api/?v=17.3.0#string fro details why it's like this.
 // In many cases we would like to allow empty string to make it easier to create UI for editing data.
@@ -46,14 +44,3 @@ function buildServices (dir) {
 }
 
 buildServices(path.join(__dirname, 'services'))
-
-// validate some configurable parameters for the app
-const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
-  ...Object.values(constants.PaymentProcessingSwitch)
-)
-try {
-  Joi.attempt(config.PAYMENT_PROCESSING_SWITCH, paymentProcessingSwitchSchema)
-} catch (err) {
-  console.error(err.message)
-  process.exit(1)
-}
