@@ -108,14 +108,13 @@ async function getMe (req, res) {
   res.send(await service.getMe(req.authUser))
 }
 
-
 /**
  * Return skills by job description.
  * @param req the request
  * @param res the response
  */
-async function getSkillsByJobDescription(req, res) {
-  res.send(await service.getSkillsByJobDescription(req.authUser, req.body));
+async function getSkillsByJobDescription (req, res) {
+  res.send(await service.getSkillsByJobDescription(req.authUser, req.body))
 }
 
 /**
@@ -123,8 +122,28 @@ async function getSkillsByJobDescription(req, res) {
  * @param req the request
  * @param res the response
  */
-async function createProj (req, res) {
-  res.send(await service.createProj(req.authUser, req.body))
+async function roleSearchRequest (req, res) {
+  res.send(await service.roleSearchRequest(req.authUser, req.body))
+}
+
+/**
+ *
+ * @param req the request
+ * @param res the response
+ */
+async function createTeam (req, res) {
+  res.send(await service.createTeam(req.authUser, req.body))
+}
+
+/**
+ * Search skills
+ * @param req the request
+ * @param res the response
+ */
+async function searchSkills (req, res) {
+  const result = await service.searchSkills(req.query)
+  helper.setResHeaders(req, res, result)
+  res.send(result.result)
 }
 
 module.exports = {
@@ -138,5 +157,7 @@ module.exports = {
   deleteMember,
   getMe,
   getSkillsByJobDescription,
-  createProj,
-};
+  roleSearchRequest,
+  createTeam,
+  searchSkills
+}

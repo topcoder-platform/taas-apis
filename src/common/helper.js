@@ -1791,21 +1791,41 @@ async function getTags (description) {
 }
 
 /**
- * @param {Object} currentUser the user performing the action
  * @param {Object} data title of project and any other info
  * @returns {Object} the project created
  */
-async function createProject (currentUser, data) {
-  const token = currentUser.jwtToken
+async function createProject (data) {
+  const token = await getM2MToken()
   const res = await request
     .post(`${config.TC_API}/projects/`)
-    .set('Authorization', token)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send(data)
   localLogger.debug({
     context: 'createProject',
     message: `response body: ${JSON.stringify(res)}`
+  })
+  return _.get(res, 'body')
+}
+
+/**
+ * Returns the email address of specified (via handle) user.
+ *
+ * @param {String} userHandle user handle
+ * @returns {String} email address of the user
+ */
+async function getMemberGroups (userId) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/groups/memberGroups/${userId}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'getMemberGroups',
+    message: `response body: ${JSON.stringify(res.body)}`
   })
   return _.get(res, 'body')
 }
@@ -1864,5 +1884,6 @@ module.exports = {
   extractWorkPeriods,
   getUserByHandle,
   substituteStringByObject,
-  createProject
+  createProject,
+  getMemberGroups
 }

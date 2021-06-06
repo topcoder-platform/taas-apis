@@ -12,6 +12,11 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
+const HttpStatus = require('http-status-codes')
+const { Op } = require('sequelize')
+const models = require('../models')
+const Role = models.Role
+const RoleSearchRequest = models.RoleSearchRequest
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
@@ -670,43 +675,369 @@ getMe.schema = Joi.object()
   .required()
 
 /**
+ * Searches roles either by roleId or jobDescription or skills
+ * @param {Object} currentUser the user performing the operation.
+ * @param {Object} data search request data
+ * @returns {Object} the created project
+ */
+async function roleSearchRequest (currentUser, data) {
+  let role
+  // if roleId is provided then find role with given id.
+  if (!_.isUndefined(data.roleId)) {
+    role = await Role.findById(data.roleId)
+    role = role.toJSON()
+    // if skills is provided then use skills to find role
+  } else if (!_.isUndefined(data.skills)) {
+    // validate given skillIds and convert them into skill names
+    const skills = await getSkillNamesByIds(data.skills)
+    // find the best matching role
+    role = await getRoleBySkills(skills)
+  } else {
+    // if only job description is provided, collect skill names from description
+    const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
+    // collected tags from description has inconsistency with topcoder skills
+    // we need to filter invalid skills
+    const skills = await getSkillNamesByNames(_.map(tags, 'tag'))
+    // find the best matching role
+    role = await getRoleBySkills(skills)
+  }
+  data.roleId = role.id
+  // create roleSearchRequest entity with found roleId
+  const { id: roleSearchRequestId } = await createRoleSearchRequest(currentUser, data)
+  // clean Role
+  role = await _cleanRoleDTO(currentUser, role)
+  // return Role
+  return _.assign(role, { roleSearchRequestId })
+}
+
+roleSearchRequest.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object().keys({
+      roleId: Joi.string().uuid(),
+      jobDescription: Joi.string().max(255),
+      skills: Joi.array().items(Joi.string().uuid().required())
+    }).required().min(1)
+  }).required()
+
+/**
+ * Returns 1 role most relevant to the specified skills
+ * @param {Array<string>} skills the array of skill names
+ * @returns {Role} the best matching Role
+ */
+async function getRoleBySkills (skills) {
+  // find all roles which includes any of the given skills
+  const queryCriteria = {
+    where: { listOfSkills: { [Op.overlap]: skills } },
+    raw: true
+  }
+  const roles = await Role.findAll(queryCriteria)
+  if (roles.length > 0) {
+    let result = _.each(roles, role => {
+      // calculate each found roles matching rate
+      role.matchingRate = _.intersection(role.listOfSkills, skills).length / skills.length
+      // each role can have multiple rates, get the maximum of global rates
+      role.maxGlobal = _.maxBy(role.rates, 'global').global
+    })
+    // sort roles by matchingRate, global rate and name
+    result = _.orderBy(result, ['matchingRate', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
+    if (result[0].matchingRate >= config.ROLE_MATCHING_RATE) {
+      // return the 1st role
+      return _.omit(result[0], ['matchingRate', 'maxGlobal'])
+    }
+  }
+  // if no matching role found then return Niche role or empty object
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Niche' } } }) || {}
+}
+
+getRoleBySkills.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().required()).required()
+  }).required()
+
+/**
  * Return skills by job description.
  *
  * @param {Object} currentUser the user who perform this operation.
- * @params {Object} criteria the search criteria
- * @returns {Object} the user data for current user
+ * @param {Object} data the search criteria
+ * @returns {Object} the result
  */
-async function getSkillsByJobDescription(currentUser,data) {
+async function getSkillsByJobDescription (currentUser, data) {
   return helper.getTags(data.description)
 }
 
 getSkillsByJobDescription.schema = Joi.object()
   .keys({
     currentUser: Joi.object().required(),
-    data: Joi.object()
-      .keys({
-        description: Joi.string().required(),
-      })
-      .required(),
-  })
-  .required();
+    data: Joi.object().keys({
+      description: Joi.string().required()
+    }).required()
+  }).required()
 
+/**
+ * Validate given skillIds and return their names
+ *
+ * @param {Array<string>} skills the array of skill ids
+ * @returns {Array<string>} the array of skill names
+ */
+async function getSkillNamesByIds (skills) {
+  const responses = await Promise.all(
+    skills.map(
+      skill => helper.getSkillById(skill)
+        .then((skill) => {
+          return _.assign(skill, { found: true })
+        })
+        .catch(err => {
+          if (err.status !== HttpStatus.NOT_FOUND) {
+            throw err
+          }
+          return { found: false, skill }
+        })
+    )
+  )
+  const errResponses = responses.filter(res => !res.found)
+  if (errResponses.length) {
+    throw new errors.BadRequestError(`Invalid skills: [${errResponses.map(res => res.skill)}]`)
+  }
+  return _.map(responses, 'name')
+}
+
+getSkillNamesByIds.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().uuid().required()).required()
+  }).required()
+
+/**
+ * Finds and returns the ids of given skill names
+ *
+ * @param {Array<string>} skills the array of skill names
+ * @returns {Array<string>} the array of skill ids
+ */
+async function getSkillIdsByNames (skills) {
+  const result = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
+  // endpoint returns the partial matched skills
+  // we need to filter by exact match case insensitive
+  const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
+  console.log(filteredSkills)
+  const skillIds = _.map(filteredSkills, 'id')
+  return skillIds
+}
+
+getSkillIdsByNames.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().required()).required()
+  }).required()
+
+/**
+ * Filters invalid skills from given skill names
+ *
+ * @param {Array<string>} skills the array of skill names
+ * @returns {Array<string>} the array of skill names
+ */
+async function getSkillNamesByNames (skills) {
+  // remove duplicates, leading and trailing whitespaces, empties.
+  const cleanedSkills = _.uniq(_.filter(_.map(skills, skill => _.trim(skill)), skill => !_.isEmpty(skill)))
+  const result = await helper.getAllTopcoderSkills({ name: _.join(cleanedSkills, ',') })
+  const skillNames = _.map(result, 'name')
+  // endpoint returns the partial matched skills
+  // we need to filter by exact match case insensitive
+  return _.intersectionBy(skillNames, cleanedSkills, _.toLower)
+}
+
+getSkillNamesByNames.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().required()).required()
+  }).required()
+
+/**
+ * Creates the role search request
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} roleSearchRequest the role search request
+ * @returns {RoleSearchRequest} the role search request entity
+ */
+
+async function createRoleSearchRequest (currentUser, roleSearchRequest) {
+  roleSearchRequest.createdBy = await helper.getUserId(currentUser.userId)
+  // if current user is not machine then it must be logged user
+  if (!currentUser.isMachine) {
+    roleSearchRequest.memberId = roleSearchRequest.createdBy
+    // find the previous search done by this user
+    const previous = await RoleSearchRequest.findOne({
+      where: {
+        memberId: roleSearchRequest.memberId
+      },
+      order: [['createdAt', 'DESC']]
+    })
+    if (previous) {
+      roleSearchRequest.previousRoleSearchRequestId = previous.id
+    }
+  }
+  const created = await RoleSearchRequest.create(roleSearchRequest)
+  return created.toJSON()
+}
+createRoleSearchRequest.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    roleSearchRequest: Joi.object().keys({
+      roleId: Joi.string().uuid(),
+      jobDescription: Joi.string().max(255),
+      skills: Joi.array().items(Joi.string().uuid().required())
+    }).required().min(1)
+  }).required()
+
+/**
+ * Exclude some fields from role if the user is external member
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} role the role object to be cleaned
+ * @returns {Object} the cleaned role
+ */
+async function _cleanRoleDTO (currentUser, role) {
+  // if current user is machine, it means user is not logged in
+  if (currentUser.isMachine || await isExternalMember(currentUser.userId)) {
+    role.isExternalMember = true
+    if (role.rates) {
+      role.rates = _.map(role.rates, rate =>
+        _.omit(rate, ['inCountry', 'offShore', 'rate30InCountry', 'rate30OffShore', 'rate20InCountry', 'rate20OffShore']))
+    }
+    return role
+  }
+  role.isExternalMember = false
+  return role
+}
+
+/**
+ * Finds out if member is external member
+ *
+ * @param {number} memberId the external id of member
+ * @returns {boolean}
+ */
+async function isExternalMember (memberId) {
+  const groups = await helper.getMemberGroups(memberId)
+  return _.intersection(config.INTERNAL_MEMBER_GROUPS, groups).length === 0
+}
+
+isExternalMember.schema = Joi.object()
+  .keys({
+    memberId: Joi.number().required()
+  }).required()
 
 /**
  * @param {Object} currentUser the user performing the operation.
- * @param {Object} data project data
- * @returns {Object} the created project
+ * @param {Object} data the team data
+ * @returns {Object} the created project id
  */
-async function createProj (currentUser, data) {
-  return helper.createProject(currentUser, data)
+async function createTeam (currentUser, data) {
+  // before creating a project, we should validate the given roleSearchRequestIds
+  // because if some data is missing it would fail to create jobs.
+  const roleSearchRequests = await _validateRoleSearchRequests(_.map(data.positions, 'roleSearchRequestId'))
+  const projectRequestBody = {
+    name: data.teamName,
+    description: data.teamDescription,
+    type: 'app_dev',
+    details: {
+      positions: data.positions
+    }
+  }
+  // create project with given data
+  const project = await helper.createProject(projectRequestBody)
+  // we created the project with m2m token
+  // so we have to add the current user as a member to the project
+  // the role of the user in the project will be determined by user's current roles.
+  if (!currentUser.isMachine) {
+    await helper.createProjectMember(project.id, { userId: currentUser.userId })
+  }
+  // create jobs for the given positions.
+  await Promise.all(_.map(data.positions, async position => {
+    const roleSearchRequest = roleSearchRequests[position.roleSearchRequestId]
+    const job = {
+      projectId: project.id,
+      title: position.roleName,
+      numPositions: position.numberOfResources,
+      rateType: 'weekly',
+      skills: roleSearchRequest.skills
+    }
+    if (roleSearchRequest.jobDescription) {
+      job.description = roleSearchRequest.jobDescription
+    }
+    if (position.startMonth) {
+      job.startDate = position.startMonth
+    }
+    if (position.durationWeeks) {
+      job.duration = position.durationWeeks
+    }
+    if (roleSearchRequest.roleId) {
+      job.roleIds = [roleSearchRequest.roleId]
+    }
+    await JobService.createJob(currentUser, job)
+  }))
+  return { projectId: project.id }
 }
 
-createProj.schema = Joi.object()
+createTeam.schema = Joi.object()
   .keys({
     currentUser: Joi.object().required(),
-    data: Joi.object().required()
+    data: Joi.object().keys({
+      teamName: Joi.string().required(),
+      teamDescription: Joi.string(),
+      positions: Joi.array().items(
+        Joi.object().keys({
+          roleName: Joi.string().required(),
+          roleSearchRequestId: Joi.string().uuid().required(),
+          numberOfResources: Joi.number().integer().min(1).required(),
+          durationWeeks: Joi.number().integer().min(1),
+          startMonth: Joi.date()
+        }).required()
+      ).required()
+    }).required()
   })
   .required()
+
+/**
+ * @param {Array<string>} roleSearchRequestIds the roleSearchRequestIds
+ * @returns {Object} the roleSearchRequests
+ */
+async function _validateRoleSearchRequests (roleSearchRequestIds) {
+  const roleSearchRequests = {}
+  await Promise.all(_.map(roleSearchRequestIds, async roleSearchRequestId => {
+    // check if roleSearchRequest exists
+    const roleSearchRequest = await RoleSearchRequest.findById(roleSearchRequestId)
+    // store the found roleSearchRequest to avoid unnecessary DB calls
+    roleSearchRequests[roleSearchRequestId] = roleSearchRequest.toJSON()
+    // we can't create a job without skills
+    if (!roleSearchRequest.roleId && !roleSearchRequest.skills) {
+      throw new errors.ConflictError(`roleSearchRequestId: ${roleSearchRequestId} must have roleId or skills`)
+    }
+    // if roleSearchRequest doesn't have skills, we have to get skills through role
+    if (!roleSearchRequest.skills) {
+      const role = await Role.findById(roleSearchRequest.roleId)
+      if (!role.listOfSkills) {
+        throw new errors.ConflictError(`role: ${role.id} must have skills`)
+      }
+      // store the found skills
+      roleSearchRequests[roleSearchRequestId].skills = await getSkillIdsByNames(role.listOfSkills)
+    }
+  }))
+  return roleSearchRequests
+}
+
+/**
+ * Search skills
+ * @param {Object} criteria the search criteria
+ * @returns {Object} the search result, contain total/page/perPage and result array
+ */
+async function searchSkills (criteria) {
+  return helper.getTopcoderSkills(criteria)
+}
+
+searchSkills.schema = Joi.object().keys({
+  criteria: Joi.object().keys({
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    orderBy: Joi.string()
+  }).required()
+}).required()
 
 module.exports = {
   searchTeams,
@@ -718,6 +1049,14 @@ module.exports = {
   searchInvites,
   deleteMember,
   getMe,
+  roleSearchRequest,
+  getRoleBySkills,
   getSkillsByJobDescription,
-  createProj,
-};
+  getSkillNamesByIds,
+  getSkillIdsByNames,
+  getSkillNamesByNames,
+  createRoleSearchRequest,
+  isExternalMember,
+  createTeam,
+  searchSkills
+}
