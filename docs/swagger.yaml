@@ -3255,10 +3255,8 @@ paths:
           content:
             application/json:
               schema:
-                type : array
-                items : {
-                  $ref: "#/components/schemas/SkillItem"
-                }
+                type: array
+                items: { $ref: "#/components/schemas/SkillItem" }
         "400":
           description: Bad request
           content:
@@ -3369,7 +3367,105 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /taas-roles/new:
+  /taas-teams/sendRoleSearchRequest:
+    post:
+      tags:
+        - Teams
+      description: |
+        Perform a role search operaion
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-roleSearchRequests scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleSearchRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleSearchResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas-teams/submitTeamRequest:
+    post:
+      tags:
+        - Teams
+      description: |
+        Creates new Team in persistence and new project that will source this team in Connect.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitTeamRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitTeamResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas-roles:
     post:
       tags:
         - Roles
@@ -3415,7 +3511,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /taas-roles:
     get:
       tags:
         - Roles
@@ -5345,6 +5440,97 @@ components:
                     type: string
                     description: "the email of a member"
                     example: "xxx@xxx.com"
+    RoleSearchRequestBody:
+      anyOf:
+        - type: object
+          required:
+            - roleId
+          properties:
+            roleId:
+              type: string
+              format: uuid
+              description: "The role id."
+        - type: object
+          required:
+            - jobDescription
+          properties:
+            jobDescription:
+              type: string
+              description: "The description of the job."
+        - type: object
+          required:
+            - skills
+          properties:
+            skills:
+              type: array
+              description: "The array of skill ids."
+              items:
+                type: string
+                format: uuid
+                description: "The skill id"
+
+    RoleSearchResponse:
+      allOf:
+        - $ref: "#/components/schemas/Role"
+        - type: object
+          required:
+            - roleSearchRequestId
+            - isExternalMember
+          properties:
+            roleSearchRequestId:
+              type: string
+              format: uuid
+              description: "The role search request id."
+            isExternalMember:
+              type: boolean
+              description: "Is the user external member"
+    SubmitTeamRequestBody:
+      properties:
+        teamName:
+          type: string
+          description: "The name of the team"
+        teamDescription:
+          type: string
+          description: "The description of the team"
+        positions:
+          type: array
+          description: "The array of positions"
+          items:
+            type: object
+            required:
+              - roleName
+              - roleSearchRequestId
+              - numberOfResources
+            properties:
+              roleName:
+                type: string
+                description: "The name of the role"
+              roleSearchRequestId:
+                type: string
+                format: uuid
+                description: "The id of roleSearchRequest"
+              numberOfResources:
+                type: integer
+                example: 10
+                minimum: 1
+                description: "The number of needed resources"
+              durationWeeks:
+                type: integer
+                example: 5
+                minimum: 1
+                description: "The amount of time in weeks"
+              startMonth:
+                type: string
+                format: date-time
+                description: "The start day of the job"
+    SubmitTeamResponse:
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: "The id of created project"
     Role:
       required:
         - id

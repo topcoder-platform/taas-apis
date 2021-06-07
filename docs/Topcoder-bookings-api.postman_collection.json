@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2c9dbe94-39f9-4a01-97e4-70f781fc1364",
+		"_postman_id": "18310e1b-429d-49db-8555-f4a54404271f",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -19476,6 +19476,1695 @@
 		{
 			"name": "Taas Teams",
 			"item": [
+				{
+					"name": "Before Start",
+					"item": [
+						{
+							"name": "create role 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleIdForTeam-1\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dev Ops Engineer\",\n    \"description\": \"A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.\",\n    \"listOfSkills\": [\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Machine Learning\",\n        \"Force.com\",\n        \"User Interface (Ui)\",\n        \"Photoshop\",\n        \"appcelerator\",\n        \"Flux\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 50,\n            \"inCountry\": 20,\n            \"offShore\": 10,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 8,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleIdForTeam-2\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Angular Developer\",\n    \"description\": \"Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.\",\n    \"listOfSkills\": [\n        \"Database\",\n        \"Winforms\",\n        \"User Interface (Ui)\",\n        \"Photoshop\",\n        \"Dropwizard\",\n        \"NGINX\",\n        \"Docker\",\n        \".NET\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 55,\n            \"inCountry\": 20,\n            \"offShore\": 10,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 8,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleIdForTeam-3\", response.id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Salesforce Developer\",\n    \"description\": \"A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.\",\n    \"listOfSkills\": [\n        \"Docker\",\n        \".NET\",\n        \"appcelerator\",\n        \"Flux\",\n        \"Database\",\n        \"Winforms\",\n        \"NGINX\",\n        \"Machine Learning\"\n    ],\n    \"rates\": [\n        {\n            \"global\": 40,\n            \"inCountry\": 20,\n            \"offShore\": 10,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        },\n        {\n            \"global\": 25,\n            \"inCountry\": 15,\n            \"offShore\": 5,\n            \"rate30Global\": 20,\n            \"rate30InCountry\": 15,\n            \"rate30OffShore\": 35,\n            \"rate20Global\": 20,\n            \"rate20InCountry\": 15,\n            \"rate20OffShore\": 35\n        }\n    ],\n    \"numberOfMembers\": 10,\n    \"numberOfMembersAvailable\": 6,\n    \"imageUrl\": \"http://images.topcoder.com/member\",\n    \"timeToCandidate\": 105,\n    \"timeToInterview\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role Niche",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Niche\",\n    \"rates\": [\n        {\n            \"global\": 10,\n            \"inCountry\": 10,\n            \"offShore\": 10\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Role Search",
+					"item": [
+						{
+							"name": "send request with administrator using roleId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId1-1\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"{{roleIdForTeam-1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with administrator using skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId1-2\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n        \"56f46882-26f3-4c39-966d-912cccea0119\",\r\n        \"536865d3-e7c7-4675-b119-6df8bf411624\",\r\n        \"bd417c10-d81a-45b6-85a9-d79efe86b9bb\",\r\n        \"4fce6ced-3610-443c-92eb-3f6d76b34f5c\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with administrator using description",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId1-3\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"jobDescription\": \"Should have these skills: Machine Learning, Dropwizard, NGINX, appcelerator\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with user using roleId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId2-1\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_member_test_2}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"{{roleIdForTeam-2}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with user using skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId2-2\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_member_test_2}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n        \"56f46882-26f3-4c39-966d-912cccea0119\",\r\n        \"536865d3-e7c7-4675-b119-6df8bf411624\",\r\n        \"bd417c10-d81a-45b6-85a9-d79efe86b9bb\",\r\n        \"4fce6ced-3610-443c-92eb-3f6d76b34f5c\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with user using description",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId2-3\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_member_test_2}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"jobDescription\": \"Should have these skills: Machine Learning, Dropwizard, NGINX, appcelerator\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with m2m using roleId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId3-1\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_roleSearchRequests}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"{{roleIdForTeam-3}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with m2m using skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId3-2\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_roleSearchRequests}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n        \"56f46882-26f3-4c39-966d-912cccea0119\",\r\n        \"536865d3-e7c7-4675-b119-6df8bf411624\",\r\n        \"bd417c10-d81a-45b6-85a9-d79efe86b9bb\",\r\n        \"4fce6ced-3610-443c-92eb-3f6d76b34f5c\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with m2m using description",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId3-3\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_roleSearchRequests}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"jobDescription\": \"Should have these skills: Machine Learning, Dropwizard, NGINX, appcelerator\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer invalid_token",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"jobDescription\": \"Should have these skills: Machine Learning, Dropwizard, NGINX, appcelerator\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data\\\" must have at least 1 key\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with invalid field 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.roleId\\\" must be a valid GUID\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"000\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with invalid field 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"id: 00000000-0000-0000-0000-000000000000 \\\"Role\\\" doesn't exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"00000000-0000-0000-0000-000000000000\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with invalid field 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.skills\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": \"00000000-0000-0000-0000-000000000000\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with invalid field 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid skills: [00000000-0000-0000-0000-000000000000]\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n        \"00000000-0000-0000-0000-000000000000\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with not matching skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.name).to.eq(\"Niche\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Team",
+					"item": [
+						{
+							"name": "create team with administrator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"createTeamProjectId-1\", response.projectId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-2}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get created jobs 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs?projectId={{createTeamProjectId-1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									],
+									"query": [
+										{
+											"key": "projectId",
+											"value": "{{createTeamProjectId-1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"createTeamProjectId-2\", response.projectId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_member_test_2}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 2\",\r\n    \"teamDescription\":\"Submit Team Test 2 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Angular Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId2-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId2-3}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get created jobs 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs?projectId={{createTeamProjectId-2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									],
+									"query": [
+										{
+											"key": "projectId",
+											"value": "{{createTeamProjectId-2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with m2m",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"createTeamProjectId-3\", response.projectId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_create_teams}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 3\",\r\n    \"teamDescription\":\"Submit Team Test 3 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId3-2}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId3-3}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get created jobs 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/jobs?projectId={{createTeamProjectId-3}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"jobs"
+									],
+									"query": [
+										{
+											"key": "projectId",
+											"value": "{{createTeamProjectId-3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer invalid token",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-2}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with missing field 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.teamName\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-2}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with missing field 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.positions\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with missing field 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.positions[0].roleName\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with missing field 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.positions[0].roleSearchRequestId\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with missing field 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.positions[0].numberOfResources\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with invalid field 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"id: 00000000-0000-0000-0000-000000000000 \\\"RoleSearchRequest\\\" doesn't exists.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"00000000-0000-0000-0000-000000000000\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create team with invalid field 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.positions\\\" must be an array\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"teamName\": \"Submit Team Test 1\",\r\n    \"teamDescription\":\"Submit Team Test 1 description\",\r\n    \"positions\":\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/submitTeamRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"submitTeamRequest"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
 				{
 					"name": "GET /taas-teams",
 					"request": {
