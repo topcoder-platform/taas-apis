@@ -2403,11 +2403,7 @@ paths:
           required: false
           schema:
             type: string
-<<<<<<< HEAD
             enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
-=======
-            enum: ["completed", "scheduled", "cancelled"]
->>>>>>> 925d7bd8f9933bad9b6a8e3c59b01dbd9246f1ad
           description: The payment status.
       responses:
         "200":
@@ -2523,7 +2519,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    
+
   /work-period-payments/{id}:
     get:
       tags:
