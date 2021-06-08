@@ -2,6 +2,7 @@
  * Handle events for JobCandidate.
  */
 
+const _ = require('lodash')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -23,17 +24,36 @@ async function inReviewJob (payload) {
     })
     return
   }
-  await JobService.partiallyUpdateJob(
+
+  const { candidates } = await JobService.getJob(
     helper.getAuditM2Muser(),
-    job.id,
-    { status: 'in-review' }
-  ).then(result => {
-    logger.info({
+    job.id
+  )
+
+  const status = ['applied', 'skills-test', 'phone-screen', 'rejected-pre-screen']
+  const needReview = _.find(candidates, (c) => {
+    return !_.includes(status, c.status)
+  })
+
+  if (needReview) {
+    await JobService.partiallyUpdateJob(
+      helper.getAuditM2Muser(),
+      job.id,
+      { status: 'in-review' }
+    ).then(result => {
+      logger.info({
+        component: 'JobCandidateEventHandler',
+        context: 'inReviewJob',
+        message: `id: ${result.id} job got in-review status.`
+      })
+    })
+  } else {
+    logger.debug({
       component: 'JobCandidateEventHandler',
       context: 'inReviewJob',
-      message: `id: ${result.id} job got in-review status.`
+      message: `id: ${job.id} job doesn't have candidates to review`
     })
-  })
+  }
 }
 
 /**
