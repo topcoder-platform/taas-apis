@@ -170,7 +170,11 @@ module.exports = {
   TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
   DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
   DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
-
+  // the minimum matching rate when searching roles by skills
+  ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.70,
+  // member groups representing Wipro or TopCoder employee
+  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
+  // payment scheduler config
   PAYMENT_PROCESSING: {
     // switch off actual API calls in Payment Scheduler
     SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF',
