@@ -1,37 +1,35 @@
 const { Sequelize, Model } = require('sequelize')
-const _ = require('lodash')
 const config = require('config')
 const errors = require('../common/errors')
-const { WorkPeriodPaymentStatus } = require('../../app-constants')
 
 module.exports = (sequelize) => {
-  class WorkPeriodPayment extends Model {
+  class PaymentScheduler extends Model {
     /**
      * Create association between models
      * @param {Object} models the database models
      */
     static associate (models) {
-      WorkPeriodPayment.belongsTo(models.WorkPeriod, { foreignKey: 'workPeriodId' })
+      PaymentScheduler.belongsTo(models.WorkPeriodPayment, { foreignKey: 'workPeriodPaymentId' })
     }
 
     /**
-     * Get work period by id
-     * @param {String} id the work period id
-     * @returns {WorkPeriodPayment} the work period payment instance
+     * Get payment scheduler by id
+     * @param {String} id the payment scheduler id
+     * @returns {PaymentScheduler} the payment scheduler instance
      */
     static async findById (id) {
-      const workPeriodPayment = await WorkPeriodPayment.findOne({
+      const paymentScheduler = await PaymentScheduler.findOne({
         where: {
           id
         }
       })
-      if (!workPeriodPayment) {
-        throw new errors.NotFoundError(`id: ${id} "WorkPeriodPayment" doesn't exists`)
+      if (!paymentScheduler) {
+        throw new errors.NotFoundError(`id: ${id} "paymentScheduler" doesn't exists`)
       }
-      return workPeriodPayment
+      return paymentScheduler
     }
   }
-  WorkPeriodPayment.init(
+  PaymentScheduler.init(
     {
       id: {
         type: Sequelize.UUID,
@@ -39,38 +37,36 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
       },
-      workPeriodId: {
-        field: 'work_period_id',
-        type: Sequelize.UUID,
-        allowNull: false
-      },
       challengeId: {
         field: 'challenge_id',
-        type: Sequelize.UUID
-      },
-      amount: {
-        type: Sequelize.DOUBLE
-      },
-      status: {
-        type: Sequelize.ENUM(_.values(WorkPeriodPaymentStatus)),
-        allowNull: false
-      },
-      statusDetails: {
-        field: 'status_details',
-        type: Sequelize.JSONB
-      },
-      billingAccountId: {
-        field: 'billing_account_id',
-        type: Sequelize.BIGINT
-      },
-      createdBy: {
-        field: 'created_by',
         type: Sequelize.UUID,
         allowNull: false
       },
-      updatedBy: {
-        field: 'updated_by',
-        type: Sequelize.UUID
+      workPeriodPaymentId: {
+        field: 'work_period_payment_id',
+        type: Sequelize.UUID,
+        allowNull: false
+      },
+      step: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM(
+          'in-progress',
+          'completed',
+          'failed'
+        ),
+        allowNull: false
+      },
+      userId: {
+        field: 'user_id',
+        type: Sequelize.BIGINT
+      },
+      userHandle: {
+        field: 'user_handle',
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         field: 'created_at',
@@ -88,7 +84,7 @@ module.exports = (sequelize) => {
     {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
-      tableName: 'work_period_payments',
+      tableName: 'payment_schedulers',
       paranoid: true,
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
@@ -100,12 +96,12 @@ module.exports = (sequelize) => {
         }
       },
       hooks: {
-        afterCreate: (workPeriodPayment) => {
-          delete workPeriodPayment.dataValues.deletedAt
+        afterCreate: (paymentScheduler) => {
+          delete paymentScheduler.dataValues.deletedAt
         }
       }
     }
   )
 
-  return WorkPeriodPayment
+  return PaymentScheduler
 }

@@ -62,6 +62,9 @@ module.exports = (sequelize) => {
       resume: {
         type: Sequelize.STRING(2048)
       },
+      remark: {
+        type: Sequelize.STRING(255)
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,
