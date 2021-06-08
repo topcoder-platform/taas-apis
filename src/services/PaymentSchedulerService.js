@@ -5,7 +5,7 @@ const models = require('../models')
 const { getV3MemberDetailsByHandle, getChallenge, getChallengeResource, sleep, postEvent } = require('../common/helper')
 const logger = require('../common/logger')
 const { createChallenge, addResourceToChallenge, activateChallenge, closeChallenge } = require('./PaymentService')
-const { ChallengeStatus, PaymentProcessingSwitch } = require('../../app-constants')
+const { ChallengeStatus, PaymentSchedulerStatus, PaymentProcessingSwitch } = require('../../app-constants')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
 const WorkPeriod = models.WorkPeriod
@@ -13,7 +13,7 @@ const PaymentScheduler = models.PaymentScheduler
 const {
   SWITCH, BATCH_SIZE, IN_PROGRESS_EXPIRED, MAX_RETRY_COUNT, RETRY_BASE_DELAY, RETRY_MAX_DELAY, PER_REQUEST_MAX_TIME, PER_PAYMENT_MAX_TIME,
   PER_MINUTE_PAYMENT_MAX_COUNT, PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT, PER_MINUTE_RESOURCE_REQUEST_MAX_COUNT,
-  FIX_DELAY_STEP_1_2, FIX_DELAY_STEP_2_3, FIX_DELAY_STEP_3_4
+  FIX_DELAY_STEP_CREATE_CHALLENGE, FIX_DELAY_STEP_ASSIGN_MEMBER, FIX_DELAY_STEP_ACTIVATE_CHALLENGE
 } = config.PAYMENT_PROCESSING
 const processStatus = {
   perMin: {
@@ -30,7 +30,6 @@ const processStatus = {
   paymentStartTime: 0,
   requestStartTime: 0
 }
-const stepEnum = ['start-process', 'create-challenge', 'assign-member', 'activate-challenge', 'get-userId', 'close-challenge']
 const processResult = {
   SUCCESS: 'success',
   FAIL: 'fail',
@@ -94,21 +93,21 @@ async function processPayment (workPeriodPayment) {
     await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
   }
   // Check whether the number of processed records per minute exceeds the specified number, if it exceeds, wait for the next minute before processing
-  await checkWait(stepEnum[0])
+  await checkWait(PaymentSchedulerStatus.START_PROCESS)
   localLogger.info(`Processing workPeriodPayment ${workPeriodPayment.id}`, 'processPayment')
 
   const workPeriod = await WorkPeriod.findById(workPeriodPayment.workPeriodId)
   try {
     if (!paymentScheduler) {
       // 1. create challenge
-      const challengeId = await withRetry(createChallenge, [getCreateChallengeParam(workPeriod, workPeriodPayment)], validateError, stepEnum[1])
+      const challengeId = await withRetry(createChallenge, [getCreateChallengeParam(workPeriod, workPeriodPayment)], validateError, PaymentSchedulerStatus.CREATE_CHALLENGE)
       paymentScheduler = await PaymentScheduler.create({ challengeId, step: 1, workPeriodPaymentId: workPeriodPayment.id, userHandle: workPeriod.userHandle, status: 'in-progress' })
     } else {
       // If the paymentScheduler already exists, it means that this is a record caused by an abnormal shutdown
       await setPaymentSchedulerStep(paymentScheduler)
     }
     // Start from unprocessed step, perform the process step by step
-    while (paymentScheduler.step < 5) {
+    while (paymentScheduler.step !== PaymentSchedulerStatus.CLOSE_CHALLENGE) {
       await processStep(paymentScheduler)
     }
 
@@ -118,7 +117,7 @@ async function processPayment (workPeriodPayment) {
     // Update the modified status to es
     await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
 
-    await paymentScheduler.update({ step: 5, userId: paymentScheduler.userId, status: 'completed' })
+    await paymentScheduler.update({ step: PaymentSchedulerStatus.CLOSE_CHALLENGE, userId: paymentScheduler.userId, status: 'completed' })
 
     localLogger.info(`Processed workPeriodPayment ${workPeriodPayment.id} successfully`, 'processPayment')
     return processResult.SUCCESS
@@ -132,7 +131,7 @@ async function processPayment (workPeriodPayment) {
     await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
 
     if (paymentScheduler) {
-      await paymentScheduler.update({ step: 5, userId: paymentScheduler.userId, status: 'failed' })
+      await paymentScheduler.update({ step: PaymentSchedulerStatus.CLOSE_CHALLENGE, userId: paymentScheduler.userId, status: 'failed' })
     }
     localLogger.error(`Processed workPeriodPayment ${workPeriodPayment.id} failed`, 'processPayment')
     return processResult.FAIL
@@ -144,23 +143,23 @@ async function processPayment (workPeriodPayment) {
  * @param {Object} paymentScheduler the payment scheduler
  */
 async function processStep (paymentScheduler) {
-  if (paymentScheduler.step === 1) {
+  if (paymentScheduler.step === PaymentSchedulerStatus.CREATE_CHALLENGE) {
     // 2. assign member to the challenge
-    await withRetry(addResourceToChallenge, [paymentScheduler.challengeId, paymentScheduler.userHandle], validateError, stepEnum[2])
-    paymentScheduler.step = 2
-  } else if (paymentScheduler.step === 2) {
+    await withRetry(addResourceToChallenge, [paymentScheduler.challengeId, paymentScheduler.userHandle], validateError, PaymentSchedulerStatus.ASSIGN_MEMBER)
+    paymentScheduler.step = PaymentSchedulerStatus.ASSIGN_MEMBER
+  } else if (paymentScheduler.step === PaymentSchedulerStatus.ASSIGN_MEMBER) {
     // 3. active the challenge
-    await withRetry(activateChallenge, [paymentScheduler.challengeId], validateError, stepEnum[3])
-    paymentScheduler.step = 3
-  } else if (paymentScheduler.step === 3) {
+    await withRetry(activateChallenge, [paymentScheduler.challengeId], validateError, PaymentSchedulerStatus.ACTIVATE_CHALLENGE)
+    paymentScheduler.step = PaymentSchedulerStatus.ACTIVATE_CHALLENGE
+  } else if (paymentScheduler.step === PaymentSchedulerStatus.ACTIVATE_CHALLENGE) {
     // 4.1. get user id
-    const { userId } = await withRetry(getV3MemberDetailsByHandle, [paymentScheduler.userHandle], validateError, stepEnum[4])
+    const { userId } = await withRetry(getV3MemberDetailsByHandle, [paymentScheduler.userHandle], validateError, PaymentSchedulerStatus.GET_USER_ID)
     paymentScheduler.userId = userId
-    paymentScheduler.step = 4
-  } else if (paymentScheduler.step === 4) {
+    paymentScheduler.step = PaymentSchedulerStatus.GET_USER_ID
+  } else if (paymentScheduler.step === PaymentSchedulerStatus.GET_USER_ID) {
     // 4.2. close the challenge
-    await withRetry(closeChallenge, [paymentScheduler.challengeId, paymentScheduler.userId, paymentScheduler.userHandle], validateError, stepEnum[5])
-    paymentScheduler.step = 5
+    await withRetry(closeChallenge, [paymentScheduler.challengeId, paymentScheduler.userId, paymentScheduler.userHandle], validateError, PaymentSchedulerStatus.CLOSE_CHALLENGE)
+    paymentScheduler.step = PaymentSchedulerStatus.CLOSE_CHALLENGE
   }
 }
 
@@ -171,17 +170,17 @@ async function processStep (paymentScheduler) {
 async function setPaymentSchedulerStep (paymentScheduler) {
   const challenge = await getChallenge(paymentScheduler.challengeId)
   if (SWITCH === PaymentProcessingSwitch.OFF) {
-    paymentScheduler.step = 5
+    paymentScheduler.step = PaymentSchedulerStatus.CLOSE_CHALLENGE
   } else if (challenge.status === ChallengeStatus.COMPLETED) {
-    paymentScheduler.step = 5
+    paymentScheduler.step = PaymentSchedulerStatus.CLOSE_CHALLENGE
   } else if (challenge.status === ChallengeStatus.ACTIVE) {
-    paymentScheduler.step = 3
+    paymentScheduler.step = PaymentSchedulerStatus.ACTIVATE_CHALLENGE
   } else {
     const resource = await getChallengeResource(paymentScheduler.challengeId, paymentScheduler.userHandle, config.ROLE_ID_SUBMITTER)
     if (resource) {
-      paymentScheduler.step = 2
+      paymentScheduler.step = PaymentSchedulerStatus.ASSIGN_MEMBER
     } else {
-      paymentScheduler.step = 1
+      paymentScheduler.step = PaymentSchedulerStatus.CREATE_CHALLENGE
     }
   }
   // The main purpose is updating the updatedAt of payment scheduler to avoid simultaneous processing
@@ -213,26 +212,26 @@ function getCreateChallengeParam (workPeriod, workPeriodPayment) {
 async function checkWait (step, tryCount) {
   // When calculating the retry time later, we need to subtract the time that has been waited before
   let lapse = 0
-  if (step === stepEnum[0]) {
+  if (step === PaymentSchedulerStatus.START_PROCESS) {
     lapse += await checkPerMinThreshold('paymentsProcessed')
-  } else if (step === stepEnum[1]) {
+  } else if (step === PaymentSchedulerStatus.CREATE_CHALLENGE) {
     await checkPerMinThreshold('challengeRequested')
-  } else if (step === stepEnum[2]) {
+  } else if (step === PaymentSchedulerStatus.ASSIGN_MEMBER) {
     // Only when tryCount = 0, it comes from the previous step, and it is necessary to wait for a fixed time
-    if (FIX_DELAY_STEP_1_2 > 0 && tryCount === 0) {
-      await sleep(FIX_DELAY_STEP_1_2)
+    if (FIX_DELAY_STEP_CREATE_CHALLENGE > 0 && tryCount === 0) {
+      await sleep(FIX_DELAY_STEP_CREATE_CHALLENGE)
     }
     lapse += await checkPerMinThreshold('resourceRequested')
-  } else if (step === stepEnum[3]) {
+  } else if (step === PaymentSchedulerStatus.ACTIVATE_CHALLENGE) {
     // Only when tryCount = 0, it comes from the previous step, and it is necessary to wait for a fixed time
-    if (FIX_DELAY_STEP_2_3 > 0 && tryCount === 0) {
-      await sleep(FIX_DELAY_STEP_2_3)
+    if (FIX_DELAY_STEP_ASSIGN_MEMBER > 0 && tryCount === 0) {
+      await sleep(FIX_DELAY_STEP_ASSIGN_MEMBER)
     }
     lapse += await checkPerMinThreshold('challengeRequested')
-  } else if (step === stepEnum[5]) {
+  } else if (step === PaymentSchedulerStatus.CLOSE_CHALLENGE) {
     // Only when tryCount = 0, it comes from the previous step, and it is necessary to wait for a fixed time
-    if (FIX_DELAY_STEP_3_4 > 0 && tryCount === 0) {
-      await sleep(FIX_DELAY_STEP_3_4)
+    if (FIX_DELAY_STEP_ACTIVATE_CHALLENGE > 0 && tryCount === 0) {
+      await sleep(FIX_DELAY_STEP_ACTIVATE_CHALLENGE)
     }
     lapse += await checkPerMinThreshold('challengeRequested')
   }
@@ -305,9 +304,9 @@ async function withRetry (func, argArr, predictFunc, step) {
       if (SWITCH === PaymentProcessingSwitch.OFF) {
         // without actual API calls by adding delay (for example 1 second for each step), to simulate the act
         sleep(1000)
-        if (step === stepEnum[1]) {
+        if (step === PaymentSchedulerStatus.CREATE_CHALLENGE) {
           return '00000000-0000-0000-0000-000000000000'
-        } else if (step === stepEnum[4]) {
+        } else if (step === PaymentSchedulerStatus.GET_USER_ID) {
           return { userId: 100001 }
         }
         return

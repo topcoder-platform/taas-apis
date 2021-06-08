@@ -2,6 +2,7 @@
 
 const config = require('config')
 const _ = require('lodash')
+const { PaymentSchedulerStatus } = require('../app-constants')
 
 /**
  * Create `payment_schedulers` table & relations.
@@ -35,7 +36,7 @@ module.exports = {
           }
         },
         step: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.ENUM(_.values(PaymentSchedulerStatus)),
           allowNull: false
         },
         status: {
@@ -87,11 +88,13 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     const table = { schema: config.DB_SCHEMA_NAME, tableName: 'payment_schedulers' }
     const statusTypeName = `${table.schema}.enum_${table.tableName}_status`
+    const stepTypeName = `${table.schema}.enum_${table.tableName}_step`
     const transaction = await queryInterface.sequelize.transaction()
     try {
       await queryInterface.dropTable(table, { transaction })
-      // drop enum type for status column
+      // drop enum type for status and step column
       await queryInterface.sequelize.query(`DROP TYPE ${statusTypeName}`, { transaction })
+      await queryInterface.sequelize.query(`DROP TYPE ${stepTypeName}`, { transaction })
 
       await queryInterface.changeColumn({ tableName: 'work_period_payments', schema: config.DB_SCHEMA_NAME }, 'challenge_id',
         { type: Sequelize.UUID, allowNull: false },
