@@ -952,6 +952,7 @@ async function postEvent (topic, payload, options = {}) {
     'mime-type': 'application/json',
     payload
   }
+  _.merge(message,options)
   await client.postEvent(message)
   await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
