@@ -290,7 +290,7 @@ async function updateWorkPeriod (currentUser, id, data) {
   }
 
   //await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), {"key":data.resourceBookingId})
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), {oldValue: oldValue, "key":data.resourceBookingId})
   return updated.dataValues
 }
 
