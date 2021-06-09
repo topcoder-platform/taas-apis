@@ -15,8 +15,10 @@ const ResourceBookingService = require('./ResourceBookingService')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const models = require('../models')
+const stopWords = require('../../docs/stopWords.json')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
+const topcoderSkills = {}
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
@@ -58,6 +60,73 @@ async function _getJobsByProjectIds (currentUser, projectIds) {
     { returnAll: true }
   )
   return result
+}
+
+/**
+ * Gets topcoder skills and stores their name and compiled
+ * regex patters according to Levenshtein distance <=1
+ */
+async function _reloadCachedTopcoderSkills () {
+  // do not reload if cache time is not expired
+  if (!_.isUndefined(topcoderSkills.time)) {
+    const cacheTime = config.TOPCODER_SKILLS_CACHE_TIME * 60 * 1000
+    if (new Date().getTime() - topcoderSkills.time < cacheTime) {
+      return
+    }
+  }
+  // collect all skills
+  const skills = await helper.getAllTopcoderSkills()
+  // set the last cached time
+  topcoderSkills.time = new Date().getTime()
+  topcoderSkills.skills = []
+  // store skill names and compiled regex paterns
+  _.each(skills, skill => {
+    topcoderSkills.skills.push({
+      name: skill.name,
+      pattern: _compileRegexPatternForSkillName(skill.name)
+    })
+  })
+}
+
+/**
+ * Prepares the regex pattern for the given word
+ * according to Levenshtein distance of 1 (insertions, deletions or substitutions)
+ * @param {String} skillName the name of the skill
+ * @returns {RegExp} the compiled regex pattern
+ */
+function _compileRegexPatternForSkillName (skillName) {
+  // split the name into its chars
+  let chars = _.split(skillName, '')
+  // escape characters reserved to regex
+  chars = _.map(chars, _.escapeRegExp)
+  // Its not a good idea to apply tolerance according to
+  // Levenshtein distance for the words have less than 3 letters
+  // We expect the skill names have 1 or 2 letters to take place
+  // in job description as how they are exactly spelled
+  if (chars.length < 3) {
+    return new RegExp(`^(?:${_.join(chars, '')})$`, 'i')
+  }
+
+  const res = []
+  // include the skill name itself
+  res.push(_.join(chars, ''))
+  // include every transposition combination
+  // E.g. java => ajva, jvaa, jaav
+  for (let i = 0; i < chars.length - 1; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + chars[i + 1] + chars[i] + _.join(_.slice(chars, i + 2), ''))
+  }
+  // include every insertion combination
+  // E.g. java => .java, j.ava, ja.va, jav.a, java.
+  for (let i = 0; i <= chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.' + _.join(_.slice(chars, i), ''))
+  }
+  // include every deletion/substitution combination
+  // E.g. java => .?ava, j.?va, ja.?a, jav.?
+  for (let i = 0; i < chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.?' + _.join(_.slice(chars, i + 1), ''))
+  }
+  // return the regex pattern
+  return new RegExp(`^(?:${_.join(res, '|')})$`, 'i')
 }
 
 /**
@@ -763,7 +832,40 @@ getRoleBySkills.schema = Joi.object()
  * @returns {Object} the result
  */
 async function getSkillsByJobDescription (currentUser, data) {
-  return helper.getTags(data.description)
+  // load topcoder skills if needed. Using cached skills helps to avoid
+  // unnecessary api calls which is extremely time comsuming.
+  await _reloadCachedTopcoderSkills()
+  // replace markdown tags with spaces
+  let description = _.replace(data.description, /[`|^[\]{}~/,:-]|#{2,}|<br>/gi, ' ')
+  // replace all whitespace characters with single space
+  description = _.replace(description, /\s\s+/g, ' ')
+  // extract words from description
+  let words = _.split(description, ' ')
+  // remove stopwords from description
+  words = _.filter(words, word => stopWords.indexOf(word.toLowerCase()) === -1)
+  let foundSkills = []
+  const result = []
+  // try to match each word with skill names
+  // using pre-compiled regex pattern
+  _.each(words, word => {
+    _.each(topcoderSkills.skills, skill => {
+      // do not stop searching after a match in order to detect more lookalikes
+      if (skill.pattern.test(word)) {
+        foundSkills.push(skill.name)
+      }
+    })
+  })
+  foundSkills = _.uniq(foundSkills)
+  // apply desired template
+  _.each(foundSkills, skill => {
+    result.push({
+      tag: skill,
+      type: 'taas_skill',
+      source: 'taas-jd-parser'
+    })
+  })
+
+  return result
 }
 
 getSkillsByJobDescription.schema = Joi.object()

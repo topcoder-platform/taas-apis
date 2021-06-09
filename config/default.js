@@ -173,5 +173,7 @@ module.exports = {
   // the minimum matching rate when searching roles by skills
   ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.70,
   // member groups representing Wipro or TopCoder employee
-  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015']
+  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
+  // Topcoder skills cache time in minutes
+  TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60
 }
