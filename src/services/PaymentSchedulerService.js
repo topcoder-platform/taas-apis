@@ -2,7 +2,7 @@ const _ = require('lodash')
 const config = require('config')
 const moment = require('moment')
 const models = require('../models')
-const { getV3MemberDetailsByHandle, getChallenge, getChallengeResource, sleep, postEvent } = require('../common/helper')
+const { getMemberDetailsByHandle, getChallenge, getChallengeResource, sleep, postEvent } = require('../common/helper')
 const logger = require('../common/logger')
 const { createChallenge, addResourceToChallenge, activateChallenge, closeChallenge } = require('./PaymentService')
 const { ChallengeStatus, PaymentSchedulerStatus, PaymentProcessingSwitch } = require('../../app-constants')
@@ -153,7 +153,7 @@ async function processStep (paymentScheduler) {
     paymentScheduler.step = PaymentSchedulerStatus.ACTIVATE_CHALLENGE
   } else if (paymentScheduler.step === PaymentSchedulerStatus.ACTIVATE_CHALLENGE) {
     // 4.1. get user id
-    const { userId } = await withRetry(getV3MemberDetailsByHandle, [paymentScheduler.userHandle], validateError, PaymentSchedulerStatus.GET_USER_ID)
+    const { userId } = await withRetry(getMemberDetailsByHandle, [paymentScheduler.userHandle], validateError, PaymentSchedulerStatus.GET_USER_ID)
     paymentScheduler.userId = userId
     paymentScheduler.step = PaymentSchedulerStatus.GET_USER_ID
   } else if (paymentScheduler.step === PaymentSchedulerStatus.GET_USER_ID) {
