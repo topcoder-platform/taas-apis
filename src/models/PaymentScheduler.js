@@ -1,6 +1,8 @@
 const { Sequelize, Model } = require('sequelize')
 const config = require('config')
+const _ = require('lodash')
 const errors = require('../common/errors')
+const { PaymentSchedulerStatus } = require('../../app-constants')
 
 module.exports = (sequelize) => {
   class PaymentScheduler extends Model {
@@ -48,7 +50,7 @@ module.exports = (sequelize) => {
         allowNull: false
       },
       step: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.ENUM(_.values(PaymentSchedulerStatus)),
         allowNull: false
       },
       status: {

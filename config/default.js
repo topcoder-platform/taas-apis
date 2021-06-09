@@ -202,11 +202,11 @@ module.exports = {
     PER_MINUTE_RESOURCE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 20),
     // the default step fix delay, unit: ms
     FIX_DELAY_STEP: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
-    // the fix delay between step one and step two, unit: ms
-    FIX_DELAY_STEP_1_2: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_1_2 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
-    // the fix delay between step two and step three, unit: ms
-    FIX_DELAY_STEP_2_3: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_2_3 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
-    // the fix delay between step three and step four, unit: ms
-    FIX_DELAY_STEP_3_4: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_3_4 || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
+    // the fix delay after step of create challenge, unit: ms
+    FIX_DELAY_STEP_CREATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_CREATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of assign member, unit: ms
+    FIX_DELAY_STEP_ASSIGN_MEMBER: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ASSIGN_MEMBER || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of activate challenge, unit: ms
+    FIX_DELAY_STEP_ACTIVATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ACTIVATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
   }
 }

@@ -97,6 +97,15 @@ const PaymentProcessingSwitch = {
   OFF: 'OFF'
 }
 
+const PaymentSchedulerStatus = {
+  START_PROCESS: 'start-process',
+  CREATE_CHALLENGE: 'create-challenge',
+  ASSIGN_MEMBER: 'assign-member',
+  ACTIVATE_CHALLENGE: 'activate-challenge',
+  GET_USER_ID: 'get-userId',
+  CLOSE_CHALLENGE: 'close-challenge'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -104,5 +113,6 @@ module.exports = {
   Interviews,
   ChallengeStatus,
   WorkPeriodPaymentStatus,
+  PaymentSchedulerStatus,
   PaymentProcessingSwitch
 }
