@@ -101,7 +101,7 @@ async function processPayment (workPeriodPayment) {
     if (!paymentScheduler) {
       // 1. create challenge
       const challengeId = await withRetry(createChallenge, [getCreateChallengeParam(workPeriod, workPeriodPayment)], validateError, PaymentSchedulerStatus.CREATE_CHALLENGE)
-      paymentScheduler = await PaymentScheduler.create({ challengeId, step: 1, workPeriodPaymentId: workPeriodPayment.id, userHandle: workPeriod.userHandle, status: 'in-progress' })
+      paymentScheduler = await PaymentScheduler.create({ challengeId, step: PaymentSchedulerStatus.CREATE_CHALLENGE, workPeriodPaymentId: workPeriodPayment.id, userHandle: workPeriod.userHandle, status: 'in-progress' })
     } else {
       // If the paymentScheduler already exists, it means that this is a record caused by an abnormal shutdown
       await setPaymentSchedulerStep(paymentScheduler)
