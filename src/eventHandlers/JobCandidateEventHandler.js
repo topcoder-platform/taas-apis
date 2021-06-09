@@ -23,17 +23,25 @@ async function inReviewJob (payload) {
     })
     return
   }
-  await JobService.partiallyUpdateJob(
-    helper.getAuditM2Muser(),
-    job.id,
-    { status: 'in-review' }
-  ).then(result => {
-    logger.info({
+  if (payload.value.status === 'open') {
+    await JobService.partiallyUpdateJob(
+      helper.getAuditM2Muser(),
+      job.id,
+      { status: 'in-review' }
+    ).then(result => {
+      logger.info({
+        component: 'JobCandidateEventHandler',
+        context: 'inReviewJob',
+        message: `id: ${result.id} job got in-review status.`
+      })
+    })
+  } else {
+    logger.debug({
       component: 'JobCandidateEventHandler',
       context: 'inReviewJob',
-      message: `id: ${result.id} job got in-review status.`
+      message: `id: ${payload.value.id} candidate is not in open status`
     })
-  })
+  }
 }
 
 /**
@@ -46,6 +54,17 @@ async function processCreate (payload) {
   await inReviewJob(payload)
 }
 
+/**
+ * Process job candidate update event.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function processUpdate (payload) {
+  await inReviewJob(payload)
+}
+
 module.exports = {
-  processCreate
+  processCreate,
+  processUpdate
 }
