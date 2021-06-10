@@ -320,6 +320,10 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
+  // We can't remove dates of Resource Booking once they are both set
+  if (!_.isNil(oldValue.startDate) && !_.isNil(oldValue.endDate) && (_.isNull(data.startDate) || _.isNull(data.endDate))) {
+    throw new errors.BadRequestError('You cannot remove start or end date if both are already set for Resource Booking.')
+  }
   // before updating the record, we need to check if any paid work periods tried to be deleted
   await _ensurePaidWorkPeriodsNotDeleted(id, oldValue, data)
 

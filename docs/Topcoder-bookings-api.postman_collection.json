@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "18310e1b-429d-49db-8555-f4a54404271f",
+		"_postman_id": "0f0620d2-acea-4e72-8d4c-6bb285d8a16a",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -13194,6 +13194,52 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"startDate\": \"2020-10-04\",\r\n  \"billingAccountId\": 80000071\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings/{{resourceBookingId}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings",
+								"{{resourceBookingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch resource booking set dates null",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": null,\r\n    \"endDate\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

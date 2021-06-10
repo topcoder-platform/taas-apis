@@ -1351,6 +1351,132 @@ const T35 = {
     message: 'Can not filter or sort by some field which is not included in fields'
   }
 }
+const T36 = {
+  resourceBooking: {
+    value: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: '2021-04-05',
+        endDate: '2021-04-17',
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    },
+    request: {
+      startDate: '2021-04-05',
+      endDate: null
+    }
+  },
+  error: {
+    httpStatus: 400,
+    message: 'You cannot remove start or end date if both are already set for Resource Booking.'
+  }
+}
+T36.resourceBooking.value.toJSON = () => T36.resourceBooking.value.dataValues
+const T37 = {
+  resourceBooking: {
+    value: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: null,
+        endDate: '2021-04-17',
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    },
+    request: {
+      startDate: null,
+      endDate: null
+    },
+    response: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: null,
+        endDate: null,
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    }
+  },
+  workPeriod: {
+    response: []
+  }
+}
+T37.resourceBooking.value.toJSON = () => T37.resourceBooking.value.dataValues
+T37.resourceBooking.value.update = () => T37.resourceBooking.response
+T37.resourceBooking.response.toJSON = () => T37.resourceBooking.response.dataValues
+const T38 = {
+  resourceBooking: {
+    value: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: null,
+        endDate: null,
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    },
+    request: {
+      startDate: null,
+      endDate: null
+    },
+    response: {
+      dataValues: {
+        id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        projectId: 21,
+        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+        jobId: '6093e58c-683d-4022-8482-5515e8345016',
+        startDate: null,
+        endDate: null,
+        memberRate: 13.23,
+        customerRate: 13,
+        rateType: 'hourly',
+        createdAt: '2020-10-09T04:24:01.048Z',
+        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        status: 'sourcing',
+        billingAccountId: 68800079
+      }
+    }
+  },
+  workPeriod: {
+    response: []
+  }
+}
+T38.resourceBooking.value.toJSON = () => T38.resourceBooking.value.dataValues
+T38.resourceBooking.value.update = () => T38.resourceBooking.response
+T38.resourceBooking.response.toJSON = () => T38.resourceBooking.response.dataValues
 module.exports = {
   T01,
   T02,
@@ -1386,5 +1512,8 @@ module.exports = {
   T32,
   T33,
   T34,
-  T35
+  T35,
+  T36,
+  T37,
+  T38
 }

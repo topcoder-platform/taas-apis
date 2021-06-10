@@ -579,4 +579,59 @@ describe('resourceBooking service test', () => {
       expect(error.message).to.eq(data.error.message)
     })
   })
+  describe('Update resource booking dates to null', () => {
+    it('T36:Should not allow setting dates to null if both dates are not null', async () => {
+      const data = testData.T36
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      let error
+      try {
+        await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      } catch (err) {
+        error = err
+      }
+      expect(error.httpStatus).to.eq(data.error.httpStatus)
+      expect(error.message).to.eq(data.error.message)
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.notCalled).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+    it('T37:Should allow setting dates to null if one of the dates is null', async () => {
+      const data = testData.T37
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+    it('T38:Should allow setting dates to null if both dates are null', async () => {
+      const data = testData.T38
+      const stubResourceBookingFindById = sinon.stub(ResourceBooking, 'findById').callsFake(async () => {
+        return data.resourceBooking.value
+      })
+      const stubWorkPeriodFindAll = sinon.stub(WorkPeriod, 'findAll').callsFake(async () => {
+        return data.workPeriod.response
+      })
+      const entity = await service.partiallyUpdateResourceBooking(commonData.currentUser, data.resourceBooking.value.dataValues.id, data.resourceBooking.request)
+      expect(entity).to.deep.eql(data.resourceBooking.response.toJSON())
+      expect(stubResourceBookingFindById.calledOnce).to.be.true
+      expect(stubPostEvent.calledOnce).to.be.true
+      expect(stubWorkPeriodFindAll.called).to.be.true
+      expect(stubCreateWorkPeriodService.callCount).to.eq(0)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
+      expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
+    })
+  })
 })
