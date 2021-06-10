@@ -235,7 +235,7 @@ async function createWorkPeriod (currentUser, workPeriod) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON())
+  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(),{"key":workPeriod.resourceBookingId})
   return created.dataValues
 }
 
@@ -289,7 +289,8 @@ async function updateWorkPeriod (currentUser, id, data) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  //await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), {oldValue: oldValue, "key":data.resourceBookingId})
   return updated.dataValues
 }
 

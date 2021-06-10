@@ -20,3 +20,4 @@ taas.interview.requested
 taas.interview.update
 taas.interview.bulkUpdate
 external.action.email
+taas.action.retry

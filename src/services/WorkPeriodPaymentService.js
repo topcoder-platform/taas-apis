@@ -81,7 +81,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     if (daysWorked === 0) {
       workPeriodPayment.amount = 0
     } else {
-      workPeriodPayment.amount = _.round(memberRate * 5 / daysWorked, 2)
+      workPeriodPayment.amount = _.round(memberRate * daysWorked / 5, 2)
     }
   }
 
@@ -183,7 +183,7 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
         const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
         result.push(successResult)
       } catch (e) {
-        result.push(_.extend(wp, { error: { message: e.message, code: e.httpStatus } }))
+        result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
       }
     }
     return result
