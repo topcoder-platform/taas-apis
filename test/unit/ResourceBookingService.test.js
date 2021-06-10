@@ -447,7 +447,7 @@ describe('resourceBooking service test', () => {
       expect(esClientSearch.calledOnce).to.be.true
       expect(result).to.deep.eq(data.result)
     })
-    it('T25:Search resource bookin from DB', async () => {
+    it('T25:Search resource booking from DB', async () => {
       const data = testData.T25
       const ESClient = commonData.ESClient
       ESClient.search = () => {}
@@ -456,7 +456,7 @@ describe('resourceBooking service test', () => {
         return data.resourceBookingFindAll
       })
       const stubResourceBookingCount = sinon.stub(ResourceBooking, 'count').callsFake(async () => {
-        return data.resourceBookingFindAll.length
+        return data.resourceBookingCount
       })
       const result = await service.searchResourceBookings(commonData.userWithManagePermission, data.criteria)
       expect(esClientSearch.calledOnce).to.be.true
