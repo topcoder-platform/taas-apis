@@ -183,7 +183,7 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
         const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
         result.push(successResult)
       } catch (e) {
-        result.push(_.extend(wp, { error: { message: e.message, code: e.httpStatus } }))
+        result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
       }
     }
     return result
