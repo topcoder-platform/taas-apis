@@ -202,6 +202,16 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
           challengeId: { type: 'keyword' },
           amount: { type: 'float' },
           status: { type: 'keyword' },
+          statusDetails: {
+            type: 'nested',
+            properties: {
+              errorMessage: { type: 'text' },
+              errorCode: { type: 'integer' },
+              retry: { type: 'integer' },
+              step: { type: 'keyword' },
+              challengeId: { type: 'keyword' }
+            }
+          },
           billingAccountId: { type: 'integer' },
           createdAt: { type: 'date' },
           createdBy: { type: 'keyword' },
@@ -284,6 +294,16 @@ async function promptUser (promptQuery, cb) {
       await cb()
     }
   })
+}
+
+/**
+ * Sleep for a given number of milliseconds.
+ *
+ * @param {Number} milliseconds the sleep time
+ * @returns {undefined}
+ */
+async function sleep (milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
 /**
@@ -953,8 +973,8 @@ async function postEvent (topic, payload, options = {}) {
     payload
   }
   if (options.key) {
-   message.key = options.key
-   }
+    message.key = options.key
+  }
   await client.postEvent(message)
   await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
@@ -1619,6 +1639,26 @@ async function createChallenge (data, token) {
 }
 
 /**
+ * Get a challenge
+ *
+ * @param {Object} data challenge data
+ * @returns {Object} the challenge
+ */
+async function getChallenge (challengeId) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/challenges/${challengeId}`
+  localLogger.debug({ context: 'getChallenge', message: `EndPoint: GET ${url}` })
+  const { body: challenge, status: httpStatus } = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'getChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
  * Update a challenge
  *
  * @param {String} challengeId id of the challenge
@@ -1691,6 +1731,35 @@ async function createChallengeResource (data, token) {
     message: `Response Body: ${JSON.stringify(resource)}`
   })
   return resource
+}
+
+/**
+ *
+ * @param {String} challengeId the challenge id
+ * @param {String} memberHandle the member handle
+ * @param {String} roleId the role id
+ * @returns {Object} the resource
+ */
+async function getChallengeResource (challengeId, memberHandle, roleId) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/resources?challengeId=${challengeId}&memberHandle=${memberHandle}&roleId=${roleId}`
+  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
+  try {
+    const { body: resource, status: httpStatus } = await request
+      .get(url)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getChallengeResource', message: `Status Code: ${httpStatus}` })
+    localLogger.debug({ context: 'getChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
+    return resource[0]
+  } catch (err) {
+    if (err.status === 404) {
+      localLogger.debug({ context: 'getChallengeResource', message: `Status Code: ${err.status}` })
+    } else {
+      throw err
+    }
+  }
 }
 
 /**
@@ -1836,6 +1905,7 @@ async function getMemberGroups (userId) {
 module.exports = {
   getParamFromCliArgs,
   promptUser,
+  sleep,
   createIndex,
   deleteIndex,
   indexBulkDataToES,
@@ -1882,8 +1952,10 @@ module.exports = {
   deleteProjectMember,
   getUserAttributeValue,
   createChallenge,
+  getChallenge,
   updateChallenge,
   createChallengeResource,
+  getChallengeResource,
   extractWorkPeriods,
   getUserByHandle,
   substituteStringByObject,

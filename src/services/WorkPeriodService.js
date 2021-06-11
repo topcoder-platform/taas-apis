@@ -235,7 +235,7 @@ async function createWorkPeriod (currentUser, workPeriod) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(), { key: workPeriod.resourceBookingId })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(), { key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
   return created.dataValues
 }
 
@@ -289,8 +289,7 @@ async function updateWorkPeriod (currentUser, id, data) {
     }
   }
 
-  // await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: data.resourceBookingId })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `resourceBooking.id:${data.resourceBookingId}` })
   return updated.dataValues
 }
 
@@ -364,9 +363,9 @@ async function deleteWorkPeriod (currentUser, id) {
       workPeriodId: id
     }
   })
-  await Promise.all(workPeriod.payments.map(({ id }) => helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC, { id })))
+  await Promise.all(workPeriod.payments.map(({ id, billingAccountId }) => helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC, { id }, { key: `workPeriodPayment.billingAccountId:${billingAccountId}` })))
   await workPeriod.destroy()
-  await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id }, { key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
 }
 
 deleteWorkPeriod.schema = Joi.object().keys({

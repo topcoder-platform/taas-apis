@@ -174,7 +174,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["hourly", "daily", "weekly", "monthly"]
+            enum: ["hourly", "daily", "weekly", "monthly","annual"]
           description: The rate type.
         - in: query
           name: status
@@ -2411,7 +2411,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["completed", "scheduled", "cancelled"]
+            enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: The payment status.
       responses:
         "200":
@@ -2527,7 +2527,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    
+
   /work-period-payments/{id}:
     get:
       tags:
@@ -4838,8 +4838,22 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "scheduled", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
+        statusDetails:
+          type: object
+          properties:
+            errorMessage:
+              type: string
+            errorCode:
+              type: integer
+            retry:
+              type: integer
+            step:
+              type: string
+            challengeId:
+              type: string
+              format: uuid
         billingAccountId:
           type: integer
           example: 80000071
@@ -4896,7 +4910,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "scheduled", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
     WorkPeriodPaymentCreateRequestBody:
       required:
@@ -4987,7 +5001,7 @@ components:
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "scheduled", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object

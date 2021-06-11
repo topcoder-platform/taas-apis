@@ -86,8 +86,24 @@ const ChallengeStatus = {
 
 const WorkPeriodPaymentStatus = {
   COMPLETED: 'completed',
-  CANCELLED: 'cancelled',
-  SCHEDULED: 'scheduled'
+  SCHEDULED: 'scheduled',
+  IN_PROGRESS: 'in-progress',
+  FAILED: 'failed',
+  CANCELLED: 'cancelled'
+}
+
+const PaymentProcessingSwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
+}
+
+const PaymentSchedulerStatus = {
+  START_PROCESS: 'start-process',
+  CREATE_CHALLENGE: 'create-challenge',
+  ASSIGN_MEMBER: 'assign-member',
+  ACTIVATE_CHALLENGE: 'activate-challenge',
+  GET_USER_ID: 'get-userId',
+  CLOSE_CHALLENGE: 'close-challenge'
 }
 
 module.exports = {
@@ -96,5 +112,7 @@ module.exports = {
   Scopes,
   Interviews,
   ChallengeStatus,
-  WorkPeriodPaymentStatus
+  WorkPeriodPaymentStatus,
+  PaymentSchedulerStatus,
+  PaymentProcessingSwitch
 }

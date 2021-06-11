@@ -68,6 +68,7 @@ workflows:
             branches:
               only:
                 - dev
+                - change-validatations-in-job-jc
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
