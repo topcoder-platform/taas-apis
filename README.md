@@ -177,6 +177,19 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 2. Run `taas-es-processor` separately from the source code. As `npm run services:up` already run all the dependencies for both `taas-apis` and for `taas-es-processor`. The only thing you need to do for running `taas-es-processor` locally is clone the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) repository and inside `taas-es-processor` folder run:
    - `nvm use` - to use correct Node version
    - `npm run install`
+   - Create `.env` file with the next environment variables. Values for **Auth0 config** should be shared with you on the forum.<br>
+
+      ```bash
+      # Auth0 config
+      AUTH0_URL=
+      AUTH0_AUDIENCE=
+      AUTH0_CLIENT_ID=
+      AUTH0_CLIENT_SECRET=
+      ```
+
+      - Values from this file would be automatically used by many `npm` commands.
+      - ⚠️ Never commit this file or its copy to the repository!
+
    - `npm run start`
 
 ## NPM Commands
