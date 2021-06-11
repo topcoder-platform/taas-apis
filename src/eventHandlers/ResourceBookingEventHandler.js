@@ -176,15 +176,45 @@ async function updateWorkPeriods (payload) {
   const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
   // find which workperiods should be created
   const workPeriodsToAdd = _.differenceBy(newWorkPeriods, workPeriods, 'startDate')
-  // find which workperiods' daysWorked propery should be updated
-  let workPeriodsToUpdate = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
-  // find which workperiods' daysWorked property is preset and exceeds the possible maximum
-  workPeriodsToUpdate = _.differenceWith(workPeriodsToUpdate, workPeriods, (a, b) => b.startDate === a.startDate && _.defaultTo(b.daysWorked, a.daysWorked) <= a.daysWorked)
-  // include id
-  workPeriodsToUpdate = _.map(workPeriodsToUpdate, wpu => {
-    wpu.id = _.filter(workPeriods, ['startDate', wpu.startDate])[0].id
-    return wpu
-  })
+  // find which workperiods' daysWorked property should be evaluated for changes
+  const IntersectedWorkPeriods = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
+  let workPeriodsToUpdate = []
+  if (IntersectedWorkPeriods.length > 0) {
+    // We only need check for first and last ones of intersected workPeriods
+    // The ones at the middle won't be updated and their daysWorked value will stay the same
+    if (payload.options.oldValue.startDate !== payload.value.startDate) {
+      const firstWeek = _.minBy(IntersectedWorkPeriods, 'startDate')
+      const originalFirstWeek = _.find(workPeriods, ['startDate', firstWeek.startDate])
+      // recalculate daysWorked for the first week of existent workPeriods
+      if (firstWeek.startDate === _.minBy(workPeriods, 'startDate').startDate) {
+        workPeriodsToUpdate.push(_.assign(firstWeek, { id: originalFirstWeek.id }))
+        // if first of intersected workPeriods is not the first one of existent workPeriods
+        // we only check if it's daysWorked exceeds the possible maximum
+      } else if (originalFirstWeek.daysWorked > firstWeek.daysWorked) {
+        workPeriodsToUpdate.push(_.assign(firstWeek, { id: originalFirstWeek.id }))
+      }
+    }
+    if (payload.options.oldValue.endDate !== payload.value.endDate) {
+      const lastWeek = _.maxBy(IntersectedWorkPeriods, 'startDate')
+      const originalLastWeek = _.find(workPeriods, ['startDate', lastWeek.startDate])
+      // recalculate daysWorked for the last week of existent workPeriods
+      if (lastWeek.startDate === _.maxBy(workPeriods, 'startDate').startDate) {
+        workPeriodsToUpdate.push(_.assign(lastWeek, { id: originalLastWeek.id }))
+        // if last of intersected workPeriods is not the last one of existent workPeriods
+        // we only check if it's daysWorked exceeds the possible maximum
+      } else if (originalLastWeek.daysWorked > lastWeek.daysWorked) {
+        workPeriodsToUpdate.push(_.assign(lastWeek, { id: originalLastWeek.id }))
+      }
+    }
+  }
+  // if intersected WP count is 1, this can result to duplicated WorkPeriods.
+  // We should choose the one with higher daysWorked because, it's more likely
+  // the WP we applied "first/last one of existent WPs" logic above.
+  if (workPeriodsToUpdate.length === 2) {
+    if (workPeriodsToUpdate[0].startDate === workPeriodsToUpdate[1].startDate) {
+      workPeriodsToUpdate = [_.maxBy(workPeriodsToUpdate, 'daysWorked')]
+    }
+  }
   if (workPeriodsToRemove.length === 0 && workPeriodsToAdd.length === 0 && workPeriodsToUpdate.length === 0) {
     logger.debug({
       component: 'ResourceBookingEventHandler',
@@ -256,14 +286,16 @@ async function deleteWorkPeriods (payload) {
  * @returns {undefined}
  */
 async function _createWorkPeriods (periods, resourceBookingId) {
-  await Promise.all(_.map(periods, async period => await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
-    {
-      resourceBookingId: resourceBookingId,
-      startDate: period.startDate,
-      endDate: period.endDate,
-      daysWorked: null,
-      paymentStatus: 'pending'
-    })))
+  for (const period of periods) {
+    await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
+      {
+        resourceBookingId: resourceBookingId,
+        startDate: period.startDate,
+        endDate: period.endDate,
+        daysWorked: period.daysWorked,
+        paymentStatus: 'pending'
+      })
+  }
 }
 
 /**
@@ -272,11 +304,13 @@ async function _createWorkPeriods (periods, resourceBookingId) {
  * @returns {undefined}
  */
 async function _updateWorkPeriods (periods) {
-  await Promise.all(_.map(periods, async period => await WorkPeriodService.partiallyUpdateWorkPeriod(helper.getAuditM2Muser(),
-    period.id,
-    {
-      daysWorked: period.daysWorked
-    })))
+  for (const period of periods) {
+    await WorkPeriodService.partiallyUpdateWorkPeriod(helper.getAuditM2Muser(),
+      period.id,
+      {
+        daysWorked: period.daysWorked
+      })
+  }
 }
 
 /**
@@ -285,8 +319,9 @@ async function _updateWorkPeriods (periods) {
  * @returns {undefined}
  */
 async function _deleteWorkPeriods (workPeriods) {
-  await Promise.all(_.map(workPeriods,
-    async workPeriod => await WorkPeriodService.deleteWorkPeriod(helper.getAuditM2Muser(), workPeriod.id)))
+  for (const period of workPeriods) {
+    await WorkPeriodService.deleteWorkPeriod(helper.getAuditM2Muser(), period.id)
+  }
 }
 
 /**

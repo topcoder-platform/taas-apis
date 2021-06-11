@@ -18,6 +18,7 @@ const moment = require('moment')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
+const WorkPeriodPayment = models.WorkPeriodPayment
 const esClient = helper.getESClient()
 const cachedModelFields = _cacheModelFields()
 
@@ -168,27 +169,41 @@ async function _checkUserPermissionForGetResourceBooking (currentUser, projectId
  */
 async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, newValue) {
   function _checkForPaidWorkPeriods (workPeriods) {
-    const paidWorkPeriods = _.filter(workPeriods
-      , workPeriod => _.includes(['completed', 'partially-completed'], workPeriod.paymentStatus))
+    const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
+      // filter by WP and WPP status
+      return (['completed', 'partially-completed', 'in-progress'].indexOf(workPeriod.paymentStatus) !== -1 ||
+      _.some(workPeriod.payments, payment => ['completed', 'in-progress'].indexOf(payment.status) !== -1))
+    })
     if (paidWorkPeriods.length > 0) {
       throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
-        has completed or partially-completed payment status.`)
+        has completed, partially-completed or in-progress payment status.`)
     }
   }
   // find related workPeriods to evaluate the changes
-  const workPeriods = await WorkPeriod.findAll({
+  // We don't need to include WPP because WPP's status changes should
+  // update WP's status. In case of any bug, it's better to check both WP
+  // and WPP status for now.
+  let workPeriods = await WorkPeriod.findAll({
     where: {
       resourceBookingId: resourceBookingId
     },
-    raw: true
+    attributes: ['id', 'paymentStatus', 'startDate', 'endDate'],
+    include: [{
+      model: WorkPeriodPayment,
+      as: 'payments',
+      required: false,
+      attributes: ['status']
+    }]
   })
+  workPeriods = _.map(workPeriods, wp => wp.toJSON())
   // oldValue and newValue are not provided at deleteResourceBooking process
   if (_.isUndefined(oldValue) || _.isUndefined(newValue)) {
     _checkForPaidWorkPeriods(workPeriods)
     return
   }
   // We should not be able to change status of ResourceBooking to 'cancelled'
-  // if there is at least one associated Work Period with paymentStatus 'partially-completed' or 'completed'.
+  // if there is at least one associated Work Period with paymentStatus 'partially-completed', 'completed' or 'in-progress',
+  // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   if (oldValue.status !== 'cancelled' && newValue.status === 'cancelled') {
     _checkForPaidWorkPeriods(workPeriods)
     // we have already checked all existing workPeriods
@@ -200,7 +215,8 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
     _.isUndefined(newValue.endDate) ? oldValue.endDate : newValue.endDate)
   // find which workPeriods should be removed
   const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
-  // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
+  // we can't delete workperiods with paymentStatus 'partially-completed', 'completed' or 'in-progress',
+  // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   _checkForPaidWorkPeriods(workPeriodsToRemove)
 }
 

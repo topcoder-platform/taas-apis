@@ -34,42 +34,42 @@ const T01 = {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-03-28',
       endDate: '2021-04-03',
-      daysWorked: null,
+      daysWorked: 0,
       paymentStatus: 'pending'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-04-04',
       endDate: '2021-04-10',
-      daysWorked: null,
+      daysWorked: 5,
       paymentStatus: 'pending'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-04-11',
       endDate: '2021-04-17',
-      daysWorked: null,
+      daysWorked: 5,
       paymentStatus: 'pending'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-04-18',
       endDate: '2021-04-24',
-      daysWorked: null,
+      daysWorked: 5,
       paymentStatus: 'pending'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-04-25',
       endDate: '2021-05-01',
-      daysWorked: null,
+      daysWorked: 5,
       paymentStatus: 'pending'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-05-02',
       endDate: '2021-05-08',
-      daysWorked: null,
+      daysWorked: 0,
       paymentStatus: 'pending'
     }]
   }
@@ -111,7 +111,7 @@ const T02 = {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
       startDate: '2021-04-11',
       endDate: '2021-04-17',
-      daysWorked: null,
+      daysWorked: 5,
       paymentStatus: 'pending'
     }]
   }
@@ -242,21 +242,30 @@ const T06 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
-    }]
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 5,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T06.workPeriod.response[0].dataValues
+    }],
+    request: [
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: { daysWorked: 3 }
+      }
+    ]
   }
 }
 T06.resourceBooking.value.toJSON = () => T06.resourceBooking.value.dataValues
@@ -305,28 +314,39 @@ const T07 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 5,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T07.workPeriod.response[0].dataValues
     }],
     request: [
       {
-        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-        startDate: '2021-04-04',
-        endDate: '2021-04-10',
-        daysWorked: null,
-        paymentStatus: 'pending'
+        data: {
+          resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+          startDate: '2021-04-04',
+          endDate: '2021-04-10',
+          daysWorked: 0,
+          paymentStatus: 'pending'
+        }
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: {
+          daysWorked: 4
+        }
       }
     ]
   }
@@ -377,28 +397,39 @@ const T08 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 5,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T08.workPeriod.response[0].dataValues
     }],
     request: [
       {
-        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-        startDate: '2021-04-18',
-        endDate: '2021-04-24',
-        daysWorked: null,
-        paymentStatus: 'pending'
+        data: {
+          resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+          startDate: '2021-04-18',
+          endDate: '2021-04-24',
+          daysWorked: 0,
+          paymentStatus: 'pending'
+        }
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: {
+          daysWorked: 5
+        }
       }
     ]
   }
@@ -449,38 +480,52 @@ const T09 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 0,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T09.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 5,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T09.workPeriod.response[1].dataValues
     }],
     request: [
-      '10faf505-d0e3-4d13-a817-7f1319625e90'
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90'
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: {
+          daysWorked: 4
+        }
+      }
     ]
   }
 }
@@ -530,38 +575,52 @@ const T10 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 0,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T10.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: null,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 5,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T10.workPeriod.response[1].dataValues
     }],
     request: [
-      '10faf505-d0e3-4d13-a817-7f1319625e91'
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91'
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        data: {
+          daysWorked: 2
+        }
+      }
     ]
   }
 }
@@ -611,39 +670,51 @@ const T11 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 0,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 0,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T11.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 3,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 3,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T11.workPeriod.response[1].dataValues
     }],
     request: [
-      '10faf505-d0e3-4d13-a817-7f1319625e91',
-      { daysWorked: 2 }
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        data: { daysWorked: 2 }
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: { daysWorked: 2 }
+      }
     ]
   }
 }
@@ -693,46 +764,58 @@ const T12 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T12.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'partially-completed',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'partially-completed',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T12.workPeriod.response[1].dataValues
     }],
     request: [
-      '10faf505-d0e3-4d13-a817-7f1319625e90',
-      '10faf505-d0e3-4d13-a817-7f1319625e91',
-      { daysWorked: 3 },
       {
-        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-        startDate: '2021-04-18',
-        endDate: '2021-04-24',
-        daysWorked: null,
-        paymentStatus: 'pending'
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90'
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        data: { daysWorked: 3 }
+      },
+      {
+        data: {
+          resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+          startDate: '2021-04-18',
+          endDate: '2021-04-24',
+          daysWorked: 5,
+          paymentStatus: 'pending'
+        }
       }
     ]
   }
@@ -766,39 +849,45 @@ const T13 = {
   error: {
     httpStatus: 400,
     message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed or partially-completed payment status.`
+        has completed, partially-completed or in-progress payment status.`
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T13.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'completed',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'completed',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T13.workPeriod.response[1].dataValues
     }]
   }
 }
@@ -830,39 +919,45 @@ const T14 = {
   error: {
     httpStatus: 400,
     message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed or partially-completed payment status.`
+        has completed, partially-completed or in-progress payment status.`
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T14.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'completed',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'completed',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T14.workPeriod.response[1].dataValues
     }]
   }
 }
@@ -889,37 +984,50 @@ const T15 = {
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T15.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T15.workPeriod.response[1].dataValues
     }],
-    request: ['10faf505-d0e3-4d13-a817-7f1319625e90', '10faf505-d0e3-4d13-a817-7f1319625e91']
+    request: [
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90'
+      },
+      {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91'
+      }
+    ]
   }
 }
 T15.resourceBooking.value.toJSON = () => T15.resourceBooking.value.dataValues
@@ -947,39 +1055,45 @@ const T16 = {
   error: {
     httpStatus: 400,
     message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed or partially-completed payment status.`
+        has completed, partially-completed or in-progress payment status.`
   },
   workPeriod: {
     response: [{
-      id: '10faf505-d0e3-4d13-a817-7f1319625e90',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-04',
-      endDate: '2021-04-10',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'pending',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e90',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-04',
+        endDate: '2021-04-10',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'pending',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T16.workPeriod.response[0].dataValues
     }, {
-      id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-      resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
-      userHandle: 'pshah_manager',
-      projectId: 21,
-      startDate: '2021-04-11',
-      endDate: '2021-04-17',
-      daysWorked: 4,
-      memberRate: null,
-      customerRate: null,
-      paymentStatus: 'completed',
-      createdBy: '00000000-0000-0000-0000-000000000000',
-      updatedBy: null,
-      createdAt: '2021-04-10T22:25:08.289Z',
-      updatedAt: '2021-04-10T22:25:08.289Z'
+      dataValues: {
+        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
+        resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
+        userHandle: 'pshah_manager',
+        projectId: 21,
+        startDate: '2021-04-11',
+        endDate: '2021-04-17',
+        daysWorked: 4,
+        memberRate: null,
+        customerRate: null,
+        paymentStatus: 'completed',
+        createdBy: '00000000-0000-0000-0000-000000000000',
+        updatedBy: null,
+        createdAt: '2021-04-10T22:25:08.289Z',
+        updatedAt: '2021-04-10T22:25:08.289Z'
+      },
+      toJSON: () => T16.workPeriod.response[1].dataValues
     }]
   }
 }

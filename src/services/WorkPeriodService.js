@@ -235,7 +235,7 @@ async function createWorkPeriod (currentUser, workPeriod) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(),{"key":workPeriod.resourceBookingId})
+  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(), { key: workPeriod.resourceBookingId })
   return created.dataValues
 }
 
@@ -289,8 +289,8 @@ async function updateWorkPeriod (currentUser, id, data) {
     }
   }
 
-  //await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), {oldValue: oldValue, "key":data.resourceBookingId})
+  // await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: data.resourceBookingId })
   return updated.dataValues
 }
 
@@ -356,8 +356,11 @@ async function deleteWorkPeriod (currentUser, id) {
   }
 
   const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
-  if (_.includes(['completed', 'partially-completed'], workPeriod.paymentStatus)) {
-    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed or partially-completed")
+  if (_.includes(['completed', 'partially-completed', 'in-progress'], workPeriod.paymentStatus)) {
+    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed partially-completed, or in-progress")
+  }
+  if (_.some(workPeriod.payments, payment => ['completed', 'in-progress'].indexOf(payment.status) !== -1)) {
+    throw new errors.BadRequestError("Can't delete WorkPeriod if any associated WorkPeriodsPayment has status completed or in-progress")
   }
   await models.WorkPeriodPayment.destroy({
     where: {
