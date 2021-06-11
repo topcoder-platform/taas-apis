@@ -1,8 +1,9 @@
 const fs = require('fs')
 const Joi = require('joi')
+const config = require('config')
 const path = require('path')
 const _ = require('lodash')
-const { Interviews, WorkPeriodPaymentStatus } = require('../app-constants')
+const { Interviews, WorkPeriodPaymentStatus, PaymentProcessingSwitch } = require('../app-constants')
 const logger = require('./common/logger')
 
 const allowedInterviewStatuses = _.values(Interviews.Status)
@@ -10,7 +11,7 @@ const allowedXAITemplate = _.keys(Interviews.XaiTemplate)
 
 Joi.page = () => Joi.number().integer().min(1).default(1)
 Joi.perPage = () => Joi.number().integer().min(1).default(20)
-Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
+Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly', 'annual')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.resourceBookingStatus = () => Joi.string().valid('placed', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')
@@ -44,3 +45,14 @@ function buildServices (dir) {
 }
 
 buildServices(path.join(__dirname, 'services'))
+
+// validate some configurable parameters for the app
+const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
+  ...Object.values(PaymentProcessingSwitch)
+)
+try {
+  Joi.attempt(config.PAYMENT_PROCESSING.SWITCH, paymentProcessingSwitchSchema)
+} catch (err) {
+  console.error(err.message)
+  process.exit(1)
+}
