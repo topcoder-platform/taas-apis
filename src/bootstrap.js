@@ -11,7 +11,7 @@ const allowedXAITemplate = _.keys(Interviews.XaiTemplate)
 
 Joi.page = () => Joi.number().integer().min(1).default(1)
 Joi.perPage = () => Joi.number().integer().min(1).default(20)
-Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly')
+Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly','annual')
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.resourceBookingStatus = () => Joi.string().valid('placed', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')

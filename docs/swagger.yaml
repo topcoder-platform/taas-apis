@@ -174,7 +174,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["hourly", "daily", "weekly", "monthly"]
+            enum: ["hourly", "daily", "weekly", "monthly","annual"]
           description: The rate type.
         - in: query
           name: status
