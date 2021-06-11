@@ -78,7 +78,8 @@ module.exports = (sequelize) => {
       },
       daysWorked: {
         field: 'days_worked',
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       memberRate: {
         field: 'member_rate',

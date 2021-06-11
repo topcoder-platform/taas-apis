@@ -245,7 +245,7 @@ createWorkPeriod.schema = Joi.object().keys({
     resourceBookingId: Joi.string().uuid().required(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDate(),
-    daysWorked: Joi.number().integer().min(0).allow(null),
+    daysWorked: Joi.number().integer().min(0).max(5).required(),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     paymentStatus: Joi.paymentStatus().required()
@@ -265,18 +265,32 @@ async function updateWorkPeriod (currentUser, id, data) {
 
   const workPeriod = await WorkPeriod.findById(id)
   const oldValue = workPeriod.toJSON()
-
+  let resourceBooking
   // if resourceBookingId is provided then update projectId and userHandle
   if (data.resourceBookingId) {
-    const resourceBooking = await helper.ensureResourceBookingById(data.resourceBookingId) // ensure resource booking exists
+    resourceBooking = await helper.ensureResourceBookingById(data.resourceBookingId) // ensure resource booking exists
     data.projectId = resourceBooking.projectId
 
     const user = await helper.ensureUserById(resourceBooking.userId) // ensure user exists
     data.userHandle = user.handle
+  } else {
+    resourceBooking = await helper.ensureResourceBookingById(oldValue.resourceBookingId)
   }
   // If one of the dates are missing then auto-calculate it
   _autoCalculateDates(data)
-
+  if (data.daysWorked) {
+    const weeks = helper.extractWorkPeriods(resourceBooking.startDate, resourceBooking.endDate)
+    if (_.isEmpty(weeks)) {
+      throw new errors.ConflictError('Resource booking has missing dates')
+    }
+    const thisWeek = _.find(weeks, ['startDate', oldValue.startDate])
+    if (_.isNil(thisWeek)) {
+      throw new errors.ConflictError('Work Period dates are not compatible with Resource Booking dates')
+    }
+    if (thisWeek.daysWorked < data.daysWorked) {
+      throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
+    }
+  }
   data.updatedBy = await helper.getUserId(currentUser.userId)
   let updated = null
   try {
@@ -311,7 +325,7 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
     resourceBookingId: Joi.string().uuid(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDateOptional(),
-    daysWorked: Joi.number().integer().min(0).allow(null),
+    daysWorked: Joi.number().integer().min(0).max(5),
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     paymentStatus: Joi.paymentStatus()
@@ -336,7 +350,7 @@ fullyUpdateWorkPeriod.schema = Joi.object().keys({
     resourceBookingId: Joi.string().uuid().required(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDate(),
-    daysWorked: Joi.number().integer().min(0).allow(null).default(null),
+    daysWorked: Joi.number().integer().min(0).required(),
     memberRate: Joi.number().allow(null).default(null),
     customerRate: Joi.number().allow(null).default(null),
     paymentStatus: Joi.paymentStatus().required()
