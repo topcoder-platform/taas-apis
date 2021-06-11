@@ -187,31 +187,35 @@ async function createJob (currentUser, job) {
   return created.toJSON()
 }
 
-createJob.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  job: Joi.object().keys({
-    status: Joi.jobStatus().default('sourcing'),
-    projectId: Joi.number().integer().required(),
-    externalId: Joi.string().allow(null),
-    description: Joi.stringAllowEmpty().allow(null),
-    title: Joi.title().required(),
-    startDate: Joi.date().allow(null),
-    duration: Joi.number().integer().min(1).allow(null),
-    numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.stringAllowEmpty().allow(null),
-    rateType: Joi.rateType().allow(null),
-    workload: Joi.workload().allow(null),
-    skills: Joi.array().items(Joi.string().uuid()).required(),
-    isApplicationPageActive: Joi.boolean(),
-    minSalary: Joi.number().integer().allow(null),
-    maxSalary: Joi.number().integer().allow(null),
-    hoursPerWeek: Joi.number().integer().allow(null),
-    jobLocation: Joi.string().stringAllowEmpty().allow(null),
-    jobTimezone: Joi.string().stringAllowEmpty().allow(null),
-    currency: Joi.string().stringAllowEmpty().allow(null),
-    roleIds: Joi.array().items(Joi.string().uuid().required())
-  }).required()
-}).required()
+createJob.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    job: Joi.object()
+      .keys({
+        status: Joi.jobStatus().default("sourcing"),
+        projectId: Joi.number().integer().required(),
+        externalId: Joi.string().allow(null),
+        description: Joi.stringAllowEmpty().allow(null),
+        title: Joi.title().required(),
+        startDate: Joi.date().allow(null),
+        duration: Joi.number().integer().min(1).allow(null),
+        numPositions: Joi.number().integer().min(1).required(),
+        resourceType: Joi.stringAllowEmpty().allow(null),
+        rateType: Joi.rateType().allow(null),
+        workload: Joi.workload().allow(null),
+        skills: Joi.array().items(Joi.string().uuid()).required(),
+        isApplicationPageActive: Joi.boolean(),
+        minSalary: Joi.number().integer().allow(null),
+        maxSalary: Joi.number().integer().allow(null),
+        hoursPerWeek: Joi.number().integer().allow(null),
+        jobLocation: Joi.string().allow(null).stringAllowEmpty(),
+        jobTimezone: Joi.string().allow(null).stringAllowEmpty(),
+        currency: Joi.string().allow(null).stringAllowEmpty(),
+        roleIds: Joi.array().items(Joi.string().uuid().required()),
+      })
+      .required(),
+  })
+  .required();
 
 /**
  * Update job. Normal user can only update the job he/she created.
