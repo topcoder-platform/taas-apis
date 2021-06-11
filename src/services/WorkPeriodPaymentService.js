@@ -96,7 +96,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON())
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON(), { key: `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}` })
   return created.dataValues
 }
 
@@ -234,7 +234,7 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
   return updated.dataValues
 }
 
