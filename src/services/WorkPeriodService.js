@@ -289,7 +289,6 @@ async function updateWorkPeriod (currentUser, id, data) {
     }
   }
 
-  // await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `resourceBooking.id:${data.resourceBookingId}` })
   return updated.dataValues
 }
@@ -401,6 +400,11 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
       return resourceBookingId
     })
   }
+  // `criteria.paymentStatus` could be array of paymentStatus, or comma separated string of paymentStatus
+  // in case it's comma separated string of paymentStatus we have to convert it to an array of paymentStatus
+  if ((typeof criteria.paymentStatus) === 'string') {
+    criteria.paymentStatus = criteria.paymentStatus.trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.paymentStatus() })).paymentStatus)
+  }
   const page = criteria.page
   const perPage = criteria.perPage
   if (!criteria.sortBy) {
@@ -436,7 +440,7 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
       criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
     }
     // Apply filters
-    _.each(_.pick(criteria, ['resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate', 'paymentStatus']), (value, key) => {
+    _.each(_.pick(criteria, ['resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate']), (value, key) => {
       esQuery.body.query.nested.query.bool.must.push({
         term: {
           [`workPeriods.${key}`]: {
@@ -445,6 +449,13 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
         }
       })
     })
+    if (criteria.paymentStatus) {
+      esQuery.body.query.nested.query.bool.must.push({
+        terms: {
+          'workPeriods.paymentStatus': criteria.paymentStatus
+        }
+      })
+    }
     // if criteria contains resourceBookingIds, filter resourceBookingId with this value
     if (criteria.resourceBookingIds) {
       esQuery.body.query.nested.query.bool.filter = [{
@@ -459,9 +470,12 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
     let workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
     // ESClient will return ResourceBookings with it's all nested WorkPeriods
     // We re-apply WorkPeriod filters
-    _.each(_.pick(criteria, ['startDate', 'endDate', 'paymentStatus']), (value, key) => {
+    _.each(_.pick(criteria, ['startDate', 'endDate']), (value, key) => {
       workPeriods = _.filter(workPeriods, { [key]: value })
     })
+    if (criteria.paymentStatus) {
+      workPeriods = _.filter(workPeriods, wp => _.includes(criteria.paymentStatus, wp.paymentStatus))
+    }
     workPeriods = _.sortBy(workPeriods, [criteria.sortBy])
     if (criteria.sortOrder === 'desc') {
       workPeriods = _.reverse(workPeriods)
@@ -522,7 +536,10 @@ searchWorkPeriods.schema = Joi.object().keys({
     perPage: Joi.number().integer().min(1).max(10000).default(20),
     sortBy: Joi.string().valid('id', 'resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate', 'daysWorked', 'customerRate', 'memberRate', 'paymentStatus'),
     sortOrder: Joi.string().valid('desc', 'asc'),
-    paymentStatus: Joi.paymentStatus(),
+    paymentStatus: Joi.alternatives(
+      Joi.string(),
+      Joi.array().items(Joi.paymentStatus())
+    ),
     startDate: Joi.date().format('YYYY-MM-DD'),
     endDate: Joi.date().format('YYYY-MM-DD'),
     userHandle: Joi.string(),
