@@ -175,5 +175,40 @@ module.exports = {
   // the minimum matching rate when searching roles by skills
   ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.70,
   // member groups representing Wipro or TopCoder employee
-  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015']
+  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
+  // payment scheduler config
+  PAYMENT_PROCESSING: {
+    // switch off actual API calls in Payment Scheduler
+    SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF',
+    // the payment scheduler cron config
+    CRON: process.env.PAYMENT_PROCESSING_CRON || '0 */5 * * * *',
+    // the number of records processed by one time
+    BATCH_SIZE: parseInt(process.env.PAYMENT_PROCESSING_BATCH_SIZE || 50),
+    // in-progress expired to determine whether a record has been processed abnormally, moment duration format
+    IN_PROGRESS_EXPIRED: process.env.IN_PROGRESS_EXPIRED || 'PT1H',
+    // the number of max retry config
+    MAX_RETRY_COUNT: parseInt(process.env.PAYMENT_PROCESSING_MAX_RETRY_COUNT || 10),
+    // the time of retry base delay, unit: ms
+    RETRY_BASE_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_BASE_DELAY || 100),
+    // the time of retry max delay, unit: ms
+    RETRY_MAX_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_MAX_DELAY || 10000),
+    // the max time of one request, unit: ms
+    PER_REQUEST_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_REQUEST_MAX_TIME || 30000),
+    // the max time of one payment record, unit: ms
+    PER_PAYMENT_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_PAYMENT_MAX_TIME || 60000),
+    // the max records of payment of a minute
+    PER_MINUTE_PAYMENT_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_PAYMENT_MAX_COUNT || 12),
+    // the max requests of challenge of a minute
+    PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 60),
+    // the max requests of resource of a minute
+    PER_MINUTE_RESOURCE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 20),
+    // the default step fix delay, unit: ms
+    FIX_DELAY_STEP: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of create challenge, unit: ms
+    FIX_DELAY_STEP_CREATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_CREATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of assign member, unit: ms
+    FIX_DELAY_STEP_ASSIGN_MEMBER: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ASSIGN_MEMBER || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of activate challenge, unit: ms
+    FIX_DELAY_STEP_ACTIVATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ACTIVATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
+  }
 }

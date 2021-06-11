@@ -1,8 +1,9 @@
 const fs = require('fs')
 const Joi = require('joi')
+const config = require('config')
 const path = require('path')
 const _ = require('lodash')
-const { Interviews, WorkPeriodPaymentStatus } = require('../app-constants')
+const { Interviews, WorkPeriodPaymentStatus, PaymentProcessingSwitch } = require('../app-constants')
 const logger = require('./common/logger')
 
 const allowedInterviewStatuses = _.values(Interviews.Status)
@@ -44,3 +45,14 @@ function buildServices (dir) {
 }
 
 buildServices(path.join(__dirname, 'services'))
+
+// validate some configurable parameters for the app
+const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
+  ...Object.values(PaymentProcessingSwitch)
+)
+try {
+  Joi.attempt(config.PAYMENT_PROCESSING.SWITCH, paymentProcessingSwitchSchema)
+} catch (err) {
+  console.error(err.message)
+  process.exit(1)
+}
