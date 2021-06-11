@@ -203,8 +203,8 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
     userId: Joi.string().uuid().required(),
     status: Joi.jobCandidateStatus().default('open'),
     externalId: Joi.string().allow(null).default(null),
-    resume: Joi.string().stringAllowEmpty().uri().allow(null).default(null),
-    remark: Joi.string().stringAllowEmpty().allow(null).default(null)
+    resume: Joi.string().uri().allow('').allow(null).default(null),
+    remark: Joi.string().allow('').allow(null).default(null)
   }).required()
 }).required()
 
