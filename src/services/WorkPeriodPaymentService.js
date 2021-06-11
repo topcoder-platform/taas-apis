@@ -381,9 +381,10 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
   })
+  const total = await WorkPeriodPayment.count({ where: filter })
   return {
     fromDb: true,
-    total: workPeriodPayments.length,
+    total,
     page,
     perPage,
     result: workPeriodPayments

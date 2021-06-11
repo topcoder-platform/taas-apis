@@ -519,10 +519,11 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
       required: false
     }]
   }
-  const workPeriods = await WorkPeriod.findAll(queryCriteria)
+  const workPeriods = await WorkPeriod.findAndCountAll(queryCriteria)
+  const total = await WorkPeriod.count({ where: filter })
   return {
     fromDb: true,
-    total: workPeriods.length,
+    total,
     page,
     perPage,
     result: workPeriods
