@@ -973,8 +973,8 @@ async function postEvent (topic, payload, options = {}) {
     payload
   }
   if (options.key) {
-   message.key = options.key
-   }
+    message.key = options.key
+  }
   await client.postEvent(message)
   await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
