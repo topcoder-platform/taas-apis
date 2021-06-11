@@ -10,7 +10,7 @@ const { PaymentSchedulerStatus } = require('../app-constants')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction()
-    try { 
+    try {
       await queryInterface.createTable('payment_schedulers', {
         id: {
           type: Sequelize.UUID,
@@ -75,7 +75,6 @@ module.exports = {
       await queryInterface.changeColumn({ tableName: 'work_period_payments', schema: config.DB_SCHEMA_NAME }, 'challenge_id',
         { type: Sequelize.UUID },
         { transaction })
-      await queryInterface.sequelize.query(`ALTER TYPE ${config.DB_SCHEMA_NAME}.enum_work_period_payments_status ADD VALUE 'scheduled'`)
       await queryInterface.sequelize.query(`ALTER TYPE ${config.DB_SCHEMA_NAME}.enum_work_period_payments_status ADD VALUE 'in-progress'`)
       await queryInterface.sequelize.query(`ALTER TYPE ${config.DB_SCHEMA_NAME}.enum_work_period_payments_status ADD VALUE 'failed'`)
       await transaction.commit()
@@ -101,7 +100,7 @@ module.exports = {
         { transaction })
       await queryInterface.removeColumn({ tableName: 'work_period_payments', schema: config.DB_SCHEMA_NAME }, 'status_details',
         { transaction })
-      await queryInterface.sequelize.query(`DELETE FROM pg_enum WHERE enumlabel in ('scheduled', 'in-progress', 'failed') AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'enum_work_period_payments_status')`,
+      await queryInterface.sequelize.query(`DELETE FROM pg_enum WHERE enumlabel in ('in-progress', 'failed') AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'enum_work_period_payments_status')`,
         { transaction })
       await transaction.commit()
     } catch (err) {
