@@ -50,11 +50,11 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(6)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
-      expect(stubCreateWorkPeriodService.getCall(1).args[1]).to.deep.eq(data.workPeriod.request[1])
-      expect(stubCreateWorkPeriodService.getCall(2).args[1]).to.deep.eq(data.workPeriod.request[2])
-      expect(stubCreateWorkPeriodService.getCall(3).args[1]).to.deep.eq(data.workPeriod.request[3])
-      expect(stubCreateWorkPeriodService.getCall(4).args[1]).to.deep.eq(data.workPeriod.request[4])
+      expect(stubCreateWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubCreateWorkPeriodService.getCall(1).args[0]).to.deep.eq(data.workPeriod.request[1])
+      expect(stubCreateWorkPeriodService.getCall(2).args[0]).to.deep.eq(data.workPeriod.request[2])
+      expect(stubCreateWorkPeriodService.getCall(3).args[0]).to.deep.eq(data.workPeriod.request[3])
+      expect(stubCreateWorkPeriodService.getCall(4).args[0]).to.deep.eq(data.workPeriod.request[4])
     })
     it('T02:Create resource booking start Sunday end Saturday', async () => {
       const data = testData.T02
@@ -70,7 +70,7 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0])
+      expect(stubCreateWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0])
     })
     it('T03:Create resource booking without startDate', async () => {
       const data = testData.T03
@@ -173,7 +173,7 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].data)
+      expect(stubCreateWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].data)
       expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1].data)
     })
@@ -194,11 +194,9 @@ describe('resourceBooking service test', () => {
       expect(stubPostEvent.calledOnce).to.be.true
       expect(stubWorkPeriodFindAll.called).to.be.true
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
-      expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
+      expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(0)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].data)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1].id)
-      expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1].data)
+      expect(stubCreateWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].data)
     })
     it('T09:Update resource booking startDate and cause work period to be deleted', async () => {
       const data = testData.T09
@@ -219,7 +217,7 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].id)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1].data)
     })
@@ -242,7 +240,7 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].id)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1].data)
     })
@@ -289,10 +287,10 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(1)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(1)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(1)
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].id)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[1].id)
       expect(stubUpdateWorkPeriodService.getCall(0).args[2]).to.deep.eq(data.workPeriod.request[1].data)
-      expect(stubCreateWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[2].data)
+      expect(stubCreateWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[2].data)
     })
   })
   describe('Update resource booking unsuccessfully', () => {
@@ -368,8 +366,8 @@ describe('resourceBooking service test', () => {
       expect(stubCreateWorkPeriodService.callCount).to.eq(0)
       expect(stubUpdateWorkPeriodService.callCount).to.eq(0)
       expect(stubDeleteWorkPeriodService.callCount).to.eq(2)
-      expect(stubDeleteWorkPeriodService.getCall(0).args[1]).to.deep.eq(data.workPeriod.request[0].id)
-      expect(stubDeleteWorkPeriodService.getCall(1).args[1]).to.deep.eq(data.workPeriod.request[1].id)
+      expect(stubDeleteWorkPeriodService.getCall(0).args[0]).to.deep.eq(data.workPeriod.request[0].id)
+      expect(stubDeleteWorkPeriodService.getCall(1).args[0]).to.deep.eq(data.workPeriod.request[1].id)
     })
   })
   describe('Delete resource booking unsuccessfully', () => {

@@ -106,8 +106,8 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   // "currentUser.isMachine" to be true is not enough to return "workPeriods.memberRate"
   // but returning "workPeriod" will be evaluated later
   if (!canSeeMemberRate) {
-    result.excludeRB.push('memberRate')
-    result.excludeWP.push('workPeriods.memberRate')
+    result.excludeRB.push('paymentTotal')
+    result.excludeWP.push('workPeriods.paymentTotal')
   }
   // if "fields" is not included in cretia, then only ResourceBooking model will be returned
   // No further evaluation is required as long as the criteria does not include a WorkPeriod filter or a WorkPeriod sorting condition
@@ -137,8 +137,8 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
     throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
   }
   // Check if the current user has no right to see the memberRate and memberRate is included in fields parameter
-  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.memberRate'], q))) {
-    throw new errors.ForbiddenError('You don\'t have access to view memberRate')
+  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.paymentTotal'], q))) {
+    throw new errors.ForbiddenError('You don\'t have access to view memberRate and paymentTotal')
   }
   // Check if the current user has no right to see the workPeriods and workPeriods is included in fields parameter
   if (currentUser.isMachine && result.withWorkPeriods && !_checkUserScopesForGetWorkPeriods(currentUser)) {
@@ -172,7 +172,7 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
     const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
       // filter by WP and WPP status
       return (['completed', 'partially-completed', 'in-progress'].indexOf(workPeriod.paymentStatus) !== -1 ||
-      _.some(workPeriod.payments, payment => ['completed', 'in-progress'].indexOf(payment.status) !== -1))
+      _.some(workPeriod.payments, payment => ['completed', 'in-progress', 'shceduled'].indexOf(payment.status) !== -1))
     })
     if (paidWorkPeriods.length > 0) {
       throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
@@ -181,13 +181,13 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   }
   // find related workPeriods to evaluate the changes
   // We don't need to include WPP because WPP's status changes should
-  // update WP's status. In case of any bug, it's better to check both WP
+  // update WP's status. In case of any bug or slow processing, it's better to check both WP
   // and WPP status for now.
   let workPeriods = await WorkPeriod.findAll({
     where: {
       resourceBookingId: resourceBookingId
     },
-    attributes: ['id', 'paymentStatus', 'startDate', 'endDate'],
+    attributes: ['id', 'paymentStatus', 'startDate', 'endDate', 'daysPaid'],
     include: [{
       model: WorkPeriodPayment,
       as: 'payments',
@@ -218,6 +218,16 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   // we can't delete workperiods with paymentStatus 'partially-completed', 'completed' or 'in-progress',
   // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   _checkForPaidWorkPeriods(workPeriodsToRemove)
+  // check if this update makes maximum possible daysWorked value less than daysPaid
+  _.each(newWorkPeriods, newWP => {
+    const wp = _.find(workPeriods, ['startDate', newWP.startDate])
+    if (!wp) {
+      return
+    }
+    if (wp.daysPaid > newWP.daysWorked) {
+      throw new errors.ConflictError(`Cannot make maximum daysWorked (${newWP.daysWorked}) to the value less than daysPaid (${wp.daysPaid}) for WorkPeriod: ${wp.id}`)
+    }
+  })
 }
 
 /**

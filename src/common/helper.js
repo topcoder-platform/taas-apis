@@ -191,8 +191,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
       endDate: { type: 'date', format: 'yyyy-MM-dd' },
       daysWorked: { type: 'integer' },
-      memberRate: { type: 'float' },
-      customerRate: { type: 'float' },
+      daysPaid: { type: 'integer' },
+      paymentTotal: { type: 'float' },
       paymentStatus: { type: 'keyword' },
       payments: {
         type: 'nested',
@@ -200,6 +200,9 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
           id: { type: 'keyword' },
           workPeriodId: { type: 'keyword' },
           challengeId: { type: 'keyword' },
+          memberRate: { type: 'float' },
+          customerRate: { type: 'float' },
+          days: { type: 'integer' },
           amount: { type: 'float' },
           status: { type: 'keyword' },
           statusDetails: {

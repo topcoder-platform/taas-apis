@@ -185,8 +185,9 @@ async function updateWorkPeriods (payload) {
     if (payload.options.oldValue.startDate !== payload.value.startDate) {
       const firstWeek = _.minBy(IntersectedWorkPeriods, 'startDate')
       const originalFirstWeek = _.find(workPeriods, ['startDate', firstWeek.startDate])
-      // recalculate daysWorked for the first week of existent workPeriods
-      if (firstWeek.startDate === _.minBy(workPeriods, 'startDate').startDate) {
+      const existentFirstWeek = _.minBy(workPeriods, 'startDate')
+      // recalculate daysWorked for the first week of existent workPeriods and daysWorked have changed
+      if (firstWeek.startDate === existentFirstWeek.startDate && firstWeek.daysWorked !== existentFirstWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(firstWeek, { id: originalFirstWeek.id }))
         // if first of intersected workPeriods is not the first one of existent workPeriods
         // we only check if it's daysWorked exceeds the possible maximum
@@ -197,8 +198,9 @@ async function updateWorkPeriods (payload) {
     if (payload.options.oldValue.endDate !== payload.value.endDate) {
       const lastWeek = _.maxBy(IntersectedWorkPeriods, 'startDate')
       const originalLastWeek = _.find(workPeriods, ['startDate', lastWeek.startDate])
-      // recalculate daysWorked for the last week of existent workPeriods
-      if (lastWeek.startDate === _.maxBy(workPeriods, 'startDate').startDate) {
+      const existentLastWeek = _.maxBy(workPeriods, 'startDate')
+      // recalculate daysWorked for the last week of existent workPeriods and daysWorked have changed
+      if (lastWeek.startDate === existentLastWeek.startDate && lastWeek.daysWorked !== existentLastWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(lastWeek, { id: originalLastWeek.id }))
         // if last of intersected workPeriods is not the last one of existent workPeriods
         // we only check if it's daysWorked exceeds the possible maximum
@@ -287,13 +289,13 @@ async function deleteWorkPeriods (payload) {
  */
 async function _createWorkPeriods (periods, resourceBookingId) {
   for (const period of periods) {
-    await WorkPeriodService.createWorkPeriod(helper.getAuditM2Muser(),
+    await WorkPeriodService.createWorkPeriod(
       {
         resourceBookingId: resourceBookingId,
         startDate: period.startDate,
         endDate: period.endDate,
         daysWorked: period.daysWorked,
-        paymentStatus: 'pending'
+        paymentStatus: period.daysWorked === 0 ? 'noDays' : 'pending'
       })
   }
 }
@@ -320,7 +322,7 @@ async function _updateWorkPeriods (periods) {
  */
 async function _deleteWorkPeriods (workPeriods) {
   for (const period of workPeriods) {
-    await WorkPeriodService.deleteWorkPeriod(helper.getAuditM2Muser(), period.id)
+    await WorkPeriodService.deleteWorkPeriod(period.id)
   }
 }
 

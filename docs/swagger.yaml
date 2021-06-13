@@ -174,7 +174,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["hourly", "daily", "weekly", "monthly","annual"]
+            enum: ["hourly", "daily", "weekly", "monthly", "annual"]
           description: The rate type.
         - in: query
           name: status
@@ -1509,9 +1509,11 @@ paths:
               - type: array
                 items:
                   type: string
-                  enum: ["pending", "partially-completed", "completed", "cancelled"]
+                  enum:
+                    ["pending", "partially-completed", "completed", "cancelled"]
               - type: string
-                enum: ["pending", "partially-completed", "completed", "cancelled"]
+                enum:
+                  ["pending", "partially-completed", "completed", "cancelled"]
           description: comma separated payment status.
         - in: query
           name: workPeriods.startDate
@@ -1837,57 +1839,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /work-periods:
-    post:
-      tags:
-        - WorkPeriods
-      description: |
-        Create Work Period.
-
-        **Authorization** Topcoder token with write Work period scope is allowed
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodRequestBody"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkPeriod"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     get:
       tags:
         - WorkPeriods
@@ -1965,9 +1916,25 @@ paths:
               - type: array
                 items:
                   type: string
-                  enum: ["pending", "partially-completed", "completed", "cancelled"]
+                  enum:
+                    [
+                      "pending",
+                      "partially-completed",
+                      "completed",
+                      "in-progress",
+                      "failed",
+                      "noDays",
+                    ]
               - type: string
-                enum: ["pending", "partially-completed", "completed", "cancelled"]
+                enum:
+                  [
+                    "pending",
+                    "partially-completed",
+                    "completed",
+                    "in-progress",
+                    "failed",
+                    "noDays",
+                  ]
           description: comma separated payment status.
         - in: query
           name: startDate
@@ -2121,115 +2088,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    delete:
-      tags:
-        - WorkPeriods
-      description: |
-        Delete the work period.
-
-        **Authorization** Topcoder token with delete work period scope is allowed
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The id of work period.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "204":
-          description: OK
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags:
-        - WorkPeriods
-      description: |
-        Update the work period.
-
-        **Authorization** Topcoder token with update work period scope is allowed
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The id of work period.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodRequestBody"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkPeriod"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     patch:
       tags:
         - WorkPeriods
@@ -2279,6 +2137,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
           content:
             application/json:
               schema:
@@ -2341,6 +2205,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
           content:
             application/json:
               schema:
@@ -2413,7 +2283,8 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
+            enum:
+              ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: The payment status.
       responses:
         "200":
@@ -2555,65 +2426,6 @@ paths:
           schema:
             type: boolean
             default: false
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkPeriodPayment"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags:
-        - WorkPeriodPayments
-      description: |
-        Update the work period payment.
-
-        **Authorization** Topcoder token with update work period payment scope is allowed
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The id of work period payment.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
       responses:
         "200":
           description: OK
@@ -4670,6 +4482,9 @@ components:
         - projectId
         - startDate
         - endDate
+        - daysWorked
+        - daysPaid
+        - paymentTotal
         - paymentStatus
         - createdAt
         - createdBy
@@ -4702,21 +4517,33 @@ components:
           description: "The end date of work period. Should be always Saturday."
         daysWorked:
           type: integer
+          minimum: 0
+          maximum: 5
           example: 2
           description: "The count of the days worked for that work period."
-        memberRate:
+        daysPaid:
+          type: integer
+          minimum: 0
+          maximum: 5
+          format: integer
+          example: 1
+          description: "The count of paid days for that work period"
+        paymentTotal:
           type: integer
           format: float
           example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
+          description: "The total paid amount"
         paymentStatus:
           type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
+          enum:
+            [
+              "pending",
+              "partially-completed",
+              "completed",
+              "in-progress",
+              "failed",
+              "noDays",
+            ]
           description: "The payment status."
         payments:
           type: array
@@ -4739,86 +4566,21 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the work period last time.(Will get the user info from the token)"
-    WorkPeriodRequestBody:
-      required:
-        - resourceBookingId
-        - startDate
-        - endDate
-        - paymentStatus
-      properties:
-        resourceBookingId:
-          type: string
-          format: uuid
-          description: "The resource booking id."
-        startDate:
-          type: string
-          format: date
-          example: "2021-03-07"
-          description: "The start date of work period. Should be always Sunday."
-        endDate:
-          type: string
-          format: date
-          example: "2021-03-13"
-          description: "The end date of work period. Should be always Saturday."
-        daysWorked:
-          type: integer
-          example: 2
-          description: "The count of the days worked for that work period."
-        memberRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
-        paymentStatus:
-          type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
-          description: "The payment status."
     WorkPeriodPatchRequestBody:
       properties:
-        resourceBookingId:
-          type: string
-          format: uuid
-          description: "The resource booking id."
-        startDate:
-          type: string
-          format: date
-          example: "2021-03-07"
-          description: "The start date of work period. Should be always Sunday."
-        endDate:
-          type: string
-          format: date
-          example: "2021-03-13"
-          description: "The end date of work period. Should be always Saturday."
         daysWorked:
           type: integer
           example: 2
           description: "The count of the days worked for that work period."
-        memberRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
-        paymentStatus:
-          type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
-          description: "The payment status."
     WorkPeriodPayment:
       required:
         - id
         - workPeriodId
-        - challengeId
+        - memberRate
+        - days
         - amount
         - status
+        - billingAccountId
         - createdAt
         - createdBy
       properties:
@@ -4834,6 +4596,22 @@ components:
           type: string
           format: uuid
           description: "The challenge id."
+        memberRate:
+          type: number
+          format: float
+          example: 20.5
+          description: "The member rate"
+        customerRate:
+          type: number
+          format: float
+          example: 15.5
+          description: "The customer rate"
+        days:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 3
+          description: "The workdays to pay"
         amount:
           type: integer
           example: 2
@@ -4898,22 +4676,6 @@ components:
               type: integer
               example: 429
               description: "HTTP code of error"
-    WorkPeriodPaymentRequestBody:
-      required:
-        - workPeriodId
-      properties:
-        workPeriodId:
-          type: string
-          format: uuid
-          description: "The work period id."
-        amount:
-          type: integer
-          example: 2
-          description: "The amount to be paid."
-        status:
-          type: string
-          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
-          description: "The payment status."
     WorkPeriodPaymentCreateRequestBody:
       required:
         - workPeriodId
@@ -4922,10 +4684,12 @@ components:
           type: string
           format: uuid
           description: "The work period id."
-        amount:
+        days:
           type: integer
+          minimum: 1
+          maximum: 5
           example: 2
-          description: "The amount to be paid."
+          description: "The workDays to be paid."
     WorkPeriodPaymentQueryCreateRequestBody:
       properties:
         status:
@@ -4964,7 +4728,7 @@ components:
                 type: integer
         workPeriods.paymentStatus:
           type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
+          enum: ["pending", "partially-completed", "failed"]
         workPeriods.startDate:
           type: string
           format: date
@@ -4993,17 +4757,9 @@ components:
           $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateRequestBody"
     WorkPeriodPaymentPatchRequestBody:
       properties:
-        workPeriodId:
-          type: string
-          format: uuid
-          description: "The work period id."
-        amount:
-          type: integer
-          example: 2
-          description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
+          enum: ["scheduled", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object

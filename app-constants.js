@@ -92,6 +92,11 @@ const WorkPeriodPaymentStatus = {
   CANCELLED: 'cancelled'
 }
 
+const WorkPeriodPaymentUpdateStatus = {
+  SCHEDULED: 'scheduled',
+  CANCELLED: 'cancelled'
+}
+
 const PaymentProcessingSwitch = {
   ON: 'ON',
   OFF: 'OFF'
@@ -113,6 +118,7 @@ module.exports = {
   Interviews,
   ChallengeStatus,
   WorkPeriodPaymentStatus,
+  WorkPeriodPaymentUpdateStatus,
   PaymentSchedulerStatus,
   PaymentProcessingSwitch
 }

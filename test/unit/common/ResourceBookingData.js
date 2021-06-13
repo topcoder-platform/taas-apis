@@ -35,7 +35,7 @@ const T01 = {
       startDate: '2021-03-28',
       endDate: '2021-04-03',
       daysWorked: 0,
-      paymentStatus: 'pending'
+      paymentStatus: 'noDays'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
@@ -70,7 +70,7 @@ const T01 = {
       startDate: '2021-05-02',
       endDate: '2021-05-08',
       daysWorked: 0,
-      paymentStatus: 'pending'
+      paymentStatus: 'noDays'
     }]
   }
 }
@@ -250,8 +250,8 @@ const T06 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 5,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -322,8 +322,8 @@ const T07 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 5,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -339,7 +339,7 @@ const T07 = {
           startDate: '2021-04-04',
           endDate: '2021-04-10',
           daysWorked: 0,
-          paymentStatus: 'pending'
+          paymentStatus: 'noDays'
         }
       },
       {
@@ -405,8 +405,8 @@ const T08 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 5,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -422,13 +422,7 @@ const T08 = {
           startDate: '2021-04-18',
           endDate: '2021-04-24',
           daysWorked: 0,
-          paymentStatus: 'pending'
-        }
-      },
-      {
-        id: '10faf505-d0e3-4d13-a817-7f1319625e91',
-        data: {
-          daysWorked: 5
+          paymentStatus: 'noDays'
         }
       }
     ]
@@ -488,9 +482,9 @@ const T09 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 0,
-        memberRate: null,
-        customerRate: null,
-        paymentStatus: 'pending',
+        daysPaid: 0,
+        paymentTotal: 0,
+        paymentStatus: 'noDays',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
@@ -506,8 +500,8 @@ const T09 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 5,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -583,9 +577,9 @@ const T10 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 0,
-        memberRate: null,
-        customerRate: null,
-        paymentStatus: 'pending',
+        daysPaid: 0,
+        paymentTotal: 0,
+        paymentStatus: 'noDays',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
@@ -601,8 +595,8 @@ const T10 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 5,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -678,9 +672,9 @@ const T11 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 0,
-        memberRate: null,
-        customerRate: null,
-        paymentStatus: 'pending',
+        daysPaid: 0,
+        paymentTotal: 0,
+        paymentStatus: 'noDays',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
@@ -696,8 +690,8 @@ const T11 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 3,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -772,8 +766,8 @@ const T12 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -790,8 +784,8 @@ const T12 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 1,
+        paymentTotal: 2.65,
         paymentStatus: 'partially-completed',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -861,8 +855,8 @@ const T13 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -879,8 +873,8 @@ const T13 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 4,
+        paymentTotal: 10.59,
         paymentStatus: 'completed',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -931,8 +925,8 @@ const T14 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -949,8 +943,8 @@ const T14 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 4,
+        paymentTotal: 10.59,
         paymentStatus: 'completed',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -992,8 +986,8 @@ const T15 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -1010,8 +1004,8 @@ const T15 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -1067,8 +1061,8 @@ const T16 = {
         startDate: '2021-04-04',
         endDate: '2021-04-10',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 0,
+        paymentTotal: 0,
         paymentStatus: 'pending',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -1085,8 +1079,8 @@ const T16 = {
         startDate: '2021-04-11',
         endDate: '2021-04-17',
         daysWorked: 4,
-        memberRate: null,
-        customerRate: null,
+        daysPaid: 4,
+        paymentTotal: 10.59,
         paymentStatus: 'completed',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
@@ -1161,7 +1155,7 @@ const T20 = {
   },
   error: {
     httpStatus: 403,
-    message: 'You don\'t have access to view memberRate'
+    message: 'You don\'t have access to view memberRate and paymentTotal'
   }
 }
 const T21 = {
@@ -1404,7 +1398,7 @@ const T27 = {
   },
   error: {
     httpStatus: 403,
-    message: 'You don\'t have access to view memberRate'
+    message: 'You don\'t have access to view memberRate and paymentTotal'
   }
 }
 const T28 = {
