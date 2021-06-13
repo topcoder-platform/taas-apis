@@ -103,10 +103,11 @@
    tc-taas-es-processor | 2021-04-09T21:20:21.469Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.update:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.470Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.delete:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.471Z DEBUG no-kafka-client Subscribed to taas.workperiodpayment.create:0 offset 0 leader kafka:9093
+   tc-taas-es-processor | 2021-04-09T21:20:21.472Z DEBUG no-kafka-client Subscribed to taas.action.retry:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.473Z DEBUG no-kafka-client Subscribed to taas.job.update:0 offset 0 leader kafka:9093
    tc-taas-es-processor | 2021-04-09T21:20:21.474Z DEBUG no-kafka-client Subscribed to taas.resourcebooking.update:0 offset 0 leader kafka:9093
    tc-taas-es-processor | [2021-04-09T21:20:21.475Z] app INFO : Initialized.......
-   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete,taas.workperiod.create,taas.workperiod.update,taas.workperiod.delete,taas.workperiodpayment.create,taas.workperiodpayment.update,taas.interview.requested,taas.interview.update,taas.interview.bulkUpdate,taas.role.requested,taas.role.update,taas.role.delete
+   tc-taas-es-processor | [2021-04-09T21:20:21.479Z] app INFO : common.error.reporting,taas.job.create,taas.job.update,taas.job.delete,taas.jobcandidate.create,taas.jobcandidate.update,taas.jobcandidate.delete,taas.resourcebooking.create,taas.resourcebooking.update,taas.resourcebooking.delete,taas.workperiod.create,taas.workperiod.update,taas.workperiod.delete,taas.workperiodpayment.create,taas.workperiodpayment.update,taas.interview.requested,taas.interview.update,taas.interview.bulkUpdate,taas.role.requested,taas.role.update,taas.role.delete,taas.action.retry
    tc-taas-es-processor | [2021-04-09T21:20:21.480Z] app INFO : Kick Start.......
    tc-taas-es-processor | ********** Topcoder Health Check DropIn listening on port 3001
    tc-taas-es-processor | Topcoder Health Check DropIn started and ready to roll
@@ -176,6 +177,19 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 2. Run `taas-es-processor` separately from the source code. As `npm run services:up` already run all the dependencies for both `taas-apis` and for `taas-es-processor`. The only thing you need to do for running `taas-es-processor` locally is clone the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) repository and inside `taas-es-processor` folder run:
    - `nvm use` - to use correct Node version
    - `npm run install`
+   - Create `.env` file with the next environment variables. Values for **Auth0 config** should be shared with you on the forum.<br>
+
+      ```bash
+      # Auth0 config
+      AUTH0_URL=
+      AUTH0_AUDIENCE=
+      AUTH0_CLIENT_ID=
+      AUTH0_CLIENT_SECRET=
+      ```
+
+      - Values from this file would be automatically used by many `npm` commands.
+      - ⚠️ Never commit this file or its copy to the repository!
+
    - `npm run start`
 
 ## NPM Commands
@@ -206,6 +220,7 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
+| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                                         |
 
 ## Import and Export data
 

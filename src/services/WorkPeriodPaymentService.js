@@ -81,7 +81,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     if (daysWorked === 0) {
       workPeriodPayment.amount = 0
     } else {
-      workPeriodPayment.amount = _.round(memberRate * 5 / daysWorked, 2)
+      workPeriodPayment.amount = _.round(memberRate * daysWorked / 5, 2)
     }
   }
 
@@ -96,7 +96,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON())
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON(), { key: `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}` })
   return created.dataValues
 }
 
@@ -183,7 +183,7 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
         const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
         result.push(successResult)
       } catch (e) {
-        result.push(_.extend(wp, { error: { message: e.message, code: e.httpStatus } }))
+        result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
       }
     }
     return result
@@ -234,7 +234,7 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
     }
   }
 
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
   return updated.dataValues
 }
 
