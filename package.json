@@ -27,6 +27,7 @@
     "local:init": "npm run local:reset && npm run data:import -- --force",
     "local:reset": "npm run delete-index -- --force || true && npm run create-index -- --force && npm run init-db force",
     "cov": "nyc --reporter=html --reporter=text npm run test",
+    "demo-payment-scheduler": "node scripts/demo-payment-scheduler/index.js && npm run index:all -- --force",
     "demo-payment": "node scripts/demo-payment"
   },
   "keywords": [],

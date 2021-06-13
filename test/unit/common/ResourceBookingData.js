@@ -1229,6 +1229,8 @@ const T25 = {
       updatedAt: '2021-05-08T18:47:37.268Z'
     }
   ],
+  resourceBookingCount: [{ id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75', count: 1 },
+    { id: '60e99790-8da0-4596-badc-29a06feb78a0', count: 1 }],
   criteria: {},
   result: {
     fromDb: true,

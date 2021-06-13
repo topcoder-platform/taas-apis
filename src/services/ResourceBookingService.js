@@ -454,6 +454,11 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       return projectId
     })
   }
+  // `criteria[workPeriods.paymentStatus]` could be array of paymentStatus, or comma separated string of paymentStatus
+  // in case it's comma separated string of paymentStatus we have to convert it to an array of paymentStatus
+  if ((typeof criteria['workPeriods.paymentStatus']) === 'string') {
+    criteria['workPeriods.paymentStatus'] = criteria['workPeriods.paymentStatus'].trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.paymentStatus() })).paymentStatus)
+  }
   const page = criteria.page
   let perPage
   if (options.returnAll) {
@@ -535,13 +540,21 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     if (!_.isEmpty(workPeriodFilters)) {
       const workPeriodsMust = []
       _.each(workPeriodFilters, (value, key) => {
-        workPeriodsMust.push({
-          term: {
-            [key]: {
-              value
+        if (key === 'workPeriods.paymentStatus') {
+          workPeriodsMust.push({
+            terms: {
+              [key]: value
             }
-          }
-        })
+          })
+        } else {
+          workPeriodsMust.push({
+            term: {
+              [key]: {
+                value
+              }
+            }
+          })
+        }
       })
 
       esQuery.body.query.bool.must.push({
@@ -560,7 +573,13 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     _.each(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
       key = key.split('.')[1]
       _.each(resourceBookings, r => {
-        r.workPeriods = _.filter(r.workPeriods, { [key]: value })
+        r.workPeriods = _.filter(r.workPeriods, wp => {
+          if (key === 'paymentStatus') {
+            return _.includes(value, wp[key])
+          } else {
+            return wp[key] === value
+          }
+        })
       })
     })
 
@@ -664,7 +683,10 @@ searchResourceBookings.schema = Joi.object().keys({
       Joi.string(),
       Joi.array().items(Joi.number().integer())
     ),
-    'workPeriods.paymentStatus': Joi.paymentStatus(),
+    'workPeriods.paymentStatus': Joi.alternatives(
+      Joi.string(),
+      Joi.array().items(Joi.paymentStatus())
+    ),
     'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
     'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
     'workPeriods.userHandle': Joi.string()
