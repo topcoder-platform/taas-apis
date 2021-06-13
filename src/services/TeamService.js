@@ -764,9 +764,7 @@ async function roleSearchRequest (currentUser, data) {
   } else {
     // if only job description is provided, collect skill names from description
     const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
-    // collected tags from description has inconsistency with topcoder skills
-    // we need to filter invalid skills
-    const skills = await getSkillNamesByNames(_.map(tags, 'tag'))
+    const skills = _.map(tags, 'tag')
     // find the best matching role
     role = await getRoleBySkills(skills)
   }
@@ -926,27 +924,6 @@ async function getSkillIdsByNames (skills) {
 }
 
 getSkillIdsByNames.schema = Joi.object()
-  .keys({
-    skills: Joi.array().items(Joi.string().required()).required()
-  }).required()
-
-/**
- * Filters invalid skills from given skill names
- *
- * @param {Array<string>} skills the array of skill names
- * @returns {Array<string>} the array of skill names
- */
-async function getSkillNamesByNames (skills) {
-  // remove duplicates, leading and trailing whitespaces, empties.
-  const cleanedSkills = _.uniq(_.filter(_.map(skills, skill => _.trim(skill)), skill => !_.isEmpty(skill)))
-  const result = await helper.getAllTopcoderSkills({ name: _.join(cleanedSkills, ',') })
-  const skillNames = _.map(result, 'name')
-  // endpoint returns the partial matched skills
-  // we need to filter by exact match case insensitive
-  return _.intersectionBy(skillNames, cleanedSkills, _.toLower)
-}
-
-getSkillNamesByNames.schema = Joi.object()
   .keys({
     skills: Joi.array().items(Joi.string().required()).required()
   }).required()
@@ -1156,7 +1133,6 @@ module.exports = {
   getSkillsByJobDescription,
   getSkillNamesByIds,
   getSkillIdsByNames,
-  getSkillNamesByNames,
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
