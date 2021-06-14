@@ -816,6 +816,7 @@ function setResHeaders (req, res, result) {
   res.set('X-Per-Page', result.perPage)
   res.set('X-Total', result.total)
   res.set('X-Total-Pages', totalPages)
+  res.set('X-Data-Source', result.fromDb ? 'database' : 'elasticsearch')
   // set Link header
   if (totalPages > 0) {
     let link = `<${getPageLink(req, 1)}>; rel="first", <${getPageLink(
