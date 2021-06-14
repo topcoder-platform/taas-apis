@@ -532,9 +532,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       required: false
     }]
   })
+  const total = await Job.count({ where: filter })
   return {
     fromDb: true,
-    total: jobs.length,
+    total,
     page,
     perPage,
     result: _.map(jobs, job => job.dataValues)

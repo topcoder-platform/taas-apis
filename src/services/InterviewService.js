@@ -539,9 +539,10 @@ async function searchInterviews (currentUser, jobCandidateId, criteria) {
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
   })
+  const total = await Interview.count({ where: filter })
   return {
     fromDb: true,
-    total: interviews.length,
+    total,
     page,
     perPage,
     result: _.map(interviews, interview => interview.dataValues)
