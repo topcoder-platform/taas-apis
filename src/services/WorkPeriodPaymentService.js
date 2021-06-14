@@ -12,7 +12,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const { WorkPeriodPaymentStatus } = require('../../app-constants')
+const { PaymentStatus, WorkPeriodPaymentStatus } = require('../../app-constants')
 const { searchResourceBookings } = require('./ResourceBookingService')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
@@ -62,6 +62,9 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
   workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
   if (_.isNil(correspondingResourceBooking.memberRate)) {
     throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
+  }
+  if (correspondingResourceBooking.memberRate <= 0) {
+    throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
   }
   workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
   const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
@@ -380,7 +383,9 @@ async function createQueryWorkPeriodPayments (currentUser, criteria) {
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
   const createdBy = await helper.getUserId(currentUser.userId)
   const query = criteria.query
-
+  if ((typeof query['workPeriods.paymentStatus']) === 'string') {
+    query['workPeriods.paymentStatus'] = query['workPeriods.paymentStatus'].trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.string().valid(PaymentStatus.PENDING, PaymentStatus.PARTIALLY_COMPLETED, PaymentStatus.FAILED) })).paymentStatus)
+  }
   const fields = _.join(_.uniq(_.concat(
     ['id', 'billingAccountId', 'memberRate', 'customerRate', 'workPeriods.id', 'workPeriods.resourceBookingId', 'workPeriods.daysWorked', 'workPeriods.daysPaid'],
     _.map(_.keys(query), k => k === 'projectIds' ? 'projectId' : k))
@@ -418,7 +423,10 @@ createQueryWorkPeriodPayments.schema = Joi.object().keys({
         Joi.string(),
         Joi.array().items(Joi.number().integer())
       ),
-      'workPeriods.paymentStatus': Joi.string().valid('pending', 'partially-completed', 'failed'),
+      'workPeriods.paymentStatus': Joi.alternatives(
+        Joi.string(),
+        Joi.array().items(Joi.string().valid(PaymentStatus.PENDING, PaymentStatus.PARTIALLY_COMPLETED, PaymentStatus.FAILED))
+      ),
       'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
       'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
       'workPeriods.userHandle': Joi.string()

@@ -171,12 +171,12 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   function _checkForPaidWorkPeriods (workPeriods) {
     const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
       // filter by WP and WPP status
-      return (['completed', 'partially-completed', 'in-progress'].indexOf(workPeriod.paymentStatus) !== -1 ||
-      _.some(workPeriod.payments, payment => ['completed', 'in-progress', 'shceduled'].indexOf(payment.status) !== -1))
+      return ([constants.PaymentStatus.COMPLETED, constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.IN_PROGRESS].indexOf(workPeriod.paymentStatus) !== -1 ||
+      _.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1))
     })
     if (paidWorkPeriods.length > 0) {
       throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
-        has completed, partially-completed or in-progress payment status.`)
+        has ${constants.PaymentStatus.COMPLETED}, ${constants.PaymentStatus.PARTIALLY_COMPLETED} or ${constants.PaymentStatus.IN_PROGRESS} payment status.`)
     }
   }
   // find related workPeriods to evaluate the changes
@@ -700,7 +700,7 @@ searchResourceBookings.schema = Joi.object().keys({
     page: Joi.page(),
     perPage: Joi.perPage(),
     sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status',
-      'workPeriods.userHandle', 'workPeriods.daysWorked', 'workPeriods.customerRate', 'workPeriods.memberRate', 'workPeriods.paymentStatus'),
+      'workPeriods.userHandle', 'workPeriods.daysWorked', 'workPeriods.daysPaid', 'workPeriods.paymentTotal', 'workPeriods.paymentStatus'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     status: Joi.resourceBookingStatus(),
     startDate: Joi.date().format('YYYY-MM-DD'),

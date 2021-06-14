@@ -7,6 +7,7 @@ const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
+const { PaymentStatus, WorkPeriodPaymentStatus } = require('../../app-constants')
 const WorkPeriod = models.WorkPeriod
 
 /**
@@ -26,23 +27,23 @@ async function updateWorkPeriod (payload) {
   data.paymentTotal = 0
   _.each(workPeriod.payments, payment => {
     paymentStatuses[payment.status] = true
-    if (_.includes(['scheduled', 'in-progress', 'completed'], payment.status)) {
+    if (_.includes([WorkPeriodPaymentStatus.SCHEDULED, WorkPeriodPaymentStatus.IN_PROGRESS, WorkPeriodPaymentStatus.COMPLETED], payment.status)) {
       data.daysPaid += payment.days
       data.paymentTotal += payment.amount
     }
   })
   if (workPeriod.daysWorked === 0) {
-    data.paymentStatus = 'noDays'
-  } else if (paymentStatuses.scheduled || paymentStatuses['in-progress']) {
-    data.paymentStatus = 'in-progress'
+    data.paymentStatus = PaymentStatus.NO_DAYS
+  } else if (paymentStatuses[WorkPeriodPaymentStatus.SCHEDULED] || paymentStatuses[WorkPeriodPaymentStatus.IN_PROGRESS]) {
+    data.paymentStatus = PaymentStatus.IN_PROGRESS
   } else if (workPeriod.daysWorked === data.daysPaid) {
-    data.paymentStatus = 'completed'
-  } else if (paymentStatuses.completed) {
-    data.paymentStatus = 'partially-completed'
-  } else if (paymentStatuses.failed) {
-    data.paymentStatus = 'failed'
+    data.paymentStatus = PaymentStatus.COMPLETED
+  } else if (paymentStatuses[WorkPeriodPaymentStatus.COMPLETED]) {
+    data.paymentStatus = PaymentStatus.PARTIALLY_COMPLETED
+  } else if (paymentStatuses[WorkPeriodPaymentStatus.FAILED]) {
+    data.paymentStatus = PaymentStatus.FAILED
   } else {
-    data.paymentStatus = 'pending'
+    data.paymentStatus = PaymentStatus.PENDING
   }
   if (workPeriod.daysPaid === data.daysPaid && workPeriod.paymentTotal === data.paymentTotal && workPeriod.paymentStatus === data.paymentStatus) {
     logger.debug({

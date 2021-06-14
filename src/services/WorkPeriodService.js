@@ -279,14 +279,14 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (thisWeek.daysWorked < data.daysWorked) {
     throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
   }
-  if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === 'completed') {
-    data.paymentStatus = 'partially-completed'
-  } else if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === 'noDays') {
-    data.paymentStatus = 'pending'
-  } else if (data.daysWorked === oldValue.daysPaid && _.includes(['partially-completed', 'failed'], oldValue.paymentStatus)) {
-    data.paymentStatus = 'completed'
+  if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === constants.PaymentStatus.COMPLETED) {
+    data.paymentStatus = constants.PaymentStatus.PARTIALLY_COMPLETED
+  } else if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === constants.PaymentStatus.NO_DAYS) {
+    data.paymentStatus = constants.PaymentStatus.PENDING
+  } else if (data.daysWorked === oldValue.daysPaid && _.includes([constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.FAILED], oldValue.paymentStatus)) {
+    data.paymentStatus = constants.PaymentStatus.COMPLETED
   } else if (data.daysWorked === 0) {
-    data.paymentStatus = 'noDays'
+    data.paymentStatus = constants.PaymentStatus.NO_DAYS
   }
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriod.update(data)
@@ -319,11 +319,11 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   */
 async function deleteWorkPeriod (id) {
   const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
-  if (_.includes(['completed', 'partially-completed', 'in-progress'], workPeriod.paymentStatus)) {
-    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed partially-completed, or in-progress")
+  if (_.includes([constants.PaymentStatus.COMPLETED, constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.IN_PROGRESS], workPeriod.paymentStatus)) {
+    throw new errors.BadRequestError(`Can't delete WorkPeriod with paymentStatus ${constants.PaymentStatus.COMPLETED}, ${constants.PaymentStatus.PARTIALLY_COMPLETED}, or ${constants.PaymentStatus.IN_PROGRESS}`)
   }
-  if (_.some(workPeriod.payments, payment => ['completed', 'in-progress', 'shceduled'].indexOf(payment.status) !== -1)) {
-    throw new errors.BadRequestError("Can't delete WorkPeriod if any associated WorkPeriodsPayment has status completed, shceduled or in-progress")
+  if (_.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1)) {
+    throw new errors.BadRequestError(`Can't delete WorkPeriod if any associated WorkPeriodsPayment has status ${constants.WorkPeriodPaymentStatus.COMPLETED}, ${constants.WorkPeriodPaymentStatus.SCHEDULED} or ${constants.WorkPeriodPaymentStatus.IN_PROGRESS}`)
   }
   await models.WorkPeriodPayment.destroy({
     where: {

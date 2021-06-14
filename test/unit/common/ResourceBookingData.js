@@ -35,7 +35,7 @@ const T01 = {
       startDate: '2021-03-28',
       endDate: '2021-04-03',
       daysWorked: 0,
-      paymentStatus: 'noDays'
+      paymentStatus: 'no-days'
     },
     {
       resourceBookingId: '520bb632-a02a-415e-9857-93b2ecbf7d60',
@@ -70,7 +70,7 @@ const T01 = {
       startDate: '2021-05-02',
       endDate: '2021-05-08',
       daysWorked: 0,
-      paymentStatus: 'noDays'
+      paymentStatus: 'no-days'
     }]
   }
 }
@@ -339,7 +339,7 @@ const T07 = {
           startDate: '2021-04-04',
           endDate: '2021-04-10',
           daysWorked: 0,
-          paymentStatus: 'noDays'
+          paymentStatus: 'no-days'
         }
       },
       {
@@ -422,7 +422,7 @@ const T08 = {
           startDate: '2021-04-18',
           endDate: '2021-04-24',
           daysWorked: 0,
-          paymentStatus: 'noDays'
+          paymentStatus: 'no-days'
         }
       }
     ]
@@ -484,7 +484,7 @@ const T09 = {
         daysWorked: 0,
         daysPaid: 0,
         paymentTotal: 0,
-        paymentStatus: 'noDays',
+        paymentStatus: 'no-days',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
@@ -579,7 +579,7 @@ const T10 = {
         daysWorked: 0,
         daysPaid: 0,
         paymentTotal: 0,
-        paymentStatus: 'noDays',
+        paymentStatus: 'no-days',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
@@ -674,7 +674,7 @@ const T11 = {
         daysWorked: 0,
         daysPaid: 0,
         paymentTotal: 0,
-        paymentStatus: 'noDays',
+        paymentStatus: 'no-days',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
