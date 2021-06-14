@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "18310e1b-429d-49db-8555-f4a54404271f",
+		"_postman_id": "d413d21d-272f-454f-b26a-0d7e3bf926d9",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -21166,6 +21166,221 @@
 					]
 				},
 				{
+					"name": "Get Skills by Job Description",
+					"item": [
+						{
+							"name": "get skills successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"description\": \"Description  A global leading healthcare company is seeking a strong Databricks Engineer to join their development team as they build their new Databricks workspace. Development efforts will contribute to the migration of data from Hadoop to Databricks to prepare data for visualization. Candidate must be well-versed in Databricks components and best practices, be an excellent problem solver and be comfortable working in a fast-moving, rapidly changing, and dynamic environment via Agile, SCRUM, and DevOps.  PREFERRED QUALIFICATIONS:      2+ years of Azure Data Stack experience: Azure Data Services using ADF, ADLS, Databricks with PySpark, Azure DevOps & Azure Key Vault.     Strong knowledge of various data warehousing methodologies and data modeling concepts.     Hands-on experience using Azure, Azure data lake, Azure functions & Databricks      Minimum 2-3+ years of Python experience (PySpark)     Design & Develop Azure native solutions for Data Platform     Minimum 3+ years of experience using Big Data ecosystem (Cloudera/Hortonworks) using Oozie, Hive, Impala, and Spark     Expert in SQL and performance tuning\" }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"getSkillsByJobDescription"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get skills by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid_token"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"description\": \"Description  A global leading healthcare company is seeking a strong Databricks Engineer to join their development team as they build their new Databricks workspace. Development efforts will contribute to the migration of data from Hadoop to Databricks to prepare data for visualization. Candidate must be well-versed in Databricks components and best practices, be an excellent problem solver and be comfortable working in a fast-moving, rapidly changing, and dynamic environment via Agile, SCRUM, and DevOps.  PREFERRED QUALIFICATIONS:      2+ years of Azure Data Stack experience: Azure Data Services using ADF, ADLS, Databricks with PySpark, Azure DevOps & Azure Key Vault.     Strong knowledge of various data warehousing methodologies and data modeling concepts.     Hands-on experience using Azure, Azure data lake, Azure functions & Databricks      Minimum 2-3+ years of Python experience (PySpark)     Design & Develop Azure native solutions for Data Platform     Minimum 3+ years of experience using Big Data ecosystem (Cloudera/Hortonworks) using Oozie, Hive, Impala, and Spark     Expert in SQL and performance tuning\" }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"getSkillsByJobDescription"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get skills by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.description\\\" is not allowed to be empty\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"description\": \"\" }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"getSkillsByJobDescription"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get skills by missing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"\\\"data.description\\\" is required\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"getSkillsByJobDescription"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "GET /taas-teams",
 					"request": {
 						"method": "GET",
@@ -21643,44 +21858,6 @@
 									"key": "id",
 									"value": "16705"
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST /taas-teams/getSkillsByJobDescription",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token_member}}"
-							},
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"description\": \"nodejs react c++ hello\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/taas-teams/getSkillsByJobDescription",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"taas-teams",
-								"getSkillsByJobDescription"
 							]
 						}
 					},
