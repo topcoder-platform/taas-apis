@@ -8734,7 +8734,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=endDate&sortOrder=asc&fields=id,endDate,workPeriods",
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=10&sortBy=endDate&sortOrder=asc",
 									"host": [
 										"{{URL}}"
 									],
@@ -8875,7 +8875,8 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,endDate,workPeriods"
+											"value": "id,endDate,workPeriods",
+											"disabled": true
 										}
 									]
 								}
@@ -9565,7 +9566,7 @@
 							"response": []
 						},
 						{
-							"name": "search RB sortBy workPeriods.customerRate",
+							"name": "search RB sortBy workPeriods.daysPaid",
 							"event": [
 								{
 									"listen": "test",
@@ -9589,7 +9590,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.customerRate&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate",
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.daysPaid&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid",
 									"host": [
 										"{{URL}}"
 									],
@@ -9607,7 +9608,7 @@
 										},
 										{
 											"key": "sortBy",
-											"value": "workPeriods.customerRate"
+											"value": "workPeriods.daysPaid"
 										},
 										{
 											"key": "workPeriods.startDate",
@@ -9624,7 +9625,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate"
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid"
 										},
 										{
 											"key": "status",
@@ -9633,7 +9634,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,status",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,status",
 											"disabled": true
 										},
 										{
@@ -9643,7 +9644,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,startDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,startDate",
 											"disabled": true
 										},
 										{
@@ -9653,7 +9654,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,endDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,endDate",
 											"disabled": true
 										},
 										{
@@ -9663,7 +9664,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,rateType",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,rateType",
 											"disabled": true
 										},
 										{
@@ -9673,7 +9674,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,jobId",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,jobId",
 											"disabled": true
 										},
 										{
@@ -9688,7 +9689,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,projectId",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,projectId",
 											"disabled": true
 										},
 										{
@@ -9698,7 +9699,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.paymentStatus",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.paymentStatus",
 											"disabled": true
 										},
 										{
@@ -9708,7 +9709,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.endDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.endDate",
 											"disabled": true
 										},
 										{
@@ -9718,7 +9719,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.customerRate,workPeriods.userHandle",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.userHandle",
 											"disabled": true
 										},
 										{
@@ -9732,7 +9733,7 @@
 							"response": []
 						},
 						{
-							"name": "search RB sortBy workPeriods.memberRate",
+							"name": "search RB sortBy workPeriods.paymentTotal",
 							"event": [
 								{
 									"listen": "test",
@@ -9756,7 +9757,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.memberRate&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate",
+									"raw": "{{URL}}/resourceBookings?page=1&perPage=5&sortBy=workPeriods.paymentTotal&workPeriods.startDate=2021-01-03&sortOrder=asc&fields=id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal",
 									"host": [
 										"{{URL}}"
 									],
@@ -9774,7 +9775,7 @@
 										},
 										{
 											"key": "sortBy",
-											"value": "workPeriods.memberRate"
+											"value": "workPeriods.paymentTotal"
 										},
 										{
 											"key": "workPeriods.startDate",
@@ -9791,7 +9792,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate"
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal"
 										},
 										{
 											"key": "status",
@@ -9800,7 +9801,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,status",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,status",
 											"disabled": true
 										},
 										{
@@ -9810,7 +9811,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,startDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,startDate",
 											"disabled": true
 										},
 										{
@@ -9820,7 +9821,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,endDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,endDate",
 											"disabled": true
 										},
 										{
@@ -9830,7 +9831,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,rateType",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,rateType",
 											"disabled": true
 										},
 										{
@@ -9840,7 +9841,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,jobId",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,jobId",
 											"disabled": true
 										},
 										{
@@ -9855,7 +9856,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,projectId",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,projectId",
 											"disabled": true
 										},
 										{
@@ -9865,7 +9866,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.paymentStatus",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.paymentStatus",
 											"disabled": true
 										},
 										{
@@ -9875,7 +9876,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.endDate",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.endDate",
 											"disabled": true
 										},
 										{
@@ -9885,7 +9886,7 @@
 										},
 										{
 											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.memberRate,workPeriods.userHandle",
+											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.userHandle",
 											"disabled": true
 										},
 										{
@@ -15049,7 +15050,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Days cannot be more than not paid days which is 0\")\r",
+									"    pm.expect(response.message).to.eq(\"Days cannot be more than not paid days which is 3\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -15456,7 +15457,7 @@
 									"    if(pm.response.status === \"OK\"){\r",
 									"        const response = pm.response.json()\r",
 									"        pm.environment.set(\"workPeriodPaymentId-2\", response[0].id);\r",
-									"        pm.environment.set(\"workPeriodPaymentId-3\", response[0].id);\r",
+									"        pm.environment.set(\"workPeriodPaymentId-3\", response[1].id);\r",
 									"    }\r",
 									"});"
 								],
