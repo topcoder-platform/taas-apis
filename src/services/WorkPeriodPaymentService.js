@@ -457,7 +457,10 @@ createQueryWorkPeriodPayments.schema = Joi.object().keys({
         Joi.string(),
         Joi.array().items(Joi.number().integer())
       ),
-      'workPeriods.paymentStatus': Joi.paymentStatus(),
+      'workPeriods.paymentStatus': Joi.alternatives(
+        Joi.string(),
+        Joi.array().items(Joi.paymentStatus())
+      ),
       'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
       'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
       'workPeriods.userHandle': Joi.string()
