@@ -3279,12 +3279,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -3765,10 +3759,13 @@ components:
       properties:
         tag:
           type: string
+          example: "Java"
         type:
           type: string
+          example: "taas_skill"
         source:
           type: string
+          example: "taas-jd-parser"
 
     Job:
       required:
