@@ -1903,6 +1903,56 @@ async function getMemberGroups (userId) {
   return _.get(res, 'body')
 }
 
+/**
+ * Removes markdown and html formatting from given text
+ *
+ * @param {String} text formatted text
+ * @returns {String} cleaned words seperated by single space
+ */
+function removeTextFormatting (text) {
+  text = _.replace(text, /^(-\s*?|\*\s*?|_\s*?){3,}\s*$/gm, ' ')
+  text = _.replace(text, /^([\s\t]*)([*\-+]|\d+\.)\s+/gm, ' $1 ')
+  // Header
+  text = _.replace(text, /\n={2,}/g, '\n')
+  // Fenced codeblocks
+  text = _.replace(text, /~{3}.*\n/g, ' ')
+  // Strikethrough
+  text = _.replace(text, /~~/g, ' ')
+  // Fenced codeblocks
+  text = _.replace(text, /`{3}.*\n/g, ' ')
+  // Remove HTML tags
+  text = _.replace(text, /<[^>]*>/g, ' ')
+  // Remove setext-style headers
+  text = _.replace(text, /^[=-]{2,}\s*$/g, ' ')
+  // Remove footnotes
+  text = _.replace(text, /\[\^.+?\](: .*?$)?/g, ' ')
+  text = _.replace(text, /\s{0,2}\[.*?\]: .*?$/g, ' ')
+  // Remove images
+  text = _.replace(text, /!\[(.*?)\][[(].*?[\])]/g, ' $1 ')
+  // Remove inline links
+  text = _.replace(text, /\[(.*?)\][[(].*?[\])]/g, ' $1 ')
+  // Remove blockquotes
+  text = _.replace(text, /^\s{0,3}>\s?/g, ' ')
+  // Remove reference-style links
+  text = _.replace(text, /^\s{1,2}\[(.*?)\]: (\S+)( ".*?")?\s*$/g, ' ')
+  // Remove atx-style headers
+  text = _.replace(text, /^#{1,6}\s*([^#]*)\s*#{1,6}?$/gm, ' $1 ')
+  // Remove emphasis (repeat the line to remove double emphasis)
+  text = _.replace(text, /([*_]{1,3})(\S.*?\S{0,1})\1/g, ' $2 ')
+  text = _.replace(text, /([*_]{1,3})(\S.*?\S{0,1})\1/g, ' $2 ')
+  // Remove code blocks
+  text = _.replace(text, /(`{3,})(.*?)\1/gm, ' $2 ')
+  // Remove inline code
+  text = _.replace(text, /`(.+?)`/g, ' $1 ')
+  // Remove punctuation
+  text = _.replace(text, /[,"'?/\\]/g, ' ')
+  // Replace two or more newlines
+  text = _.replace(text, /\n/g, ' ')
+  // replace all whitespace characters with single space
+  text = _.replace(text, /\s\s+/g, ' ')
+  return text
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
@@ -1961,5 +2011,6 @@ module.exports = {
   getUserByHandle,
   substituteStringByObject,
   createProject,
-  getMemberGroups
+  getMemberGroups,
+  removeTextFormatting
 }
