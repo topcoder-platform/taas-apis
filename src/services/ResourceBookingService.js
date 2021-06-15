@@ -171,7 +171,7 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   function _checkForPaidWorkPeriods (workPeriods) {
     const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
       // filter by WP and WPP status
-      return ([constants.PaymentStatus.COMPLETED, constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.IN_PROGRESS].indexOf(workPeriod.paymentStatus) !== -1 ||
+      return (workPeriod.daysPaid > 0 ||
       _.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1))
     })
     if (paidWorkPeriods.length > 0) {

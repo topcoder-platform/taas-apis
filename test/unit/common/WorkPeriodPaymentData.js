@@ -12,7 +12,7 @@ const workPeriodPayment01 = {
       customerRate: 13,
       id: '01971e6f-0f09-4a2a-bc2e-2adac0f00622',
       challengeId: '00000000-0000-0000-0000-000000000000',
-      createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+      createdBy: '79a39efd-91af-494a-b0f6-62310495effd',
       updatedAt: '2021-04-21T12:58:07.535Z',
       createdAt: '2021-04-21T12:58:07.535Z',
       updatedBy: null
@@ -39,7 +39,7 @@ const workPeriodPayment01 = {
     userHandle: 'pshah_manager',
     updatedBy: null,
     endDate: '2020-10-31',
-    daysPaid: 5,
+    daysPaid: 2,
     resourceBookingId: '8694a939-45fe-482e-bee2-3b530acf4139',
     daysWorked: 5,
     createdAt: '2021-06-13T18:21:52.564Z',
@@ -48,7 +48,7 @@ const workPeriodPayment01 = {
     id: '467b4df7-ced4-41b9-9710-b83808cddaf4',
     projectId: 17234,
     startDate: '2020-10-25',
-    paymentStatus: 'in-progress',
+    paymentStatus: 'partially-completed',
     updatedAt: '2021-06-13T18:25:08.492Z',
     payments: [
       {
@@ -75,11 +75,11 @@ const workPeriodPayment01 = {
         createdAt: '2021-06-13T18:22:10.258Z',
         challengeId: '00000000-0000-0000-0000-000000000000',
         memberRate: 13.23,
-        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+        createdBy: '79a39efd-91af-494a-b0f6-62310495effd',
         customerRate: 13,
         days: 3,
         statusDetails: null,
-        id: '2a30b5a1-3558-4795-b516-d03cb098fc0f',
+        id: '01971e6f-0f09-4a2a-bc2e-2adac0f00622',
         status: 'scheduled',
         updatedAt: '2021-06-13T18:25:08.445Z'
       }

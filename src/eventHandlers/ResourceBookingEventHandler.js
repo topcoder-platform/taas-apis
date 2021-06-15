@@ -178,13 +178,13 @@ async function updateWorkPeriods (payload) {
   // find which workperiods should be created
   const workPeriodsToAdd = _.differenceBy(newWorkPeriods, workPeriods, 'startDate')
   // find which workperiods' daysWorked property should be evaluated for changes
-  const IntersectedWorkPeriods = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
+  const intersectedWorkPeriods = _.intersectionBy(newWorkPeriods, workPeriods, 'startDate')
   let workPeriodsToUpdate = []
-  if (IntersectedWorkPeriods.length > 0) {
+  if (intersectedWorkPeriods.length > 0) {
     // We only need check for first and last ones of intersected workPeriods
     // The ones at the middle won't be updated and their daysWorked value will stay the same
     if (payload.options.oldValue.startDate !== payload.value.startDate) {
-      const firstWeek = _.minBy(IntersectedWorkPeriods, 'startDate')
+      const firstWeek = _.minBy(intersectedWorkPeriods, 'startDate')
       const originalFirstWeek = _.find(workPeriods, ['startDate', firstWeek.startDate])
       const existentFirstWeek = _.minBy(workPeriods, 'startDate')
       // recalculate daysWorked for the first week of existent workPeriods and daysWorked have changed
@@ -197,7 +197,7 @@ async function updateWorkPeriods (payload) {
       }
     }
     if (payload.options.oldValue.endDate !== payload.value.endDate) {
-      const lastWeek = _.maxBy(IntersectedWorkPeriods, 'startDate')
+      const lastWeek = _.maxBy(intersectedWorkPeriods, 'startDate')
       const originalLastWeek = _.find(workPeriods, ['startDate', lastWeek.startDate])
       const existentLastWeek = _.maxBy(workPeriods, 'startDate')
       // recalculate daysWorked for the last week of existent workPeriods and daysWorked have changed

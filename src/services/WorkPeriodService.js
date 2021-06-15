@@ -259,7 +259,7 @@ async function updateWorkPeriod (currentUser, id, data) {
   // check permission
   await _checkUserPermissionForWriteWorkPeriod(currentUser)
 
-  const workPeriod = await WorkPeriod.findById(id)
+  const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
   const oldValue = workPeriod.toJSON()
   if (oldValue.daysWorked === data.daysWorked) {
     return oldValue
@@ -279,14 +279,9 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (thisWeek.daysWorked < data.daysWorked) {
     throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
   }
-  if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === constants.PaymentStatus.COMPLETED) {
-    data.paymentStatus = constants.PaymentStatus.PARTIALLY_COMPLETED
-  } else if (data.daysWorked > oldValue.daysWorked && oldValue.paymentStatus === constants.PaymentStatus.NO_DAYS) {
-    data.paymentStatus = constants.PaymentStatus.PENDING
-  } else if (data.daysWorked === oldValue.daysPaid && _.includes([constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.FAILED], oldValue.paymentStatus)) {
-    data.paymentStatus = constants.PaymentStatus.COMPLETED
-  } else if (data.daysWorked === 0) {
-    data.paymentStatus = constants.PaymentStatus.NO_DAYS
+  data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
+  if (oldValue.paymentStatus === data.paymentStatus) {
+    return oldValue
   }
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriod.update(data)
