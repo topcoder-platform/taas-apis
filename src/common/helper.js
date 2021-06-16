@@ -1867,11 +1867,11 @@ async function getTags (description) {
  * @param {Object} data title of project and any other info
  * @returns {Object} the project created
  */
-async function createProject (data) {
-  const token = await getM2MToken()
+async function createProject (currentUser, data) {
+  const token = currentUser.jwtToken
   const res = await request
     .post(`${config.TC_API}/projects/`)
-    .set('Authorization', `Bearer ${token}`)
+    .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send(data)
