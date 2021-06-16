@@ -834,13 +834,17 @@ async function getSkillsByJobDescription (currentUser, data) {
   // unnecessary api calls which is extremely time comsuming.
   await _reloadCachedTopcoderSkills()
   // replace markdown tags with spaces
-  let description = _.replace(data.description, /[`|^[\]{}~/,:-]|#{2,}|<br>/gi, ' ')
-  // replace all whitespace characters with single space
-  description = _.replace(description, /\s\s+/g, ' ')
+  const description = helper.removeTextFormatting(data.description)
   // extract words from description
   let words = _.split(description, ' ')
   // remove stopwords from description
   words = _.filter(words, word => stopWords.indexOf(word.toLowerCase()) === -1)
+  // include consecutive two word combinations
+  const twoWords = []
+  for (let i = 0; i < words.length - 1; i++) {
+    twoWords.push(`${words[i]} ${words[i + 1]}`)
+  }
+  words = _.concat(words, twoWords)
   let foundSkills = []
   const result = []
   // try to match each word with skill names
