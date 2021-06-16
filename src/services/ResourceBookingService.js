@@ -613,6 +613,13 @@ async function searchResourceBookings (currentUser, criteria, options = { return
       })
     })
 
+    // sort Work Periods inside Resource Bookings by startDate just for comfort output
+    _.each(resourceBookings, r => {
+      if (_.isArray(r.workPeriods)) {
+        r.workPeriods = _.sortBy(r.workPeriods, ['startDate'])
+      }
+    })
+
     return {
       total: body.hits.total.value,
       page,
@@ -676,6 +683,12 @@ async function searchResourceBookings (currentUser, criteria, options = { return
     queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], `${criteria.sortOrder} NULLS LAST`]]
   }
   const result = await ResourceBooking.findAll(queryCriteria)
+  // sort Work Periods inside Resource Bookings by startDate just for comfort output
+  _.each(result, r => {
+    if (_.isArray(r.workPeriods)) {
+      r.workPeriods = _.sortBy(r.workPeriods, ['startDate'])
+    }
+  })
   let countQuery
   countQuery = _.omit(queryCriteria, ['limit', 'offset', 'attributes', 'order'])
   if (queryOpt.withWorkPeriods && !queryCriteria.include[0].required) {
