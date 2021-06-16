@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-expressions */
-
-// const _ = require('lodash')
 const expect = require('chai').expect
 const sinon = require('sinon')
 const models = require('../../src/models')
@@ -8,7 +6,6 @@ const service = require('../../src/services/WorkPeriodPaymentService')
 const commonData = require('./common/CommonData')
 const testData = require('./common/WorkPeriodPaymentData')
 const helper = require('../../src/common/helper')
-// const esClient = helper.getESClient()
 const busApiClient = helper.getBusApiClient()
 describe('workPeriod service test', () => {
   beforeEach(() => {
@@ -19,7 +16,7 @@ describe('workPeriod service test', () => {
     sinon.restore()
   })
 
-  describe('create work period test', () => {
+  describe('create work period payment test', () => {
     let stubGetUserId
     let stubEnsureWorkPeriodById
     let stubEnsureResourceBookingById
@@ -33,22 +30,21 @@ describe('workPeriod service test', () => {
     })
 
     it('create work period success', async () => {
+      const stubWorkPeriodFindById = sinon.stub(models.WorkPeriod, 'findOne').callsFake(async () => testData.workPeriodPayment01.workPeriodWithPayments)
+      const stubUpdateWorkPeriod = sinon.stub(testData.workPeriodPayment01.workPeriodWithPayments, 'update').callsFake(async () => testData.workPeriodPayment01.workPeriodUpdateResponse)
       const response = await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request)
       expect(stubGetUserId.calledOnce).to.be.true
       expect(stubEnsureWorkPeriodById.calledOnce).to.be.true
       expect(stubEnsureResourceBookingById.calledOnce).to.be.true
       expect(stubCreateWorkPeriodPayment.calledOnce).to.be.true
+      expect(stubWorkPeriodFindById.calledOnce).to.be.true
+      expect(stubUpdateWorkPeriod.calledOnce).to.be.true
       expect(response).to.eql(testData.workPeriodPayment01.response.dataValues)
-    })
-
-    it('create work period success - billingAccountId is set', async () => {
-      await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request)
-      expect(stubCreateWorkPeriodPayment.calledOnce).to.be.true
+      expect(stubUpdateWorkPeriod.getCall(0).args[0]).to.deep.eq(testData.workPeriodPayment01.workPeriodUpdateRequest)
       expect(stubCreateWorkPeriodPayment.args[0][0]).to.include({
         billingAccountId: testData.workPeriodPayment01.ensureResourceBookingByIdResponse.billingAccountId
       })
     })
-
     it('fail to create work period if corresponding resource booking does not have bill account', async () => {
       stubEnsureResourceBookingById.restore()
       sinon.stub(helper, 'ensureResourceBookingById').callsFake(async () => testData.workPeriodPayment01.ensureResourceBookingByIdResponse02)

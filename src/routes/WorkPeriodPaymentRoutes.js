@@ -33,12 +33,6 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
     },
-    put: {
-      controller: 'WorkPeriodPaymentController',
-      method: 'fullyUpdateWorkPeriodPayment',
-      auth: 'jwt',
-      scopes: [constants.Scopes.UPDATE_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
-    },
     patch: {
       controller: 'WorkPeriodPaymentController',
       method: 'partiallyUpdateWorkPeriodPayment',

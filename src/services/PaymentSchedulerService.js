@@ -282,7 +282,7 @@ async function checkPerMinThreshold (key) {
  * @returns {Boolean}
  */
 function validateError (err) {
-  return !err.status || err.status >= 500
+  return err.status >= 500 && err.status < 600
 }
 
 /**

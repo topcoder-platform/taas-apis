@@ -97,8 +97,8 @@ function _getWorkPeriodFilteringFields (currentUser) {
     withPayments: false
   }
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    queryOpt.excludeES.push('workPeriods.memberRate')
-    queryOpt.excludeDB.push('memberRate')
+    queryOpt.excludeES.push('workPeriods.paymentTotal')
+    queryOpt.excludeDB.push('paymentTotal')
   }
   if (currentUser.hasManagePermission || _checkUserScopesForGetPayments(currentUser)) {
     queryOpt.withPayments = true
@@ -205,13 +205,10 @@ getWorkPeriod.schema = Joi.object().keys({
 
 /**
   * Create workPeriod
-  * @param {Object} currentUser the user who perform this operation
   * @param {Object} workPeriod the workPeriod to be created
   * @returns {Object} the created workPeriod
   */
-async function createWorkPeriod (currentUser, workPeriod) {
-  // check permission
-  await _checkUserPermissionForWriteWorkPeriod(currentUser)
+async function createWorkPeriod (workPeriod) {
   // If one of the dates are missing then auto-calculate it
   _autoCalculateDates(workPeriod)
 
@@ -222,7 +219,7 @@ async function createWorkPeriod (currentUser, workPeriod) {
   workPeriod.userHandle = user.handle
 
   workPeriod.id = uuid.v4()
-  workPeriod.createdBy = await helper.getUserId(currentUser.userId)
+  workPeriod.createdBy = config.m2m.M2M_AUDIT_USER_ID
 
   let created = null
   try {
@@ -240,14 +237,13 @@ async function createWorkPeriod (currentUser, workPeriod) {
 }
 
 createWorkPeriod.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
   workPeriod: Joi.object().keys({
     resourceBookingId: Joi.string().uuid().required(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDate(),
-    daysWorked: Joi.number().integer().min(0).allow(null),
-    memberRate: Joi.number().allow(null),
-    customerRate: Joi.number().allow(null),
+    daysWorked: Joi.number().integer().min(0).max(5).required(),
+    daysPaid: Joi.number().default(0).forbidden(),
+    paymentTotal: Joi.number().default(0).forbidden(),
     paymentStatus: Joi.paymentStatus().required()
   }).required()
 }).required()
@@ -263,34 +259,30 @@ async function updateWorkPeriod (currentUser, id, data) {
   // check permission
   await _checkUserPermissionForWriteWorkPeriod(currentUser)
 
-  const workPeriod = await WorkPeriod.findById(id)
+  const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
   const oldValue = workPeriod.toJSON()
-
-  // if resourceBookingId is provided then update projectId and userHandle
-  if (data.resourceBookingId) {
-    const resourceBooking = await helper.ensureResourceBookingById(data.resourceBookingId) // ensure resource booking exists
-    data.projectId = resourceBooking.projectId
-
-    const user = await helper.ensureUserById(resourceBooking.userId) // ensure user exists
-    data.userHandle = user.handle
+  if (data.daysWorked < oldValue.daysPaid) {
+    throw new errors.BadRequestError(`Cannot update daysWorked (${data.daysWorked}) to the value less than daysPaid (${oldValue.daysPaid})`)
   }
-  // If one of the dates are missing then auto-calculate it
-  _autoCalculateDates(data)
-
+  const resourceBooking = await helper.ensureResourceBookingById(oldValue.resourceBookingId)
+  const weeks = helper.extractWorkPeriods(resourceBooking.startDate, resourceBooking.endDate)
+  if (_.isEmpty(weeks)) {
+    throw new errors.ConflictError('Resource booking has missing dates')
+  }
+  const thisWeek = _.find(weeks, ['startDate', oldValue.startDate])
+  if (_.isNil(thisWeek)) {
+    throw new errors.ConflictError('Work Period dates are not compatible with Resource Booking dates')
+  }
+  if (thisWeek.daysWorked < data.daysWorked) {
+    throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
+  }
+  data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
   data.updatedBy = await helper.getUserId(currentUser.userId)
-  let updated = null
-  try {
-    updated = await workPeriod.update(data)
-  } catch (err) {
-    if (!_.isUndefined(err.original)) {
-      throw new errors.BadRequestError(err.original.detail)
-    } else {
-      throw err
-    }
-  }
-
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `resourceBooking.id:${data.resourceBookingId}` })
-  return updated.dataValues
+  const updated = await workPeriod.update(data)
+  const updatedDataWithoutPayments = _.omit(updated.toJSON(), ['payments'])
+  const oldValueWithoutPayments = _.omit(oldValue, ['payments'])
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updatedDataWithoutPayments, { oldValue: oldValueWithoutPayments, key: `resourceBooking.id:${updated.resourceBookingId}` })
+  return updatedDataWithoutPayments
 }
 
 /**
@@ -308,68 +300,29 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    resourceBookingId: Joi.string().uuid(),
-    startDate: Joi.workPeriodStartDate(),
-    endDate: Joi.workPeriodEndDateOptional(),
-    daysWorked: Joi.number().integer().min(0).allow(null),
-    memberRate: Joi.number().allow(null),
-    customerRate: Joi.number().allow(null),
-    paymentStatus: Joi.paymentStatus()
-  }).required()
-}).required()
-
-/**
-  * Fully update workPeriod by id
-  * @param {Object} currentUser the user who perform this operation
-  * @param {String} id the workPeriod id
-  * @param {Object} data the data to be updated
-  * @returns {Object} the updated workPeriod
-  */
-async function fullyUpdateWorkPeriod (currentUser, id, data) {
-  return updateWorkPeriod(currentUser, id, data)
-}
-
-fullyUpdateWorkPeriod.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.string().uuid().required(),
-  data: Joi.object().keys({
-    resourceBookingId: Joi.string().uuid().required(),
-    startDate: Joi.workPeriodStartDate(),
-    endDate: Joi.workPeriodEndDate(),
-    daysWorked: Joi.number().integer().min(0).allow(null).default(null),
-    memberRate: Joi.number().allow(null).default(null),
-    customerRate: Joi.number().allow(null).default(null),
-    paymentStatus: Joi.paymentStatus().required()
-  }).required()
+    daysWorked: Joi.number().integer().min(0).max(5)
+  }).required().min(1)
 }).required()
 
 /**
   * Delete workPeriod by id
-  * @params {Object} currentUser the user who perform this operation
-  * @params {String} id the workPeriod id
+  * @param {String} id the workPeriod id
   */
-async function deleteWorkPeriod (currentUser, id) {
-  // check permission
-  if (!currentUser.hasManagePermission && !currentUser.isMachine) {
-    throw new errors.ForbiddenError('You are not allowed to perform this action!')
-  }
-
+async function deleteWorkPeriod (id) {
   const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
-  if (_.includes(['completed', 'partially-completed'], workPeriod.paymentStatus)) {
-    throw new errors.BadRequestError("Can't delete WorkPeriod with paymentStatus completed or partially-completed")
+  if (_.some(workPeriod.payments, payment => constants.ActiveWorkPeriodPaymentStatuses.indexOf(payment.status) !== -1)) {
+    throw new errors.BadRequestError(`Can't delete WorkPeriod as it has associated WorkPeriodsPayment with one of statuses ${constants.ActiveWorkPeriodPaymentStatuses.join(', ')}`)
   }
   await models.WorkPeriodPayment.destroy({
     where: {
       workPeriodId: id
     }
   })
-  await Promise.all(workPeriod.payments.map(({ id, billingAccountId }) => helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_DELETE_TOPIC, { id }, { key: `workPeriodPayment.billingAccountId:${billingAccountId}` })))
   await workPeriod.destroy()
   await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id }, { key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
 }
 
 deleteWorkPeriod.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
   id: Joi.string().uuid().required()
 }).required()
 
@@ -558,7 +511,6 @@ module.exports = {
   getWorkPeriod,
   createWorkPeriod,
   partiallyUpdateWorkPeriod,
-  fullyUpdateWorkPeriod,
   deleteWorkPeriod,
   searchWorkPeriods
 }

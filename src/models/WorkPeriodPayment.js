@@ -48,8 +48,22 @@ module.exports = (sequelize) => {
         field: 'challenge_id',
         type: Sequelize.UUID
       },
+      memberRate: {
+        field: 'member_rate',
+        type: Sequelize.FLOAT,
+        allowNull: false
+      },
+      customerRate: {
+        field: 'customer_rate',
+        type: Sequelize.FLOAT
+      },
+      days: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       amount: {
-        type: Sequelize.DOUBLE
+        type: Sequelize.DOUBLE,
+        allowNull: false
       },
       status: {
         type: Sequelize.ENUM(_.values(WorkPeriodPaymentStatus)),
@@ -61,7 +75,8 @@ module.exports = (sequelize) => {
       },
       billingAccountId: {
         field: 'billing_account_id',
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
+        allowNull: false
       },
       createdBy: {
         field: 'created_by',

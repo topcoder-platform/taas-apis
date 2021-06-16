@@ -21,6 +21,7 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment')
+const { PaymentStatusRules } = require('../../app-constants')
 
 const localLogger = {
   debug: (message) =>
@@ -191,8 +192,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
       endDate: { type: 'date', format: 'yyyy-MM-dd' },
       daysWorked: { type: 'integer' },
-      memberRate: { type: 'float' },
-      customerRate: { type: 'float' },
+      daysPaid: { type: 'integer' },
+      paymentTotal: { type: 'float' },
       paymentStatus: { type: 'keyword' },
       payments: {
         type: 'nested',
@@ -200,6 +201,9 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
           id: { type: 'keyword' },
           workPeriodId: { type: 'keyword' },
           challengeId: { type: 'keyword' },
+          memberRate: { type: 'float' },
+          customerRate: { type: 'float' },
+          days: { type: 'integer' },
           amount: { type: 'float' },
           status: { type: 'keyword' },
           statusDetails: {
@@ -1806,6 +1810,35 @@ function extractWorkPeriods (start, end) {
 }
 
 /**
+ * Calculate the payment status of given workPeriod
+ * @param {object} workPeriod workPeriod object with payments
+ * @returns {string} new workperiod payment status
+ * @throws {ConflictError} when no rule matches
+ */
+function calculateWorkPeriodPaymentStatus (workPeriod) {
+  function matchRule (rule) {
+    const actualState = {
+      daysWorked: workPeriod.daysWorked,
+      hasDueDays: workPeriod.daysWorked > workPeriod.daysPaid
+    }
+    return _.every(_.keys(rule.condition), condition => {
+      if (_.isArray(rule.condition[condition])) {
+        return checkIfExists(_.map(workPeriod.payments, 'status'), rule.condition[condition])
+      } else {
+        return rule.condition[condition] === actualState[condition]
+      }
+    })
+  }
+  // find the first rule which is matched by the Work Period
+  for (const rule of PaymentStatusRules) {
+    if (matchRule(rule)) {
+      return rule.paymentStatus
+    }
+  }
+  throw new errors.ConflictError('Cannot calculate payment status.')
+}
+
+/**
  * Returns the email address of specified (via handle) user.
  *
  * @param {String} userHandle user handle
@@ -2008,6 +2041,7 @@ module.exports = {
   createChallengeResource,
   getChallengeResource,
   extractWorkPeriods,
+  calculateWorkPeriodPaymentStatus,
   getUserByHandle,
   substituteStringByObject,
   createProject,
