@@ -84,11 +84,25 @@ const ChallengeStatus = {
   COMPLETED: 'Completed'
 }
 
+const PaymentStatus = {
+  PENDING: 'pending',
+  IN_PROGRESS: 'in-progress',
+  PARTIALLY_COMPLETED: 'partially-completed',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+  NO_DAYS: 'no-days'
+}
+
 const WorkPeriodPaymentStatus = {
   COMPLETED: 'completed',
   SCHEDULED: 'scheduled',
   IN_PROGRESS: 'in-progress',
   FAILED: 'failed',
+  CANCELLED: 'cancelled'
+}
+
+const WorkPeriodPaymentUpdateStatus = {
+  SCHEDULED: 'scheduled',
   CANCELLED: 'cancelled'
 }
 
@@ -112,7 +126,9 @@ module.exports = {
   Scopes,
   Interviews,
   ChallengeStatus,
+  PaymentStatus,
   WorkPeriodPaymentStatus,
+  WorkPeriodPaymentUpdateStatus,
   PaymentSchedulerStatus,
   PaymentProcessingSwitch
 }

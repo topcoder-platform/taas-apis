@@ -18,6 +18,7 @@ const moment = require('moment')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
+const WorkPeriodPayment = models.WorkPeriodPayment
 const esClient = helper.getESClient()
 const cachedModelFields = _cacheModelFields()
 
@@ -105,8 +106,8 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   // "currentUser.isMachine" to be true is not enough to return "workPeriods.memberRate"
   // but returning "workPeriod" will be evaluated later
   if (!canSeeMemberRate) {
-    result.excludeRB.push('memberRate')
-    result.excludeWP.push('workPeriods.memberRate')
+    result.excludeRB.push('paymentTotal')
+    result.excludeWP.push('workPeriods.paymentTotal')
   }
   // if "fields" is not included in cretia, then only ResourceBooking model will be returned
   // No further evaluation is required as long as the criteria does not include a WorkPeriod filter or a WorkPeriod sorting condition
@@ -136,8 +137,8 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
     throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
   }
   // Check if the current user has no right to see the memberRate and memberRate is included in fields parameter
-  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.memberRate'], q))) {
-    throw new errors.ForbiddenError('You don\'t have access to view memberRate')
+  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.paymentTotal'], q))) {
+    throw new errors.ForbiddenError('You don\'t have access to view memberRate and paymentTotal')
   }
   // Check if the current user has no right to see the workPeriods and workPeriods is included in fields parameter
   if (currentUser.isMachine && result.withWorkPeriods && !_checkUserScopesForGetWorkPeriods(currentUser)) {
@@ -168,27 +169,41 @@ async function _checkUserPermissionForGetResourceBooking (currentUser, projectId
  */
 async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, newValue) {
   function _checkForPaidWorkPeriods (workPeriods) {
-    const paidWorkPeriods = _.filter(workPeriods
-      , workPeriod => _.includes(['completed', 'partially-completed'], workPeriod.paymentStatus))
+    const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
+      // filter by WP and WPP status
+      return (workPeriod.daysPaid > 0 ||
+      _.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1))
+    })
     if (paidWorkPeriods.length > 0) {
       throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
-        has completed or partially-completed payment status.`)
+        has ${constants.PaymentStatus.COMPLETED}, ${constants.PaymentStatus.PARTIALLY_COMPLETED} or ${constants.PaymentStatus.IN_PROGRESS} payment status.`)
     }
   }
   // find related workPeriods to evaluate the changes
-  const workPeriods = await WorkPeriod.findAll({
+  // We don't need to include WPP because WPP's status changes should
+  // update WP's status. In case of any bug or slow processing, it's better to check both WP
+  // and WPP status for now.
+  let workPeriods = await WorkPeriod.findAll({
     where: {
       resourceBookingId: resourceBookingId
     },
-    raw: true
+    attributes: ['id', 'paymentStatus', 'startDate', 'endDate', 'daysPaid'],
+    include: [{
+      model: WorkPeriodPayment,
+      as: 'payments',
+      required: false,
+      attributes: ['status']
+    }]
   })
+  workPeriods = _.map(workPeriods, wp => wp.toJSON())
   // oldValue and newValue are not provided at deleteResourceBooking process
   if (_.isUndefined(oldValue) || _.isUndefined(newValue)) {
     _checkForPaidWorkPeriods(workPeriods)
     return
   }
   // We should not be able to change status of ResourceBooking to 'cancelled'
-  // if there is at least one associated Work Period with paymentStatus 'partially-completed' or 'completed'.
+  // if there is at least one associated Work Period with paymentStatus 'partially-completed', 'completed' or 'in-progress',
+  // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   if (oldValue.status !== 'cancelled' && newValue.status === 'cancelled') {
     _checkForPaidWorkPeriods(workPeriods)
     // we have already checked all existing workPeriods
@@ -200,8 +215,19 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
     _.isUndefined(newValue.endDate) ? oldValue.endDate : newValue.endDate)
   // find which workPeriods should be removed
   const workPeriodsToRemove = _.differenceBy(workPeriods, newWorkPeriods, 'startDate')
-  // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
+  // we can't delete workperiods with paymentStatus 'partially-completed', 'completed' or 'in-progress',
+  // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   _checkForPaidWorkPeriods(workPeriodsToRemove)
+  // check if this update makes maximum possible daysWorked value less than daysPaid
+  _.each(newWorkPeriods, newWP => {
+    const wp = _.find(workPeriods, ['startDate', newWP.startDate])
+    if (!wp) {
+      return
+    }
+    if (wp.daysPaid > newWP.daysWorked) {
+      throw new errors.ConflictError(`Cannot make maximum daysWorked (${newWP.daysWorked}) to the value less than daysPaid (${wp.daysPaid}) for WorkPeriod: ${wp.id}`)
+    }
+  })
 }
 
 /**
@@ -320,6 +346,10 @@ async function updateResourceBooking (currentUser, id, data) {
 
   const resourceBooking = await ResourceBooking.findById(id)
   const oldValue = resourceBooking.toJSON()
+  // We can't remove dates of Resource Booking once they are both set
+  if (!_.isNil(oldValue.startDate) && !_.isNil(oldValue.endDate) && (_.isNull(data.startDate) || _.isNull(data.endDate))) {
+    throw new errors.BadRequestError('You cannot remove start or end date if both are already set for Resource Booking.')
+  }
   // before updating the record, we need to check if any paid work periods tried to be deleted
   await _ensurePaidWorkPeriodsNotDeleted(id, oldValue, data)
 
@@ -670,7 +700,7 @@ searchResourceBookings.schema = Joi.object().keys({
     page: Joi.page(),
     perPage: Joi.perPage(),
     sortBy: Joi.string().valid('id', 'rateType', 'startDate', 'endDate', 'customerRate', 'memberRate', 'status',
-      'workPeriods.userHandle', 'workPeriods.daysWorked', 'workPeriods.customerRate', 'workPeriods.memberRate', 'workPeriods.paymentStatus'),
+      'workPeriods.userHandle', 'workPeriods.daysWorked', 'workPeriods.daysPaid', 'workPeriods.paymentTotal', 'workPeriods.paymentStatus'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     status: Joi.resourceBookingStatus(),
     startDate: Joi.date().format('YYYY-MM-DD'),

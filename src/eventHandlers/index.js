@@ -9,6 +9,7 @@ const JobCandidateEventHandler = require('./JobCandidateEventHandler')
 const ResourceBookingEventHandler = require('./ResourceBookingEventHandler')
 const InterviewEventHandler = require('./InterviewEventHandler')
 const RoleEventHandler = require('./RoleEventHandler')
+const WorkPeriodPaymentEventHandler = require('./WorkPeriodPaymentEventHandler')
 const logger = require('../common/logger')
 
 const TopicOperationMapping = {
@@ -18,6 +19,8 @@ const TopicOperationMapping = {
   [config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC]: ResourceBookingEventHandler.processCreate,
   [config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC]: ResourceBookingEventHandler.processUpdate,
   [config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC]: ResourceBookingEventHandler.processDelete,
+  [config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC]: WorkPeriodPaymentEventHandler.processCreate,
+  [config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC]: WorkPeriodPaymentEventHandler.processUpdate,
   [config.TAAS_INTERVIEW_REQUEST_TOPIC]: InterviewEventHandler.processRequest,
   [config.TAAS_ROLE_DELETE_TOPIC]: RoleEventHandler.processDelete
 }
