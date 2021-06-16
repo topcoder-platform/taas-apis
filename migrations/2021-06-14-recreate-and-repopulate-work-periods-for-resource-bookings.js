@@ -3,7 +3,7 @@ const ResourceBooking = require('../src/models').ResourceBooking
 const _ = require('lodash')
 const helper = require('../src/common/helper')
 const { v4: uuid } = require('uuid')
-const { PaymentStatus } = require('../app-constants')
+const { AggregatePaymentStatus } = require('../app-constants')
 
 // maximum start date of resource bookings when populating work periods from existing resource bookings in migration script
 const MAX_START_DATE = process.env.MAX_START_DATE || '2100-12-31'
@@ -85,7 +85,7 @@ module.exports = {
               days_worked: period.daysWorked,
               days_paid: 0,
               payment_total: 0,
-              payment_status: period.daysWorked === 0 ? PaymentStatus.NO_DAYS : PaymentStatus.PENDING,
+              payment_status: period.daysWorked === 0 ? AggregatePaymentStatus.NO_DAYS : AggregatePaymentStatus.PENDING,
               created_by: config.m2m.M2M_AUDIT_USER_ID,
               created_at: new Date()
             })
