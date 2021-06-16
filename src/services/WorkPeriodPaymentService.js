@@ -8,6 +8,7 @@ const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const uuid = require('uuid')
+const moment = require('moment')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -377,8 +378,25 @@ searchWorkPeriodPayments.schema = Joi.object().keys({
  * @returns {Object} the process result
  */
 async function createQueryWorkPeriodPayments (currentUser, criteria) {
+  console.log(criteria.query['workPeriods.startDate'])
   // check permission
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  // Joi validation normalizes the dates back to ISO format
+  // so, we need to change the date format back to YYYY-MM-DD
+  if (criteria.query.startDate) {
+    criteria.query.startDate = moment(criteria.query.startDate).format('YYYY-MM-DD')
+  }
+  if (criteria.query.endDate) {
+    criteria.query.endDate = moment(criteria.query.endDate).format('YYYY-MM-DD')
+  }
+  if (criteria.query['workPeriods.startDate']) {
+    criteria.query['workPeriods.startDate'] = moment(criteria.query['workPeriods.startDate']).format('YYYY-MM-DD')
+  }
+  if (criteria.query['workPeriods.endDate']) {
+    criteria.query['workPeriods.endDate'] = moment(criteria.query['workPeriods.endDate']).format('YYYY-MM-DD')
+  }
+  // save query to return back
+  const rawQuery = _.cloneDeep(criteria.query)
   const createdBy = await helper.getUserId(currentUser.userId)
   const query = criteria.query
   if ((typeof query['workPeriods.paymentStatus']) === 'string') {
@@ -392,7 +410,7 @@ async function createQueryWorkPeriodPayments (currentUser, criteria) {
 
   const wpArray = _.flatMap(searchResult.result, 'workPeriods')
   const resourceBookingMap = _.fromPairs(_.map(searchResult.result, rb => [rb.id, rb]))
-  const result = { total: wpArray.length, query, totalSuccess: 0, totalError: 0 }
+  const result = { total: wpArray.length, query: rawQuery, totalSuccess: 0, totalError: 0 }
 
   for (const wp of wpArray) {
     try {
