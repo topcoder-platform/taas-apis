@@ -460,7 +460,7 @@ deleteResourceBooking.schema = Joi.object().keys({
  * @param {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchResourceBookings (currentUser, criteria, options = { returnAll: false }) {
+async function searchResourceBookings (currentUser, criteria, options) {
   // Evaluate criteria and extract the fields to be included or excluded
   const queryOpt = _checkCriteriaAndGetFields(currentUser, criteria)
   // check user permission
@@ -506,128 +506,131 @@ async function searchResourceBookings (currentUser, criteria, options = { return
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  try {
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-      _source_includes: queryOpt.include,
-      _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP],
-      body: {
-        query: {
-          bool: {
-            must: []
-          }
-        },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort: []
+  if (!options.fromDb) {
+    try {
+      const esQuery = {
+        index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+        _source_includes: queryOpt.include,
+        _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP],
+        body: {
+          query: {
+            bool: {
+              must: []
+            }
+          },
+          from: (page - 1) * perPage,
+          size: perPage,
+          sort: []
+        }
       }
-    }
-    // change the date format to match with index schema
-    if (criteria.startDate) {
-      criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
-    }
-    if (criteria.endDate) {
-      criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
-    }
-    if (criteria['workPeriods.startDate']) {
-      criteria['workPeriods.startDate'] = moment(criteria['workPeriods.startDate']).format('YYYY-MM-DD')
-    }
-    if (criteria['workPeriods.endDate']) {
-      criteria['workPeriods.endDate'] = moment(criteria['workPeriods.endDate']).format('YYYY-MM-DD')
-    }
-    const sort = { [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }
-    if (queryOpt.sortByWP) {
-      const nestedSortFilter = {}
+      // change the date format to match with index schema
+      if (criteria.startDate) {
+        criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
+      }
+      if (criteria.endDate) {
+        criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
+      }
       if (criteria['workPeriods.startDate']) {
-        nestedSortFilter.term = { 'workPeriods.startDate': criteria['workPeriods.startDate'] }
-      } else if (criteria['workPeriods.endDate']) {
-        nestedSortFilter.term = { 'workPeriods.endDate': criteria['workPeriods.endDate'] }
+        criteria['workPeriods.startDate'] = moment(criteria['workPeriods.startDate']).format('YYYY-MM-DD')
       }
-      sort[criteria.sortBy].nested = { path: 'workPeriods', filter: nestedSortFilter }
-    }
-    esQuery.body.sort.push(sort)
-    // Apply ResourceBooking filters
-    _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
-      esQuery.body.query.bool.must.push({
-        term: {
-          [key]: {
-            value
-          }
+      if (criteria['workPeriods.endDate']) {
+        criteria['workPeriods.endDate'] = moment(criteria['workPeriods.endDate']).format('YYYY-MM-DD')
+      }
+      const sort = { [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }
+      if (queryOpt.sortByWP) {
+        const nestedSortFilter = {}
+        if (criteria['workPeriods.startDate']) {
+          nestedSortFilter.term = { 'workPeriods.startDate': criteria['workPeriods.startDate'] }
+        } else if (criteria['workPeriods.endDate']) {
+          nestedSortFilter.term = { 'workPeriods.endDate': criteria['workPeriods.endDate'] }
         }
-      })
-    })
-    // if criteria contains projectIds, filter projectId with this value
-    if (criteria.projectIds) {
-      esQuery.body.query.bool.filter = [{
-        terms: {
-          projectId: criteria.projectIds
-        }
-      }]
-    }
-    // Apply WorkPeriod filters
-    const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
-    if (!_.isEmpty(workPeriodFilters)) {
-      const workPeriodsMust = []
-      _.each(workPeriodFilters, (value, key) => {
-        if (key === 'workPeriods.paymentStatus') {
-          workPeriodsMust.push({
-            terms: {
-              [key]: value
+        sort[criteria.sortBy].nested = { path: 'workPeriods', filter: nestedSortFilter }
+      }
+      esQuery.body.sort.push(sort)
+      // Apply ResourceBooking filters
+      _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
+        esQuery.body.query.bool.must.push({
+          term: {
+            [key]: {
+              value
             }
-          })
-        } else {
-          workPeriodsMust.push({
-            term: {
-              [key]: {
-                value
-              }
-            }
-          })
-        }
-      })
-
-      esQuery.body.query.bool.must.push({
-        nested: {
-          path: 'workPeriods',
-          query: { bool: { must: workPeriodsMust } }
-        }
-      })
-    }
-    logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-    const resourceBookings = _.map(body.hits.hits, '_source')
-    // ESClient will return ResourceBookings with it's all nested WorkPeriods
-    // We re-apply WorkPeriod filters except userHandle because all WPs share same userHandle
-    _.each(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
-      key = key.split('.')[1]
-      _.each(resourceBookings, r => {
-        r.workPeriods = _.filter(r.workPeriods, wp => {
-          if (key === 'paymentStatus') {
-            return _.includes(value, wp[key])
-          } else {
-            return wp[key] === value
           }
         })
       })
-    })
-
-    // sort Work Periods inside Resource Bookings by startDate just for comfort output
-    _.each(resourceBookings, r => {
-      if (_.isArray(r.workPeriods)) {
-        r.workPeriods = _.sortBy(r.workPeriods, ['startDate'])
+      // if criteria contains projectIds, filter projectId with this value
+      if (criteria.projectIds) {
+        esQuery.body.query.bool.filter = [{
+          terms: {
+            projectId: criteria.projectIds
+          }
+        }]
       }
-    })
+      // Apply WorkPeriod filters
+      const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
+      if (!_.isEmpty(workPeriodFilters)) {
+        const workPeriodsMust = []
+        _.each(workPeriodFilters, (value, key) => {
+          if (key === 'workPeriods.paymentStatus') {
+            workPeriodsMust.push({
+              terms: {
+                [key]: value
+              }
+            })
+          } else {
+            workPeriodsMust.push({
+              term: {
+                [key]: {
+                  value
+                }
+              }
+            })
+          }
+        })
 
-    return {
-      total: body.hits.total.value,
-      page,
-      perPage,
-      result: resourceBookings
+        esQuery.body.query.bool.must.push({
+          nested: {
+            path: 'workPeriods',
+            query: { bool: { must: workPeriodsMust } }
+          }
+        })
+      }
+      logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
+
+      const { body } = await esClient.search(esQuery)
+      const resourceBookings = _.map(body.hits.hits, '_source')
+      // ESClient will return ResourceBookings with it's all nested WorkPeriods
+      // We re-apply WorkPeriod filters except userHandle because all WPs share same userHandle
+      _.each(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
+        key = key.split('.')[1]
+        _.each(resourceBookings, r => {
+          r.workPeriods = _.filter(r.workPeriods, wp => {
+            if (key === 'paymentStatus') {
+              return _.includes(value, wp[key])
+            } else {
+              return wp[key] === value
+            }
+          })
+        })
+      })
+
+      // sort Work Periods inside Resource Bookings by startDate just for comfort output
+      _.each(resourceBookings, r => {
+        if (_.isArray(r.workPeriods)) {
+          r.workPeriods = _.sortBy(r.workPeriods, ['startDate'])
+        }
+      })
+
+      return {
+        total: body.hits.total.value,
+        page,
+        perPage,
+        result: resourceBookings
+      }
+    } catch (err) {
+      logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
     }
-  } catch (err) {
-    logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
   }
+
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   // Apply ResourceBooking filters
@@ -733,7 +736,13 @@ searchResourceBookings.schema = Joi.object().keys({
     'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
     'workPeriods.userHandle': Joi.string()
   }).required(),
-  options: Joi.object()
+  options: Joi.object().keys({
+    returnAll: Joi.boolean().default(false),
+    fromDb: Joi.boolean().default(false)
+  }).default({
+    returnAll: false,
+    fromDb: false
+  })
 }).required()
 
 module.exports = {
