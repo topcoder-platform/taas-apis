@@ -280,9 +280,6 @@ async function updateWorkPeriod (currentUser, id, data) {
     throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
   }
   data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
-  if (oldValue.paymentStatus === data.paymentStatus) {
-    return oldValue
-  }
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriod.update(data)
   await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `resourceBooking.id:${updated.resourceBookingId}` })
