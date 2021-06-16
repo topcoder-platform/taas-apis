@@ -211,7 +211,7 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
     if (oldValue.status !== 'failed') {
       throw new errors.BadRequestError(`You cannot schedule a WorkPeriodPayment which is ${oldValue.status}`)
     }
-    const workPeriod = WorkPeriod.findById(workPeriodPayment.workPeriodId)
+    const workPeriod = await WorkPeriod.findById(workPeriodPayment.workPeriodId)
     // we con't check if paymentStatus is 'completed'
     // because paymentStatus can be in-progress when daysWorked = daysPaid
     if (workPeriod.daysWorked === workPeriod.daysPaid) {
@@ -378,7 +378,6 @@ searchWorkPeriodPayments.schema = Joi.object().keys({
  * @returns {Object} the process result
  */
 async function createQueryWorkPeriodPayments (currentUser, criteria) {
-  console.log(criteria.query['workPeriods.startDate'])
   // check permission
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
   // Joi validation normalizes the dates back to ISO format
