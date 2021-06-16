@@ -203,9 +203,6 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
 
   const workPeriodPayment = await WorkPeriodPayment.findById(id)
   const oldValue = workPeriodPayment.toJSON()
-  if (oldValue.status === data.status) {
-    return oldValue
-  }
   if (data.status === 'cancelled' && oldValue.status === 'in-progress') {
     throw new errors.BadRequestError('You cannot cancel a WorkPeriodPayment which is in-progress')
   }

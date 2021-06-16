@@ -261,9 +261,6 @@ async function updateWorkPeriod (currentUser, id, data) {
 
   const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
   const oldValue = workPeriod.toJSON()
-  if (oldValue.daysWorked === data.daysWorked) {
-    return oldValue
-  }
   if (data.daysWorked < oldValue.daysPaid) {
     throw new errors.BadRequestError(`Cannot update daysWorked (${data.daysWorked}) to the value less than daysPaid (${oldValue.daysPaid})`)
   }
@@ -282,8 +279,10 @@ async function updateWorkPeriod (currentUser, id, data) {
   data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriod.update(data)
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `resourceBooking.id:${updated.resourceBookingId}` })
-  return updated.dataValues
+  const updatedDataWithoutPayments = _.omit(updated.toJSON(), ['payments'])
+  const oldValueWithoutPayments = _.omit(oldValue, ['payments'])
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updatedDataWithoutPayments, { oldValue: oldValueWithoutPayments, key: `resourceBooking.id:${updated.resourceBookingId}` })
+  return updatedDataWithoutPayments
 }
 
 /**
