@@ -12,7 +12,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const { PaymentStatus, WorkPeriodPaymentStatus } = require('../../app-constants')
+const { WorkPeriodPaymentStatus } = require('../../app-constants')
 const { searchResourceBookings } = require('./ResourceBookingService')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
@@ -382,7 +382,7 @@ async function createQueryWorkPeriodPayments (currentUser, criteria) {
   const createdBy = await helper.getUserId(currentUser.userId)
   const query = criteria.query
   if ((typeof query['workPeriods.paymentStatus']) === 'string') {
-    query['workPeriods.paymentStatus'] = query['workPeriods.paymentStatus'].trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.string().valid(PaymentStatus.PENDING, PaymentStatus.PARTIALLY_COMPLETED, PaymentStatus.FAILED) })).paymentStatus)
+    query['workPeriods.paymentStatus'] = query['workPeriods.paymentStatus'].trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.paymentStatus() })).paymentStatus)
   }
   const fields = _.join(_.uniq(_.concat(
     ['id', 'billingAccountId', 'memberRate', 'customerRate', 'workPeriods.id', 'workPeriods.resourceBookingId', 'workPeriods.daysWorked', 'workPeriods.daysPaid'],
@@ -423,7 +423,7 @@ createQueryWorkPeriodPayments.schema = Joi.object().keys({
       ),
       'workPeriods.paymentStatus': Joi.alternatives(
         Joi.string(),
-        Joi.array().items(Joi.string().valid(PaymentStatus.PENDING, PaymentStatus.PARTIALLY_COMPLETED, PaymentStatus.FAILED))
+        Joi.array().items(Joi.string().valid(Joi.paymentStatus()))
       ),
       'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
       'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),

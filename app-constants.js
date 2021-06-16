@@ -84,15 +84,21 @@ const ChallengeStatus = {
   COMPLETED: 'Completed'
 }
 
-const PaymentStatus = {
+/**
+ * Aggregate payment status for Work Period which is determined
+ * based on the payments the Work Period has using `PaymentStatusRules`
+ */
+const AggregatePaymentStatus = {
   PENDING: 'pending',
   IN_PROGRESS: 'in-progress',
   PARTIALLY_COMPLETED: 'partially-completed',
   COMPLETED: 'completed',
-  FAILED: 'failed',
   NO_DAYS: 'no-days'
 }
 
+/**
+ * `WorkPeriodPayment.status` - possible values
+ */
 const WorkPeriodPaymentStatus = {
   COMPLETED: 'completed',
   SCHEDULED: 'scheduled',
@@ -100,6 +106,32 @@ const WorkPeriodPaymentStatus = {
   FAILED: 'failed',
   CANCELLED: 'cancelled'
 }
+
+/**
+ * The rules how to determine WorkPeriod.paymentStatus based on the payments
+ *
+ * The top rule has priority over the bottom rules.
+ */
+const PaymentStatusRules = [
+  { paymentStatus: AggregatePaymentStatus.NO_DAYS, condition: { daysWorked: 0 } },
+  { paymentStatus: AggregatePaymentStatus.IN_PROGRESS, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.SCHEDULED, WorkPeriodPaymentStatus.IN_PROGRESS] } },
+  { paymentStatus: AggregatePaymentStatus.COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: false } },
+  { paymentStatus: AggregatePaymentStatus.PARTIALLY_COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: true } },
+  { paymentStatus: AggregatePaymentStatus.PENDING, condition: { hasDueDays: true } }
+]
+
+/**
+ * The WorkPeriodPayment.status values which we take into account when calculate
+ * aggregate values inside WorkPeriod:
+ * - daysPaid
+ * - paymentTotal
+ * - paymentStatus
+ */
+const ActiveWorkPeriodPaymentStatuses = [
+  WorkPeriodPaymentStatus.SCHEDULED,
+  WorkPeriodPaymentStatus.IN_PROGRESS,
+  WorkPeriodPaymentStatus.COMPLETED
+]
 
 const WorkPeriodPaymentUpdateStatus = {
   SCHEDULED: 'scheduled',
@@ -126,9 +158,11 @@ module.exports = {
   Scopes,
   Interviews,
   ChallengeStatus,
-  PaymentStatus,
+  AggregatePaymentStatus,
   WorkPeriodPaymentStatus,
   WorkPeriodPaymentUpdateStatus,
   PaymentSchedulerStatus,
-  PaymentProcessingSwitch
+  PaymentProcessingSwitch,
+  PaymentStatusRules,
+  ActiveWorkPeriodPaymentStatuses
 }

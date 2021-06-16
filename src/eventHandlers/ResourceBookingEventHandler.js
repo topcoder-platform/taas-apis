@@ -7,7 +7,7 @@ const _ = require('lodash')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
-const { PaymentStatus } = require('../../app-constants')
+const { AggregatePaymentStatus } = require('../../app-constants')
 const JobService = require('../services/JobService')
 const JobCandidateService = require('../services/JobCandidateService')
 const WorkPeriodService = require('../services/WorkPeriodService')
@@ -296,7 +296,7 @@ async function _createWorkPeriods (periods, resourceBookingId) {
         startDate: period.startDate,
         endDate: period.endDate,
         daysWorked: period.daysWorked,
-        paymentStatus: period.daysWorked === 0 ? PaymentStatus.NO_DAYS : PaymentStatus.PENDING
+        paymentStatus: period.daysWorked === 0 ? AggregatePaymentStatus.NO_DAYS : AggregatePaymentStatus.PENDING
       })
   }
 }

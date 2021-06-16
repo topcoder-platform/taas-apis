@@ -7,7 +7,7 @@ const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
-const { WorkPeriodPaymentStatus } = require('../../app-constants')
+const { ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const WorkPeriod = models.WorkPeriod
 
 /**
@@ -25,7 +25,7 @@ async function updateWorkPeriod (payload) {
   data.daysPaid = 0
   data.paymentTotal = 0
   _.each(workPeriod.payments, payment => {
-    if (_.includes([WorkPeriodPaymentStatus.SCHEDULED, WorkPeriodPaymentStatus.IN_PROGRESS, WorkPeriodPaymentStatus.COMPLETED], payment.status)) {
+    if (_.includes(ActiveWorkPeriodPaymentStatuses, payment.status)) {
       data.daysPaid += payment.days
       data.paymentTotal += payment.amount
     }

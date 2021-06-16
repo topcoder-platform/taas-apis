@@ -171,12 +171,11 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   function _checkForPaidWorkPeriods (workPeriods) {
     const paidWorkPeriods = _.filter(workPeriods, workPeriod => {
       // filter by WP and WPP status
-      return (workPeriod.daysPaid > 0 ||
-      _.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1))
+      return _.some(workPeriod.payments, payment => constants.ActiveWorkPeriodPaymentStatuses.indexOf(payment.status) !== -1)
     })
     if (paidWorkPeriods.length > 0) {
-      throw new errors.BadRequestError(`WorkPeriods with id of ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
-        has ${constants.PaymentStatus.COMPLETED}, ${constants.PaymentStatus.PARTIALLY_COMPLETED} or ${constants.PaymentStatus.IN_PROGRESS} payment status.`)
+      throw new errors.BadRequestError(`Can't delete associated WorkPeriods ${_.map(paidWorkPeriods, workPeriod => workPeriod.id)}
+       as they have associated WorkPeriodsPayment with one of statuses ${constants.ActiveWorkPeriodPaymentStatuses.join(', ')}.`)
     }
   }
   // find related workPeriods to evaluate the changes

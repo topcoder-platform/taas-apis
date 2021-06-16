@@ -842,8 +842,8 @@ const T13 = {
   },
   error: {
     httpStatus: 400,
-    message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed, partially-completed or in-progress payment status.`
+    message: `Can't delete associated WorkPeriods 10faf505-d0e3-4d13-a817-7f1319625e91
+       as they have associated WorkPeriodsPayment with one of statuses scheduled, in-progress, completed.`
   },
   workPeriod: {
     response: [{
@@ -861,7 +861,8 @@ const T13 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: []
       },
       toJSON: () => T13.workPeriod.response[0].dataValues
     }, {
@@ -879,7 +880,23 @@ const T13 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: [{
+          amount: 400,
+          updatedBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          billingAccountId: 80000071,
+          workPeriodId: '193a029e-0d3d-48fa-a249-0a4b6b21c32a',
+          createdAt: '2021-06-16T08:51:30.374Z',
+          challengeId: '3c849caf-6c60-40f7-8f0e-ee72c41ede6e',
+          memberRate: 2000,
+          createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          customerRate: 2600,
+          days: 1,
+          statusDetails: null,
+          id: 'c3ba01c5-56db-462f-811f-65cd256096c3',
+          status: 'in-progress',
+          updatedAt: '2021-06-16T08:57:21.483Z'
+        }]
       },
       toJSON: () => T13.workPeriod.response[1].dataValues
     }]
@@ -912,8 +929,8 @@ const T14 = {
   },
   error: {
     httpStatus: 400,
-    message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed, partially-completed or in-progress payment status.`
+    message: `Can't delete associated WorkPeriods 10faf505-d0e3-4d13-a817-7f1319625e91
+       as they have associated WorkPeriodsPayment with one of statuses scheduled, in-progress, completed.`
   },
   workPeriod: {
     response: [{
@@ -931,7 +948,8 @@ const T14 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: []
       },
       toJSON: () => T14.workPeriod.response[0].dataValues
     }, {
@@ -949,7 +967,23 @@ const T14 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: [{
+          amount: 400,
+          updatedBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          billingAccountId: 80000071,
+          workPeriodId: '193a029e-0d3d-48fa-a249-0a4b6b21c32a',
+          createdAt: '2021-06-16T08:51:30.374Z',
+          challengeId: '3c849caf-6c60-40f7-8f0e-ee72c41ede6e',
+          memberRate: 2000,
+          createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          customerRate: 2600,
+          days: 1,
+          statusDetails: null,
+          id: 'c3ba01c5-56db-462f-811f-65cd256096c3',
+          status: 'scheduled',
+          updatedAt: '2021-06-16T08:57:21.483Z'
+        }]
       },
       toJSON: () => T14.workPeriod.response[1].dataValues
     }]
@@ -992,7 +1026,8 @@ const T15 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: []
       },
       toJSON: () => T15.workPeriod.response[0].dataValues
     }, {
@@ -1010,7 +1045,23 @@ const T15 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: [{
+          amount: 400,
+          updatedBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          billingAccountId: 80000071,
+          workPeriodId: '193a029e-0d3d-48fa-a249-0a4b6b21c32a',
+          createdAt: '2021-06-16T08:51:30.374Z',
+          challengeId: '3c849caf-6c60-40f7-8f0e-ee72c41ede6e',
+          memberRate: 2000,
+          createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          customerRate: 2600,
+          days: 1,
+          statusDetails: null,
+          id: 'c3ba01c5-56db-462f-811f-65cd256096c3',
+          status: 'failed',
+          updatedAt: '2021-06-16T08:57:21.483Z'
+        }]
       },
       toJSON: () => T15.workPeriod.response[1].dataValues
     }],
@@ -1048,8 +1099,8 @@ const T16 = {
   },
   error: {
     httpStatus: 400,
-    message: `WorkPeriods with id of 10faf505-d0e3-4d13-a817-7f1319625e91
-        has completed, partially-completed or in-progress payment status.`
+    message: `Can't delete associated WorkPeriods 10faf505-d0e3-4d13-a817-7f1319625e91
+       as they have associated WorkPeriodsPayment with one of statuses scheduled, in-progress, completed.`
   },
   workPeriod: {
     response: [{
@@ -1067,7 +1118,8 @@ const T16 = {
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: []
       },
       toJSON: () => T16.workPeriod.response[0].dataValues
     }, {
@@ -1080,12 +1132,28 @@ const T16 = {
         endDate: '2021-04-17',
         daysWorked: 4,
         daysPaid: 4,
-        paymentTotal: 10.59,
+        paymentTotal: 400,
         paymentStatus: 'completed',
         createdBy: '00000000-0000-0000-0000-000000000000',
         updatedBy: null,
         createdAt: '2021-04-10T22:25:08.289Z',
-        updatedAt: '2021-04-10T22:25:08.289Z'
+        updatedAt: '2021-04-10T22:25:08.289Z',
+        payments: [{
+          amount: 400,
+          updatedBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          billingAccountId: 80000071,
+          workPeriodId: '193a029e-0d3d-48fa-a249-0a4b6b21c32a',
+          createdAt: '2021-06-16T08:51:30.374Z',
+          challengeId: '3c849caf-6c60-40f7-8f0e-ee72c41ede6e',
+          memberRate: 2000,
+          createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+          customerRate: 2600,
+          days: 4,
+          statusDetails: null,
+          id: 'c3ba01c5-56db-462f-811f-65cd256096c3',
+          status: 'completed',
+          updatedAt: '2021-06-16T08:57:21.483Z'
+        }]
       },
       toJSON: () => T16.workPeriod.response[1].dataValues
     }]

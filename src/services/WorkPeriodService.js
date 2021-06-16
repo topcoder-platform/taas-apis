@@ -310,11 +310,8 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   */
 async function deleteWorkPeriod (id) {
   const workPeriod = await WorkPeriod.findById(id, { withPayments: true })
-  if (_.includes([constants.PaymentStatus.COMPLETED, constants.PaymentStatus.PARTIALLY_COMPLETED, constants.PaymentStatus.IN_PROGRESS], workPeriod.paymentStatus)) {
-    throw new errors.BadRequestError(`Can't delete WorkPeriod with paymentStatus ${constants.PaymentStatus.COMPLETED}, ${constants.PaymentStatus.PARTIALLY_COMPLETED}, or ${constants.PaymentStatus.IN_PROGRESS}`)
-  }
-  if (_.some(workPeriod.payments, payment => [constants.WorkPeriodPaymentStatus.COMPLETED, constants.WorkPeriodPaymentStatus.IN_PROGRESS, constants.WorkPeriodPaymentStatus.SCHEDULED].indexOf(payment.status) !== -1)) {
-    throw new errors.BadRequestError(`Can't delete WorkPeriod if any associated WorkPeriodsPayment has status ${constants.WorkPeriodPaymentStatus.COMPLETED}, ${constants.WorkPeriodPaymentStatus.SCHEDULED} or ${constants.WorkPeriodPaymentStatus.IN_PROGRESS}`)
+  if (_.some(workPeriod.payments, payment => constants.ActiveWorkPeriodPaymentStatuses.indexOf(payment.status) !== -1)) {
+    throw new errors.BadRequestError(`Can't delete WorkPeriod as it has associated WorkPeriodsPayment with one of statuses ${constants.ActiveWorkPeriodPaymentStatuses.join(', ')}`)
   }
   await models.WorkPeriodPayment.destroy({
     where: {

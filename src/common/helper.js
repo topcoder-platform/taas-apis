@@ -21,7 +21,7 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment')
-const { PaymentStatus, WorkPeriodPaymentStatus } = require('../../app-constants')
+const { PaymentStatusRules } = require('../../app-constants')
 
 const localLogger = {
   debug: (message) =>
@@ -1829,17 +1829,8 @@ function calculateWorkPeriodPaymentStatus (workPeriod) {
       }
     })
   }
-  // define rules for the payment status as constant
-  const PAYMENT_STATUS_RULES = [
-    { paymentStatus: PaymentStatus.NO_DAYS, condition: { daysWorked: 0 } },
-    { paymentStatus: PaymentStatus.IN_PROGRESS, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.SCHEDULED, WorkPeriodPaymentStatus.IN_PROGRESS] } },
-    { paymentStatus: PaymentStatus.COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: false } },
-    { paymentStatus: PaymentStatus.PARTIALLY_COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: true } },
-    { paymentStatus: PaymentStatus.FAILED, condition: { hasWorkPeriodPaymentStatus: [PaymentStatus.FAILED], hasDueDays: true } },
-    { paymentStatus: PaymentStatus.PENDING, condition: { hasDueDays: true } }
-  ]
   // find the first rule which is matched by the Work Period
-  for (const rule of PAYMENT_STATUS_RULES) {
+  for (const rule of PaymentStatusRules) {
     if (matchRule(rule)) {
       return rule.paymentStatus
     }
