@@ -20,11 +20,14 @@ module.exports = (sequelize) => {
      * @param {Object} options { withPayments: true/false } whether contains payments
      * @returns {WorkPeriod} the work period instance
      */
-    static async findById (id, options = { withPayments: false }) {
+    static async findById (id, options = { withPayments: false, exclude: [] }) {
       const criteria = {
         where: {
           id
         }
+      }
+      if (options.exclude && options.exclude.length > 0) {
+        criteria.attributes = { exclude: options.exclude }
       }
       if (options.withPayments) {
         criteria.include = [{
@@ -75,15 +78,18 @@ module.exports = (sequelize) => {
       },
       daysWorked: {
         field: 'days_worked',
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      memberRate: {
-        field: 'member_rate',
-        type: Sequelize.FLOAT
+      daysPaid: {
+        field: 'days_paid',
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      customerRate: {
-        field: 'customer_rate',
-        type: Sequelize.FLOAT
+      paymentTotal: {
+        field: 'payment_total',
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       paymentStatus: {
         field: 'payment_status',

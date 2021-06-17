@@ -12,6 +12,13 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
+const HttpStatus = require('http-status-codes')
+const { Op } = require('sequelize')
+const models = require('../models')
+const stopWords = require('../../data/stopWords.json')
+const Role = models.Role
+const RoleSearchRequest = models.RoleSearchRequest
+const topcoderSkills = {}
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
@@ -32,7 +39,11 @@ const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
  */
 async function _getPlacedResourceBookingsByProjectIds (currentUser, projectIds) {
   const criteria = { status: 'placed', projectIds }
-  const { result } = await ResourceBookingService.searchResourceBookings(currentUser, criteria, { returnAll: true })
+  const { result } = await ResourceBookingService.searchResourceBookings(
+    currentUser,
+    criteria,
+    { returnAll: true }
+  )
   return result
 }
 
@@ -43,8 +54,79 @@ async function _getPlacedResourceBookingsByProjectIds (currentUser, projectIds) 
  * @returns the request result
  */
 async function _getJobsByProjectIds (currentUser, projectIds) {
-  const { result } = await JobService.searchJobs(currentUser, { projectIds }, { returnAll: true })
+  const { result } = await JobService.searchJobs(
+    currentUser,
+    { projectIds },
+    { returnAll: true }
+  )
   return result
+}
+
+/**
+ * Gets topcoder skills and stores their name and compiled
+ * regex patters according to Levenshtein distance <=1
+ */
+async function _reloadCachedTopcoderSkills () {
+  // do not reload if cache time is not expired
+  if (!_.isUndefined(topcoderSkills.time)) {
+    const cacheTime = config.TOPCODER_SKILLS_CACHE_TIME * 60 * 1000
+    if (new Date().getTime() - topcoderSkills.time < cacheTime) {
+      return
+    }
+  }
+  // collect all skills
+  const skills = await helper.getAllTopcoderSkills()
+  // set the last cached time
+  topcoderSkills.time = new Date().getTime()
+  topcoderSkills.skills = []
+  // store skill names and compiled regex paterns
+  _.each(skills, skill => {
+    topcoderSkills.skills.push({
+      name: skill.name,
+      pattern: _compileRegexPatternForSkillName(skill.name)
+    })
+  })
+}
+
+/**
+ * Prepares the regex pattern for the given word
+ * according to Levenshtein distance of 1 (insertions, deletions or substitutions)
+ * @param {String} skillName the name of the skill
+ * @returns {RegExp} the compiled regex pattern
+ */
+function _compileRegexPatternForSkillName (skillName) {
+  // split the name into its chars
+  let chars = _.split(skillName, '')
+  // escape characters reserved to regex
+  chars = _.map(chars, _.escapeRegExp)
+  // Its not a good idea to apply tolerance according to
+  // Levenshtein distance for the words have less than 3 letters
+  // We expect the skill names have 1 or 2 letters to take place
+  // in job description as how they are exactly spelled
+  if (chars.length < 3) {
+    return new RegExp(`^(?:${_.join(chars, '')})$`, 'i')
+  }
+
+  const res = []
+  // include the skill name itself
+  res.push(_.join(chars, ''))
+  // include every transposition combination
+  // E.g. java => ajva, jvaa, jaav
+  for (let i = 0; i < chars.length - 1; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + chars[i + 1] + chars[i] + _.join(_.slice(chars, i + 2), ''))
+  }
+  // include every insertion combination
+  // E.g. java => .java, j.ava, ja.va, jav.a, java.
+  for (let i = 0; i <= chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.' + _.join(_.slice(chars, i), ''))
+  }
+  // include every deletion/substitution combination
+  // E.g. java => .?ava, j.?va, ja.?a, jav.?
+  for (let i = 0; i < chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.?' + _.join(_.slice(chars, i + 1), ''))
+  }
+  // return the regex pattern
+  return new RegExp(`^(?:${_.join(res, '|')})$`, 'i')
 }
 
 /**
@@ -56,15 +138,17 @@ async function _getJobsByProjectIds (currentUser, projectIds) {
 async function searchTeams (currentUser, criteria) {
   const sort = `${criteria.sortBy} ${criteria.sortOrder}`
   // Get projects from /v5/projects with searching criteria
-  const { total, page, perPage, result: projects } = await helper.getProjects(
-    currentUser,
-    {
-      page: criteria.page,
-      perPage: criteria.perPage,
-      name: criteria.name,
-      sort
-    }
-  )
+  const {
+    total,
+    page,
+    perPage,
+    result: projects
+  } = await helper.getProjects(currentUser, {
+    page: criteria.page,
+    perPage: criteria.perPage,
+    name: criteria.name,
+    sort
+  })
   return {
     total,
     page,
@@ -73,20 +157,37 @@ async function searchTeams (currentUser, criteria) {
   }
 }
 
-searchTeams.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  criteria: Joi.object().keys({
-    page: Joi.page(),
-    perPage: Joi.perPage(),
-    sortBy: Joi.string().valid('createdAt', 'updatedAt', 'lastActivityAt', 'id', 'status', 'name', 'type', 'best match').default('lastActivityAt'),
-    sortOrder: Joi.when('sortBy', {
-      is: 'best match',
-      then: Joi.forbidden().label('sortOrder(with sortBy being `best match`)'),
-      otherwise: Joi.string().valid('asc', 'desc').default('desc')
-    }),
-    name: Joi.string()
-  }).required()
-}).required()
+searchTeams.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    criteria: Joi.object()
+      .keys({
+        page: Joi.page(),
+        perPage: Joi.perPage(),
+        sortBy: Joi.string()
+          .valid(
+            'createdAt',
+            'updatedAt',
+            'lastActivityAt',
+            'id',
+            'status',
+            'name',
+            'type',
+            'best match'
+          )
+          .default('lastActivityAt'),
+        sortOrder: Joi.when('sortBy', {
+          is: 'best match',
+          then: Joi.forbidden().label(
+            'sortOrder(with sortBy being `best match`)'
+          ),
+          otherwise: Joi.string().valid('asc', 'desc').default('desc')
+        }),
+        name: Joi.string()
+      })
+      .required()
+  })
+  .required()
 
 /**
  * Get team details
@@ -98,7 +199,10 @@ searchTeams.schema = Joi.object().keys({
 async function getTeamDetail (currentUser, projects, isSearch = true) {
   const projectIds = _.map(projects, 'id')
   // Get all placed resourceBookings filtered by projectIds
-  const resourceBookings = await _getPlacedResourceBookingsByProjectIds(currentUser, projectIds)
+  const resourceBookings = await _getPlacedResourceBookingsByProjectIds(
+    currentUser,
+    projectIds
+  )
   // Get all jobs filtered by projectIds
   const jobs = await _getJobsByProjectIds(currentUser, projectIds)
 
@@ -107,7 +211,11 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
   const firstDay = dateFNS.startOfWeek(curr)
   const lastDay = dateFNS.endOfWeek(curr)
 
-  logger.debug({ component: 'TeamService', context: 'getTeamDetail', message: `week started: ${firstDay}, week ended: ${lastDay}` })
+  logger.debug({
+    component: 'TeamService',
+    context: 'getTeamDetail',
+    message: `week started: ${firstDay}, week ended: ${lastDay}`
+  })
 
   const result = []
   for (const project of projects) {
@@ -146,31 +254,33 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         const endDate = new Date(item.endDate)
 
         // normally startDate is smaller than endDate for a resourceBooking so not check if startDate < endDate
-        if ((!item.startDate || startDate < lastDay) &&
-          (!item.endDate || endDate > firstDay)) {
+        if (
+          (!item.startDate || startDate < lastDay) &&
+          (!item.endDate || endDate > firstDay)
+        ) {
           res.weeklyCost += item.customerRate
         }
       }
 
       const resourceInfos = await Promise.all(
         _.map(rbs, (rb) => {
-          return helper.getUserById(rb.userId, true)
-            .then(user => {
-              const resource = {
-                id: rb.id,
-                userId: user.id,
-                ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
-              }
-              // If call function is not search, add jobId field
-              if (!isSearch) {
-                resource.jobId = rb.jobId
-                resource.customerRate = rb.customerRate
-                resource.startDate = rb.startDate
-                resource.endDate = rb.endDate
-              }
-              return resource
-            })
-        }))
+          return helper.getUserById(rb.userId, true).then((user) => {
+            const resource = {
+              id: rb.id,
+              userId: user.id,
+              ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
+            }
+            // If call function is not search, add jobId field
+            if (!isSearch) {
+              resource.jobId = rb.jobId
+              resource.customerRate = rb.customerRate
+              resource.startDate = rb.startDate
+              resource.endDate = rb.endDate
+            }
+            return resource
+          })
+        })
+      )
       if (resourceInfos && resourceInfos.length > 0) {
         res.resources = resourceInfos
 
@@ -179,7 +289,9 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
         const members = await helper.getMembers(userHandles)
 
         for (const item of res.resources) {
-          const findMember = _.find(members, { handleLower: item.handle.toLowerCase() })
+          const findMember = _.find(members, {
+            handleLower: item.handle.toLowerCase()
+          })
           if (findMember && findMember.photoURL) {
             item.photo_url = findMember.photoURL
           }
@@ -200,8 +312,19 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
           res.totalPositions += item.numPositions
         }
       } else {
-        res.jobs = _.map(jobsTmp, job => {
-          return _.pick(job, ['id', 'description', 'startDate', 'duration', 'numPositions', 'rateType', 'skills', 'customerRate', 'status', 'title'])
+        res.jobs = _.map(jobsTmp, (job) => {
+          return _.pick(job, [
+            'id',
+            'description',
+            'startDate',
+            'duration',
+            'numPositions',
+            'rateType',
+            'skills',
+            'customerRate',
+            'status',
+            'title'
+          ])
         })
       }
     }
@@ -228,7 +351,9 @@ async function getTeam (currentUser, id) {
     for (const job of teamDetail.jobs) {
       if (job.skills) {
         const usersPromises = []
-        _.map(job.skills, (skillId) => { usersPromises.push(helper.getSkillById(skillId)) })
+        _.map(job.skills, (skillId) => {
+          usersPromises.push(helper.getSkillById(skillId))
+        })
         jobSkills = await Promise.all(usersPromises)
         job.skills = jobSkills
       }
@@ -238,10 +363,12 @@ async function getTeam (currentUser, id) {
   return teamDetail
 }
 
-getTeam.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required()
-}).required()
+getTeam.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required()
+  })
+  .required()
 
 /**
  * Get team job with id
@@ -256,7 +383,9 @@ async function getTeamJob (currentUser, id, jobId) {
   const job = _.find(jobs, { id: jobId })
 
   if (!job) {
-    throw new errors.NotFoundError(`id: ${jobId} "Job" with Team id ${id} doesn't exist`)
+    throw new errors.NotFoundError(
+      `id: ${jobId} "Job" with Team id ${id} doesn't exist`
+    )
   }
   const result = {
     id: job.id,
@@ -278,7 +407,9 @@ async function getTeamJob (currentUser, id, jobId) {
   if (job && job.candidates && job.candidates.length > 0) {
     // find user data for candidates
     const users = await Promise.all(
-      _.map(_.uniq(_.map(job.candidates, 'userId')), userId => helper.getUserById(userId, true))
+      _.map(_.uniq(_.map(job.candidates, 'userId')), (userId) =>
+        helper.getUserById(userId, true)
+      )
     )
     const userMap = _.groupBy(users, 'id')
 
@@ -286,11 +417,20 @@ async function getTeamJob (currentUser, id, jobId) {
     const members = await helper.getMembers(_.map(users, 'handle'))
     const photoURLMap = _.groupBy(members, 'handleLower')
 
-    result.candidates = _.map(job.candidates, candidate => {
-      const candidateData = _.pick(candidate, ['status', 'resume', 'userId', 'interviews', 'id'])
+    result.candidates = _.map(job.candidates, (candidate) => {
+      const candidateData = _.pick(candidate, [
+        'status',
+        'resume',
+        'userId',
+        'interviews',
+        'id'
+      ])
       const userData = userMap[candidate.userId][0]
       // attach user data to the candidate
-      Object.assign(candidateData, _.pick(userData, ['handle', 'firstName', 'lastName', 'skills']))
+      Object.assign(
+        candidateData,
+        _.pick(userData, ['handle', 'firstName', 'lastName', 'skills'])
+      )
       // attach photo URL to the candidate
       const handleLower = userData.handle.toLowerCase()
       if (photoURLMap[handleLower]) {
@@ -303,11 +443,13 @@ async function getTeamJob (currentUser, id, jobId) {
   return result
 }
 
-getTeamJob.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required(),
-  jobId: Joi.string().guid().required()
-}).required()
+getTeamJob.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required(),
+    jobId: Joi.string().guid().required()
+  })
+  .required()
 
 /**
  * Send email through a particular template
@@ -326,7 +468,10 @@ async function sendEmail (currentUser, data) {
     body: data.body || template.body
   }
   for (const key in subjectBody) {
-    subjectBody[key] = await helper.substituteStringByObject(subjectBody[key], data.data)
+    subjectBody[key] = await helper.substituteStringByObject(
+      subjectBody[key],
+      data.data
+    )
   }
   const emailData = {
     // override template if coming data already have the 'from' address
@@ -341,16 +486,22 @@ async function sendEmail (currentUser, data) {
   await helper.postEvent(config.EMAIL_TOPIC, emailData)
 }
 
-sendEmail.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  data: Joi.object().keys({
-    template: Joi.string().valid(...Object.keys(emailTemplates)).required(),
-    data: Joi.object().required(),
-    from: Joi.string().email(),
-    recipients: Joi.array().items(Joi.string().email()).allow(null),
-    cc: Joi.array().items(Joi.string().email()).allow(null)
-  }).required()
-}).required()
+sendEmail.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object()
+      .keys({
+        template: Joi.string()
+          .valid(...Object.keys(emailTemplates))
+          .required(),
+        data: Joi.object().required(),
+        from: Joi.string().email(),
+        recipients: Joi.array().items(Joi.string().email()).allow(null),
+        cc: Joi.array().items(Joi.string().email()).allow(null)
+      })
+      .required()
+  })
+  .required()
 
 /**
  * Add a member to a team as customer.
@@ -401,70 +552,101 @@ async function addMembers (currentUser, id, criteria, data) {
   const handles = data.handles || []
   const emails = data.emails || []
 
-  const handleMembers = await helper.getMemberDetailsByHandles(handles)
-    .then((members) => _.map(members, (member) => ({
-      ...member,
-      // populate members with lower-cased handle for case insensitive search
-      handleLowerCase: member.handle.toLowerCase()
-    })))
+  const handleMembers = await helper
+    .getMemberDetailsByHandles(handles)
+    .then((members) =>
+      _.map(members, (member) => ({
+        ...member,
+        // populate members with lower-cased handle for case insensitive search
+        handleLowerCase: member.handle.toLowerCase()
+      }))
+    )
 
-  const emailMembers = await helper.getMemberDetailsByEmails(emails)
-    .then((members) => _.map(members, (member) => ({
-      ...member,
-      // populate members with lower-cased email for case insensitive search
-      emailLowerCase: member.email.toLowerCase()
-    })))
+  const emailMembers = await helper
+    .getMemberDetailsByEmails(emails)
+    .then((members) =>
+      _.map(members, (member) => ({
+        ...member,
+        // populate members with lower-cased email for case insensitive search
+        emailLowerCase: member.email.toLowerCase()
+      }))
+    )
 
   await Promise.all([
-    Promise.all(handles.map(handle => {
-      const memberDetails = _.find(handleMembers, { handleLowerCase: handle.toLowerCase() })
-
-      if (!memberDetails) {
-        result.failed.push({ error: 'User doesn\'t exist', handle })
-        return
-      }
-
-      return _addMemberToProjectAsCustomer(id, memberDetails.userId, criteria.fields)
-        .then(member => {
-          // note, that we return `handle` in the same case it was in request
-          result.success.push(({ ...member, handle }))
-        }).catch(err => {
-          result.failed.push({ error: err.message, handle })
+    Promise.all(
+      handles.map((handle) => {
+        const memberDetails = _.find(handleMembers, {
+          handleLowerCase: handle.toLowerCase()
         })
-    })),
 
-    Promise.all(emails.map(email => {
-      const memberDetails = _.find(emailMembers, { emailLowerCase: email.toLowerCase() })
+        if (!memberDetails) {
+          result.failed.push({ error: "User doesn't exist", handle })
+          return
+        }
 
-      if (!memberDetails) {
-        result.failed.push({ error: 'User doesn\'t exist', email })
-        return
-      }
+        return _addMemberToProjectAsCustomer(
+          id,
+          memberDetails.userId,
+          criteria.fields
+        )
+          .then((member) => {
+            // note, that we return `handle` in the same case it was in request
+            result.success.push({ ...member, handle })
+          })
+          .catch((err) => {
+            result.failed.push({ error: err.message, handle })
+          })
+      })
+    ),
 
-      return _addMemberToProjectAsCustomer(id, memberDetails.id, criteria.fields)
-        .then(member => {
-          // note, that we return `email` in the same case it was in request
-          result.success.push(({ ...member, email }))
-        }).catch(err => {
-          result.failed.push({ error: err.message, email })
+    Promise.all(
+      emails.map((email) => {
+        const memberDetails = _.find(emailMembers, {
+          emailLowerCase: email.toLowerCase()
         })
-    }))
+
+        if (!memberDetails) {
+          result.failed.push({ error: "User doesn't exist", email })
+          return
+        }
+
+        return _addMemberToProjectAsCustomer(
+          id,
+          memberDetails.id,
+          criteria.fields
+        )
+          .then((member) => {
+            // note, that we return `email` in the same case it was in request
+            result.success.push({ ...member, email })
+          })
+          .catch((err) => {
+            result.failed.push({ error: err.message, email })
+          })
+      })
+    )
   ])
 
   return result
 }
 
-addMembers.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required(),
-  criteria: Joi.object().keys({
-    fields: Joi.string()
-  }).required(),
-  data: Joi.object().keys({
-    handles: Joi.array().items(Joi.string()),
-    emails: Joi.array().items(Joi.string().email())
-  }).or('handles', 'emails').required()
-}).required()
+addMembers.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required(),
+    criteria: Joi.object()
+      .keys({
+        fields: Joi.string()
+      })
+      .required(),
+    data: Joi.object()
+      .keys({
+        handles: Joi.array().items(Joi.string()),
+        emails: Joi.array().items(Joi.string().email())
+      })
+      .or('handles', 'emails')
+      .required()
+  })
+  .required()
 
 /**
  * Search members in a team.
@@ -480,14 +662,18 @@ async function searchMembers (currentUser, id, criteria) {
   return { result }
 }
 
-searchMembers.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required(),
-  criteria: Joi.object().keys({
-    role: Joi.string(),
-    fields: Joi.string()
-  }).required()
-}).required()
+searchMembers.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required(),
+    criteria: Joi.object()
+      .keys({
+        role: Joi.string(),
+        fields: Joi.string()
+      })
+      .required()
+  })
+  .required()
 
 /**
  * Search member invites for a team.
@@ -499,17 +685,25 @@ searchMembers.schema = Joi.object().keys({
  * @returns {Object} the search result
  */
 async function searchInvites (currentUser, id, criteria) {
-  const result = await helper.listProjectMemberInvites(currentUser, id, criteria)
+  const result = await helper.listProjectMemberInvites(
+    currentUser,
+    id,
+    criteria
+  )
   return { result }
 }
 
-searchInvites.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required(),
-  criteria: Joi.object().keys({
-    fields: Joi.string()
-  }).required()
-}).required()
+searchInvites.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required(),
+    criteria: Joi.object()
+      .keys({
+        fields: Joi.string()
+      })
+      .required()
+  })
+  .required()
 
 /**
  * Remove a member from a team.
@@ -524,11 +718,13 @@ async function deleteMember (currentUser, id, projectMemberId) {
   await helper.deleteProjectMember(currentUser, id, projectMemberId)
 }
 
-deleteMember.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.number().integer().required(),
-  projectMemberId: Joi.number().integer().required()
-}).required()
+deleteMember.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.number().integer().required(),
+    projectMemberId: Joi.number().integer().required()
+  })
+  .required()
 
 /**
  * Return details about the current user.
@@ -541,8 +737,387 @@ async function getMe (currentUser) {
   return helper.getUserByExternalId(currentUser.userId)
 }
 
-getMe.schema = Joi.object().keys({
-  currentUser: Joi.object().required()
+getMe.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required()
+  })
+  .required()
+
+/**
+ * Searches roles either by roleId or jobDescription or skills
+ * @param {Object} currentUser the user performing the operation.
+ * @param {Object} data search request data
+ * @returns {Object} the created project
+ */
+async function roleSearchRequest (currentUser, data) {
+  let role
+  // if roleId is provided then find role with given id.
+  if (!_.isUndefined(data.roleId)) {
+    role = await Role.findById(data.roleId)
+    role = role.toJSON()
+    // if skills is provided then use skills to find role
+  } else if (!_.isUndefined(data.skills)) {
+    // validate given skillIds and convert them into skill names
+    const skills = await getSkillNamesByIds(data.skills)
+    // find the best matching role
+    role = await getRoleBySkills(skills)
+  } else {
+    // if only job description is provided, collect skill names from description
+    const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
+    const skills = _.map(tags, 'tag')
+    // find the best matching role
+    role = await getRoleBySkills(skills)
+  }
+  data.roleId = role.id
+  // create roleSearchRequest entity with found roleId
+  const { id: roleSearchRequestId } = await createRoleSearchRequest(currentUser, data)
+  // clean Role
+  role = await _cleanRoleDTO(currentUser, role)
+  // return Role
+  return _.assign(role, { roleSearchRequestId })
+}
+
+roleSearchRequest.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object().keys({
+      roleId: Joi.string().uuid(),
+      jobDescription: Joi.string().max(255),
+      skills: Joi.array().items(Joi.string().uuid().required())
+    }).required().min(1)
+  }).required()
+
+/**
+ * Returns 1 role most relevant to the specified skills
+ * @param {Array<string>} skills the array of skill names
+ * @returns {Role} the best matching Role
+ */
+async function getRoleBySkills (skills) {
+  // find all roles which includes any of the given skills
+  const queryCriteria = {
+    where: { listOfSkills: { [Op.overlap]: skills } },
+    raw: true
+  }
+  const roles = await Role.findAll(queryCriteria)
+  if (roles.length > 0) {
+    let result = _.each(roles, role => {
+      // calculate each found roles matching rate
+      role.matchingRate = _.intersection(role.listOfSkills, skills).length / skills.length
+      // each role can have multiple rates, get the maximum of global rates
+      role.maxGlobal = _.maxBy(role.rates, 'global').global
+    })
+    // sort roles by matchingRate, global rate and name
+    result = _.orderBy(result, ['matchingRate', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
+    if (result[0].matchingRate >= config.ROLE_MATCHING_RATE) {
+      // return the 1st role
+      return _.omit(result[0], ['matchingRate', 'maxGlobal'])
+    }
+  }
+  // if no matching role found then return Niche role or empty object
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Niche' } } }) || {}
+}
+
+getRoleBySkills.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().required()).required()
+  }).required()
+
+/**
+ * Return skills by job description.
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} data the search criteria
+ * @returns {Object} the result
+ */
+async function getSkillsByJobDescription (currentUser, data) {
+  // load topcoder skills if needed. Using cached skills helps to avoid
+  // unnecessary api calls which is extremely time comsuming.
+  await _reloadCachedTopcoderSkills()
+  // replace markdown tags with spaces
+  const description = helper.removeTextFormatting(data.description)
+  // extract words from description
+  let words = _.split(description, ' ')
+  // remove stopwords from description
+  words = _.filter(words, word => stopWords.indexOf(word.toLowerCase()) === -1)
+  // include consecutive two word combinations
+  const twoWords = []
+  for (let i = 0; i < words.length - 1; i++) {
+    twoWords.push(`${words[i]} ${words[i + 1]}`)
+  }
+  words = _.concat(words, twoWords)
+  let foundSkills = []
+  const result = []
+  // try to match each word with skill names
+  // using pre-compiled regex pattern
+  _.each(words, word => {
+    _.each(topcoderSkills.skills, skill => {
+      // do not stop searching after a match in order to detect more lookalikes
+      if (skill.pattern.test(word)) {
+        foundSkills.push(skill.name)
+      }
+    })
+  })
+  foundSkills = _.uniq(foundSkills)
+  // apply desired template
+  _.each(foundSkills, skill => {
+    result.push({
+      tag: skill,
+      type: 'taas_skill',
+      source: 'taas-jd-parser'
+    })
+  })
+
+  return result
+}
+
+getSkillsByJobDescription.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object().keys({
+      description: Joi.string().required()
+    }).required()
+  }).required()
+
+/**
+ * Validate given skillIds and return their names
+ *
+ * @param {Array<string>} skills the array of skill ids
+ * @returns {Array<string>} the array of skill names
+ */
+async function getSkillNamesByIds (skills) {
+  const responses = await Promise.all(
+    skills.map(
+      skill => helper.getSkillById(skill)
+        .then((skill) => {
+          return _.assign(skill, { found: true })
+        })
+        .catch(err => {
+          if (err.status !== HttpStatus.NOT_FOUND) {
+            throw err
+          }
+          return { found: false, skill }
+        })
+    )
+  )
+  const errResponses = responses.filter(res => !res.found)
+  if (errResponses.length) {
+    throw new errors.BadRequestError(`Invalid skills: [${errResponses.map(res => res.skill)}]`)
+  }
+  return _.map(responses, 'name')
+}
+
+getSkillNamesByIds.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().uuid().required()).required()
+  }).required()
+
+/**
+ * Finds and returns the ids of given skill names
+ *
+ * @param {Array<string>} skills the array of skill names
+ * @returns {Array<string>} the array of skill ids
+ */
+async function getSkillIdsByNames (skills) {
+  const result = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
+  // endpoint returns the partial matched skills
+  // we need to filter by exact match case insensitive
+  const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
+  const skillIds = _.map(filteredSkills, 'id')
+  return skillIds
+}
+
+getSkillIdsByNames.schema = Joi.object()
+  .keys({
+    skills: Joi.array().items(Joi.string().required()).required()
+  }).required()
+
+/**
+ * Creates the role search request
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} roleSearchRequest the role search request
+ * @returns {RoleSearchRequest} the role search request entity
+ */
+
+async function createRoleSearchRequest (currentUser, roleSearchRequest) {
+  roleSearchRequest.createdBy = await helper.getUserId(currentUser.userId)
+  // if current user is not machine then it must be logged user
+  if (!currentUser.isMachine) {
+    roleSearchRequest.memberId = roleSearchRequest.createdBy
+    // find the previous search done by this user
+    const previous = await RoleSearchRequest.findOne({
+      where: {
+        memberId: roleSearchRequest.memberId
+      },
+      order: [['createdAt', 'DESC']]
+    })
+    if (previous) {
+      roleSearchRequest.previousRoleSearchRequestId = previous.id
+    }
+  }
+  const created = await RoleSearchRequest.create(roleSearchRequest)
+  return created.toJSON()
+}
+createRoleSearchRequest.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    roleSearchRequest: Joi.object().keys({
+      roleId: Joi.string().uuid(),
+      jobDescription: Joi.string().max(255),
+      skills: Joi.array().items(Joi.string().uuid().required())
+    }).required().min(1)
+  }).required()
+
+/**
+ * Exclude some fields from role if the user is external member
+ *
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} role the role object to be cleaned
+ * @returns {Object} the cleaned role
+ */
+async function _cleanRoleDTO (currentUser, role) {
+  // if current user is machine, it means user is not logged in
+  if (currentUser.isMachine || await isExternalMember(currentUser.userId)) {
+    role.isExternalMember = true
+    if (role.rates) {
+      role.rates = _.map(role.rates, rate =>
+        _.omit(rate, ['inCountry', 'offShore', 'rate30InCountry', 'rate30OffShore', 'rate20InCountry', 'rate20OffShore']))
+    }
+    return role
+  }
+  role.isExternalMember = false
+  return role
+}
+
+/**
+ * Finds out if member is external member
+ *
+ * @param {number} memberId the external id of member
+ * @returns {boolean}
+ */
+async function isExternalMember (memberId) {
+  const groups = await helper.getMemberGroups(memberId)
+  return _.intersection(config.INTERNAL_MEMBER_GROUPS, groups).length === 0
+}
+
+isExternalMember.schema = Joi.object()
+  .keys({
+    memberId: Joi.number().required()
+  }).required()
+
+/**
+ * @param {Object} currentUser the user performing the operation.
+ * @param {Object} data the team data
+ * @returns {Object} the created project id
+ */
+async function createTeam (currentUser, data) {
+  // before creating a project, we should validate the given roleSearchRequestIds
+  // because if some data is missing it would fail to create jobs.
+  const roleSearchRequests = await _validateRoleSearchRequests(_.map(data.positions, 'roleSearchRequestId'))
+  const projectRequestBody = {
+    name: data.teamName,
+    description: data.teamDescription,
+    type: 'talent-as-a-service',
+    details: {
+      positions: data.positions
+    }
+  }
+  // create project with given data
+  const project = await helper.createProject(currentUser, projectRequestBody)
+  // create jobs for the given positions.
+  await Promise.all(_.map(data.positions, async position => {
+    const roleSearchRequest = roleSearchRequests[position.roleSearchRequestId]
+    const job = {
+      projectId: project.id,
+      title: position.roleName,
+      numPositions: position.numberOfResources,
+      rateType: position.rateType,
+      workload: position.workload,
+      skills: roleSearchRequest.skills,
+      description: roleSearchRequest.jobDescription,
+      roleIds: [roleSearchRequest.roleId],
+      resourceType: roleSearchRequest.resourceType
+    }
+    if (position.startMonth) {
+      job.startDate = position.startMonth
+    }
+    if (position.durationWeeks) {
+      job.duration = position.durationWeeks
+    }
+    await JobService.createJob(currentUser, job)
+  }))
+  return { projectId: project.id }
+}
+
+createTeam.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    data: Joi.object().keys({
+      teamName: Joi.string().required(),
+      teamDescription: Joi.string(),
+      positions: Joi.array().items(
+        Joi.object().keys({
+          roleName: Joi.string().required(),
+          roleSearchRequestId: Joi.string().uuid().required(),
+          numberOfResources: Joi.number().integer().min(1).required(),
+          durationWeeks: Joi.number().integer().min(1),
+          startMonth: Joi.date(),
+          rateType: Joi.rateType().default('weekly'),
+          workload: Joi.workload().default('full-time'),
+          resourceType: Joi.string()
+        }).required()
+      ).required()
+    }).required()
+  })
+  .required()
+
+/**
+ * @param {Array<string>} roleSearchRequestIds the roleSearchRequestIds
+ * @returns {Object} the roleSearchRequests
+ */
+async function _validateRoleSearchRequests (roleSearchRequestIds) {
+  const roleSearchRequests = {}
+  await Promise.all(_.map(roleSearchRequestIds, async roleSearchRequestId => {
+    // check if roleSearchRequest exists
+    const roleSearchRequest = await RoleSearchRequest.findById(roleSearchRequestId)
+    // store the found roleSearchRequest to avoid unnecessary DB calls
+    roleSearchRequests[roleSearchRequestId] = roleSearchRequest.toJSON()
+    // we can't create a job without a role
+    if (!roleSearchRequest.roleId) {
+      throw new errors.ConflictError(`roleSearchRequestId: ${roleSearchRequestId} must have roleId`)
+    }
+    const role = await Role.findById(roleSearchRequest.roleId)
+    // if roleSearchRequest doesn't have skills, we have to get skills through role
+    if (!roleSearchRequest.skills) {
+      if (!role.listOfSkills) {
+        throw new errors.ConflictError(`role: ${role.id} must have skills`)
+      }
+      // store role's skills
+      roleSearchRequests[roleSearchRequestId].skills = await getSkillIdsByNames(role.listOfSkills)
+    }
+    if (!roleSearchRequest.jobDescription) {
+      roleSearchRequests[roleSearchRequestId].jobDescription = role.description
+    }
+    roleSearchRequests[roleSearchRequestId].resourceType = role.name
+  }))
+  return roleSearchRequests
+}
+
+/**
+ * Search skills
+ * @param {Object} criteria the search criteria
+ * @returns {Object} the search result, contain total/page/perPage and result array
+ */
+async function searchSkills (criteria) {
+  return helper.getTopcoderSkills(criteria)
+}
+
+searchSkills.schema = Joi.object().keys({
+  criteria: Joi.object().keys({
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    orderBy: Joi.string()
+  }).required()
 }).required()
 
 module.exports = {
@@ -554,5 +1129,14 @@ module.exports = {
   searchMembers,
   searchInvites,
   deleteMember,
-  getMe
+  getMe,
+  roleSearchRequest,
+  getRoleBySkills,
+  getSkillsByJobDescription,
+  getSkillNamesByIds,
+  getSkillIdsByNames,
+  createRoleSearchRequest,
+  isExternalMember,
+  createTeam,
+  searchSkills
 }

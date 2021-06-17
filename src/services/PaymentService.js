@@ -39,7 +39,8 @@ async function createPayment (options) {
   const challengeId = await createChallenge(options, token)
   await addResourceToChallenge(challengeId, options.userHandle, token)
   await activateChallenge(challengeId, token)
-  const completedChallenge = await closeChallenge(challengeId, options.userHandle, token)
+  const { userId } = await helper.getV3MemberDetailsByHandle(options.userHandle)
+  const completedChallenge = await closeChallenge(challengeId, userId, options.userHandle, token)
   return completedChallenge
 }
 
@@ -117,6 +118,13 @@ async function addResourceToChallenge (id, handle, token) {
     await helper.createChallengeResource(body, token)
     localLogger.info({ context: 'addResourceToChallenge', message: `${handle} added to challenge ${id}` })
   } catch (err) {
+    if (err.status === 409) {
+      const resource = await helper.getChallengeResource(id, handle, config.ROLE_ID_SUBMITTER)
+      if (resource) {
+        localLogger.info({ context: 'addResourceToChallenge', message: `${handle} exists in challenge ${id}` })
+        return
+      }
+    }
     localLogger.error({ context: 'addResourceToChallenge', message: `Status Code: ${err.status}` })
     localLogger.error({ context: 'addResourceToChallenge', message: err.response.text })
     throw err
@@ -137,6 +145,13 @@ async function activateChallenge (id, token) {
     await helper.updateChallenge(id, body, token)
     localLogger.info({ context: 'activateChallenge', message: `Challenge ${id} is activated successfully.` })
   } catch (err) {
+    if (err.status >= 500) {
+      const challenge = await helper.getChallenge(id)
+      if (_.includes([constants.ChallengeStatus.ACTIVE, constants.ChallengeStatus.COMPLETED], challenge.status)) {
+        localLogger.info({ context: 'activateChallenge', message: `the status of Challenge ${id} had been ${challenge.status}.` })
+        return
+      }
+    }
     localLogger.error({ context: 'activateChallenge', message: `Status Code: ${err.status}` })
     localLogger.error({ context: 'activateChallenge', message: err.response.text })
     throw err
@@ -146,14 +161,14 @@ async function activateChallenge (id, token) {
 /**
   * closes the topcoder challenge
   * @param {String} id the challenge id
+  * @param {String} userId the user id
   * @param {String} userHandle the user handle
   * @param {String} token m2m token
   * @returns {Object} the closed challenge
   */
-async function closeChallenge (id, userHandle, token) {
+async function closeChallenge (id, userId, userHandle, token) {
   localLogger.info({ context: 'closeChallenge', message: `Closing challenge ${id}` })
   try {
-    const { userId } = await helper.getV3MemberDetailsByHandle(userHandle)
     const body = {
       status: constants.ChallengeStatus.COMPLETED,
       winners: [{
@@ -166,6 +181,13 @@ async function closeChallenge (id, userHandle, token) {
     localLogger.info({ context: 'closeChallenge', message: `Challenge ${id} is closed successfully.` })
     return response
   } catch (err) {
+    if (err.status >= 500) {
+      const challenge = await helper.getChallenge(id)
+      if (constants.ChallengeStatus.COMPLETED === challenge.status) {
+        localLogger.info({ context: 'activateChallenge', message: `the status of Challenge ${id} had been ${challenge.status}.` })
+        return challenge
+      }
+    }
     localLogger.error({ context: 'closeChallenge', message: `Status Code: ${err.status}` })
     localLogger.error({ context: 'closeChallenge', message: err.response.text })
     throw err
@@ -173,5 +195,9 @@ async function closeChallenge (id, userHandle, token) {
 }
 
 module.exports = {
-  createPayment
+  createPayment,
+  createChallenge,
+  addResourceToChallenge,
+  activateChallenge,
+  closeChallenge
 }

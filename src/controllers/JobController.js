@@ -2,6 +2,7 @@
  * Controller for Job endpoints
  */
 const HttpStatus = require('http-status-codes')
+const _ = require('lodash')
 const service = require('../services/JobService')
 const helper = require('../common/helper')
 
@@ -57,7 +58,8 @@ async function deleteJob (req, res) {
  * @param res the response
  */
 async function searchJobs (req, res) {
-  const result = await service.searchJobs(req.authUser, req.query)
+  const query = { ...req.query, jobIds: _.get(req, 'body.jobIds', []) }
+  const result = await service.searchJobs(req.authUser, query)
   helper.setResHeaders(req, res, result)
   res.send(result.result)
 }

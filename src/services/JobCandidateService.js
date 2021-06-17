@@ -130,7 +130,8 @@ createJobCandidate.schema = Joi.object().keys({
     jobId: Joi.string().uuid().required(),
     userId: Joi.string().uuid().required(),
     externalId: Joi.string().allow(null),
-    resume: Joi.string().uri().allow(null)
+    resume: Joi.string().uri().allow(null),
+    remark: Joi.string().allow(null)
   }).required()
 }).required()
 
@@ -176,7 +177,8 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
   data: Joi.object().keys({
     status: Joi.jobCandidateStatus(),
     externalId: Joi.string().allow(null),
-    resume: Joi.string().uri().allow(null)
+    resume: Joi.string().uri().allow(null),
+    remark: Joi.string().allow(null)
   }).required()
 }).required()
 
@@ -201,7 +203,8 @@ fullyUpdateJobCandidate.schema = Joi.object().keys({
     userId: Joi.string().uuid().required(),
     status: Joi.jobCandidateStatus().default('open'),
     externalId: Joi.string().allow(null).default(null),
-    resume: Joi.string().uri().allow(null).default(null)
+    resume: Joi.string().uri().allow('').allow(null).default(null),
+    remark: Joi.string().allow('').allow(null).default(null)
   }).required()
 }).required()
 
@@ -313,9 +316,10 @@ async function searchJobCandidates (currentUser, criteria) {
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
   })
+  const total = await JobCandidate.count({ where: filter })
   return {
     fromDb: true,
-    total: jobCandidates.length,
+    total,
     page,
     perPage,
     result: _.map(jobCandidates, jobCandidate => _.omit(jobCandidate.dataValues, omitList))

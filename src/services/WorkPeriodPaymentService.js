@@ -3,20 +3,20 @@
  */
 
 const _ = require('lodash')
-const Joi = require('joi')
+const Joi = require('joi').extend(require('@joi/date'))
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const uuid = require('uuid')
-const moment = require('moment')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
-const constants = require('../../app-constants')
 const models = require('../models')
-const PaymentService = require('./PaymentService')
+const { WorkPeriodPaymentStatus } = require('../../app-constants')
+const { searchResourceBookings } = require('./ResourceBookingService')
 
 const WorkPeriodPayment = models.WorkPeriodPayment
+const WorkPeriod = models.WorkPeriod
 const esClient = helper.getESClient()
 
 /**
@@ -26,10 +26,64 @@ const esClient = helper.getESClient()
  * @param {Object} currentUser the user who perform this operation.
  * @returns {undefined}
  */
-async function _checkUserPermissionForCRUWorkPeriodPayment (currentUser) {
+function _checkUserPermissionForCRUWorkPeriodPayment (currentUser) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
+}
+
+/**
+ * Create single workPeriodPayment
+ * @param {Object} workPeriodPayment the workPeriodPayment to be created
+ * @param {String} createdBy the authUser id
+ * @returns {Object} the created workPeriodPayment
+ */
+async function _createSingleWorkPeriodPayment (workPeriodPayment, createdBy) {
+  const correspondingWorkPeriod = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+
+  // get billingAccountId from corresponding resource booking
+  const correspondingResourceBooking = await helper.ensureResourceBookingById(correspondingWorkPeriod.resourceBookingId)
+
+  return _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking(workPeriodPayment, createdBy, correspondingWorkPeriod.toJSON(), correspondingResourceBooking.toJSON())
+}
+
+/**
+ * Create single workPeriodPayment
+ * @param {Object} workPeriodPayment the workPeriodPayment to be created
+ * @param {String} createdBy the authUser id
+ * @param {Object} correspondingWorkPeriod the workPeriod
+ * @param {Object} correspondingResourceBooking the resourceBooking
+ * @returns {Object} the created workPeriodPayment
+ */
+async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (workPeriodPayment, createdBy, correspondingWorkPeriod, correspondingResourceBooking) {
+  if (_.isNil(correspondingResourceBooking.billingAccountId)) {
+    throw new errors.ConflictError(`id: ${correspondingResourceBooking.id} "ResourceBooking" Billing account is not assigned to the resource booking`)
+  }
+  workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
+  if (_.isNil(correspondingResourceBooking.memberRate)) {
+    throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
+  }
+  if (correspondingResourceBooking.memberRate <= 0) {
+    throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
+  }
+  workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
+  const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
+  if (workPeriodPayment.days > maxPossibleDays) {
+    throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
+  }
+  if (maxPossibleDays <= 0) {
+    throw new errors.ConflictError(`There are no days to pay for WorkPeriod: ${correspondingWorkPeriod.id}`)
+  }
+  workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
+  workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
+  workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
+  workPeriodPayment.id = uuid.v4()
+  workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
+  workPeriodPayment.createdBy = createdBy
+
+  const created = await WorkPeriodPayment.create(workPeriodPayment)
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON(), { key: `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}` })
+  return created.dataValues
 }
 
 /**
@@ -41,28 +95,39 @@ async function _checkUserPermissionForCRUWorkPeriodPayment (currentUser) {
  */
 async function getWorkPeriodPayment (currentUser, id, fromDb = false) {
   // check user permission
-  await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
   if (!fromDb) {
     try {
-      const workPeriod = await esClient.search({
-        index: config.esConfig.ES_INDEX_WORK_PERIOD,
-        _source: 'payments',
+      const resourceBooking = await esClient.search({
+        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
+        _source: 'workPeriods.payments',
         body: {
           query: {
             nested: {
-              path: 'payments',
+              path: 'workPeriods.payments',
               query: {
-                match: { 'payments.id': id }
+                match: { 'workPeriods.payments.id': id }
               }
             }
           }
         }
       })
 
-      if (!workPeriod.body.hits.total.value) {
+      if (!resourceBooking.body.hits.total.value) {
         throw new errors.NotFoundError()
       }
-      const workPeriodPaymentRecord = _.find(workPeriod.body.hits.hits[0]._source.payments, { id })
+      let workPeriodPaymentRecord = null
+      _.forEach(resourceBooking.body.hits.hits[0]._source.workPeriods, wp => {
+        _.forEach(wp.payments, p => {
+          if (p.id === id) {
+            workPeriodPaymentRecord = p
+            return false
+          }
+        })
+        if (workPeriodPaymentRecord) {
+          return false
+        }
+      })
       return workPeriodPaymentRecord
     } catch (err) {
       if (err.httpStatus === HttpStatus.NOT_FOUND) {
@@ -90,58 +155,39 @@ getWorkPeriodPayment.schema = Joi.object().keys({
  * Create workPeriodPayment
  * @param {Object} currentUser the user who perform this operation
  * @param {Object} workPeriodPayment the workPeriodPayment to be created
- * @param {Object} options the extra options to control the function
  * @returns {Object} the created workPeriodPayment
  */
-async function createWorkPeriodPayment (currentUser, workPeriodPayment, options = { paymentProcessingSwitch: 'OFF' }) {
+async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
   // check permission
-  await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  const createdBy = await helper.getUserId(currentUser.userId)
 
-  const { projectId, userHandle, endDate, resourceBookingId } = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
-
-  // get billingAccountId from corresponding resource booking
-  const correspondingResourceBooking = await helper.ensureResourceBookingById(resourceBookingId)
-  if (!correspondingResourceBooking.billingAccountId) {
-    throw new errors.ConflictError(`id: ${resourceBookingId} "ResourceBooking" Billing account is not assigned to the resource booking`)
-  }
-  workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
-
-  const paymentChallenge = options.paymentProcessingSwitch === constants.PaymentProcessingSwitch.ON ? (await PaymentService.createPayment({
-    projectId,
-    userHandle,
-    amount: workPeriodPayment.amount,
-    name: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
-    description: `TaaS Payment - ${userHandle} - Week Ending ${moment(endDate).format('D/M/YYYY')}`,
-    billingAccountId: correspondingResourceBooking.billingAccountId
-  })) : ({ id: '00000000-0000-0000-0000-000000000000' })
-
-  workPeriodPayment.id = uuid.v4()
-  workPeriodPayment.challengeId = paymentChallenge.id
-  workPeriodPayment.createdBy = await helper.getUserId(currentUser.userId)
-
-  let created = null
-  try {
-    created = await WorkPeriodPayment.create(workPeriodPayment)
-  } catch (err) {
-    if (!_.isUndefined(err.original)) {
-      throw new errors.BadRequestError(err.original.detail)
-    } else {
-      throw err
+  if (_.isArray(workPeriodPayment)) {
+    const result = []
+    for (const wp of workPeriodPayment) {
+      try {
+        const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
+        result.push(successResult)
+      } catch (e) {
+        result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
+      }
     }
+    return result
+  } else {
+    return await _createSingleWorkPeriodPayment(workPeriodPayment, createdBy)
   }
-
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON())
-  return created.dataValues
 }
 
+const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
+  workPeriodId: Joi.string().uuid().required(),
+  days: Joi.number().integer().min(1).max(5)
+})
 createWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  workPeriodPayment: Joi.object().keys({
-    workPeriodId: Joi.string().uuid().required(),
-    amount: Joi.number().greater(0).allow(null),
-    status: Joi.workPeriodPaymentStatus().default('completed')
-  }).required(),
-  options: Joi.object()
+  workPeriodPayment: Joi.alternatives().try(
+    singleCreateWorkPeriodPaymentSchema.required(),
+    Joi.array().min(1).items(singleCreateWorkPeriodPaymentSchema).required()
+  ).required()
 }).required()
 
 /**
@@ -153,28 +199,27 @@ createWorkPeriodPayment.schema = Joi.object().keys({
  */
 async function updateWorkPeriodPayment (currentUser, id, data) {
   // check permission
-  await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
-  if (data.workPeriodId) {
-    // ensure work period exists
-    await helper.ensureWorkPeriodById(data.workPeriodId)
-  }
   const workPeriodPayment = await WorkPeriodPayment.findById(id)
   const oldValue = workPeriodPayment.toJSON()
-
-  data.updatedBy = await helper.getUserId(currentUser.userId)
-  let updated = null
-  try {
-    updated = await workPeriodPayment.update(data)
-  } catch (err) {
-    if (!_.isUndefined(err.original)) {
-      throw new errors.BadRequestError(err.original.detail)
-    } else {
-      throw err
+  if (data.status === 'cancelled' && oldValue.status === 'in-progress') {
+    throw new errors.BadRequestError('You cannot cancel a WorkPeriodPayment which is in-progress')
+  }
+  if (data.status === 'scheduled') {
+    if (oldValue.status !== 'failed') {
+      throw new errors.BadRequestError(`You cannot schedule a WorkPeriodPayment which is ${oldValue.status}`)
+    }
+    const workPeriod = WorkPeriod.findById(workPeriodPayment.workPeriodId)
+    // we con't check if paymentStatus is 'completed'
+    // because paymentStatus can be in-progress when daysWorked = daysPaid
+    if (workPeriod.daysWorked === workPeriod.daysPaid) {
+      throw new errors.BadRequestError('There is no available daysWorked to schedule a payment')
     }
   }
-
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+  const updated = await workPeriodPayment.update(data)
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
   return updated.dataValues
 }
 
@@ -193,31 +238,8 @@ partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    workPeriodId: Joi.string().uuid(),
-    amount: Joi.number().greater(0).allow(null),
-    status: Joi.workPeriodPaymentStatus()
-  }).required()
-}).required()
-
-/**
- * Fully update workPeriodPayment by id
- * @param {Object} currentUser the user who perform this operation
- * @param {String} id the workPeriodPayment id
- * @param {Object} data the data to be updated
- * @returns {Object} the updated workPeriodPayment
- */
-async function fullyUpdateWorkPeriodPayment (currentUser, id, data) {
-  return updateWorkPeriodPayment(currentUser, id, data)
-}
-
-fullyUpdateWorkPeriodPayment.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.string().uuid().required(),
-  data: Joi.object().keys({
-    workPeriodId: Joi.string().uuid().required(),
-    amount: Joi.number().greater(0).allow(null),
-    status: Joi.workPeriodPaymentStatus()
-  }).required()
+    status: Joi.workPeriodPaymentUpdateStatus()
+  }).min(1).required()
 }).required()
 
 /**
@@ -229,7 +251,7 @@ fullyUpdateWorkPeriodPayment.schema = Joi.object().keys({
  */
 async function searchWorkPeriodPayments (currentUser, criteria, options = { returnAll: false }) {
   // check user permission
-  await _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
   if ((typeof criteria.workPeriodIds) === 'string') {
     criteria.workPeriodIds = criteria.workPeriodIds.trim().split(',').map(workPeriodIdRaw => {
@@ -244,12 +266,12 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
   const perPage = criteria.perPage
   try {
     const esQuery = {
-      index: config.get('esConfig.ES_INDEX_WORK_PERIOD'),
-      _source: 'payments',
+      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
+      _source: 'workPeriods.payments',
       body: {
         query: {
           nested: {
-            path: 'payments',
+            path: 'workPeriods.payments',
             query: { bool: { must: [] } }
           }
         },
@@ -263,7 +285,7 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     _.each(_.pick(criteria, ['status', 'workPeriodId']), (value, key) => {
       esQuery.body.query.nested.query.bool.must.push({
         term: {
-          [`payments.${key}`]: {
+          [`workPeriods.payments.${key}`]: {
             value
           }
         }
@@ -272,14 +294,20 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     if (criteria.workPeriodIds) {
       esQuery.body.query.nested.query.bool.filter = [{
         terms: {
-          'payments.workPeriodId': criteria.workPeriodIds
+          'workPeriods.payments.workPeriodId': criteria.workPeriodIds
         }
       }]
     }
     logger.debug({ component: 'WorkPeriodPaymentService', context: 'searchWorkPeriodPayment', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
-    let payments = _.reduce(body.hits.hits, (acc, workPeriod) => _.concat(acc, workPeriod._source.payments), [])
+    const workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
+    let payments = _.reduce(workPeriods, (acc, workPeriod) => _.concat(acc, workPeriod.payments), [])
+    if (criteria.workPeriodId) {
+      payments = _.filter(payments, { workPeriodId: criteria.workPeriodId })
+    } else if (criteria.workPeriodIds) {
+      payments = _.filter(payments, p => _.includes(criteria.workPeriodIds, p.workPeriodId))
+    }
     if (criteria.status) {
       payments = _.filter(payments, { status: criteria.status })
     }
@@ -315,14 +343,13 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
   })
+  const total = await WorkPeriodPayment.count({ where: filter })
   return {
     fromDb: true,
-    total: workPeriodPayments.length,
+    total,
     page,
     perPage,
-    result: _.map(workPeriodPayments, workPeriodPayment => {
-      return workPeriodPayment.dataValues
-    })
+    result: workPeriodPayments
   }
 }
 
@@ -343,10 +370,72 @@ searchWorkPeriodPayments.schema = Joi.object().keys({
   options: Joi.object()
 }).required()
 
+/**
+ * Create all query workPeriodPayments
+ * @param {Object} currentUser the user who perform this operation.
+ * @param {Object} criteria the query criteria
+ * @returns {Object} the process result
+ */
+async function createQueryWorkPeriodPayments (currentUser, criteria) {
+  // check permission
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  const createdBy = await helper.getUserId(currentUser.userId)
+  const query = criteria.query
+  if ((typeof query['workPeriods.paymentStatus']) === 'string') {
+    query['workPeriods.paymentStatus'] = query['workPeriods.paymentStatus'].trim().split(',').map(ps => Joi.attempt({ paymentStatus: ps.trim() }, Joi.object().keys({ paymentStatus: Joi.paymentStatus() })).paymentStatus)
+  }
+  const fields = _.join(_.uniq(_.concat(
+    ['id', 'billingAccountId', 'memberRate', 'customerRate', 'workPeriods.id', 'workPeriods.resourceBookingId', 'workPeriods.daysWorked', 'workPeriods.daysPaid'],
+    _.map(_.keys(query), k => k === 'projectIds' ? 'projectId' : k))
+  ), ',')
+  const searchResult = await searchResourceBookings(currentUser, _.extend({ fields, page: 1 }, query), { returnAll: true })
+
+  const wpArray = _.flatMap(searchResult.result, 'workPeriods')
+  const resourceBookingMap = _.fromPairs(_.map(searchResult.result, rb => [rb.id, rb]))
+  const result = { total: wpArray.length, query, totalSuccess: 0, totalError: 0 }
+
+  for (const wp of wpArray) {
+    try {
+      await _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking({ workPeriodId: wp.id }, createdBy, wp, resourceBookingMap[wp.resourceBookingId])
+      result.totalSuccess++
+    } catch (err) {
+      logger.logFullError(err, { component: 'WorkPeriodPaymentService', context: 'createQueryWorkPeriodPayments' })
+      result.totalError++
+    }
+  }
+  return result
+}
+
+createQueryWorkPeriodPayments.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  criteria: Joi.object().keys({
+    query: Joi.object().keys({
+      status: Joi.resourceBookingStatus(),
+      startDate: Joi.date().format('YYYY-MM-DD'),
+      endDate: Joi.date().format('YYYY-MM-DD'),
+      rateType: Joi.rateType(),
+      jobId: Joi.string().uuid(),
+      userId: Joi.string().uuid(),
+      projectId: Joi.number().integer(),
+      projectIds: Joi.alternatives(
+        Joi.string(),
+        Joi.array().items(Joi.number().integer())
+      ),
+      'workPeriods.paymentStatus': Joi.alternatives(
+        Joi.string(),
+        Joi.array().items(Joi.string().valid(Joi.paymentStatus()))
+      ),
+      'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
+      'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
+      'workPeriods.userHandle': Joi.string()
+    }).required()
+  }).required()
+}).required()
+
 module.exports = {
   getWorkPeriodPayment,
   createWorkPeriodPayment,
+  createQueryWorkPeriodPayments,
   partiallyUpdateWorkPeriodPayment,
-  fullyUpdateWorkPeriodPayment,
   searchWorkPeriodPayments
 }

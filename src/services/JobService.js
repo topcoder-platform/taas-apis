@@ -75,6 +75,27 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Validate if all roles exist.
+ *
+ * @param {Array} roles the list of roles
+ * @returns {undefined}
+ */
+async function _validateRoles (roles) {
+  const foundRolesObj = await models.Role.findAll({
+    where: {
+      id: roles
+    },
+    attributes: ['id'],
+    raw: true
+  })
+  const foundRoles = _.map(foundRolesObj, 'id')
+  const nonexistentRoles = _.difference(roles, foundRoles)
+  if (nonexistentRoles.length > 0) {
+    throw new errors.BadRequestError(`Invalid roles: [${nonexistentRoles}]`)
+  }
+}
+
+/**
  * Check user permission for getting job.
  *
  * @param {Object} currentUser the user who perform this operation.
@@ -154,6 +175,10 @@ async function createJob (currentUser, job) {
   }
 
   await _validateSkills(job.skills)
+  if (job.roleIds) {
+    job.roleIds = _.uniq(job.roleIds)
+    await _validateRoles(job.roleIds)
+  }
   job.id = uuid()
   job.createdBy = await helper.getUserId(currentUser.userId)
 
@@ -162,24 +187,35 @@ async function createJob (currentUser, job) {
   return created.toJSON()
 }
 
-createJob.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  job: Joi.object().keys({
-    status: Joi.jobStatus().default('sourcing'),
-    projectId: Joi.number().integer().required(),
-    externalId: Joi.string().allow(null),
-    description: Joi.stringAllowEmpty().allow(null),
-    title: Joi.title().required(),
-    startDate: Joi.date().allow(null),
-    duration: Joi.number().integer().min(1).allow(null),
-    numPositions: Joi.number().integer().min(1).required(),
-    resourceType: Joi.stringAllowEmpty().allow(null),
-    rateType: Joi.rateType().allow(null),
-    workload: Joi.workload().allow(null),
-    skills: Joi.array().items(Joi.string().uuid()).required(),
-    isApplicationPageActive: Joi.boolean()
-  }).required()
-}).required()
+createJob.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    job: Joi.object()
+      .keys({
+        status: Joi.jobStatus().default('sourcing'),
+        projectId: Joi.number().integer().required(),
+        externalId: Joi.string().allow(null),
+        description: Joi.stringAllowEmpty().allow(null),
+        title: Joi.title().required(),
+        startDate: Joi.date().allow(null),
+        duration: Joi.number().integer().min(1).allow(null),
+        numPositions: Joi.number().integer().min(1).required(),
+        resourceType: Joi.stringAllowEmpty().allow(null),
+        rateType: Joi.rateType().allow(null),
+        workload: Joi.workload().allow(null),
+        skills: Joi.array().items(Joi.string().uuid()).required(),
+        isApplicationPageActive: Joi.boolean(),
+        minSalary: Joi.number().integer().allow(null),
+        maxSalary: Joi.number().integer().allow(null),
+        hoursPerWeek: Joi.number().integer().allow(null),
+        jobLocation: Joi.string().allow(null).allow(''),
+        jobTimezone: Joi.string().allow(null).allow(''),
+        currency: Joi.string().allow(null).allow(''),
+        roleIds: Joi.array().items(Joi.string().uuid().required())
+      })
+      .required()
+  })
+  .required()
 
 /**
  * Update job. Normal user can only update the job he/she created.
@@ -191,6 +227,10 @@ createJob.schema = Joi.object().keys({
 async function updateJob (currentUser, id, data) {
   if (data.skills) {
     await _validateSkills(data.skills)
+  }
+  if (data.roleIds) {
+    data.roleIds = _.uniq(data.roleIds)
+    await _validateRoles(data.roleIds)
   }
   let job = await Job.findById(id)
   const oldValue = job.toJSON()
@@ -245,7 +285,14 @@ partiallyUpdateJob.schema = Joi.object().keys({
     rateType: Joi.rateType().allow(null),
     workload: Joi.workload().allow(null),
     skills: Joi.array().items(Joi.string().uuid()),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer(),
+    hoursPerWeek: Joi.number().integer(),
+    jobLocation: Joi.string(),
+    jobTimezone: Joi.string(),
+    currency: Joi.string(),
+    roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
   }).required()
 }).required()
 
@@ -276,7 +323,14 @@ fullyUpdateJob.schema = Joi.object().keys({
     workload: Joi.workload().allow(null).default(null),
     skills: Joi.array().items(Joi.string().uuid()).required(),
     status: Joi.jobStatus().default('sourcing'),
-    isApplicationPageActive: Joi.boolean()
+    isApplicationPageActive: Joi.boolean(),
+    minSalary: Joi.number().integer().allow(null),
+    maxSalary: Joi.number().integer().allow(null),
+    hoursPerWeek: Joi.number().integer().allow(null),
+    jobLocation: Joi.string().allow(null),
+    jobTimezone: Joi.string().allow(null),
+    currency: Joi.string().allow(null),
+    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
   }).required()
 }).required()
 
@@ -344,7 +398,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       body: {
         query: {
           bool: {
-            must: []
+            must: [],
+            filter: []
           }
         },
         from: (page - 1) * perPage,
@@ -360,6 +415,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'startDate',
       'resourceType',
       'skill',
+      'role',
       'rateType',
       'workload',
       'title',
@@ -374,10 +430,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         }
-      } else if (key === 'skill') {
+      } else if (key === 'skill' || key === 'role') {
         must = {
           terms: {
-            skills: [value]
+            [`${key}s`]: [value]
           }
         }
       } else {
@@ -393,11 +449,19 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     })
     // If criteria contains projectIds, filter projectId with this value
     if (criteria.projectIds) {
-      esQuery.body.query.bool.filter = [{
+      esQuery.body.query.bool.filter.push({
         terms: {
           projectId: criteria.projectIds
         }
-      }]
+      })
+    }
+    // if criteria contains jobIds, filter jobIds with this value
+    if (criteria.jobIds && criteria.jobIds.length > 0) {
+      esQuery.body.query.bool.filter.push({
+        terms: {
+          _id: criteria.jobIds
+        }
+      })
     }
     logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
 
@@ -422,7 +486,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
-  const filter = {}
+  const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, [
     'projectId',
     'externalId',
@@ -444,10 +508,18 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.title}%`
     }
   }
-  if (criteria.skills) {
+  if (criteria.skill) {
     filter.skills = {
-      [Op.contains]: [criteria.skills]
+      [Op.contains]: [criteria.skill]
     }
+  }
+  if (criteria.role) {
+    filter.roles = {
+      [Op.contains]: [criteria.role]
+    }
+  }
+  if (criteria.jobIds && criteria.jobIds.length > 0) {
+    filter[Op.and].push({ id: criteria.jobIds })
   }
   const jobs = await Job.findAll({
     where: filter,
@@ -460,9 +532,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       required: false
     }]
   })
+  const total = await Job.count({ where: filter })
   return {
     fromDb: true,
-    total: jobs.length,
+    total,
     page,
     perPage,
     result: _.map(jobs, job => job.dataValues)
@@ -483,10 +556,12 @@ searchJobs.schema = Joi.object().keys({
     startDate: Joi.date(),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
+    role: Joi.string().uuid(),
     rateType: Joi.rateType(),
     workload: Joi.workload(),
     status: Joi.jobStatus(),
-    projectIds: Joi.array().items(Joi.number().integer()).single()
+    projectIds: Joi.array().items(Joi.number().integer()).single(),
+    jobIds: Joi.array().items(Joi.string().uuid())
   }).required(),
   options: Joi.object()
 }).required()

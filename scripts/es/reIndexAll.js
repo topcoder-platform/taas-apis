@@ -2,7 +2,7 @@
  * Reindex all data in Elasticsearch using data from database
  */
 const config = require('config')
-const { Interview, WorkPeriodPayment } = require('../../src/models')
+const { Interview, WorkPeriod, WorkPeriodPayment } = require('../../src/models')
 const logger = require('../../src/common/logger')
 const helper = require('../../src/common/helper')
 
@@ -16,11 +16,15 @@ const jobCandidateModelOpts = {
   }]
 }
 
-const workPeriodModelOpts = {
-  modelName: 'JobCandidate',
+const resourceBookingModelOpts = {
+  modelName: 'ResourceBooking',
   include: [{
-    model: WorkPeriodPayment,
-    as: 'payments'
+    model: WorkPeriod,
+    as: 'workPeriods',
+    include: [{
+      model: WorkPeriodPayment,
+      as: 'payments'
+    }]
   }]
 }
 
@@ -29,8 +33,8 @@ async function indexAll () {
     try {
       await helper.indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
       await helper.indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
-      await helper.indexBulkDataToES('ResourceBooking', config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
-      await helper.indexBulkDataToES(workPeriodModelOpts, config.get('esConfig.ES_INDEX_WORK_PERIOD'), logger)
+      await helper.indexBulkDataToES(resourceBookingModelOpts, config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
+      await helper.indexBulkDataToES('Role', config.get('esConfig.ES_INDEX_ROLE'), logger)
       process.exit(0)
     } catch (err) {
       logger.logFullError(err, { component: 'indexAll' })

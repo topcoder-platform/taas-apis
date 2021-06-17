@@ -40,7 +40,7 @@ module.exports = {
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
   // the api to find topcoder members
-  TOPCODER_MEMBERS_API: process.env.TOPCODER_MEMBERS_API || 'https://api.topcoder-dev.com/v3/members',
+  TOPCODER_MEMBERS_API: process.env.TOPCODER_MEMBERS_API || 'https://api.topcoder-dev.com/v5/members',
   // rate limit of requests to user api
   MAX_PARALLEL_REQUEST_TOPCODER_USERS_API: process.env.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API || 100,
 
@@ -76,8 +76,8 @@ module.exports = {
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
     // the resource booking index
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
-    // the work period index
-    ES_INDEX_WORK_PERIOD: process.env.ES_INDEX_WORK_PERIOD || 'work_period',
+    // the role index
+    ES_INDEX_ROLE: process.env.ES_INDEX_ROLE || 'role',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
@@ -133,6 +133,15 @@ module.exports = {
   TAAS_INTERVIEW_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_UPDATE_TOPIC || 'taas.interview.update',
   // the interview bulk update Kafka message topic
   TAAS_INTERVIEW_BULK_UPDATE_TOPIC: process.env.TAAS_INTERVIEW_BULK_UPDATE_TOPIC || 'taas.interview.bulkUpdate',
+  // topics for role service
+  // the create role entity Kafka message topic
+  TAAS_ROLE_CREATE_TOPIC: process.env.TAAS_ROLE_CREATE_TOPIC || 'taas.role.requested',
+  // the update role entity Kafka message topic
+  TAAS_ROLE_UPDATE_TOPIC: process.env.TAAS_ROLE_UPDATE_TOPIC || 'taas.role.update',
+  // the delete role entity Kafka message topic
+  TAAS_ROLE_DELETE_TOPIC: process.env.TAAS_ROLE_DELETE_TOPIC || 'taas.role.delete',
+  // special kafka topics
+  TAAS_ACTION_RETRY_TOPIC: process.env.TAAS_ACTION_RETRY_TOPIC || 'taas.action.retry',
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
@@ -163,6 +172,45 @@ module.exports = {
   TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
   DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
   DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
-
-  PAYMENT_PROCESSING_SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF'
+  // the minimum matching rate when searching roles by skills
+  ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.70,
+  // member groups representing Wipro or TopCoder employee
+  INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
+  // Topcoder skills cache time in minutes
+  TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60,
+  // payment scheduler config
+  PAYMENT_PROCESSING: {
+    // switch off actual API calls in Payment Scheduler
+    SWITCH: process.env.PAYMENT_PROCESSING_SWITCH || 'OFF',
+    // the payment scheduler cron config
+    CRON: process.env.PAYMENT_PROCESSING_CRON || '0 */5 * * * *',
+    // the number of records processed by one time
+    BATCH_SIZE: parseInt(process.env.PAYMENT_PROCESSING_BATCH_SIZE || 50),
+    // in-progress expired to determine whether a record has been processed abnormally, moment duration format
+    IN_PROGRESS_EXPIRED: process.env.IN_PROGRESS_EXPIRED || 'PT1H',
+    // the number of max retry config
+    MAX_RETRY_COUNT: parseInt(process.env.PAYMENT_PROCESSING_MAX_RETRY_COUNT || 10),
+    // the time of retry base delay, unit: ms
+    RETRY_BASE_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_BASE_DELAY || 100),
+    // the time of retry max delay, unit: ms
+    RETRY_MAX_DELAY: parseInt(process.env.PAYMENT_PROCESSING_RETRY_MAX_DELAY || 10000),
+    // the max time of one request, unit: ms
+    PER_REQUEST_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_REQUEST_MAX_TIME || 30000),
+    // the max time of one payment record, unit: ms
+    PER_PAYMENT_MAX_TIME: parseInt(process.env.PAYMENT_PROCESSING_PER_PAYMENT_MAX_TIME || 60000),
+    // the max records of payment of a minute
+    PER_MINUTE_PAYMENT_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_PAYMENT_MAX_COUNT || 12),
+    // the max requests of challenge of a minute
+    PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 60),
+    // the max requests of resource of a minute
+    PER_MINUTE_RESOURCE_REQUEST_MAX_COUNT: parseInt(process.env.PAYMENT_PROCESSING_PER_MINUTE_CHALLENGE_REQUEST_MAX_COUNT || 20),
+    // the default step fix delay, unit: ms
+    FIX_DELAY_STEP: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of create challenge, unit: ms
+    FIX_DELAY_STEP_CREATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_CREATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of assign member, unit: ms
+    FIX_DELAY_STEP_ASSIGN_MEMBER: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ASSIGN_MEMBER || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
+    // the fix delay after step of activate challenge, unit: ms
+    FIX_DELAY_STEP_ACTIVATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ACTIVATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
+  }
 }

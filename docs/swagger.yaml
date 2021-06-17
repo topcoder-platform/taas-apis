@@ -18,6 +18,8 @@ tags:
   - name: ResourceBookings
   - name: Teams
   - name: WorkPeriods
+  - name: WorkPeriodPayments
+  - name: Roles
 paths:
   /jobs:
     post:
@@ -172,7 +174,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["hourly", "daily", "weekly", "monthly"]
+            enum: ["hourly", "daily", "weekly", "monthly", "annual"]
           description: The rate type.
         - in: query
           name: status
@@ -181,6 +183,11 @@ paths:
             type: string
             enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
           description: The rate type.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobSearchBody"
       responses:
         "200":
           description: OK
@@ -603,6 +610,12 @@ paths:
                 "cancelled",
                 "interview",
                 "topcoder-rejected",
+                "applied",
+                "rejected-pre-screen",
+                "skills-test",
+                "phone-screen",
+                "job-closed",
+                "offered",
               ]
           description: The job candidate status.
         - in: query
@@ -1386,6 +1399,12 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: fields
+          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          required: false
+          schema:
+            type: string
+        - in: query
           name: page
           required: false
           schema:
@@ -1414,6 +1433,11 @@ paths:
                 "rateType",
                 "customerRate",
                 "memberRate",
+                "workPeriods.userHandle",
+                "workPeriods.daysWorked",
+                "workPeriods.customerRate",
+                "workPeriods.memberRate",
+                "workPeriods.paymentStatus",
               ]
           description: The sort by column.
         - in: query
@@ -1477,6 +1501,42 @@ paths:
           schema:
             type: string
           description: comma separated project ids.
+        - in: query
+          name: workPeriods.paymentStatus
+          required: false
+          schema:
+            oneOf:
+              - type: array
+                items:
+                  type: string
+                  enum:
+                    ["pending", "partially-completed", "completed", "cancelled"]
+              - type: string
+                enum:
+                  ["pending", "partially-completed", "completed", "cancelled"]
+          description: comma separated payment status.
+        - in: query
+          name: workPeriods.startDate
+          required: false
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period start date.
+        - in: query
+          name: workPeriods.endDate
+          required: false
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period end date.
+        - in: query
+          name: workPeriods.userHandle
+          required: false
+          schema:
+            type: string
+          description: The user handle.
 
       responses:
         "200":
@@ -1565,6 +1625,12 @@ paths:
           required: false
           schema:
             type: boolean
+        - in: query
+          name: fields
+          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -1773,57 +1839,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /work-periods:
-    post:
-      tags:
-        - WorkPeriods
-      description: |
-        Create Work Period.
-
-        **Authorization** Topcoder token with write Work period scope is allowed
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodRequestBody"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkPeriod"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     get:
       tags:
         - WorkPeriods
@@ -1897,9 +1912,30 @@ paths:
           name: paymentStatus
           required: false
           schema:
-            type: string
-            enum: ["pending", "partially-completed", "completed", "cancelled"]
-          description: The payment status.
+            oneOf:
+              - type: array
+                items:
+                  type: string
+                  enum:
+                    [
+                      "pending",
+                      "partially-completed",
+                      "completed",
+                      "in-progress",
+                      "failed",
+                      "no-days",
+                    ]
+              - type: string
+                enum:
+                  [
+                    "pending",
+                    "partially-completed",
+                    "completed",
+                    "in-progress",
+                    "failed",
+                    "no-days",
+                  ]
+          description: comma separated payment status.
         - in: query
           name: startDate
           required: false
@@ -2052,115 +2088,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    delete:
-      tags:
-        - WorkPeriods
-      description: |
-        Delete the work period.
-
-        **Authorization** Topcoder token with delete work period scope is allowed
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The id of work period.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "204":
-          description: OK
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags:
-        - WorkPeriods
-      description: |
-        Update the work period.
-
-        **Authorization** Topcoder token with update work period scope is allowed
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The id of work period.
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodRequestBody"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkPeriod"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     patch:
       tags:
         - WorkPeriods
@@ -2214,6 +2141,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal Server Error
           content:
@@ -2234,14 +2167,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
+              oneOf:
+                - $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WorkPeriodPayment"
+                oneOf:
+                  - $ref: "#/components/schemas/WorkPeriodPayment"
+                  - type: array
+                    items:
+                      oneOf:
+                        - $ref: "#/components/schemas/WorkPeriodPayment"
+                        - $ref: "#/components/schemas/WorkPeriodPaymentCreatedError"
         "400":
           description: Bad request
           content:
@@ -2262,6 +2205,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
           content:
             application/json:
               schema:
@@ -2334,7 +2283,8 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["completed", "cancelled"]
+            enum:
+              ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: The payment status.
       responses:
         "200":
@@ -2398,38 +2348,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /work-period-payments/{id}:
-    get:
+  /work-period-payments/query:
+    post:
       tags:
         - WorkPeriodPayments
       description: |
-        Get work period payment by id.
+        Create Multiple Work Period Payments for all the pages at once.
 
-        **Authorization** Topcoder token with read work period payment scope is allowed
+        **Authorization** Topcoder token with write Work period payment scope is allowed
       security:
         - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          description: The work period payment id.
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - in: query
-          name: fromDb
-          description: get data from db or not.
-          required: false
-          schema:
-            type: boolean
-            default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateRequestBody"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WorkPeriodPayment"
+                $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateResult"
         "400":
           description: Bad request
           content:
@@ -2460,28 +2400,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    put:
+
+  /work-period-payments/{id}:
+    get:
       tags:
         - WorkPeriodPayments
       description: |
-        Update the work period payment.
+        Get work period payment by id.
 
-        **Authorization** Topcoder token with update work period payment scope is allowed
+        **Authorization** Topcoder token with read work period payment scope is allowed
       security:
         - bearerAuth: []
       parameters:
         - in: path
           name: id
-          description: The id of work period payment.
+          description: The work period payment id.
           required: true
           schema:
             type: string
             format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WorkPeriodPaymentRequestBody"
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: OK
@@ -3113,6 +3057,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /taas-teams/getSkillsByJobDescription:
+    post:
+      tags:
+        - Teams
+      description: |
+        Get skill list by Job Description
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamJobDescriptionRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SkillItem" }
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams/email:
     post:
       tags:
@@ -3199,6 +3183,364 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /taas-teams/sendRoleSearchRequest:
+    post:
+      tags:
+        - Teams
+      description: |
+        Perform a role search operaion
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-roleSearchRequests scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleSearchRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleSearchResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas-teams/submitTeamRequest:
+    post:
+      tags:
+        - Teams
+      description: |
+        Creates new Team in persistence and new project that will source this team in Connect.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitTeamRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitTeamResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas-roles:
+    post:
+      tags:
+        - Roles
+      description: |
+        Create Role.
+
+        **Authorization** Topcoder m2m token with create scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - Roles
+      description: |
+        Search roles.
+
+        **Authorization** Topcoder m2m token with read scope is allowed. Topcoder user token with any role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skillsList
+          required: false
+          schema:
+            type: string
+          description: comma separated skill names. case-insensitive.
+        - in: query
+          name: keyword
+          required: false
+          schema:
+            type: string
+          description: role name. case-insensitive. partial match allowed
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas-roles/{id}:
+    get:
+      tags:
+        - Roles
+      description: |
+        Get role by id.
+
+        **Authorization** Topcoder m2m token with read scope is allowed. Topcoder user token with any role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The role id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: fromDb
+          description: get data from db or not.
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - Roles
+      description: |
+        Partial Update role.
+
+        **Authorization** Topcoder m2m token with update scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolePatchRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - Roles
+      description: |
+        Delete the role.
+
+        **Authorization** Topcoder m2m token with delete scope is allowed. Topcoder user token with administrator or bookingmanager role is allowed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The id of role.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /health:
     get:
       tags:
@@ -3225,6 +3567,18 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    SkillItem:
+      properties:
+        tag:
+          type: string
+          example: "Java"
+        type:
+          type: string
+          example: "taas_skill"
+        source:
+          type: string
+          example: "taas-jd-parser"
+
     Job:
       required:
         - id
@@ -3233,6 +3587,12 @@ components:
         - numPositions
         - skills
         - status
+        - minSalary
+        - maxSalary
+        - hoursPerWeek
+        - jobLocation
+        - jobTimezone
+        - currency
         - createdAt
         - createdBy
       properties:
@@ -3289,6 +3649,13 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         status:
           type: string
           enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
@@ -3301,6 +3668,30 @@ components:
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
         createdAt:
           type: string
           format: date-time
@@ -3317,12 +3708,27 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobSearchBody:
+      properties:
+        jobIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of job ids"
+
     JobRequestBody:
       required:
         - projectId
         - title
         - numPositions
         - skills
+        - minSalary
+        - maxSalary
+        - hoursPerWeek
+        - jobLocation
+        - jobTimezone
+        - currency
       properties:
         projectId:
           type: integer
@@ -3378,9 +3784,40 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
     JobCandidate:
       required:
         - id
@@ -3424,6 +3861,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
         createdAt:
           type: string
           format: date-time
@@ -3480,6 +3921,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
         interviews:
           type: array
           description: "Interviews associated to this job candidate."
@@ -3517,7 +3962,18 @@ components:
           description: "The user id."
         status:
           type: string
-          enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected"]
+          enum:
+            [
+              "open",
+              "placed",
+              "selected",
+              "client rejected - screening",
+              "client rejected - interview",
+              "rejected - other",
+              "cancelled",
+              "interview",
+              "topcoder-rejected",
+            ]
           description: "The job candidate status."
           default: open
         externalId:
@@ -3528,6 +3984,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
     JobCandidatePatchRequestBody:
       properties:
         status:
@@ -3552,6 +4012,10 @@ components:
           type: string
           example: "http://example.com"
           description: "The resume link"
+        remark:
+          type: string
+          example: "excellent"
+          description: "The remark of candidate"
     Interview:
       required:
         - id
@@ -3632,7 +4096,15 @@ components:
           description: "Interview end time."
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           description: "The interview status."
         rescheduleUrl:
           type: string
@@ -3678,7 +4150,15 @@ components:
             format: email
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           default: "Scheduling"
           description: "The interview status."
     UpdateInterviewRequestBody:
@@ -3737,7 +4217,15 @@ components:
           description: "Interview end time."
         status:
           type: string
-          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled"]
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
           description: "The interview status."
         rescheduleUrl:
           type: string
@@ -3784,9 +4272,40 @@ components:
             type: string
             format: uuid
             description: "The skill id."
+        roleIds:
+          type: array
+          description: "The roles."
+          items:
+            type: string
+            format: uuid
+            description: "The role id."
         isApplicationPageActive:
           type: boolean
           default: false
+        minSalary:
+          type: integer
+          example: 1000
+          description: "the amount of minimum salary"
+        maxSalary:
+          type: integer
+          example: 3000
+          description: "the amount of maximum salary"
+        hoursPerWeek:
+          type: integer
+          example: 20
+          description: "the amount working hours per week"
+        jobLocation:
+          type: string
+          example: "Any location"
+          description: "the location of job"
+        jobTimezone:
+          type: string
+          example: "GMT"
+          description: "the timezone of job"
+        currency:
+          type: string
+          example: "USD"
+          description: "the currency of job"
     ResourceBooking:
       required:
         - id
@@ -3845,7 +4364,12 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
+        workPeriods:
+          type: array
+          description: "The work periods related with resource booking"
+          items:
+            $ref: "#/components/schemas/WorkPeriod"
         createdAt:
           type: string
           format: date-time
@@ -3913,7 +4437,7 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
     ResourceBookingPatchRequestBody:
       properties:
         status:
@@ -3946,7 +4470,7 @@ components:
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
     WorkPeriod:
       required:
         - id
@@ -3955,6 +4479,9 @@ components:
         - projectId
         - startDate
         - endDate
+        - daysWorked
+        - daysPaid
+        - paymentTotal
         - paymentStatus
         - createdAt
         - createdBy
@@ -3987,21 +4514,33 @@ components:
           description: "The end date of work period. Should be always Saturday."
         daysWorked:
           type: integer
+          minimum: 0
+          maximum: 5
           example: 2
           description: "The count of the days worked for that work period."
-        memberRate:
+        daysPaid:
+          type: integer
+          minimum: 0
+          maximum: 5
+          format: integer
+          example: 1
+          description: "The count of paid days for that work period"
+        paymentTotal:
           type: integer
           format: float
           example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
+          description: "The total paid amount"
         paymentStatus:
           type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
+          enum:
+            [
+              "pending",
+              "partially-completed",
+              "completed",
+              "in-progress",
+              "failed",
+              "no-days",
+            ]
           description: "The payment status."
         payments:
           type: array
@@ -4024,86 +4563,21 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the work period last time.(Will get the user info from the token)"
-    WorkPeriodRequestBody:
-      required:
-        - resourceBookingId
-        - startDate
-        - endDate
-        - paymentStatus
-      properties:
-        resourceBookingId:
-          type: string
-          format: uuid
-          description: "The resource booking id."
-        startDate:
-          type: string
-          format: date
-          example: "2021-03-07"
-          description: "The start date of work period. Should be always Sunday."
-        endDate:
-          type: string
-          format: date
-          example: "2021-03-13"
-          description: "The end date of work period. Should be always Saturday."
-        daysWorked:
-          type: integer
-          example: 2
-          description: "The count of the days worked for that work period."
-        memberRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
-        paymentStatus:
-          type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
-          description: "The payment status."
     WorkPeriodPatchRequestBody:
       properties:
-        resourceBookingId:
-          type: string
-          format: uuid
-          description: "The resource booking id."
-        startDate:
-          type: string
-          format: date
-          example: "2021-03-07"
-          description: "The start date of work period. Should be always Sunday."
-        endDate:
-          type: string
-          format: date
-          example: "2021-03-13"
-          description: "The end date of work period. Should be always Saturday."
         daysWorked:
           type: integer
           example: 2
           description: "The count of the days worked for that work period."
-        memberRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The member rate."
-        customerRate:
-          type: integer
-          format: float
-          example: 13.13
-          description: "The customer rate."
-        paymentStatus:
-          type: string
-          enum: ["pending", "partially-completed", "completed", "cancelled"]
-          description: "The payment status."
     WorkPeriodPayment:
       required:
         - id
         - workPeriodId
-        - challengeId
+        - memberRate
+        - days
         - amount
         - status
+        - billingAccountId
         - createdAt
         - createdBy
       properties:
@@ -4119,18 +4593,48 @@ components:
           type: string
           format: uuid
           description: "The challenge id."
+        memberRate:
+          type: number
+          format: float
+          example: 20.5
+          description: "The member rate"
+        customerRate:
+          type: number
+          format: float
+          example: 15.5
+          description: "The customer rate"
+        days:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 3
+          description: "The workdays to pay"
         amount:
           type: integer
           example: 2
           description: "The amount to be paid."
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["completed", "scheduled", "in-progress", "failed", "cancelled"]
           description: "The payment status."
+        statusDetails:
+          type: object
+          properties:
+            errorMessage:
+              type: string
+            errorCode:
+              type: integer
+            retry:
+              type: integer
+            step:
+              type: string
+            challengeId:
+              type: string
+              format: uuid
         billingAccountId:
           type: integer
           example: 80000071
-          description: 'the billing account id for payments'
+          description: "the billing account id for payments"
         createdAt:
           type: string
           format: date-time
@@ -4147,7 +4651,7 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the work period payment last time.(Will get the user info from the token)"
-    WorkPeriodPaymentRequestBody:
+    WorkPeriodPaymentCreatedError:
       required:
         - workPeriodId
       properties:
@@ -4159,23 +4663,100 @@ components:
           type: integer
           example: 2
           description: "The amount to be paid."
-        status:
-          type: string
-          enum: ["completed", "cancelled"]
-          description: "The payment status."
-    WorkPeriodPaymentPatchRequestBody:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: "The error message"
+            code:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
+    WorkPeriodPaymentCreateRequestBody:
+      required:
+        - workPeriodId
       properties:
         workPeriodId:
           type: string
           format: uuid
           description: "The work period id."
-        amount:
+        days:
           type: integer
+          minimum: 1
+          maximum: 5
           example: 2
-          description: "The amount to be paid."
+          description: "The workDays to be paid."
+    WorkPeriodPaymentQueryCreateRequestBody:
+      properties:
         status:
           type: string
-          enum: ["completed", "cancelled"]
+          enum: ["placed", "in-progress", "completed"]
+          description: The resource booking status.
+        startDate:
+          type: string
+          format: date
+          description: The resource booking start date.
+        endDate:
+          type: string
+          format: date
+          description: The resource booking end date.
+        rateType:
+          type: string
+          enum: ["hourly", "daily", "weekly", "monthly"]
+          description: The resource booking rate type.
+        jobId:
+          type: string
+          format: uuid
+          description: The job id.
+        userId:
+          type: string
+          format: uuid
+          description: The user id.
+        projectId:
+          type: integer
+          description: The project id.
+        projectIds:
+          oneOf:
+            - type: string
+              description: comma separated project ids.
+            - type: array
+              items:
+                type: integer
+        workPeriods.paymentStatus:
+          type: string
+          enum: ["pending", "partially-completed", "failed"]
+        workPeriods.startDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period start date.
+        workPeriods.endDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: The work period end date.
+        workPeriods.userHandle:
+          type: string
+          description: The user handle.
+    WorkPeriodPaymentQueryCreateResult:
+      properties:
+        total:
+          type: integer
+          description: The total Work Periods found.
+        totalSuccess:
+          type: integer
+          description: The total payments scheduled successfully.
+        totalError:
+          type: integer
+          description: The total payments which failed to get scheduled.
+        query:
+          $ref: "#/components/schemas/WorkPeriodPaymentQueryCreateRequestBody"
+    WorkPeriodPaymentPatchRequestBody:
+      properties:
+        status:
+          type: string
+          enum: ["scheduled", "cancelled"]
           description: "The payment status."
     CheckRun:
       type: object
@@ -4537,6 +5118,10 @@ components:
                 type: string
                 format: url
                 description: "The link for the resume that can be downloaded"
+              remark:
+                type: string
+                example: "excellent"
+                description: "The remark of candidate"
               interviews:
                 type: array
                 items:
@@ -4560,6 +5145,14 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Skill"
+    TeamJobDescriptionRequestBody:
+      type: object
+      properties:
+        description:
+          type: string
+          description: "job description"
+          example: "nodejs and java"
+
     TeamEmailRequestBody:
       type: object
       properties:
@@ -4624,6 +5217,289 @@ components:
                     type: string
                     description: "the email of a member"
                     example: "xxx@xxx.com"
+    RoleSearchRequestBody:
+      anyOf:
+        - type: object
+          required:
+            - roleId
+          properties:
+            roleId:
+              type: string
+              format: uuid
+              description: "The role id."
+        - type: object
+          required:
+            - jobDescription
+          properties:
+            jobDescription:
+              type: string
+              description: "The description of the job."
+        - type: object
+          required:
+            - skills
+          properties:
+            skills:
+              type: array
+              description: "The array of skill ids."
+              items:
+                type: string
+                format: uuid
+                description: "The skill id"
+
+    RoleSearchResponse:
+      allOf:
+        - $ref: "#/components/schemas/Role"
+        - type: object
+          required:
+            - roleSearchRequestId
+            - isExternalMember
+          properties:
+            roleSearchRequestId:
+              type: string
+              format: uuid
+              description: "The role search request id."
+            isExternalMember:
+              type: boolean
+              description: "Is the user external member"
+    SubmitTeamRequestBody:
+      properties:
+        teamName:
+          type: string
+          description: "The name of the team"
+        teamDescription:
+          type: string
+          description: "The description of the team"
+        positions:
+          type: array
+          description: "The array of positions"
+          items:
+            type: object
+            required:
+              - roleName
+              - roleSearchRequestId
+              - numberOfResources
+            properties:
+              roleName:
+                type: string
+                description: "The name of the role"
+              roleSearchRequestId:
+                type: string
+                format: uuid
+                description: "The id of roleSearchRequest"
+              numberOfResources:
+                type: integer
+                example: 10
+                minimum: 1
+                description: "The number of needed resources"
+              durationWeeks:
+                type: integer
+                example: 5
+                minimum: 1
+                description: "The amount of time in weeks"
+              startMonth:
+                type: string
+                format: date-time
+                description: "The start day of the job"
+    SubmitTeamResponse:
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: "The id of created project"
+    Role:
+      required:
+        - id
+        - name
+        - rates
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The role id."
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: integer
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The role created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user Id who created the role.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The role last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user Id who updated the role last time.(Will get the user info from the token)"
+    RoleRequestBody:
+      required:
+        - name
+        - rates
+      properties:
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: number
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+    RolePatchRequestBody:
+      properties:
+        name:
+          type: string
+          example: "Dev Ops Engineer"
+          description: "The role name."
+        description:
+          type: string
+          example: "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates."
+          description: "The role description"
+        listOfSkills:
+          type: array
+          description: "The array of skill names."
+          items:
+            type: string
+            example: "HTML"
+            description: "The skill name"
+        rates:
+          type: array
+          description: "The rates object array."
+          items:
+            $ref: "#/components/schemas/RoleRates"
+        numberOfMembers:
+          type: number
+          example: 100
+          description: "The number of members."
+        numberOfMembersAvailable:
+          type: number
+          example: 100
+          description: "The number of members available."
+        imageUrl:
+          type: string
+          format: url
+          example: "http://images.topcoder.com/images"
+          description: "The image url of the role."
+        timeToCandidate:
+          type: integer
+          example: 200
+          description: "The time to candidate."
+        timeToInterview:
+          type: integer
+          example: 300
+          description: "The time to interview."
+    RoleRates:
+      required:
+        - global
+        - inCountry
+        - offShore
+      type: object
+      properties:
+        global:
+          type: integer
+          example: 10
+        inCountry:
+          type: integer
+          example: 20
+        offShore:
+          type: integer
+          example: 30
+        rate30Global:
+          type: integer
+          example: 10
+        rate30InCountry:
+          type: integer
+          example: 20
+        rate30OffShore:
+          type: integer
+          example: 30
+        rate20Global:
+          type: integer
+          example: 10
+        rate20InCountry:
+          type: integer
+          example: 20
+        rate20OffShore:
+          type: integer
+          example: 30
     ProjectMember:
       type: object
       example:

@@ -2,7 +2,7 @@
  * Export data to a json file
  */
 const config = require('config')
-const { Interview, WorkPeriodPayment } = require('../../src/models')
+const { Interview, WorkPeriod, WorkPeriodPayment } = require('../../src/models')
 const logger = require('../../src/common/logger')
 const helper = require('../../src/common/helper')
 
@@ -14,17 +14,21 @@ const jobCandidateModelOpts = {
   }]
 }
 
-const workPeriodModelOpts = {
-  modelName: 'WorkPeriod',
+const resourceBookingModelOpts = {
+  modelName: 'ResourceBooking',
   include: [{
-    model: WorkPeriodPayment,
-    as: 'payments'
+    model: WorkPeriod,
+    as: 'workPeriods',
+    include: [{
+      model: WorkPeriodPayment,
+      as: 'payments'
+    }]
   }]
 }
 
 const filePath = helper.getParamFromCliArgs() || config.DEFAULT_DATA_FILE_PATH
 const userPrompt = `WARNING: are you sure you want to export all data in the database to a json file with the path ${filePath}? This will overwrite the file.`
-const dataModels = ['Job', jobCandidateModelOpts, 'ResourceBooking', workPeriodModelOpts]
+const dataModels = ['Job', jobCandidateModelOpts, resourceBookingModelOpts, 'Role']
 
 async function exportData () {
   await helper.promptUser(userPrompt, async () => {
