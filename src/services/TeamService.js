@@ -16,6 +16,7 @@ const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const models = require('../models')
 const stopWords = require('../../data/stopWords.json')
+const { getAuditM2Muser } = require('../common/helper')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
 const topcoderSkills = {}
@@ -750,11 +751,16 @@ getMe.schema = Joi.object()
  * @returns {Object} the created project
  */
 async function roleSearchRequest (currentUser, data) {
+  // if currentUser is undefined then set to machine
+  if (_.isUndefined(currentUser)) {
+    currentUser = getAuditM2Muser()
+  }
   let role
   // if roleId is provided then find role with given id.
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
+    role.skillsMatch = 1;
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
     // validate given skillIds and convert them into skill names
@@ -779,7 +785,7 @@ async function roleSearchRequest (currentUser, data) {
 
 roleSearchRequest.schema = Joi.object()
   .keys({
-    currentUser: Joi.object().required(),
+    currentUser: Joi.object(),
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
       jobDescription: Joi.string().max(255),
@@ -793,28 +799,29 @@ roleSearchRequest.schema = Joi.object()
  * @returns {Role} the best matching Role
  */
 async function getRoleBySkills (skills) {
+  const lowerCaseSkills = skills.map(skill => skill.toLowerCase())
   // find all roles which includes any of the given skills
   const queryCriteria = {
-    where: { listOfSkills: { [Op.overlap]: skills } },
+    where: { listOfSkills: { [Op.overlap]: lowerCaseSkills } },
     raw: true
   }
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
       // calculate each found roles matching rate
-      role.matchingRate = _.intersection(role.listOfSkills, skills).length / skills.length
+      role.skillsMatch = _.intersection(role.listOfSkills, lowerCaseSkills).length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
-    // sort roles by matchingRate, global rate and name
-    result = _.orderBy(result, ['matchingRate', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
-    if (result[0].matchingRate >= config.ROLE_MATCHING_RATE) {
+    // sort roles by skillsMatch, global rate and name
+    result = _.orderBy(result, ['skillsMatch', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
+    if (result[0].skillsMatch >= config.ROLE_MATCHING_RATE) {
       // return the 1st role
-      return _.omit(result[0], ['matchingRate', 'maxGlobal'])
+      return _.omit(result[0], ['maxGlobal'])
     }
   }
-  // if no matching role found then return Niche role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Niche' } } }) || {}
+  // if no matching role found then return Custom role or empty object
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } } }) || {}
 }
 
 getRoleBySkills.schema = Joi.object()

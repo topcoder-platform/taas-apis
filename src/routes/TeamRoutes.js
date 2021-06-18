@@ -24,8 +24,6 @@ module.exports = {
     get: {
       controller: 'TeamController',
       method: 'searchSkills',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_TAAS_TEAM]
     }
   },
   '/taas-teams/me': {
@@ -94,8 +92,6 @@ module.exports = {
     post: {
       controller: 'TeamController',
       method: 'roleSearchRequest',
-      auth: 'jwt',
-      scopes: [constants.Scopes.CREATE_ROLE_SEARCH_REQUEST]
     }
   },
   '/taas-teams/submitTeamRequest': {
