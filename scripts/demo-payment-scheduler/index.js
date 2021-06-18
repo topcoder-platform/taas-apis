@@ -13,6 +13,8 @@ for (let i = 0; i < 1000; i++) {
     amount: _.round(_.random(1000, true), 2),
     status: 'scheduled',
     billingAccountId: data.ResourceBooking.billingAccountId,
+    memberRate: data.ResourceBooking.memberRate,
+    days: 4,
     createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
     updatedBy: null,
     createdAt: `2021-05-19T21:3${i % 10}:46.507Z`,
