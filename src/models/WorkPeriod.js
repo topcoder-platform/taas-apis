@@ -78,15 +78,18 @@ module.exports = (sequelize) => {
       },
       daysWorked: {
         field: 'days_worked',
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      memberRate: {
-        field: 'member_rate',
-        type: Sequelize.FLOAT
+      daysPaid: {
+        field: 'days_paid',
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      customerRate: {
-        field: 'customer_rate',
-        type: Sequelize.FLOAT
+      paymentTotal: {
+        field: 'payment_total',
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       paymentStatus: {
         field: 'payment_status',

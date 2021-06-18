@@ -21,6 +21,7 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment')
+const { PaymentStatusRules } = require('../../app-constants')
 
 const localLogger = {
   debug: (message) =>
@@ -191,8 +192,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
       endDate: { type: 'date', format: 'yyyy-MM-dd' },
       daysWorked: { type: 'integer' },
-      memberRate: { type: 'float' },
-      customerRate: { type: 'float' },
+      daysPaid: { type: 'integer' },
+      paymentTotal: { type: 'float' },
       paymentStatus: { type: 'keyword' },
       payments: {
         type: 'nested',
@@ -200,8 +201,21 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
           id: { type: 'keyword' },
           workPeriodId: { type: 'keyword' },
           challengeId: { type: 'keyword' },
+          memberRate: { type: 'float' },
+          customerRate: { type: 'float' },
+          days: { type: 'integer' },
           amount: { type: 'float' },
           status: { type: 'keyword' },
+          statusDetails: {
+            type: 'nested',
+            properties: {
+              errorMessage: { type: 'text' },
+              errorCode: { type: 'integer' },
+              retry: { type: 'integer' },
+              step: { type: 'keyword' },
+              challengeId: { type: 'keyword' }
+            }
+          },
           billingAccountId: { type: 'integer' },
           createdAt: { type: 'date' },
           createdBy: { type: 'keyword' },
@@ -284,6 +298,16 @@ async function promptUser (promptQuery, cb) {
       await cb()
     }
   })
+}
+
+/**
+ * Sleep for a given number of milliseconds.
+ *
+ * @param {Number} milliseconds the sleep time
+ * @returns {undefined}
+ */
+async function sleep (milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
 /**
@@ -796,6 +820,7 @@ function setResHeaders (req, res, result) {
   res.set('X-Per-Page', result.perPage)
   res.set('X-Total', result.total)
   res.set('X-Total-Pages', totalPages)
+  res.set('X-Data-Source', result.fromDb ? 'database' : 'elasticsearch')
   // set Link header
   if (totalPages > 0) {
     let link = `<${getPageLink(req, 1)}>; rel="first", <${getPageLink(
@@ -953,8 +978,8 @@ async function postEvent (topic, payload, options = {}) {
     payload
   }
   if (options.key) {
-   message.key = options.key
-   }
+    message.key = options.key
+  }
   await client.postEvent(message)
   await eventDispatcher.handleEvent(topic, { value: payload, options })
 }
@@ -1619,6 +1644,26 @@ async function createChallenge (data, token) {
 }
 
 /**
+ * Get a challenge
+ *
+ * @param {Object} data challenge data
+ * @returns {Object} the challenge
+ */
+async function getChallenge (challengeId) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/challenges/${challengeId}`
+  localLogger.debug({ context: 'getChallenge', message: `EndPoint: GET ${url}` })
+  const { body: challenge, status: httpStatus } = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({ context: 'getChallenge', message: `Status Code: ${httpStatus}` })
+  localLogger.debug({ context: 'getChallenge', message: `Response Body: ${JSON.stringify(challenge)}` })
+  return challenge
+}
+
+/**
  * Update a challenge
  *
  * @param {String} challengeId id of the challenge
@@ -1694,6 +1739,35 @@ async function createChallengeResource (data, token) {
 }
 
 /**
+ *
+ * @param {String} challengeId the challenge id
+ * @param {String} memberHandle the member handle
+ * @param {String} roleId the role id
+ * @returns {Object} the resource
+ */
+async function getChallengeResource (challengeId, memberHandle, roleId) {
+  const token = await getM2MToken()
+  const url = `${config.TC_API}/resources?challengeId=${challengeId}&memberHandle=${memberHandle}&roleId=${roleId}`
+  localLogger.debug({ context: 'createChallengeResource', message: `EndPoint: POST ${url}` })
+  try {
+    const { body: resource, status: httpStatus } = await request
+      .get(url)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    localLogger.debug({ context: 'getChallengeResource', message: `Status Code: ${httpStatus}` })
+    localLogger.debug({ context: 'getChallengeResource', message: `Response Body: ${JSON.stringify(resource)}` })
+    return resource[0]
+  } catch (err) {
+    if (err.status === 404) {
+      localLogger.debug({ context: 'getChallengeResource', message: `Status Code: ${err.status}` })
+    } else {
+      throw err
+    }
+  }
+}
+
+/**
  * Populates workPeriods from start and end date of resource booking
  * @param {Date} start start date of the resource booking
  * @param {Date} end end date of the resource booking
@@ -1733,6 +1807,35 @@ function extractWorkPeriods (start, end) {
     startDate.add(1, 'day')
   }
   return periods
+}
+
+/**
+ * Calculate the payment status of given workPeriod
+ * @param {object} workPeriod workPeriod object with payments
+ * @returns {string} new workperiod payment status
+ * @throws {ConflictError} when no rule matches
+ */
+function calculateWorkPeriodPaymentStatus (workPeriod) {
+  function matchRule (rule) {
+    const actualState = {
+      daysWorked: workPeriod.daysWorked,
+      hasDueDays: workPeriod.daysWorked > workPeriod.daysPaid
+    }
+    return _.every(_.keys(rule.condition), condition => {
+      if (_.isArray(rule.condition[condition])) {
+        return checkIfExists(_.map(workPeriod.payments, 'status'), rule.condition[condition])
+      } else {
+        return rule.condition[condition] === actualState[condition]
+      }
+    })
+  }
+  // find the first rule which is matched by the Work Period
+  for (const rule of PaymentStatusRules) {
+    if (matchRule(rule)) {
+      return rule.paymentStatus
+    }
+  }
+  throw new errors.ConflictError('Cannot calculate payment status.')
 }
 
 /**
@@ -1797,11 +1900,11 @@ async function getTags (description) {
  * @param {Object} data title of project and any other info
  * @returns {Object} the project created
  */
-async function createProject (data) {
-  const token = await getM2MToken()
+async function createProject (currentUser, data) {
+  const token = currentUser.jwtToken
   const res = await request
     .post(`${config.TC_API}/projects/`)
-    .set('Authorization', `Bearer ${token}`)
+    .set('Authorization', token)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send(data)
@@ -1833,9 +1936,60 @@ async function getMemberGroups (userId) {
   return _.get(res, 'body')
 }
 
+/**
+ * Removes markdown and html formatting from given text
+ *
+ * @param {String} text formatted text
+ * @returns {String} cleaned words seperated by single space
+ */
+function removeTextFormatting (text) {
+  text = _.replace(text, /^(-\s*?|\*\s*?|_\s*?){3,}\s*$/gm, ' ')
+  text = _.replace(text, /^([\s\t]*)([*\-+]|\d+\.)\s+/gm, ' $1 ')
+  // Header
+  text = _.replace(text, /\n={2,}/g, '\n')
+  // Fenced codeblocks
+  text = _.replace(text, /~{3}.*\n/g, ' ')
+  // Strikethrough
+  text = _.replace(text, /~~/g, ' ')
+  // Fenced codeblocks
+  text = _.replace(text, /`{3}.*\n/g, ' ')
+  // Remove HTML tags
+  text = _.replace(text, /<[^>]*>/g, ' ')
+  // Remove setext-style headers
+  text = _.replace(text, /^[=-]{2,}\s*$/g, ' ')
+  // Remove footnotes
+  text = _.replace(text, /\[\^.+?\](: .*?$)?/g, ' ')
+  text = _.replace(text, /\s{0,2}\[.*?\]: .*?$/g, ' ')
+  // Remove images
+  text = _.replace(text, /!\[(.*?)\][[(].*?[\])]/g, ' $1 ')
+  // Remove inline links
+  text = _.replace(text, /\[(.*?)\][[(].*?[\])]/g, ' $1 ')
+  // Remove blockquotes
+  text = _.replace(text, /^\s{0,3}>\s?/g, ' ')
+  // Remove reference-style links
+  text = _.replace(text, /^\s{1,2}\[(.*?)\]: (\S+)( ".*?")?\s*$/g, ' ')
+  // Remove atx-style headers
+  text = _.replace(text, /^#{1,6}\s*([^#]*)\s*#{1,6}?$/gm, ' $1 ')
+  // Remove emphasis (repeat the line to remove double emphasis)
+  text = _.replace(text, /([*_]{1,3})(\S.*?\S{0,1})\1/g, ' $2 ')
+  text = _.replace(text, /([*_]{1,3})(\S.*?\S{0,1})\1/g, ' $2 ')
+  // Remove code blocks
+  text = _.replace(text, /(`{3,})(.*?)\1/gm, ' $2 ')
+  // Remove inline code
+  text = _.replace(text, /`(.+?)`/g, ' $1 ')
+  // Remove punctuation
+  text = _.replace(text, /[,"'?/\\]/g, ' ')
+  // Replace two or more newlines
+  text = _.replace(text, /\n/g, ' ')
+  // replace all whitespace characters with single space
+  text = _.replace(text, /\s\s+/g, ' ')
+  return text
+}
+
 module.exports = {
   getParamFromCliArgs,
   promptUser,
+  sleep,
   createIndex,
   deleteIndex,
   indexBulkDataToES,
@@ -1882,11 +2036,15 @@ module.exports = {
   deleteProjectMember,
   getUserAttributeValue,
   createChallenge,
+  getChallenge,
   updateChallenge,
   createChallengeResource,
+  getChallengeResource,
   extractWorkPeriods,
+  calculateWorkPeriodPaymentStatus,
   getUserByHandle,
   substituteStringByObject,
   createProject,
-  getMemberGroups
+  getMemberGroups,
+  removeTextFormatting
 }

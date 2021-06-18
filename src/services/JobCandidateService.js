@@ -320,9 +320,10 @@ async function searchJobCandidates (currentUser, criteria) {
     limit: perPage,
     order: [[criteria.sortBy, criteria.sortOrder]]
   })
+  const total = await JobCandidate.count({ where: filter })
   return {
     fromDb: true,
-    total: jobCandidates.length,
+    total,
     page,
     perPage,
     result: _.map(jobCandidates, jobCandidate => _.omit(jobCandidate.dataValues, omitList))

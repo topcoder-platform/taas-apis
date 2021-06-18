@@ -192,7 +192,7 @@ createJob.schema = Joi.object()
     currentUser: Joi.object().required(),
     job: Joi.object()
       .keys({
-        status: Joi.jobStatus().default("sourcing"),
+        status: Joi.jobStatus().default('sourcing'),
         projectId: Joi.number().integer().required(),
         externalId: Joi.string().allow(null),
         description: Joi.stringAllowEmpty().allow(null),
@@ -211,11 +211,11 @@ createJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required()),
+        roleIds: Joi.array().items(Joi.string().uuid().required())
       })
-      .required(),
+      .required()
   })
-  .required();
+  .required()
 
 /**
  * Update job. Normal user can only update the job he/she created.
@@ -532,9 +532,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       required: false
     }]
   })
+  const total = await Job.count({ where: filter })
   return {
     fromDb: true,
-    total: jobs.length,
+    total,
     page,
     perPage,
     result: _.map(jobs, job => job.dataValues)

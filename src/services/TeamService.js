@@ -15,8 +15,10 @@ const ResourceBookingService = require('./ResourceBookingService')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const models = require('../models')
+const stopWords = require('../../data/stopWords.json')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
+const topcoderSkills = {}
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
@@ -58,6 +60,73 @@ async function _getJobsByProjectIds (currentUser, projectIds) {
     { returnAll: true }
   )
   return result
+}
+
+/**
+ * Gets topcoder skills and stores their name and compiled
+ * regex patters according to Levenshtein distance <=1
+ */
+async function _reloadCachedTopcoderSkills () {
+  // do not reload if cache time is not expired
+  if (!_.isUndefined(topcoderSkills.time)) {
+    const cacheTime = config.TOPCODER_SKILLS_CACHE_TIME * 60 * 1000
+    if (new Date().getTime() - topcoderSkills.time < cacheTime) {
+      return
+    }
+  }
+  // collect all skills
+  const skills = await helper.getAllTopcoderSkills()
+  // set the last cached time
+  topcoderSkills.time = new Date().getTime()
+  topcoderSkills.skills = []
+  // store skill names and compiled regex paterns
+  _.each(skills, skill => {
+    topcoderSkills.skills.push({
+      name: skill.name,
+      pattern: _compileRegexPatternForSkillName(skill.name)
+    })
+  })
+}
+
+/**
+ * Prepares the regex pattern for the given word
+ * according to Levenshtein distance of 1 (insertions, deletions or substitutions)
+ * @param {String} skillName the name of the skill
+ * @returns {RegExp} the compiled regex pattern
+ */
+function _compileRegexPatternForSkillName (skillName) {
+  // split the name into its chars
+  let chars = _.split(skillName, '')
+  // escape characters reserved to regex
+  chars = _.map(chars, _.escapeRegExp)
+  // Its not a good idea to apply tolerance according to
+  // Levenshtein distance for the words have less than 3 letters
+  // We expect the skill names have 1 or 2 letters to take place
+  // in job description as how they are exactly spelled
+  if (chars.length < 3) {
+    return new RegExp(`^(?:${_.join(chars, '')})$`, 'i')
+  }
+
+  const res = []
+  // include the skill name itself
+  res.push(_.join(chars, ''))
+  // include every transposition combination
+  // E.g. java => ajva, jvaa, jaav
+  for (let i = 0; i < chars.length - 1; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + chars[i + 1] + chars[i] + _.join(_.slice(chars, i + 2), ''))
+  }
+  // include every insertion combination
+  // E.g. java => .java, j.ava, ja.va, jav.a, java.
+  for (let i = 0; i <= chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.' + _.join(_.slice(chars, i), ''))
+  }
+  // include every deletion/substitution combination
+  // E.g. java => .?ava, j.?va, ja.?a, jav.?
+  for (let i = 0; i < chars.length; i++) {
+    res.push(_.join(_.slice(chars, 0, i), '') + '.?' + _.join(_.slice(chars, i + 1), ''))
+  }
+  // return the regex pattern
+  return new RegExp(`^(?:${_.join(res, '|')})$`, 'i')
 }
 
 /**
@@ -695,9 +764,7 @@ async function roleSearchRequest (currentUser, data) {
   } else {
     // if only job description is provided, collect skill names from description
     const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
-    // collected tags from description has inconsistency with topcoder skills
-    // we need to filter invalid skills
-    const skills = await getSkillNamesByNames(_.map(tags, 'tag'))
+    const skills = _.map(tags, 'tag')
     // find the best matching role
     role = await getRoleBySkills(skills)
   }
@@ -763,7 +830,44 @@ getRoleBySkills.schema = Joi.object()
  * @returns {Object} the result
  */
 async function getSkillsByJobDescription (currentUser, data) {
-  return helper.getTags(data.description)
+  // load topcoder skills if needed. Using cached skills helps to avoid
+  // unnecessary api calls which is extremely time comsuming.
+  await _reloadCachedTopcoderSkills()
+  // replace markdown tags with spaces
+  const description = helper.removeTextFormatting(data.description)
+  // extract words from description
+  let words = _.split(description, ' ')
+  // remove stopwords from description
+  words = _.filter(words, word => stopWords.indexOf(word.toLowerCase()) === -1)
+  // include consecutive two word combinations
+  const twoWords = []
+  for (let i = 0; i < words.length - 1; i++) {
+    twoWords.push(`${words[i]} ${words[i + 1]}`)
+  }
+  words = _.concat(words, twoWords)
+  let foundSkills = []
+  const result = []
+  // try to match each word with skill names
+  // using pre-compiled regex pattern
+  _.each(words, word => {
+    _.each(topcoderSkills.skills, skill => {
+      // do not stop searching after a match in order to detect more lookalikes
+      if (skill.pattern.test(word)) {
+        foundSkills.push(skill.name)
+      }
+    })
+  })
+  foundSkills = _.uniq(foundSkills)
+  // apply desired template
+  _.each(foundSkills, skill => {
+    result.push({
+      tag: skill,
+      type: 'taas_skill',
+      source: 'taas-jd-parser'
+    })
+  })
+
+  return result
 }
 
 getSkillsByJobDescription.schema = Joi.object()
@@ -818,33 +922,11 @@ async function getSkillIdsByNames (skills) {
   // endpoint returns the partial matched skills
   // we need to filter by exact match case insensitive
   const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
-  console.log(filteredSkills)
   const skillIds = _.map(filteredSkills, 'id')
   return skillIds
 }
 
 getSkillIdsByNames.schema = Joi.object()
-  .keys({
-    skills: Joi.array().items(Joi.string().required()).required()
-  }).required()
-
-/**
- * Filters invalid skills from given skill names
- *
- * @param {Array<string>} skills the array of skill names
- * @returns {Array<string>} the array of skill names
- */
-async function getSkillNamesByNames (skills) {
-  // remove duplicates, leading and trailing whitespaces, empties.
-  const cleanedSkills = _.uniq(_.filter(_.map(skills, skill => _.trim(skill)), skill => !_.isEmpty(skill)))
-  const result = await helper.getAllTopcoderSkills({ name: _.join(cleanedSkills, ',') })
-  const skillNames = _.map(result, 'name')
-  // endpoint returns the partial matched skills
-  // we need to filter by exact match case insensitive
-  return _.intersectionBy(skillNames, cleanedSkills, _.toLower)
-}
-
-getSkillNamesByNames.schema = Joi.object()
   .keys({
     skills: Joi.array().items(Joi.string().required()).required()
   }).required()
@@ -935,19 +1017,13 @@ async function createTeam (currentUser, data) {
   const projectRequestBody = {
     name: data.teamName,
     description: data.teamDescription,
-    type: 'app_dev',
+    type: 'talent-as-a-service',
     details: {
       positions: data.positions
     }
   }
   // create project with given data
-  const project = await helper.createProject(projectRequestBody)
-  // we created the project with m2m token
-  // so we have to add the current user as a member to the project
-  // the role of the user in the project will be determined by user's current roles.
-  if (!currentUser.isMachine) {
-    await helper.createProjectMember(project.id, { userId: currentUser.userId })
-  }
+  const project = await helper.createProject(currentUser, projectRequestBody)
   // create jobs for the given positions.
   await Promise.all(_.map(data.positions, async position => {
     const roleSearchRequest = roleSearchRequests[position.roleSearchRequestId]
@@ -955,20 +1031,18 @@ async function createTeam (currentUser, data) {
       projectId: project.id,
       title: position.roleName,
       numPositions: position.numberOfResources,
-      rateType: 'weekly',
-      skills: roleSearchRequest.skills
-    }
-    if (roleSearchRequest.jobDescription) {
-      job.description = roleSearchRequest.jobDescription
+      rateType: position.rateType,
+      workload: position.workload,
+      skills: roleSearchRequest.skills,
+      description: roleSearchRequest.jobDescription,
+      roleIds: [roleSearchRequest.roleId],
+      resourceType: roleSearchRequest.resourceType
     }
     if (position.startMonth) {
       job.startDate = position.startMonth
     }
     if (position.durationWeeks) {
       job.duration = position.durationWeeks
-    }
-    if (roleSearchRequest.roleId) {
-      job.roleIds = [roleSearchRequest.roleId]
     }
     await JobService.createJob(currentUser, job)
   }))
@@ -987,7 +1061,10 @@ createTeam.schema = Joi.object()
           roleSearchRequestId: Joi.string().uuid().required(),
           numberOfResources: Joi.number().integer().min(1).required(),
           durationWeeks: Joi.number().integer().min(1),
-          startMonth: Joi.date()
+          startMonth: Joi.date(),
+          rateType: Joi.rateType().default('weekly'),
+          workload: Joi.workload().default('full-time'),
+          resourceType: Joi.string()
         }).required()
       ).required()
     }).required()
@@ -1005,19 +1082,23 @@ async function _validateRoleSearchRequests (roleSearchRequestIds) {
     const roleSearchRequest = await RoleSearchRequest.findById(roleSearchRequestId)
     // store the found roleSearchRequest to avoid unnecessary DB calls
     roleSearchRequests[roleSearchRequestId] = roleSearchRequest.toJSON()
-    // we can't create a job without skills
-    if (!roleSearchRequest.roleId && !roleSearchRequest.skills) {
-      throw new errors.ConflictError(`roleSearchRequestId: ${roleSearchRequestId} must have roleId or skills`)
+    // we can't create a job without a role
+    if (!roleSearchRequest.roleId) {
+      throw new errors.ConflictError(`roleSearchRequestId: ${roleSearchRequestId} must have roleId`)
     }
+    const role = await Role.findById(roleSearchRequest.roleId)
     // if roleSearchRequest doesn't have skills, we have to get skills through role
     if (!roleSearchRequest.skills) {
-      const role = await Role.findById(roleSearchRequest.roleId)
       if (!role.listOfSkills) {
         throw new errors.ConflictError(`role: ${role.id} must have skills`)
       }
-      // store the found skills
+      // store role's skills
       roleSearchRequests[roleSearchRequestId].skills = await getSkillIdsByNames(role.listOfSkills)
     }
+    if (!roleSearchRequest.jobDescription) {
+      roleSearchRequests[roleSearchRequestId].jobDescription = role.description
+    }
+    roleSearchRequests[roleSearchRequestId].resourceType = role.name
   }))
   return roleSearchRequests
 }
@@ -1054,7 +1135,6 @@ module.exports = {
   getSkillsByJobDescription,
   getSkillNamesByIds,
   getSkillIdsByNames,
-  getSkillNamesByNames,
   createRoleSearchRequest,
   isExternalMember,
   createTeam,

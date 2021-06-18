@@ -32,15 +32,6 @@ async function partiallyUpdateWorkPeriodPayment (req, res) {
 }
 
 /**
- * Fully update workPeriodPayment by id
- * @param req the request
- * @param res the response
- */
-async function fullyUpdateWorkPeriodPayment (req, res) {
-  res.send(await service.fullyUpdateWorkPeriodPayment(req.authUser, req.params.id, req.body))
-}
-
-/**
  * Search workPeriodPayments
  * @param req the request
  * @param res the response
@@ -65,6 +56,5 @@ module.exports = {
   createWorkPeriodPayment,
   createQueryWorkPeriodPayments,
   partiallyUpdateWorkPeriodPayment,
-  fullyUpdateWorkPeriodPayment,
   searchWorkPeriodPayments
 }
