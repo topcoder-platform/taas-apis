@@ -131,7 +131,7 @@ createJobCandidate.schema = Joi.object().keys({
     userId: Joi.string().uuid().required(),
     externalId: Joi.string().allow(null),
     resume: Joi.string().uri().allow(null),
-    remark: Joi.string().allow(null)
+    remark: Joi.stringAllowEmpty().allow(null)
   }).required()
 }).required()
 
@@ -178,7 +178,7 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
     status: Joi.jobCandidateStatus(),
     externalId: Joi.string().allow(null),
     resume: Joi.string().uri().allow(null),
-    remark: Joi.string().allow(null)
+    remark: Joi.stringAllowEmpty().allow(null)
   }).required()
 }).required()
 
@@ -206,7 +206,7 @@ fullyUpdateJobCandidate.schema = Joi.object()
         status: Joi.jobCandidateStatus().default("open"),
         externalId: Joi.string().allow(null).default(null),
         resume: Joi.string().uri().allow("").allow(null).default(null),
-        remark: Joi.stringAllowEmpty().allow(null),
+        remark: Joi.stringAllowEmpty().allow(null)
       })
       .required(),
   })

@@ -270,31 +270,35 @@ async function partiallyUpdateJob (currentUser, id, data) {
   return updateJob(currentUser, id, data, false)
 }
 
-partiallyUpdateJob.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.string().guid().required(),
-  data: Joi.object().keys({
-    status: Joi.jobStatus(),
-    externalId: Joi.string().allow(null),
-    description: Joi.stringAllowEmpty().allow(null),
-    title: Joi.title(),
-    startDate: Joi.date().allow(null),
-    duration: Joi.number().integer().min(1).allow(null),
-    numPositions: Joi.number().integer().min(1),
-    resourceType: Joi.stringAllowEmpty().allow(null),
-    rateType: Joi.rateType().allow(null),
-    workload: Joi.workload().allow(null),
-    skills: Joi.array().items(Joi.string().uuid()),
-    isApplicationPageActive: Joi.boolean(),
-    minSalary: Joi.number().integer(),
-    maxSalary: Joi.number().integer(),
-    hoursPerWeek: Joi.number().integer(),
-    jobLocation: Joi.string(),
-    jobTimezone: Joi.string(),
-    currency: Joi.string(),
-    roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
-  }).required()
-}).required()
+partiallyUpdateJob.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.string().guid().required(),
+    data: Joi.object()
+      .keys({
+        status: Joi.jobStatus(),
+        externalId: Joi.string().allow(null),
+        description: Joi.stringAllowEmpty().allow(null),
+        title: Joi.title(),
+        startDate: Joi.date().allow(null),
+        duration: Joi.number().integer().min(1).allow(null),
+        numPositions: Joi.number().integer().min(1),
+        resourceType: Joi.stringAllowEmpty().allow(null),
+        rateType: Joi.rateType().allow(null),
+        workload: Joi.workload().allow(null),
+        skills: Joi.array().items(Joi.string().uuid()),
+        isApplicationPageActive: Joi.boolean(),
+        minSalary: Joi.number().integer(),
+        maxSalary: Joi.number().integer(),
+        hoursPerWeek: Joi.number().integer(),
+        jobLocation: Joi.stringAllowEmpty().allow(null),
+        jobTimezone: Joi.stringAllowEmpty().allow(null),
+        currency: Joi.stringAllowEmpty().allow(null),
+        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null),
+      })
+      .required(),
+  })
+  .required();
 
 /**
  * Fully update job by id
@@ -327,9 +331,9 @@ fullyUpdateJob.schema = Joi.object().keys({
     minSalary: Joi.number().integer().allow(null),
     maxSalary: Joi.number().integer().allow(null),
     hoursPerWeek: Joi.number().integer().allow(null),
-    jobLocation: Joi.string().allow(null),
-    jobTimezone: Joi.string().allow(null),
-    currency: Joi.string().allow(null),
+    jobLocation: Joi.stringAllowEmpty().allow(null),
+    jobTimezone: Joi.stringAllowEmpty().allow(null),
+    currency: Joi.stringAllowEmpty().allow(null),
     roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
   }).required()
 }).required()
