@@ -628,29 +628,31 @@ async function searchResourceBookings (currentUser, criteria, options) {
             })
           }
         })
-        const workPeriodPaymentsMust = []
-        _.each(workPeriodPaymentFilters, (value, key) => {
-          workPeriodPaymentsMust.push({
-            term: {
-              [key]: {
-                value
+        const workPeriodPaymentPath = []
+        if (!_.isEmpty(workPeriodPaymentFilters)) {
+          const workPeriodPaymentsMust = []
+          _.each(workPeriodPaymentFilters, (value, key) => {
+            workPeriodPaymentsMust.push({
+              term: {
+                [key]: {
+                  value
+                }
               }
+            })
+          })
+          workPeriodPaymentPath.push({
+            nested: {
+              path: 'workPeriods.payments',
+              query: { bool: { must: workPeriodPaymentsMust } }
             }
           })
-        })
+        }
         esQuery.body.query.bool.must.push({
           nested: {
             path: 'workPeriods',
             query: {
               bool: {
-                must: [...workPeriodsMust,
-                  {
-                    nested: {
-                      path: 'workPeriods.payments',
-                      query: { bool: { must: workPeriodPaymentsMust } }
-                    }
-                  }
-                ]
+                must: [...workPeriodsMust, ...workPeriodPaymentPath]
               }
             }
           }
@@ -847,7 +849,7 @@ searchResourceBookings.schema = Joi.object().keys({
   }).required(),
   options: Joi.object().keys({
     returnAll: Joi.boolean().default(false),
-    fromDb: Joi.boolean().default(false)
+    returnFromDB: Joi.boolean().default(false)
   }).default({
     returnAll: false,
     returnFromDB: false
