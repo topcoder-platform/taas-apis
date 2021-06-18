@@ -546,7 +546,8 @@ async function searchResourceBookings (currentUser, criteria, options) {
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
-  if (!options.fromDb) {
+  // this option to return data from DB is only for internal usage, and it cannot be passed from the endpoint
+  if (!options.returnFromDB) {
     try {
       const esQuery = {
         index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
@@ -849,7 +850,7 @@ searchResourceBookings.schema = Joi.object().keys({
     fromDb: Joi.boolean().default(false)
   }).default({
     returnAll: false,
-    fromDb: false
+    returnFromDB: false
   })
 }).required()
 

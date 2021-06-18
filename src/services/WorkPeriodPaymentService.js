@@ -405,7 +405,7 @@ async function createQueryWorkPeriodPayments (currentUser, criteria) {
     ['id', 'billingAccountId', 'memberRate', 'customerRate', 'workPeriods.id', 'workPeriods.resourceBookingId', 'workPeriods.daysWorked', 'workPeriods.daysPaid'],
     _.map(_.keys(query), k => k === 'projectIds' ? 'projectId' : k))
   ), ',')
-  const searchResult = await searchResourceBookings(currentUser, _.extend({ fields, page: 1 }, query), { returnAll: true, fromDb: true })
+  const searchResult = await searchResourceBookings(currentUser, _.extend({ fields, page: 1 }, query), { returnAll: true, returnFromDB: true })
 
   const wpArray = _.flatMap(searchResult.result, 'workPeriods')
   const resourceBookingMap = _.fromPairs(_.map(searchResult.result, rb => [rb.id, rb]))
