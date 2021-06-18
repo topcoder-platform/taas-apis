@@ -341,7 +341,8 @@ function extractErrorMessage (err) {
   return _.get(err, 'response.body.result.content.message') ||
   _.get(err, 'response.body.message') ||
   _.get(err, 'message') ||
-  _.get(err, 'response.res.statusMessage')
+  _.get(err, 'response.res.statusMessage') ||
+  err.toString()
 }
 
 module.exports = {
