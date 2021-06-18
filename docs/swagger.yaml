@@ -1400,7 +1400,7 @@ paths:
       parameters:
         - in: query
           name: fields
-          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          description: the field names to be returned from all ResourceBooking, WorkPeriod and WorkPeriodPayment
           required: false
           schema:
             type: string
@@ -1537,6 +1537,21 @@ paths:
           schema:
             type: string
           description: The user handle.
+        - in: query
+          name: workPeriods.payments.status
+          required: false
+          schema:
+            type: string
+          description: The status of the payment
+        - in: query
+          name: workPeriods.payments.days
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            example: 3
+          description: The workdays to pay
 
       responses:
         "200":
@@ -1627,7 +1642,7 @@ paths:
             type: boolean
         - in: query
           name: fields
-          description: the field names to be returned from both ResourceBooking and WorkPeriod
+          description: the field names to be returned from all ResourceBooking, WorkPeriod and WorkPeriodPayment
           required: false
           schema:
             type: string
