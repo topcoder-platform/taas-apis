@@ -131,7 +131,7 @@ createJobCandidate.schema = Joi.object().keys({
     userId: Joi.string().uuid().required(),
     externalId: Joi.string().allow(null),
     resume: Joi.string().uri().allow(null),
-    remark: Joi.string().allow(null)
+    remark: Joi.stringAllowEmpty().allow(null)
   }).required()
 }).required()
 
