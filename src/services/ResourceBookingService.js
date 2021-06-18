@@ -29,8 +29,7 @@ const cachedModelFields = _cacheModelFields()
 function _cacheModelFields () {
   const resourceBookingFields = _.keys(ResourceBooking.rawAttributes)
   const workPeriodFields = _.map(_.keys(WorkPeriod.rawAttributes), key => `workPeriods.${key}`)
-  const workPeriodPaymentFields = _.map(_.keys(WorkPeriodPayment.rawAttributes), key => `workPeriods.payments.${key}`)
-  return [...resourceBookingFields, 'workPeriods', ...workPeriodFields, 'workPeriods.payments', ...workPeriodPaymentFields]
+  return [...resourceBookingFields, 'workPeriods', ...workPeriodFields]
 }
 
 /**
@@ -44,16 +43,6 @@ function _checkUserScopesForGetWorkPeriods (currentUser) {
 }
 
 /**
- * Check user scopes for getting workPeriodPayments
- * @param {Object} currentUser the user who perform this operation.
- * @returns {Boolean} true if user is machine and has read/all workPeriodPayment scopes
- */
-function _checkUserScopesForGetWorkPeriodPayments (currentUser) {
-  const getWorkPeriodPaymentsScopes = [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
-  return currentUser.isMachine && helper.checkIfExists(getWorkPeriodPaymentsScopes, currentUser.scopes)
-}
-
-/**
  * Evaluates the criterias and returns the fields
  * to be returned as a result of GET endpoints
  * @param {Object} currentUser the user who perform this operation.
@@ -62,32 +51,25 @@ function _checkUserScopesForGetWorkPeriodPayments (currentUser) {
  * @returns {Array<string>} result.include field names to include
  * @returns {Array<string>} result.fieldsRB ResourceBooking field names to include
  * @returns {Array<string>} result.fieldsWP WorkPeriod field names to include
- * @returns {Array<string>} result.fieldsWPP WorkPeriodPayment field names to include
  * @returns {Array<string>} result.excludeRB ResourceBooking field names to exclude
  * @returns {Array<string>} result.excludeWP WorkPeriod field names to exclude
  * @returns {Boolean} result.regularUser is current user a regular user?
  * @returns {Boolean} result.allWorkPeriods will all WorkPeriod fields be returned?
  * @returns {Boolean} result.withWorkPeriods does fields include any WorkPeriod field?
- * @returns {Boolean} result.allWorkPeriodPayments will all WorkPeriodPayment fields be returned?
- * @returns {Boolean} result.withWorkPeriodPayments does fields include any WorkPeriodPayment field?
  * @returns {Boolean} result.sortByWP will the sorting be done by WorkPeriod field?
- * @throws  {BadRequestError}
- * @throws  {ForbiddenError}
  */
 function _checkCriteriaAndGetFields (currentUser, criteria) {
   const result = {
     include: [],
     fieldsRB: [],
     fieldsWP: [],
-    fieldsWPP: [],
     excludeRB: [],
-    excludeWP: [],
-    excludeWPP: []
+    excludeWP: []
   }
   const fields = criteria.fields
   const sort = criteria.sortBy
   const onlyResourceBooking = _.isUndefined(fields)
-  const query = onlyResourceBooking ? [] : _.uniq(_.filter(_.map(_.split(fields, ','), _.trim), field => !_.isEmpty(field)))
+  const query = onlyResourceBooking ? [] : _.split(fields, ',')
   const notAllowedFields = _.difference(query, cachedModelFields)
   // Check if fields criteria has a field name that RB or WP models don't have
   if (notAllowedFields.length > 0) {
@@ -97,17 +79,12 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   result.regularUser = !currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager
   // Check if all WorkPeriod fields will be returned
   result.allWorkPeriods = _.some(query, q => q === 'workPeriods')
-  // Check if all WorkPeriodPayment fields will be returned
-  result.allWorkPeriodPayments = result.allWorkPeriods || _.some(query, q => q === 'workPeriods.payments')
   // Split the fields criteria into ResourceBooking and WorkPeriod fields
   _.forEach(query, q => {
-    if (_.includes(q, 'payments.')) { result.fieldsWPP.push(q) } else if (q !== 'workPeriods.payments' && _.includes(q, '.')) { result.fieldsWP.push(q) } else if (q !== 'workPeriods' && q !== 'workPeriods.payments') { result.fieldsRB.push(q) }
+    if (_.includes(q, '.')) { result.fieldsWP.push(q) } else if (q !== 'workPeriods') { result.fieldsRB.push(q) }
   })
   // Check if any WorkPeriod field will be returned
-  result.withWorkPeriods = result.allWorkPeriods || result.fieldsWP.length > 0 ||
-  result.allWorkPeriodPayments || result.fieldsWPP.length > 0
-  // Check if any WorkPeriodPayment field will be returned
-  result.withWorkPeriodPayments = result.allWorkPeriodPayments || result.fieldsWPP.length > 0
+  result.withWorkPeriods = result.allWorkPeriods || result.fieldsWP.length > 0
   // Extract the filters from criteria parameter
   let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder'], key) === -1)
   filters = _.map(filters, f => {
@@ -117,22 +94,20 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   })
   const filterRB = []
   const filterWP = []
-  const filterWPP = []
-  // Split the filters criteria into ResourceBooking, WorkPeriod and WorkPeriodPayment filters
-  _.forEach(filters, q => { if (_.includes(q, 'payments.')) { filterWPP.push(q) } else if (_.includes(q, '.')) { filterWP.push(q) } else { filterRB.push(q) } })
-  // Check if filter criteria has any WorkPeriod or payments filter
-  const filterHasWorkPeriods = filterWP.length > 0 || filterWPP.length > 0
+  // Split the filters criteria into ResourceBooking and WorkPeriod filters
+  _.forEach(filters, q => { if (_.includes(q, '.')) { filterWP.push(q) } else { filterRB.push(q) } })
+  // Check if filter criteria has any WorkPeriod filter
+  const filterHasWorkPeriods = filterWP.length > 0
   // Check if sorting will be done by WorkPeriod field
   result.sortByWP = _.split(sort, '.')[0] === 'workPeriods'
   // Check if the current user has the right to see the memberRate
   const canSeeMemberRate = currentUser.hasManagePermission || currentUser.isMachine
-  // If current user has no right to see the memberRate then it's excluded.
+  // If current user has no right to see the memberRate then it's excluded
   // "currentUser.isMachine" to be true is not enough to return "workPeriods.memberRate"
   // but returning "workPeriod" will be evaluated later
   if (!canSeeMemberRate) {
     result.excludeRB.push('paymentTotal')
     result.excludeWP.push('workPeriods.paymentTotal')
-    result.excludeWPP.push('workPeriods.payments')
   }
   // if "fields" is not included in cretia, then only ResourceBooking model will be returned
   // No further evaluation is required as long as the criteria does not include a WorkPeriod filter or a WorkPeriod sorting condition
@@ -155,27 +130,19 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   }
   // Check If it's tried to filter or sort by some field which should not be included as per rules of fields param
   if (_.difference(filterRB, result.fieldsRB).length > 0) {
-    throw new errors.BadRequestError('Can not filter or sort by ResourceBooking field which is not included in fields')
+    throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
   }
   // Check If it's tried to filter or sort by some field which should not be included as per rules of fields param
   if (!result.allWorkPeriods && _.difference(filterWP, result.fieldsWP).length > 0) {
-    throw new errors.BadRequestError('Can not filter or sort by WorkPeriod field which is not included in fields')
-  }
-  // Check If it's tried to filter or sort by some field which should not be included as per rules of fields param
-  if (!result.allWorkPeriodPayments && _.difference(filterWPP, result.fieldsWPP).length > 0) {
-    throw new errors.BadRequestError('Can not filter by WorkPeriodPayment field which is not included in fields')
+    throw new errors.BadRequestError('Can not filter or sort by some field which is not included in fields')
   }
   // Check if the current user has no right to see the memberRate and memberRate is included in fields parameter
-  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.paymentTotal', 'workPeriods.payments'], q))) {
-    throw new errors.ForbiddenError('You don\'t have access to view memberRate, paymentTotal and payments')
+  if (!canSeeMemberRate && _.some(query, q => _.includes(['memberRate', 'workPeriods.paymentTotal'], q))) {
+    throw new errors.ForbiddenError('You don\'t have access to view memberRate and paymentTotal')
   }
   // Check if the current user has no right to see the workPeriods and workPeriods is included in fields parameter
   if (currentUser.isMachine && result.withWorkPeriods && !_checkUserScopesForGetWorkPeriods(currentUser)) {
     throw new errors.ForbiddenError('You don\'t have access to view workPeriods')
-  }
-  // Check if the current user has no right to see the workPeriodPayments and workPeriodPayments is included in fields parameter
-  if (currentUser.isMachine && result.withWorkPeriodPayments && !_checkUserScopesForGetWorkPeriodPayments(currentUser)) {
-    throw new errors.ForbiddenError('You don\'t have access to view workPeriodPayments')
   }
   result.include.push(...query)
   return result
@@ -282,7 +249,7 @@ async function getResourceBooking (currentUser, id, criteria) {
         index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
         id,
         _source_includes: [...queryOpt.include],
-        _source_excludes: [...queryOpt.excludeRB, ...queryOpt.excludeWP, ...queryOpt.excludeWPP]
+        _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP]
       })
       if (queryOpt.regularUser) {
         await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
@@ -299,18 +266,11 @@ async function getResourceBooking (currentUser, id, criteria) {
     }
   }
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
-  let resourceBooking = await ResourceBooking.findById(id, queryOpt)
-  resourceBooking = resourceBooking.toJSON()
-  // omit workPeriod.id if fields criteria has no workPeriod field but have workPeriodPayment field
-  if (queryOpt.withWorkPeriods && !queryOpt.allWorkPeriods && (!queryOpt.fieldsWP || queryOpt.fieldsWP.length === 0)) {
-    if (_.isArray(resourceBooking.workPeriods)) {
-      resourceBooking.workPeriods = _.map(resourceBooking.workPeriods, wp => _.omit(wp, 'id'))
-    }
-  }
+  const resourceBooking = await ResourceBooking.findById(id, queryOpt)
   if (queryOpt.regularUser) {
     await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.projectId) // check user permission
   }
-  return resourceBooking
+  return resourceBooking.dataValues
 }
 
 getResourceBooking.schema = Joi.object().keys({
@@ -552,7 +512,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
       const esQuery = {
         index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
         _source_includes: queryOpt.include,
-        _source_excludes: [...queryOpt.excludeRB, ...queryOpt.excludeWP, ...queryOpt.excludeWPP],
+        _source_excludes: ['workPeriods.payments', ...queryOpt.excludeRB, ...queryOpt.excludeWP],
         body: {
           query: {
             bool: {
@@ -606,10 +566,9 @@ async function searchResourceBookings (currentUser, criteria, options) {
           }
         }]
       }
-      // Apply WorkPeriod and WorkPeriodPayment filters
+      // Apply WorkPeriod filters
       const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
-      const workPeriodPaymentFilters = _.pick(criteria, ['workPeriods.payments.status', 'workPeriods.payments.days'])
-      if (!_.isEmpty(workPeriodFilters) || !_.isEmpty(workPeriodPaymentFilters)) {
+      if (!_.isEmpty(workPeriodFilters)) {
         const workPeriodsMust = []
         _.each(workPeriodFilters, (value, key) => {
           if (key === 'workPeriods.paymentStatus') {
@@ -628,31 +587,11 @@ async function searchResourceBookings (currentUser, criteria, options) {
             })
           }
         })
-        const workPeriodPaymentsMust = []
-        _.each(workPeriodPaymentFilters, (value, key) => {
-          workPeriodPaymentsMust.push({
-            term: {
-              [key]: {
-                value
-              }
-            }
-          })
-        })
+
         esQuery.body.query.bool.must.push({
           nested: {
             path: 'workPeriods',
-            query: {
-              bool: {
-                must: [...workPeriodsMust,
-                  {
-                    nested: {
-                      path: 'workPeriods.payments',
-                      query: { bool: { must: workPeriodPaymentsMust } }
-                    }
-                  }
-                ]
-              }
-            }
+            query: { bool: { must: workPeriodsMust } }
           }
         })
       }
@@ -662,24 +601,18 @@ async function searchResourceBookings (currentUser, criteria, options) {
       const resourceBookings = _.map(body.hits.hits, '_source')
       // ESClient will return ResourceBookings with it's all nested WorkPeriods
       // We re-apply WorkPeriod filters except userHandle because all WPs share same userHandle
-      if (!_.isEmpty(workPeriodFilters) || !_.isEmpty(workPeriodPaymentFilters)) {
+      _.each(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
+        key = key.split('.')[1]
         _.each(resourceBookings, r => {
           r.workPeriods = _.filter(r.workPeriods, wp => {
-            return _.every(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
-              key = key.split('.')[1]
-              if (key === 'paymentStatus') {
-                return _.includes(value, wp[key])
-              } else {
-                return wp[key] === value
-              }
-            }) && _.every(workPeriodPaymentFilters, (value, key) => {
-              key = key.split('.')[2]
-              wp.payments = _.filter(wp.payments, payment => payment[key] === value)
-              return wp.payments.length > 0
-            })
+            if (key === 'paymentStatus') {
+              return _.includes(value, wp[key])
+            } else {
+              return wp[key] === value
+            }
           })
         })
-      }
+      })
 
       // sort Work Periods inside Resource Bookings by startDate just for comfort output
       _.each(resourceBookings, r => {
@@ -729,13 +662,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
     }]
     // Select WorkPeriod fields
     if (!queryOpt.allWorkPeriods) {
-      if (queryOpt.fieldsWP && queryOpt.fieldsWP.length > 0) {
-        queryCriteria.include[0].attributes = _.map(queryOpt.fieldsWP, f => _.split(f, '.')[1])
-      } else {
-        // we should include at least one workPeriod field
-        // if fields criteria has no workPeriod field but have workPeriodPayment field
-        queryCriteria.include[0].attributes = ['id']
-      }
+      queryCriteria.include[0].attributes = _.map(queryOpt.fieldsWP, f => _.split(f, '.')[1])
     } else if (queryOpt.excludeWP && queryOpt.excludeWP.length > 0) {
       queryCriteria.include[0].attributes = { exclude: _.map(queryOpt.excludeWP, f => _.split(f, '.')[1]) }
     }
@@ -750,30 +677,6 @@ async function searchResourceBookings (currentUser, criteria, options) {
     if (queryCriteria.include[0].where[Op.and].length > 0) {
       queryCriteria.include[0].required = true
     }
-    // Include WorkPeriodPayment Model
-    if (queryOpt.withWorkPeriodPayments) {
-      queryCriteria.include[0].include = [{
-        model: WorkPeriodPayment,
-        as: 'payments',
-        required: false,
-        where: { [Op.and]: [] }
-      }]
-      // Select WorkPeriodPayment fields
-      if (!queryOpt.allWorkPeriodPayments) {
-        queryCriteria.include[0].include[0].attributes = _.map(queryOpt.fieldsWPP, f => _.split(f, '.')[2])
-      } else if (queryOpt.excludeWPP && queryOpt.excludeWPP.length > 0) {
-        queryCriteria.include[0].include[0].attributes = { exclude: _.map(queryOpt.excludeWPP, f => _.split(f, '.')[2]) }
-      }
-      // Apply WorkPeriodPayment filters
-      _.each(_.pick(criteria, ['workPeriods.payments.status', 'workPeriods.payments.days']), (value, key) => {
-        key = key.split('.')[2]
-        queryCriteria.include[0].include[0].where[Op.and].push({ [key]: value })
-      })
-      if (queryCriteria.include[0].include[0].where[Op.and].length > 0) {
-        queryCriteria.include[0].required = true
-        queryCriteria.include[0].include[0].required = true
-      }
-    }
   }
   // Apply sorting criteria
   if (!queryOpt.sortByWP) {
@@ -782,16 +685,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
     queryCriteria.subQuery = false
     queryCriteria.order = [[{ model: WorkPeriod, as: 'workPeriods' }, _.split(criteria.sortBy, '.')[1], `${criteria.sortOrder} NULLS LAST`]]
   }
-  const resultModel = await ResourceBooking.findAll(queryCriteria)
-  const result = _.map(resultModel, r => r.toJSON())
-  // omit workPeriod.id if fields criteria has no workPeriod field but have workPeriodPayment field
-  if (queryOpt.withWorkPeriods && !queryOpt.allWorkPeriods && (!queryOpt.fieldsWP || queryOpt.fieldsWP.length === 0)) {
-    _.each(result, r => {
-      if (_.isArray(r.workPeriods)) {
-        r.workPeriods = _.map(r.workPeriods, wp => _.omit(wp, 'id'))
-      }
-    })
-  }
+  const result = await ResourceBooking.findAll(queryCriteria)
   // sort Work Periods inside Resource Bookings by startDate just for comfort output
   _.each(result, r => {
     if (_.isArray(r.workPeriods)) {
@@ -841,9 +735,7 @@ searchResourceBookings.schema = Joi.object().keys({
     ),
     'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
     'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
-    'workPeriods.userHandle': Joi.string(),
-    'workPeriods.payments.status': Joi.workPeriodPaymentStatus(),
-    'workPeriods.payments.days': Joi.number().integer().min(0).max(5)
+    'workPeriods.userHandle': Joi.string()
   }).required(),
   options: Joi.object().keys({
     returnAll: Joi.boolean().default(false),

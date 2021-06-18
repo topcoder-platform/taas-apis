@@ -42,32 +42,13 @@ module.exports = (sequelize) => {
           }]
           // Select WorkPeriod fields
           if (!options.allWorkPeriods) {
-            if (options.fieldsWP && options.fieldsWP.length > 0) {
-              criteria.include[0].attributes = _.map(options.fieldsWP, f => _.split(f, '.')[1])
-            } else {
-              // we should include at least one workPeriod field
-              // if fields criteria has no workPeriod field but have workPeriodPayment field
-              criteria.include[0].attributes = ['id']
-            }
+            criteria.include[0].attributes = _.map(options.fieldsWP, f => _.split(f, '.')[1])
           } else if (options.excludeWP && options.excludeWP.length > 0) {
             criteria.include[0].attributes = { exclude: _.map(options.excludeWP, f => _.split(f, '.')[1]) }
           }
-          // Include WorkPeriodPayment Model
-          if (options.withWorkPeriodPayments) {
-            criteria.include[0].include = [{
-              model: ResourceBooking._models.WorkPeriodPayment,
-              as: 'payments',
-              required: false
-            }]
-            // Select WorkPeriodPayment fields
-            if (!options.allWorkPeriodPayments) {
-              criteria.include[0].include[0].attributes = _.map(options.fieldsWPP, f => _.split(f, '.')[2])
-            } else if (options.excludeWPP && options.excludeWPP.length > 0) {
-              criteria.include[0].include[0].attributes = { exclude: _.map(options.excludeWPP, f => _.split(f, '.')[2]) }
-            }
-          }
         }
       }
+
       const resourceBooking = await ResourceBooking.findOne(criteria)
       if (!resourceBooking) {
         throw new errors.NotFoundError(`id: ${id} "ResourceBooking" doesn't exists.`)

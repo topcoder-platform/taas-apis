@@ -1206,7 +1206,6 @@ const T18 = {
   },
   criteria: { fromDb: true }
 }
-T18.resourceBooking.value.toJSON = () => T18.resourceBooking.value.dataValues
 const T19 = {
   id: '520bb632-a02a-415e-9857-93b2ecbf7d60',
   criteria: {
@@ -1224,7 +1223,7 @@ const T20 = {
   },
   error: {
     httpStatus: 403,
-    message: 'You don\'t have access to view memberRate, paymentTotal and payments'
+    message: 'You don\'t have access to view memberRate and paymentTotal'
   }
 }
 const T21 = {
@@ -1372,44 +1371,38 @@ const T24 = {
 const T25 = {
   resourceBookingFindAll: [
     {
-      dataValues: {
-        updatedBy: null,
-        endDate: '2020-10-27',
-        billingAccountId: 80000071,
-        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
-        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
-        rateType: 'hourly',
-        createdAt: '2021-05-08T18:35:16.368Z',
-        memberRate: 13.23,
-        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
-        customerRate: 13,
-        id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
-        projectId: 17234,
-        startDate: '2020-09-27',
-        status: 'placed',
-        updatedAt: '2021-05-08T18:35:16.368Z'
-      },
-      toJSON: () => T25.resourceBookingFindAll[0].dataValues
+      updatedBy: null,
+      endDate: '2020-10-27',
+      billingAccountId: 80000071,
+      userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+      jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+      rateType: 'hourly',
+      createdAt: '2021-05-08T18:35:16.368Z',
+      memberRate: 13.23,
+      createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+      customerRate: 13,
+      id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75',
+      projectId: 17234,
+      startDate: '2020-09-27',
+      status: 'placed',
+      updatedAt: '2021-05-08T18:35:16.368Z'
     },
     {
-      dataValues: {
-        updatedBy: null,
-        endDate: '2020-10-27',
-        billingAccountId: 80000071,
-        userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
-        jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
-        rateType: 'hourly',
-        createdAt: '2021-05-08T18:47:37.268Z',
-        memberRate: 13.23,
-        createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
-        customerRate: 13,
-        id: '60e99790-8da0-4596-badc-29a06feb78a0',
-        projectId: 17234,
-        startDate: '2020-09-27',
-        status: 'placed',
-        updatedAt: '2021-05-08T18:47:37.268Z'
-      },
-      toJSON: () => T25.resourceBookingFindAll[1].dataValues
+      updatedBy: null,
+      endDate: '2020-10-27',
+      billingAccountId: 80000071,
+      userId: 'a55fe1bc-1754-45fa-9adc-cf3d6d7c377a',
+      jobId: '05232809-3693-44c1-a0cc-9a79f2672385',
+      rateType: 'hourly',
+      createdAt: '2021-05-08T18:47:37.268Z',
+      memberRate: 13.23,
+      createdBy: '57646ff9-1cd3-4d3c-88ba-eb09a395366c',
+      customerRate: 13,
+      id: '60e99790-8da0-4596-badc-29a06feb78a0',
+      projectId: 17234,
+      startDate: '2020-09-27',
+      status: 'placed',
+      updatedAt: '2021-05-08T18:47:37.268Z'
     }
   ],
   resourceBookingCount: [{ id: 'fbe133dd-0e36-4d0c-8197-49307b13ce75', count: 1 },
@@ -1473,7 +1466,7 @@ const T27 = {
   },
   error: {
     httpStatus: 403,
-    message: 'You don\'t have access to view memberRate, paymentTotal and payments'
+    message: 'You don\'t have access to view memberRate and paymentTotal'
   }
 }
 const T28 = {
@@ -1524,14 +1517,14 @@ const T34 = {
   criteria: { fields: 'id,startDate,endDate,workPeriods', status: 'closed' },
   error: {
     httpStatus: 400,
-    message: 'Can not filter or sort by ResourceBooking field which is not included in fields'
+    message: 'Can not filter or sort by some field which is not included in fields'
   }
 }
 const T35 = {
   criteria: { fields: 'id,startDate,endDate', 'workPeriods.paymentStatus': 'completed' },
   error: {
     httpStatus: 400,
-    message: 'Can not filter or sort by WorkPeriod field which is not included in fields'
+    message: 'Can not filter or sort by some field which is not included in fields'
   }
 }
 const T36 = {

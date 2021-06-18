@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6f274c86-24a5-412e-95e6-fafa34e2a936",
+		"_postman_id": "3a5bab78-49d6-4dca-9aea-e8688564ac98",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -8183,33 +8183,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -8377,33 +8352,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,status,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,status,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,status,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,status,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -8576,33 +8526,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,rateType,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,rateType,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,rateType,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,rateType,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -8775,33 +8700,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,startDate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,startDate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,startDate,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,startDate,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -8974,33 +8874,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,endDate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,endDate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,endDate,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,endDate,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -9173,33 +9048,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,customerRate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,customerRate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,customerRate,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,customerRate,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -9372,33 +9222,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,memberRate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,memberRate,workPeriods.id,workPeriods.payments.id,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,memberRate,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,memberRate,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -9564,33 +9389,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.userHandle,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.startDate,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -9756,33 +9556,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.startDate,workPeriods.daysWorked,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -9948,33 +9723,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.startDate,workPeriods.daysPaid,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -10140,33 +9890,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.startDate,workPeriods.paymentTotal,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -10332,33 +10057,8 @@
 											"disabled": true
 										},
 										{
-											"key": "workPeriods.payments.status",
-											"value": "completed",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.payments.status",
-											"disabled": true
-										},
-										{
-											"key": "workPeriods.payments.days",
-											"value": "3",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.payments.days",
-											"disabled": true
-										},
-										{
 											"key": "fields",
 											"value": "id,workPeriods",
-											"disabled": true
-										},
-										{
-											"key": "fields",
-											"value": "id,workPeriods.startDate,workPeriods.paymentStatus,workPeriods.payments",
 											"disabled": true
 										}
 									]
@@ -11392,7 +11092,7 @@
 									"pm.test('Status code is 403', function () {\r",
 									"    pm.response.to.have.status(403);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate, paymentTotal and payments\")\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate and paymentTotal\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -11437,7 +11137,7 @@
 									"pm.test('Status code is 403', function () {\r",
 									"    pm.response.to.have.status(403);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate, paymentTotal and payments\")\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate and paymentTotal\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -12267,7 +11967,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Can not filter or sort by ResourceBooking field which is not included in fields\")\r",
+									"    pm.expect(response.message).to.eq(\"Can not filter or sort by some field which is not included in fields\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -12315,7 +12015,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Can not filter or sort by ResourceBooking field which is not included in fields\")\r",
+									"    pm.expect(response.message).to.eq(\"Can not filter or sort by some field which is not included in fields\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -12455,7 +12155,7 @@
 									"pm.test('Status code is 403', function () {\r",
 									"    pm.response.to.have.status(403);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate, paymentTotal and payments\")\r",
+									"    pm.expect(response.message).to.eq(\"You don't have access to view memberRate and paymentTotal\")\r",
 									"});"
 								],
 								"type": "text/javascript"
