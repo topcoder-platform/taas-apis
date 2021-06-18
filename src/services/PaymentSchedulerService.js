@@ -131,7 +131,7 @@ async function processPayment (workPeriodPayment) {
     await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
 
     if (paymentScheduler) {
-      await paymentScheduler.update({ step: _.get(err, 'step', PaymentSchedulerStatus.CLOSE_CHALLENGE), userId: paymentScheduler.userId, status: 'failed' })
+      await paymentScheduler.update({ step: _.get(err, 'step'), userId: paymentScheduler.userId, status: 'failed' })
     }
     localLogger.error(`Processed workPeriodPayment ${workPeriodPayment.id} failed`, 'processPayment')
     return processResult.FAIL
