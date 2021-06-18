@@ -5498,6 +5498,10 @@ components:
             - roleSearchRequestId
             - isExternalMember
           properties:
+            skillsMatch:
+              type: number
+              example: 80
+              description: "skills match"
             roleSearchRequestId:
               type: string
               format: uuid

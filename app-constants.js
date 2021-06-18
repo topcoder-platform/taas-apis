@@ -53,7 +53,7 @@ const Scopes = {
   UPDATE_INTERVIEW: 'update:taas-interviews',
   ALL_INTERVIEW: 'all:taas-interviews',
   // role
-  READ_ROLE: 'read:taas-roles',
+  READ_ROLE: 'read:roles',
   CREATE_ROLE: 'create:taas-roles',
   UPDATE_ROLE: 'update:taas-roles',
   DELETE_ROLE: 'delete:taas-roles',

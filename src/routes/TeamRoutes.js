@@ -95,7 +95,7 @@ module.exports = {
       controller: 'TeamController',
       method: 'roleSearchRequest',
       auth: 'jwt',
-      scopes: [constants.Scopes.CREATE_ROLE_SEARCH_REQUEST]
+      scopes: [constants.Scopes.CREATE_ROLE_SEARCH_REQUEST, constants.Scopes.READ_ROLE]
     }
   },
   '/taas-teams/submitTeamRequest': {

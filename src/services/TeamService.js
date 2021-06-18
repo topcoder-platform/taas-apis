@@ -755,6 +755,7 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
+    role.skillsMatch = 100
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
     // validate given skillIds and convert them into skill names
@@ -782,7 +783,7 @@ roleSearchRequest.schema = Joi.object()
     currentUser: Joi.object().required(),
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
-      jobDescription: Joi.string().max(255),
+      jobDescription: Joi.string().max(2000),
       skills: Joi.array().items(Joi.string().uuid().required())
     }).required().min(1)
   }).required()
@@ -808,13 +809,14 @@ async function getRoleBySkills (skills) {
     })
     // sort roles by matchingRate, global rate and name
     result = _.orderBy(result, ['matchingRate', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
+    result[0].skillsMatch = Math.ceil(result[0].matchingRate * 100) || 0
     if (result[0].matchingRate >= config.ROLE_MATCHING_RATE) {
       // return the 1st role
       return _.omit(result[0], ['matchingRate', 'maxGlobal'])
     }
   }
-  // if no matching role found then return Niche role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Niche' } } }) || {}
+  // if no matching role found then return Custom role or empty object
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } } }) || {}
 }
 
 getRoleBySkills.schema = Joi.object()

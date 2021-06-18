@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d413d21d-272f-454f-b26a-0d7e3bf926d9",
+		"_postman_id": "0945e4c8-2066-4096-a82d-1ce6a0b0c0fe",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -19627,7 +19627,7 @@
 							"response": []
 						},
 						{
-							"name": "create role Niche",
+							"name": "create role Custom",
 							"event": [
 								{
 									"listen": "test",
@@ -19652,7 +19652,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Niche\",\n    \"rates\": [\n        {\n            \"global\": 10,\n            \"inCountry\": 10,\n            \"offShore\": 10\n        }\n    ]\n}",
+									"raw": "{\n    \"name\": \"Custom\",\n    \"rates\": [\n        {\n            \"global\": 10,\n            \"inCountry\": 10,\n            \"offShore\": 10\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -20424,7 +20424,7 @@
 											"pm.test('Status code is 200', function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"    const response = pm.response.json()\r",
-											"    pm.expect(response.name).to.eq(\"Niche\")\r",
+											"    pm.expect(response.name).to.eq(\"Custom\")\r",
 											"});"
 										],
 										"type": "text/javascript"
