@@ -195,18 +195,22 @@ async function fullyUpdateJobCandidate (currentUser, id, data) {
   return updateJobCandidate(currentUser, id, data)
 }
 
-fullyUpdateJobCandidate.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
-  id: Joi.string().uuid().required(),
-  data: Joi.object().keys({
-    jobId: Joi.string().uuid().required(),
-    userId: Joi.string().uuid().required(),
-    status: Joi.jobCandidateStatus().default('open'),
-    externalId: Joi.string().allow(null).default(null),
-    resume: Joi.string().uri().allow('').allow(null).default(null),
-    remark: Joi.string().allow('').allow(null).default(null)
-  }).required()
-}).required()
+fullyUpdateJobCandidate.schema = Joi.object()
+  .keys({
+    currentUser: Joi.object().required(),
+    id: Joi.string().uuid().required(),
+    data: Joi.object()
+      .keys({
+        jobId: Joi.string().uuid().required(),
+        userId: Joi.string().uuid().required(),
+        status: Joi.jobCandidateStatus().default("open"),
+        externalId: Joi.string().allow(null).default(null),
+        resume: Joi.string().uri().allow("").allow(null).default(null),
+        remark: Joi.stringAllowEmpty().allow(null),
+      })
+      .required(),
+  })
+  .required();
 
 /**
  * Delete jobCandidate by id
