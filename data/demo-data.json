@@ -7622,9 +7622,29 @@
     ],
     "Role": [
         {
+            "id": "f5e01b7c-466f-45c8-989c-16ff831d7e59",
+            "name": "Custom",
+            "description": null,
+            "listOfSkills": null,
+            "rates": [{
+                "global": 1200,
+                "offShore": 1200,
+                "inCountry": 1200
+            }],
+            "numberOfMembers": null,
+            "numberOfMembersAvailable": null,
+            "imageUrl": null,
+            "timeToCandidate": null,
+            "timeToInterview": null,
+            "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+            "updatedBy": null,
+            "createdAt": "2021-05-27T21:43:08.201Z",
+            "updatedAt": "2021-05-27T21:43:08.201Z"
+        },
+        {
             "id": "c145247d-5757-463d-9317-ff9e7026d403",
             "name": "Angular Developer",
-            "description": "Angular is an open-source, client-side framework based on TypeScript and designed for building web applications.",
+            "description": "* Writes tested and documented JavaScript, HTML and CSS\n* Makes design and technical decisions for AngularJS projects\n* Develops application code and unit test in the AngularJS, Rest Web Services and Java technologies",
             "listOfSkills": [
                 "database",
                 "winforms",
@@ -7656,7 +7676,7 @@
         {
             "id": "d7ff0289-d3ea-44d8-b39a-53bba5b5b309",
             "name": "Dev Ops Engineer",
-            "description": "A DevOps engineer introduces processes, tools, and methodologies to balance needs throughout the software development life cycle, from coding and deployment, to maintenance and updates.",
+            "description": "* Introduces processes, tools, and methodologies\n* Balances needs throughout the software development life cycle\n* Configures server images, optimizes task performance in correspondence with engineers",
             "listOfSkills": [
                 "dropwizard",
                 "nginx",
@@ -7700,7 +7720,7 @@
         {
             "id": "e7b7e818-40d4-4102-b486-09bdd21400b8",
             "name": "Salesforce Developer",
-            "description": "A Salesforce developer is a programmer who builds Salesforce applications across various PaaS (Platform as a Service) platforms.",
+            "description": "* Meets with project managers to determine CRM needs\n* Develops customized solutions within the Salesforce platform\n* Designs, codes, and implements Salesforce applications\n* Creates timelines and development goals\n* Tests the stability and functionality of the application\n* Troubleshoots and fixes bugs\n* Writes documents and provides technical training for Salesforce Staff\n* Maintains the security and integrity of the application software",
             "listOfSkills": [
                 "docker",
                 ".net",

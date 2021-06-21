@@ -17653,7 +17653,7 @@
 							"response": []
 						},
 						{
-							"name": "create role Niche",
+							"name": "create role Custom",
 							"event": [
 								{
 									"listen": "test",
@@ -17678,7 +17678,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Niche\",\n    \"rates\": [\n        {\n            \"global\": 10,\n            \"inCountry\": 10,\n            \"offShore\": 10\n        }\n    ]\n}",
+									"raw": "{\n    \"name\": \"Custom\",\n    \"rates\": [\n        {\n            \"global\": 1200,\n            \"inCountry\": 1200,\n            \"offShore\": 1200\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -18450,7 +18450,7 @@
 											"pm.test('Status code is 200', function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"    const response = pm.response.json()\r",
-											"    pm.expect(response.name).to.eq(\"Niche\")\r",
+											"    pm.expect(response.name).to.eq(\"Custom\")\r",
 											"});"
 										],
 										"type": "text/javascript"

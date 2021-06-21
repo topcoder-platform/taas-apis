@@ -74,7 +74,7 @@ async function _checkIfSameNamedRoleExists (roleName) {
   * @param {Boolean} fromDb flag if query db for data or not
   * @returns {Object} the role
   */
-async function getRole (currentUser, id, fromDb = false) {
+async function getRole (id, fromDb = false) {
   if (!fromDb) {
     try {
       const role = await esClient.get({
@@ -95,7 +95,6 @@ async function getRole (currentUser, id, fromDb = false) {
 }
 
 getRole.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   fromDb: Joi.boolean()
 }).required()
@@ -230,7 +229,7 @@ deleteRole.schema = Joi.object().keys({
   * @param {Object} criteria the search criteria
   * @returns {Object} the search result
   */
-async function searchRoles (currentUser, criteria) {
+async function searchRoles (criteria) {
   // clean skill names and convert into an array
   criteria.skillsList = _.filter(_.map(_.split(criteria.skillsList, ','), skill => _.trim(skill)), skill => !_.isEmpty(skill))
   try {
@@ -291,7 +290,6 @@ async function searchRoles (currentUser, criteria) {
 }
 
 searchRoles.schema = Joi.object().keys({
-  currentUser: Joi.object().required(),
   criteria: Joi.object().keys({
     skillsList: Joi.string(),
     keyword: Joi.string()
