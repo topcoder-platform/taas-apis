@@ -14,16 +14,12 @@ module.exports = {
     get: {
       controller: 'RoleController',
       method: 'searchRoles',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_ROLE, constants.Scopes.ALL_ROLE]
     }
   },
   '/taas-roles/:id': {
     get: {
       controller: 'RoleController',
       method: 'getRole',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_ROLE, constants.Scopes.ALL_ROLE]
     },
     patch: {
       controller: 'RoleController',

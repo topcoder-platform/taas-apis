@@ -10,7 +10,7 @@ const service = require('../services/RoleService')
  * @param res the response
  */
 async function getRole (req, res) {
-  res.send(await service.getRole(req.authUser, req.params.id, req.query.fromDb))
+  res.send(await service.getRole(req.params.id, req.query.fromDb))
 }
 
 /**
@@ -47,7 +47,7 @@ async function deleteRole (req, res) {
  * @param res the response
  */
 async function searchRoles (req, res) {
-  res.send(await service.searchRoles(req.authUser, req.query))
+  res.send(await service.searchRoles(req.query))
 }
 
 module.exports = {

@@ -5505,6 +5505,11 @@ components:
             isExternalMember:
               type: boolean
               description: "Is the user external member"
+            skillsMatch:
+              type: number
+              format: float
+              description: "Rate at which searched skills match the given role"
+              example: 0.75
     SubmitTeamRequestBody:
       properties:
         teamName:
