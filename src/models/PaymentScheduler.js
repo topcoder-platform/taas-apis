@@ -50,8 +50,7 @@ module.exports = (sequelize) => {
         allowNull: false
       },
       step: {
-        type: Sequelize.ENUM(_.values(PaymentSchedulerStatus)),
-        allowNull: false
+        type: Sequelize.ENUM(_.values(PaymentSchedulerStatus))
       },
       status: {
         type: Sequelize.ENUM(

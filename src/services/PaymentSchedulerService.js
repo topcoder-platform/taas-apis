@@ -123,7 +123,7 @@ async function processPayment (workPeriodPayment) {
     return processResult.SUCCESS
   } catch (err) {
     logger.logFullError(err, { component: 'PaymentSchedulerService', context: 'processPayment' })
-    const statusDetails = { errorMessage: err.message, errorCode: _.get(err, 'status', -1), retry: _.get(err, 'retry', -1), step: _.get(err, 'step'), challengeId: paymentScheduler ? paymentScheduler.challengeId : null }
+    const statusDetails = { errorMessage: extractErrorMessage(err), errorCode: _.get(err, 'status', -1), retry: _.get(err, 'retry', -1), step: _.get(err, 'step'), challengeId: paymentScheduler ? paymentScheduler.challengeId : null }
     const oldValue = workPeriodPayment.toJSON()
     // If payment processing failed Work Periods Payment "status" should be changed to "failed" and populate "statusDetails" field with error details in JSON format.
     const updated = await workPeriodPayment.update({ statusDetails, status: 'failed' })
@@ -131,7 +131,7 @@ async function processPayment (workPeriodPayment) {
     await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
 
     if (paymentScheduler) {
-      await paymentScheduler.update({ step: PaymentSchedulerStatus.CLOSE_CHALLENGE, userId: paymentScheduler.userId, status: 'failed' })
+      await paymentScheduler.update({ step: _.get(err, 'step'), userId: paymentScheduler.userId, status: 'failed' })
     }
     localLogger.error(`Processed workPeriodPayment ${workPeriodPayment.id} failed`, 'processPayment')
     return processResult.FAIL
@@ -330,6 +330,19 @@ async function withRetry (func, argArr, predictFunc, step) {
       localLogger.info(`execute ${step} with error: ${err.message}, retry...`, 'withRetry')
     }
   }
+}
+
+/**
+ * Extract error message from throwed error object
+ * @param {object} err the error object
+ * @returns {String} the error message
+ */
+function extractErrorMessage (err) {
+  return _.get(err, 'response.body.result.content.message') ||
+  _.get(err, 'response.body.message') ||
+  _.get(err, 'message') ||
+  _.get(err, 'response.res.statusMessage') ||
+  err.toString()
 }
 
 module.exports = {
