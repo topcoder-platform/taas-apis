@@ -776,11 +776,12 @@ async function roleSearchRequest (currentUser, data) {
   }
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
-  const { id: roleSearchRequestId } = await createRoleSearchRequest(currentUser, data)
+  const { id: roleSearchRequestId, jobTitle } = await createRoleSearchRequest(currentUser, data)
+  const entity = jobTitle ? { jobTitle, roleSearchRequestId } : { roleSearchRequestId };
   // clean Role
   role = await _cleanRoleDTO(currentUser, role)
   // return Role
-  return _.assign(role, { roleSearchRequestId })
+  return _.assign(role, entity)
 }
 
 roleSearchRequest.schema = Joi.object()
@@ -789,8 +790,10 @@ roleSearchRequest.schema = Joi.object()
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
       jobDescription: Joi.string().max(255),
-      skills: Joi.array().items(Joi.string().uuid().required())
-    }).required().min(1)
+      skills: Joi.array().items(Joi.string().uuid().required()),
+      jobTitle: Joi.string().max(100),
+      previousRoleSearchRequestId: Joi.string().uuid()
+    }).required().or('roleId', 'jobDescription', 'skills')
   }).required()
 
 /**
