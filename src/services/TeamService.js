@@ -769,7 +769,7 @@ async function roleSearchRequest (currentUser, data) {
     role = await getRoleBySkills(skills)
   } else {
     // if only job description is provided, collect skill names from description
-    const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
+    const tags = await getSkillsByJobDescription({ description: data.jobDescription })
     const skills = _.map(tags, 'tag')
     // find the best matching role
     role = await getRoleBySkills(skills)
