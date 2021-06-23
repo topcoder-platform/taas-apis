@@ -838,7 +838,7 @@ getRoleBySkills.schema = Joi.object()
  * @param {Object} data the search criteria
  * @returns {Object} the result
  */
-async function getSkillsByJobDescription (currentUser, data) {
+async function getSkillsByJobDescription (data) {
   // load topcoder skills if needed. Using cached skills helps to avoid
   // unnecessary api calls which is extremely time comsuming.
   await _reloadCachedTopcoderSkills()
@@ -881,7 +881,6 @@ async function getSkillsByJobDescription (currentUser, data) {
 
 getSkillsByJobDescription.schema = Joi.object()
   .keys({
-    currentUser: Joi.object().required(),
     data: Joi.object().keys({
       description: Joi.string().required()
     }).required()

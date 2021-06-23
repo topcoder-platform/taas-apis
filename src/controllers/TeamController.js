@@ -114,7 +114,7 @@ async function getMe (req, res) {
  * @param res the response
  */
 async function getSkillsByJobDescription (req, res) {
-  res.send(await service.getSkillsByJobDescription(req.authUser, req.body))
+  res.send(await service.getSkillsByJobDescription(req.body))
 }
 
 /**
