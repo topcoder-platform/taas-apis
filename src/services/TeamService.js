@@ -760,7 +760,7 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
-    role.skillsMatch = 1;
+    role.skillsMatch = 1
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
     // validate given skillIds and convert them into skill names
@@ -837,7 +837,7 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } } }) || {}
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
 }
 
 getRoleBySkills.schema = Joi.object()
