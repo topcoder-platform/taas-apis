@@ -13,7 +13,7 @@ const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 const HttpStatus = require('http-status-codes')
-const { Op } = require('sequelize')
+const { Op, where, fn, col } = require('sequelize')
 const models = require('../models')
 const stopWords = require('../../data/stopWords.json')
 const { getAuditM2Muser } = require('../common/helper')
@@ -776,11 +776,12 @@ async function roleSearchRequest (currentUser, data) {
   }
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
-  const { id: roleSearchRequestId } = await createRoleSearchRequest(currentUser, data)
+  const { id: roleSearchRequestId, jobTitle } = await createRoleSearchRequest(currentUser, data)
+  const entity = jobTitle ? { jobTitle, roleSearchRequestId } : { roleSearchRequestId };
   // clean Role
   role = await _cleanRoleDTO(currentUser, role)
   // return Role
-  return _.assign(role, { roleSearchRequestId })
+  return _.assign(role, entity)
 }
 
 roleSearchRequest.schema = Joi.object()
@@ -789,8 +790,10 @@ roleSearchRequest.schema = Joi.object()
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
       jobDescription: Joi.string().max(255),
-      skills: Joi.array().items(Joi.string().uuid().required())
-    }).required().min(1)
+      skills: Joi.array().items(Joi.string().uuid().required()),
+      jobTitle: Joi.string().max(100),
+      previousRoleSearchRequestId: Joi.string().uuid()
+    }).required().or('roleId', 'jobDescription', 'skills')
   }).required()
 
 /**
@@ -799,17 +802,30 @@ roleSearchRequest.schema = Joi.object()
  * @returns {Role} the best matching Role
  */
 async function getRoleBySkills (skills) {
+  // Case-insensitive search for roles matching any of the given skills
   const lowerCaseSkills = skills.map(skill => skill.toLowerCase())
-  // find all roles which includes any of the given skills
   const queryCriteria = {
-    where: { listOfSkills: { [Op.overlap]: lowerCaseSkills } },
+    where: where(
+      fn(
+        'string_to_array', 
+        fn(
+          'lower', 
+          fn(
+            'array_to_string', 
+            col('list_of_skills'),
+            ','
+          )
+        ),
+        ','
+      ),
+      {[Op.overlap]: lowerCaseSkills }),
     raw: true
   }
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
-      // calculate each found roles matching rate
-      role.skillsMatch = _.intersection(role.listOfSkills, lowerCaseSkills).length / skills.length
+      // calculate each found roles matching rate (must again be made case-insensitive)
+      role.skillsMatch = _.intersection(role.listOfSkills.map(skill => skill.toLowerCase()), lowerCaseSkills).length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
