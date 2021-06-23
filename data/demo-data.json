@@ -7646,10 +7646,10 @@
             "name": "Angular Developer",
             "description": "* Writes tested and documented JavaScript, HTML and CSS\n* Makes design and technical decisions for AngularJS projects\n* Develops application code and unit test in the AngularJS, Rest Web Services and Java technologies",
             "listOfSkills": [
-                "database",
-                "winforms",
-                "user interface (ui)",
-                "photoshop"
+                "Database",
+                "Winforms",
+                "User Interface (Ui)",
+                "Photoshop"
             ],
             "rates": [
                 {
@@ -7678,10 +7678,10 @@
             "name": "Dev Ops Engineer",
             "description": "* Introduces processes, tools, and methodologies\n* Balances needs throughout the software development life cycle\n* Configures server images, optimizes task performance in correspondence with engineers",
             "listOfSkills": [
-                "dropwizard",
-                "nginx",
-                "machine learning",
-                "force.com"
+                "Dropwizard",
+                "NGINX",
+                "Machine Learning",
+                "Force.com"
             ],
             "rates": [
                 {
@@ -7722,10 +7722,10 @@
             "name": "Salesforce Developer",
             "description": "* Meets with project managers to determine CRM needs\n* Develops customized solutions within the Salesforce platform\n* Designs, codes, and implements Salesforce applications\n* Creates timelines and development goals\n* Tests the stability and functionality of the application\n* Troubleshoots and fixes bugs\n* Writes documents and provides technical training for Salesforce Staff\n* Maintains the security and integrity of the application software",
             "listOfSkills": [
-                "docker",
-                ".net",
+                "Docker",
+                ".NET",
                 "appcelerator",
-                "flux"
+                "Flux"
             ],
             "rates": [
                 {

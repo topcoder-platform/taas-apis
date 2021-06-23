@@ -62,6 +62,11 @@ module.exports = (sequelize) => {
           type: Sequelize.UUID
         })
       },
+      jobTitle: {
+        field: 'job_title',
+        type: Sequelize.STRING(100),
+        allowNull: true
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

@@ -5249,6 +5249,9 @@ components:
             jobDescription:
               type: string
               description: "The description of the job."
+            jobTitle:
+              type: string
+              description: "An optional job title."
         - type: object
           required:
             - skills
@@ -5281,6 +5284,10 @@ components:
               format: float
               description: "Rate at which searched skills match the given role"
               example: 0.75
+            jobTitle:
+              type: string
+              description: "Optional job title."
+              example: "Lead Application Developer"
     SubmitTeamRequestBody:
       properties:
         teamName:
