@@ -1960,8 +1960,8 @@ function removeTextFormatting (text) {
   // Remove footnotes
   text = _.replace(text, /\[\^.+?\](: .*?$)?/g, ' ')
   text = _.replace(text, /\s{0,2}\[.*?\]: .*?$/g, ' ')
-  // Remove images
-  text = _.replace(text, /!\[(.*?)\][[(].*?[\])]/g, ' $1 ')
+  // Remove images and keep description unless it is default description "image"
+  text = _.replace(text, /!(\[((?!image).*?)\]|\[.*?\])[[(].*?[\])]/g, ' $2 ')
   // Remove inline links
   text = _.replace(text, /\[(.*?)\][[(].*?[\])]/g, ' $1 ')
   // Remove blockquotes
