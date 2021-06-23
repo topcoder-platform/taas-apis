@@ -90,7 +90,7 @@ async function processPayment (workPeriodPayment) {
     const oldValue = workPeriodPayment.toJSON()
     const updated = await workPeriodPayment.update({ status: 'in-progress' })
     // Update the modified status to es
-    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
+    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
   }
   // Check whether the number of processed records per minute exceeds the specified number, if it exceeds, wait for the next minute before processing
   await checkWait(PaymentSchedulerStatus.START_PROCESS)
@@ -115,7 +115,7 @@ async function processPayment (workPeriodPayment) {
     // 5. update wp and save  it should only update already existent Work Period Payment record with created "challengeId" and "status=completed".
     const updated = await workPeriodPayment.update({ challengeId: paymentScheduler.challengeId, status: 'completed' })
     // Update the modified status to es
-    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
+    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
 
     await paymentScheduler.update({ step: PaymentSchedulerStatus.CLOSE_CHALLENGE, userId: paymentScheduler.userId, status: 'completed' })
 
@@ -128,7 +128,7 @@ async function processPayment (workPeriodPayment) {
     // If payment processing failed Work Periods Payment "status" should be changed to "failed" and populate "statusDetails" field with error details in JSON format.
     const updated = await workPeriodPayment.update({ statusDetails, status: 'failed' })
     // Update the modified status to es
-    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue })
+    await postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
 
     if (paymentScheduler) {
       await paymentScheduler.update({ step: _.get(err, 'step'), userId: paymentScheduler.userId, status: 'failed' })
