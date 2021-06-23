@@ -760,7 +760,7 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
-    role.skillsMatch = 1;
+    role.skillsMatch = 1
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
     // validate given skillIds and convert them into skill names
@@ -802,30 +802,16 @@ roleSearchRequest.schema = Joi.object()
  * @returns {Role} the best matching Role
  */
 async function getRoleBySkills (skills) {
-  // Case-insensitive search for roles matching any of the given skills
-  const lowerCaseSkills = skills.map(skill => skill.toLowerCase())
+  // find all roles which includes any of the given skills
   const queryCriteria = {
-    where: where(
-      fn(
-        'string_to_array', 
-        fn(
-          'lower', 
-          fn(
-            'array_to_string', 
-            col('list_of_skills'),
-            ','
-          )
-        ),
-        ','
-      ),
-      {[Op.overlap]: lowerCaseSkills }),
+    where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
-      // calculate each found roles matching rate (must again be made case-insensitive)
-      role.skillsMatch = _.intersection(role.listOfSkills.map(skill => skill.toLowerCase()), lowerCaseSkills).length / skills.length
+      // calculate each found roles matching rate
+      role.skillsMatch = _.intersection(role.listOfSkills, skills).length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
@@ -837,7 +823,7 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } } }) || {}
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
 }
 
 getRoleBySkills.schema = Joi.object()
