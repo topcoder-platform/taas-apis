@@ -23,7 +23,7 @@ module.exports = {
   '/taas-teams/skills': {
     get: {
       controller: 'TeamController',
-      method: 'searchSkills',
+      method: 'searchSkills'
     }
   },
   '/taas-teams/me': {
@@ -37,9 +37,7 @@ module.exports = {
   '/taas-teams/getSkillsByJobDescription': {
     post: {
       controller: 'TeamController',
-      method: 'getSkillsByJobDescription',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_TAAS_TEAM]
+      method: 'getSkillsByJobDescription'
     }
   },
   '/taas-teams/:id': {
@@ -91,7 +89,7 @@ module.exports = {
   '/taas-teams/sendRoleSearchRequest': {
     post: {
       controller: 'TeamController',
-      method: 'roleSearchRequest',
+      method: 'roleSearchRequest'
     }
   },
   '/taas-teams/submitTeamRequest': {

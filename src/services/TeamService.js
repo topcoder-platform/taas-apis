@@ -760,7 +760,7 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
-    role.skillsMatch = 1;
+    role.skillsMatch = 1
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
     // validate given skillIds and convert them into skill names
@@ -769,18 +769,19 @@ async function roleSearchRequest (currentUser, data) {
     role = await getRoleBySkills(skills)
   } else {
     // if only job description is provided, collect skill names from description
-    const tags = await getSkillsByJobDescription(currentUser, { description: data.jobDescription })
+    const tags = await getSkillsByJobDescription({ description: data.jobDescription })
     const skills = _.map(tags, 'tag')
     // find the best matching role
     role = await getRoleBySkills(skills)
   }
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
-  const { id: roleSearchRequestId } = await createRoleSearchRequest(currentUser, data)
+  const { id: roleSearchRequestId, jobTitle } = await createRoleSearchRequest(currentUser, data)
+  const entity = jobTitle ? { jobTitle, roleSearchRequestId } : { roleSearchRequestId }
   // clean Role
   role = await _cleanRoleDTO(currentUser, role)
   // return Role
-  return _.assign(role, { roleSearchRequestId })
+  return _.assign(role, entity)
 }
 
 roleSearchRequest.schema = Joi.object()
@@ -789,8 +790,10 @@ roleSearchRequest.schema = Joi.object()
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
       jobDescription: Joi.string().max(255),
-      skills: Joi.array().items(Joi.string().uuid().required())
-    }).required().min(1)
+      skills: Joi.array().items(Joi.string().uuid().required()),
+      jobTitle: Joi.string().max(100),
+      previousRoleSearchRequestId: Joi.string().uuid()
+    }).required().or('roleId', 'jobDescription', 'skills')
   }).required()
 
 /**
@@ -799,17 +802,16 @@ roleSearchRequest.schema = Joi.object()
  * @returns {Role} the best matching Role
  */
 async function getRoleBySkills (skills) {
-  const lowerCaseSkills = skills.map(skill => skill.toLowerCase())
   // find all roles which includes any of the given skills
   const queryCriteria = {
-    where: { listOfSkills: { [Op.overlap]: lowerCaseSkills } },
+    where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
       // calculate each found roles matching rate
-      role.skillsMatch = _.intersection(role.listOfSkills, lowerCaseSkills).length / skills.length
+      role.skillsMatch = _.intersection(role.listOfSkills, skills).length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
@@ -821,7 +823,7 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } } }) || {}
+  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
 }
 
 getRoleBySkills.schema = Joi.object()
@@ -836,7 +838,7 @@ getRoleBySkills.schema = Joi.object()
  * @param {Object} data the search criteria
  * @returns {Object} the result
  */
-async function getSkillsByJobDescription (currentUser, data) {
+async function getSkillsByJobDescription (data) {
   // load topcoder skills if needed. Using cached skills helps to avoid
   // unnecessary api calls which is extremely time comsuming.
   await _reloadCachedTopcoderSkills()
@@ -879,7 +881,6 @@ async function getSkillsByJobDescription (currentUser, data) {
 
 getSkillsByJobDescription.schema = Joi.object()
   .keys({
-    currentUser: Joi.object().required(),
     data: Joi.object().keys({
       description: Joi.string().required()
     }).required()
@@ -984,7 +985,7 @@ createRoleSearchRequest.schema = Joi.object()
  */
 async function _cleanRoleDTO (currentUser, role) {
   // if current user is machine, it means user is not logged in
-  if (currentUser.isMachine || await isExternalMember(currentUser.userId)) {
+  if (_.isNil(currentUser) || currentUser.isMachine || await isExternalMember(currentUser.userId)) {
     role.isExternalMember = true
     if (role.rates) {
       role.rates = _.map(role.rates, rate =>

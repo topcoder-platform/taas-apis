@@ -59,6 +59,36 @@ module.exports = (app) => {
             next()
           }
         })
+      } else {
+        // public API, but still try to authenticate token if provided, but allow missing/invalid token
+        actions.push((req, res, next) => {
+          const interceptRes = {}
+          interceptRes.status = () => interceptRes
+          interceptRes.json = () => interceptRes
+          interceptRes.send = () => next()
+          authenticator(_.pick(config, ['AUTH_SECRET', 'VALID_ISSUERS']))(req, interceptRes, next)
+        })
+
+        actions.push((req, res, next) => {
+          if (!req.authUser) {
+            next()
+          } else if (req.authUser.isMachine) {
+            if (!def.scopes || !req.authUser.scopes || !helper.checkIfExists(def.scopes, req.authUser.scopes)) {
+              req.authUser = undefined
+            }
+            next()
+          } else {
+            req.authUser.jwtToken = req.headers.authorization
+            // check if user has full manage permission
+            if (_.intersection(req.authUser.roles, constants.FullManagePermissionRoles).length) {
+              req.authUser.hasManagePermission = true
+            }
+            if (_.includes(req.authUser.roles, constants.UserRoles.ConnectManager)) {
+              req.authUser.isConnectManager = true
+            }
+            next()
+          }
+        })
       }
 
       actions.push(method)
