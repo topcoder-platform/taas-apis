@@ -13,7 +13,7 @@ const errors = require('../common/errors')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 const HttpStatus = require('http-status-codes')
-const { Op, where, fn, col } = require('sequelize')
+const { Op } = require('sequelize')
 const models = require('../models')
 const stopWords = require('../../data/stopWords.json')
 const { getAuditM2Muser } = require('../common/helper')
@@ -777,7 +777,7 @@ async function roleSearchRequest (currentUser, data) {
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
   const { id: roleSearchRequestId, jobTitle } = await createRoleSearchRequest(currentUser, data)
-  const entity = jobTitle ? { jobTitle, roleSearchRequestId } : { roleSearchRequestId };
+  const entity = jobTitle ? { jobTitle, roleSearchRequestId } : { roleSearchRequestId }
   // clean Role
   role = await _cleanRoleDTO(currentUser, role)
   // return Role
@@ -985,7 +985,7 @@ createRoleSearchRequest.schema = Joi.object()
  */
 async function _cleanRoleDTO (currentUser, role) {
   // if current user is machine, it means user is not logged in
-  if (currentUser.isMachine || await isExternalMember(currentUser.userId)) {
+  if (_.isNil(currentUser) || currentUser.isMachine || await isExternalMember(currentUser.userId)) {
     role.isExternalMember = true
     if (role.rates) {
       role.rates = _.map(role.rates, rate =>
