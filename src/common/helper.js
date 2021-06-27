@@ -1981,6 +1981,8 @@ function removeTextFormatting (text) {
   text = _.replace(text, /[,"'?/\\]/g, ' ')
   // Replace two or more newlines
   text = _.replace(text, /\n/g, ' ')
+  // Replace non-breaking space with regular space
+  text = _.replace(text, /\xA0/g, ' ')
   // replace all whitespace characters with single space
   text = _.replace(text, /\s\s+/g, ' ')
   return text
