@@ -13,13 +13,13 @@ module.exports = {
     },
     get: {
       controller: 'RoleController',
-      method: 'searchRoles',
+      method: 'searchRoles'
     }
   },
   '/taas-roles/:id': {
     get: {
       controller: 'RoleController',
-      method: 'getRole',
+      method: 'getRole'
     },
     patch: {
       controller: 'RoleController',

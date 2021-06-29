@@ -294,11 +294,11 @@ partiallyUpdateJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null),
+        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
       })
-      .required(),
+      .required()
   })
-  .required();
+  .required()
 
 /**
  * Fully update job by id

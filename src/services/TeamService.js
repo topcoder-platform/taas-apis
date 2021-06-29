@@ -789,7 +789,7 @@ roleSearchRequest.schema = Joi.object()
     currentUser: Joi.object(),
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
-      jobDescription: Joi.string().max(255),
+      jobDescription: Joi.string().max(2000),
       skills: Joi.array().items(Joi.string().uuid().required()),
       jobTitle: Joi.string().max(100),
       previousRoleSearchRequestId: Joi.string().uuid()
@@ -863,6 +863,12 @@ async function getSkillsByJobDescription (data) {
       // do not stop searching after a match in order to detect more lookalikes
       if (skill.pattern.test(word)) {
         foundSkills.push(skill.name)
+      }
+      // for suffix with 'js'
+      if (!word.endsWith('js') && skill.name.endsWith('js')) {
+        if (skill.pattern.test(word + 'js')) {
+          foundSkills.push(skill.name)
+        }
       }
     })
   })
