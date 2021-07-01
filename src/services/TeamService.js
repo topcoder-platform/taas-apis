@@ -771,8 +771,11 @@ async function roleSearchRequest (currentUser, data) {
     // if only job description is provided, collect skill names from description
     const tags = await getSkillsByJobDescription({ description: data.jobDescription })
     const skills = _.map(tags, 'tag')
-    // find the best matching role
-    role = await getRoleBySkills(skills)
+    
+    // add skills to roleSearchRequest and get best matching role
+    const [skillIds, roleList] = await Promise.all([getSkillIdsByNames(skills), getRoleBySkills(skills)])
+    data.skills = skillIds
+    role = roleList
   }
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
