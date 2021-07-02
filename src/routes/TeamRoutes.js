@@ -99,5 +99,13 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.CREATE_TAAS_TEAM]
     }
+  },
+  '/taas-teams/members-suggest/:fragment': {
+    get: {
+      controller: 'TeamController',
+      method: 'suggestMembers',
+      auth: 'jwt',
+      scopes: []
+    }
   }
 }

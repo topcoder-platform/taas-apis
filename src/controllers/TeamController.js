@@ -146,6 +146,15 @@ async function searchSkills (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Suggest members
+ * @param req the request
+ * @param res the response
+ */
+async function suggestMembers (req, res) {
+  res.send(await service.suggestMembers(req.authUser, req.params.fragment))
+}
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -159,5 +168,6 @@ module.exports = {
   getSkillsByJobDescription,
   roleSearchRequest,
   createTeam,
-  searchSkills
+  searchSkills,
+  suggestMembers
 }

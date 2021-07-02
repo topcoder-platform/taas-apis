@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "15f10b58-dda5-4aaf-96e5-061a5c901717",
+		"_postman_id": "87477d86-2d08-40b6-93c6-99a394193e28",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -19305,6 +19305,247 @@
 									"path": [
 										"taas-teams",
 										"getSkillsByJobDescription"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Member Suggestion",
+					"item": [
+						{
+							"name": "get member suggestion successfully with administrator",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/maxceem",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"maxceem"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member suggestion successfully with booking manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_bookingManager}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/isbilir",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"isbilir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member suggestion with connect manager",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_connect_manager_pshahcopmanag2}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/isbilir",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"isbilir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member suggestion with member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_member}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/isbilir",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"isbilir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member suggestion with m2m",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"You are not allowed to perform this action!\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_m2m_all_job}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/isbilir",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"isbilir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member suggestion with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"    const response = pm.response.json()\r",
+											"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer invalid"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-teams/members-suggest/isbilir",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"members-suggest",
+										"isbilir"
 									]
 								}
 							},
