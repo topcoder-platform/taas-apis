@@ -1148,7 +1148,7 @@ async function suggestMembers (currentUser, fragment) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
   }
   const { result } = await helper.getMembersSuggest(fragment)
-  return result.content.slice(0, 100)
+  return result.content
 }
 
 suggestMembers.schema = Joi.object().keys({
