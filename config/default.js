@@ -41,6 +41,8 @@ module.exports = {
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
   // the api to find topcoder members
   TOPCODER_MEMBERS_API: process.env.TOPCODER_MEMBERS_API || 'https://api.topcoder-dev.com/v5/members',
+  // the v3 api to find topcoder members
+  TOPCODER_MEMBERS_API_V3: process.env.TOPCODER_MEMBERS_API_V3 || 'https://api.topcoder-dev.com/v3/members',
   // rate limit of requests to user api
   MAX_PARALLEL_REQUEST_TOPCODER_USERS_API: process.env.MAX_PARALLEL_REQUEST_TOPCODER_USERS_API || 100,
 

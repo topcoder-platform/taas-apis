@@ -771,7 +771,7 @@ async function roleSearchRequest (currentUser, data) {
     // if only job description is provided, collect skill names from description
     const tags = await getSkillsByJobDescription({ description: data.jobDescription })
     const skills = _.map(tags, 'tag')
-    
+
     // add skills to roleSearchRequest and get best matching role
     const [skillIds, roleList] = await Promise.all([getSkillIdsByNames(skills), getRoleBySkills(skills)])
     data.skills = skillIds
@@ -1137,6 +1137,25 @@ searchSkills.schema = Joi.object().keys({
   }).required()
 }).required()
 
+/**
+ * Get member suggestions
+ * @param {object} currentUser the user performing the operation.
+ * @param {string} fragment the user's handle fragment
+ * @returns {Array} the search result, contains result array
+ */
+async function suggestMembers (currentUser, fragment) {
+  if (!currentUser.hasManagePermission) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+  const { result } = await helper.getMembersSuggest(fragment)
+  return result.content.slice(0, 100)
+}
+
+suggestMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  fragment: Joi.string().required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -1155,5 +1174,6 @@ module.exports = {
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
-  searchSkills
+  searchSkills,
+  suggestMembers
 }

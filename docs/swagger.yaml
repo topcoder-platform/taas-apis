@@ -3296,6 +3296,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /taas-teams/members-suggest/{fragment}:
+    get:
+      tags:
+        - Teams
+      description: |
+        Returns suggested members for the given handle fragment
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SuggestedMember"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-roles:
     post:
       tags:
@@ -5404,6 +5439,32 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the role last time.(Will get the user info from the token)"
+    SuggestedMember:
+      properties:
+        userId:
+          type: number
+          example: 40157055
+          description: the user id
+        handle:
+          type: string
+          example: maxceemdev
+          description: the user handle
+        photoURL:
+          type: string
+          example: https://topcoder-dev-media.s3.amazonaws.com/member/profile/maxceem13-1587184611143.jpeg
+          description: the photo url
+        firstName:
+          type: string
+          example: Max
+          description: the firstname of the user
+        lastName:
+          type: string
+          example: Max
+          description: the lastname of the user
+        maxRating:
+          type: number
+          example: 1200
+          description: the maximum rating of the user
     RoleRequestBody:
       required:
         - name
