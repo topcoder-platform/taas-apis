@@ -1981,9 +1981,31 @@ function removeTextFormatting (text) {
   text = _.replace(text, /[,"'?/\\]/g, ' ')
   // Replace two or more newlines
   text = _.replace(text, /\n/g, ' ')
+  // Replace non-breaking space with regular space
+  text = _.replace(text, /\xA0/g, ' ')
   // replace all whitespace characters with single space
   text = _.replace(text, /\s\s+/g, ' ')
   return text
+}
+
+/**
+ * Function to get member suggestions
+ * @param {string} fragment the handle fragment
+ * @return the request result
+ */
+async function getMembersSuggest (fragment) {
+  const token = await getM2MToken()
+  const url = `${config.TOPCODER_MEMBERS_API_V3}/_suggest/${encodeURIComponent(fragment)}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'getMembersSuggest',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  return res.body
 }
 
 module.exports = {
@@ -2046,5 +2068,6 @@ module.exports = {
   substituteStringByObject,
   createProject,
   getMemberGroups,
-  removeTextFormatting
+  removeTextFormatting,
+  getMembersSuggest
 }

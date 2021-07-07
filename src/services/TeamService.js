@@ -771,8 +771,11 @@ async function roleSearchRequest (currentUser, data) {
     // if only job description is provided, collect skill names from description
     const tags = await getSkillsByJobDescription({ description: data.jobDescription })
     const skills = _.map(tags, 'tag')
-    // find the best matching role
-    role = await getRoleBySkills(skills)
+
+    // add skills to roleSearchRequest and get best matching role
+    const [skillIds, roleList] = await Promise.all([getSkillIdsByNames(skills), getRoleBySkills(skills)])
+    data.skills = skillIds
+    role = roleList
   }
   data.roleId = role.id
   // create roleSearchRequest entity with found roleId
@@ -789,7 +792,7 @@ roleSearchRequest.schema = Joi.object()
     currentUser: Joi.object(),
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
-      jobDescription: Joi.string().max(255),
+      jobDescription: Joi.string().max(2000),
       skills: Joi.array().items(Joi.string().uuid().required()),
       jobTitle: Joi.string().max(100),
       previousRoleSearchRequestId: Joi.string().uuid()
@@ -863,6 +866,12 @@ async function getSkillsByJobDescription (data) {
       // do not stop searching after a match in order to detect more lookalikes
       if (skill.pattern.test(word)) {
         foundSkills.push(skill.name)
+      }
+      // for suffix with 'js'
+      if (!word.endsWith('js') && skill.name.endsWith('js')) {
+        if (skill.pattern.test(word + 'js')) {
+          foundSkills.push(skill.name)
+        }
       }
     })
   })
@@ -971,7 +980,7 @@ createRoleSearchRequest.schema = Joi.object()
     currentUser: Joi.object().required(),
     roleSearchRequest: Joi.object().keys({
       roleId: Joi.string().uuid(),
-      jobDescription: Joi.string().max(255),
+      jobDescription: Joi.string().max(2000),
       skills: Joi.array().items(Joi.string().uuid().required())
     }).required().min(1)
   }).required()
@@ -1128,6 +1137,25 @@ searchSkills.schema = Joi.object().keys({
   }).required()
 }).required()
 
+/**
+ * Get member suggestions
+ * @param {object} currentUser the user performing the operation.
+ * @param {string} fragment the user's handle fragment
+ * @returns {Array} the search result, contains result array
+ */
+async function suggestMembers (currentUser, fragment) {
+  if (!currentUser.hasManagePermission) {
+    throw new errors.ForbiddenError('You are not allowed to perform this action!')
+  }
+  const { result } = await helper.getMembersSuggest(fragment)
+  return result.content
+}
+
+suggestMembers.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  fragment: Joi.string().required()
+}).required()
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -1146,5 +1174,6 @@ module.exports = {
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
-  searchSkills
+  searchSkills,
+  suggestMembers
 }
