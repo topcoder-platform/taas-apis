@@ -1036,7 +1036,10 @@ async function createTeam (currentUser, data) {
     description: data.teamDescription,
     type: 'talent-as-a-service',
     details: {
-      positions: data.positions
+      positions: data.positions,
+      utm: {
+        code: data.refCode
+      }
     }
   }
   // create project with given data
@@ -1072,6 +1075,7 @@ createTeam.schema = Joi.object()
     data: Joi.object().keys({
       teamName: Joi.string().required(),
       teamDescription: Joi.string(),
+      refCode: Joi.string(),
       positions: Joi.array().items(
         Joi.object().keys({
           roleName: Joi.string().required(),
