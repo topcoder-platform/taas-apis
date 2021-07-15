@@ -998,7 +998,7 @@ async function _cleanRoleDTO (currentUser, role) {
     role.isExternalMember = true
     if (role.rates) {
       role.rates = _.map(role.rates, rate =>
-        _.omit(rate, ['inCountry', 'offShore', 'rate30InCountry', 'rate30OffShore', 'rate20InCountry', 'rate20OffShore']))
+        _.omit(rate, ['inCountry', 'offShore', 'niche', 'rate30InCountry', 'rate30OffShore', 'rate30Niche', 'rate20InCountry', 'rate20OffShore', 'rate20Niche']))
     }
     return role
   }
