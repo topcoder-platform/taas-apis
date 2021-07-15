@@ -55,7 +55,7 @@ module.exports = (sequelize) => {
       },
       jobDescription: {
         field: 'job_description',
-        type: Sequelize.STRING()
+        type: Sequelize.STRING(100000)
       },
       skills: {
         type: Sequelize.ARRAY({

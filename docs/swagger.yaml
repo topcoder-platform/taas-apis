@@ -5331,6 +5331,9 @@ components:
         teamDescription:
           type: string
           description: "The description of the team"
+        refCode:
+          type: string
+          description: "Optional referral code"
         positions:
           type: array
           description: "The array of positions"
