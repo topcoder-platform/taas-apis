@@ -55,18 +55,27 @@ module.exports = (sequelize) => {
         type: Sequelize.ARRAY({
           type: Sequelize.JSONB({
             global: {
-              type: Sequelize.SMALLINT,
-              allowNull: false
+              type: Sequelize.SMALLINT
             },
             inCountry: {
               field: 'in_country',
-              type: Sequelize.SMALLINT,
-              allowNull: false
+              type: Sequelize.SMALLINT
             },
             offShore: {
               field: 'off_shore',
-              type: Sequelize.SMALLINT,
-              allowNull: false
+              type: Sequelize.SMALLINT
+            },
+            niche: {
+              field: 'niche',
+              type: Sequelize.SMALLINT
+            },
+            rate20Niche: {
+              field: 'rate20_niche',
+              type: Sequelize.SMALLINT
+            },
+            rate30Niche: {
+              field: 'rate30_niche',
+              type: Sequelize.SMALLINT
             },
             rate30Global: {
               field: 'rate30_global',

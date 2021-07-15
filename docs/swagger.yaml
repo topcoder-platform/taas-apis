@@ -5555,12 +5555,11 @@ components:
           example: 300
           description: "The time to interview."
     RoleRates:
-      required:
-        - global
-        - inCountry
-        - offShore
       type: object
       properties:
+        niche:
+          type: integer
+          example: 10
         global:
           type: integer
           example: 10
@@ -5570,6 +5569,9 @@ components:
         offShore:
           type: integer
           example: 30
+        rate30Niche:
+          type: integer
+          example: 10
         rate30Global:
           type: integer
           example: 10
@@ -5579,6 +5581,9 @@ components:
         rate30OffShore:
           type: integer
           example: 30
+        rate20Niche:
+          type: integer
+          example: 10
         rate20Global:
           type: integer
           example: 10
@@ -5772,3 +5777,4 @@ components:
       properties:
         message:
           type: string
+
