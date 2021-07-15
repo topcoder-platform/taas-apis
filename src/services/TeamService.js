@@ -792,7 +792,7 @@ roleSearchRequest.schema = Joi.object()
     currentUser: Joi.object(),
     data: Joi.object().keys({
       roleId: Joi.string().uuid(),
-      jobDescription: Joi.string().max(2000),
+      jobDescription: Joi.string().max(100000),
       skills: Joi.array().items(Joi.string().uuid().required()),
       jobTitle: Joi.string().max(100),
       previousRoleSearchRequestId: Joi.string().uuid()
