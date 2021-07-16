@@ -624,6 +624,11 @@ paths:
           schema:
             type: string
           description: The external id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobCandidateSearchBody"
       responses:
         "200":
           description: OK
@@ -3996,6 +4001,14 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobCandidateSearchBody:
+      properties:
+        statuses:
+          type: array
+          items:
+            type: string
+            enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected", "applied", "rejected-pre-screen", "skills-test", "phone-screen", "job-closed", "offered"]
+            description: "The array of job Candidates status"
     JobCandidateRequestBody:
       required:
         - jobId
