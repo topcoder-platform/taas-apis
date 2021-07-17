@@ -556,7 +556,8 @@ async function searchResourceBookings (currentUser, criteria, options) {
         body: {
           query: {
             bool: {
-              must: []
+              must: [],
+              filter: []
             }
           },
           from: (page - 1) * perPage,
@@ -600,11 +601,19 @@ async function searchResourceBookings (currentUser, criteria, options) {
       })
       // if criteria contains projectIds, filter projectId with this value
       if (criteria.projectIds) {
-        esQuery.body.query.bool.filter = [{
+        esQuery.body.query.bool.filter.push({
           terms: {
             projectId: criteria.projectIds
           }
-        }]
+        })
+      }
+      // if criteria contains jobIds, filter jobIds with this value
+      if (criteria.jobIds && criteria.jobIds.length > 0) {
+        esQuery.body.query.bool.filter.push({
+          terms: {
+            jobId: criteria.jobIds
+          }
+        })
       }
       // Apply WorkPeriod and WorkPeriodPayment filters
       const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
@@ -709,6 +718,9 @@ async function searchResourceBookings (currentUser, criteria, options) {
   })
   if (criteria.projectIds) {
     filter[Op.and].push({ projectId: criteria.projectIds })
+  }
+  if (criteria.jobIds && criteria.jobIds.length > 0) {
+    filter[Op.and].push({ id: criteria.jobIds })
   }
   const queryCriteria = {
     where: filter,
@@ -831,6 +843,7 @@ searchResourceBookings.schema = Joi.object().keys({
     endDate: Joi.date().format('YYYY-MM-DD'),
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
+    jobIds: Joi.array().items(Joi.string().uuid()),
     userId: Joi.string().uuid(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
