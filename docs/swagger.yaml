@@ -1557,6 +1557,11 @@ paths:
             maximum: 5
             example: 3
           description: The workdays to pay
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceBookingSearchBody"
 
       responses:
         "200":
@@ -4449,6 +4454,14 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    ResourceBookingSearchBody:
+      properties:
+        jobIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of job ids"
     ResourceBookingRequestBody:
       required:
         - projectId
