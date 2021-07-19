@@ -1500,7 +1500,7 @@ const T30 = {
   }
 }
 const T31 = {
-  criteria: { 'workPeriods.startDate': '2021-05-10' },
+  criteria: { 'workPeriods.startDate': '2021-05-09' },
   error: {
     httpStatus: 400,
     message: 'Can not filter or sort by some field which is not included in fields'
