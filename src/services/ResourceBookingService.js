@@ -109,7 +109,7 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   // Check if any WorkPeriodPayment field will be returned
   result.withWorkPeriodPayments = result.allWorkPeriodPayments || result.fieldsWPP.length > 0
   // Extract the filters from criteria parameter
-  let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder'], key) === -1)
+  let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder', 'jobIds'], key) === -1)
   filters = _.map(filters, f => {
     if (f === 'projectIds') {
       return 'projectId'
