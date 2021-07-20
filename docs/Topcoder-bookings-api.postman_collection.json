@@ -12675,7 +12675,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Cannot set \\\"isFirstWeek\\\" without \\\"startDate\\\"\")\r",
+									"    pm.expect(response.message).to.eq(\"Cannot filter by \\\"isLastWeek\\\" without \\\"startDate\\\"\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -12727,7 +12727,59 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Cannot set both \\\"isFirstWeek\\\" and \\\"isLastWeek\\\" to \\\"true\\\"\")\r",
+									"    pm.expect(response.message).to.eq(\"Cannot filter by \\\"isFirstWeek\\\" without \\\"startDate\\\"\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/resourceBookings?fields=id,startDate,endDate,billingAccountId,workPeriods&billingAccountId=80000071&workPeriods.isFirstWeek=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id,startDate,endDate,billingAccountId,workPeriods"
+								},
+								{
+									"key": "billingAccountId",
+									"value": "80000071"
+								},
+								{
+									"key": "workPeriods.isFirstWeek",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search resource bookings with parameters 17",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Cannot filter by both \\\"isFirstWeek\\\" and \\\"isLastWeek\\\" set to \\\"true\\\"\")\r",
 									"});"
 								],
 								"type": "text/javascript"

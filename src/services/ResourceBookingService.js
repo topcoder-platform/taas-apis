@@ -893,7 +893,7 @@ searchResourceBookings.schema = Joi.object().keys({
       is: Joi.exist(),
       then: Joi.boolean().default(false),
       otherwise: Joi.boolean().valid(false).messages({
-        'any.only': 'Cannot set "isFirstWeek" without "startDate"'
+        'any.only': 'Cannot filter by "isFirstWeek" without "startDate"'
       })
     }),
     'workPeriods.isLastWeek': Joi.boolean().when(Joi.ref('workPeriods.startDate', { separator: false }), {
@@ -902,11 +902,11 @@ searchResourceBookings.schema = Joi.object().keys({
         is: false,
         then: Joi.boolean().default(false),
         otherwise: Joi.boolean().valid(false).messages({
-          'any.only': 'Cannot set both "isFirstWeek" and "isLastWeek" to "true"'
+          'any.only': 'Cannot filter by both "isFirstWeek" and "isLastWeek" set to "true"'
         })
       }),
       otherwise: Joi.boolean().valid(false).messages({
-        'any.only': 'Cannot set "isFirstWeek" without "startDate"'
+        'any.only': 'Cannot filter by "isLastWeek" without "startDate"'
       })
     }),
     'workPeriods.payments.status': Joi.workPeriodPaymentStatus(),
