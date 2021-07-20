@@ -15,7 +15,7 @@ Joi.rateType = () => Joi.string().valid('hourly', 'daily', 'weekly', 'monthly', 
 Joi.jobStatus = () => Joi.string().valid('sourcing', 'in-review', 'assigned', 'closed', 'cancelled')
 Joi.resourceBookingStatus = () => Joi.string().valid('placed', 'closed', 'cancelled')
 Joi.workload = () => Joi.string().valid('full-time', 'fractional')
-Joi.jobCandidateStatus = () => Joi.string().valid('open', 'placed', 'selected', 'client rejected - screening', 'client rejected - interview', 'rejected - other', 'cancelled', 'interview', 'topcoder-rejected', 'applied', 'rejected-pre-screen', 'skills-test', 'skills-test', 'phone-screen', 'job-closed', 'offered')
+Joi.jobCandidateStatus = () => Joi.string().valid('open', 'placed', 'selected', 'client rejected - screening', 'client rejected - interview', 'rejected - other', 'cancelled', 'interview', 'topcoder-rejected', 'applied', 'rejected-pre-screen', 'skills-test', 'skills-test', 'phone-screen', 'job-closed', 'offered', 'withdrawn')
 Joi.title = () => Joi.string().max(128)
 Joi.paymentStatus = () => Joi.string().valid(..._.values(AggregatePaymentStatus))
 Joi.xaiTemplate = () => Joi.string().valid(...allowedXAITemplate)
