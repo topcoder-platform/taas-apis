@@ -619,7 +619,8 @@ async function searchResourceBookings (currentUser, criteria, options) {
         esQuery.body.query.bool.must.push({
           range: { startDate: { gte: criteria['workPeriods.startDate'] } }
         })
-      } else if (criteria['workPeriods.isLastWeek']) {
+      }
+      if (criteria['workPeriods.isLastWeek']) {
         esQuery.body.query.bool.must.push({
           range: { endDate: { lte: moment(criteria['workPeriods.startDate']).add(6, 'day').format('YYYY-MM-DD') } }
         })
@@ -736,7 +737,8 @@ async function searchResourceBookings (currentUser, criteria, options) {
   }
   if (criteria['workPeriods.isFirstWeek']) {
     filter[Op.and].push({ startDate: { [Op.gte]: criteria['workPeriods.startDate'] } })
-  } else if (criteria['workPeriods.isLastWeek']) {
+  }
+  if (criteria['workPeriods.isLastWeek']) {
     filter[Op.and].push({ endDate: { [Op.lte]: moment(criteria['workPeriods.startDate']).add(6, 'day').format('YYYY-MM-DD') } })
   }
   const queryCriteria = {
@@ -898,13 +900,7 @@ searchResourceBookings.schema = Joi.object().keys({
     }),
     'workPeriods.isLastWeek': Joi.boolean().when(Joi.ref('workPeriods.startDate', { separator: false }), {
       is: Joi.exist(),
-      then: Joi.when(Joi.ref('workPeriods.isFirstWeek', { separator: false }), {
-        is: false,
-        then: Joi.boolean().default(false),
-        otherwise: Joi.boolean().valid(false).messages({
-          'any.only': 'Cannot filter by both "isFirstWeek" and "isLastWeek" set to "true"'
-        })
-      }),
+      then: Joi.boolean().default(false),
       otherwise: Joi.boolean().valid(false).messages({
         'any.only': 'Cannot filter by "isLastWeek" without "startDate"'
       })

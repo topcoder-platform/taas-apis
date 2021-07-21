@@ -192,10 +192,13 @@ updateRole.schema = Joi.object().keys({
       global: Joi.smallint().required(),
       inCountry: Joi.smallint().required(),
       offShore: Joi.smallint().required(),
+      niche: Joi.smallint(),
+      rate30Niche: Joi.smallint(),
       rate30Global: Joi.smallint(),
       rate30InCountry: Joi.smallint(),
       rate30OffShore: Joi.smallint(),
       rate20Global: Joi.smallint(),
+      rate20Niche: Joi.smallint(),
       rate20InCountry: Joi.smallint(),
       rate20OffShore: Joi.smallint()
     }).required()),
