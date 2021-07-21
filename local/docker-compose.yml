@@ -58,9 +58,8 @@ services:
     depends_on:
       - kafka-client
       - elasticsearch
-    environment:
-      - KAFKA_URL=kafka:9093
-      - ES_HOST=http://elasticsearch:9200
+    env_file: 
+      - taas-es-processor.env
 
   tc-bus-api:
     container_name: tc-bus-api
