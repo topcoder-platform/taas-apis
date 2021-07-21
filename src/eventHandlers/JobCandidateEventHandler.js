@@ -70,12 +70,12 @@ async function updateJobCandidates (statuses, userId) {
       logger.info({
         component: 'JobCandidateEventHandler',
         context: 'updateJobCandidates',
-        message: `Begin update id: ${candidate.id}' candidate with ${candidate.status} status into ${config.STATUS_MAPPING[candidate.status]} for userId: ${userId}`
+        message: `Begin update id: ${candidate.id}' candidate with ${candidate.status} status into ${config.WITHDRAWN_STATUS_CHANGE_MAPPING[candidate.status]} for userId: ${userId}`
       })
       await JobCandidateService.partiallyUpdateJobCandidate(
         helper.getAuditM2Muser(),
         candidate.id,
-        { status: config.STATUS_MAPPING[candidate.status] }
+        { status: config.WITHDRAWN_STATUS_CHANGE_MAPPING[candidate.status] }
       ).then(result => {
         logger.info({
           component: 'JobCandidateEventHandler',
@@ -133,6 +133,7 @@ async function withDrawnJobCandidates (payload) {
  */
 async function processCreate (payload) {
   await inReviewJob(payload)
+  await withDrawnJobCandidates(payload)
 }
 
 /**

@@ -217,8 +217,8 @@ module.exports = {
   },
   // if a job reach this critier, system will automatically withdrawn other job applications.
   JOBS_HOUR_PER_WEEK: 20,
-  // status mapping
-  STATUS_MAPPING: {
+  // the mapping includes the status transformation when auto-withdrawn feature is performed on job candidates.
+  WITHDRAWN_STATUS_CHANGE_MAPPING: {
     applied: 'withdrawn-prescreen',
     'skills-test': 'withdrawn-prescreen',
     'phone-screen': 'withdrawn-prescreen',
