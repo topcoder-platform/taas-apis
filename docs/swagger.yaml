@@ -3937,6 +3937,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
           description: "The job candidate status."
         externalId:
@@ -4038,7 +4046,7 @@ components:
           type: array
           items:
             type: string
-            enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected", "applied", "rejected-pre-screen", "skills-test", "phone-screen", "job-closed", "offered"]
+            enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected", "applied", "rejected-pre-screen", "skills-test", "phone-screen", "job-closed", "offered", "withdrawn", "withdrawn-prescreen"]
             description: "The array of job Candidates status"
     JobCandidateRequestBody:
       required:
@@ -4067,6 +4075,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
           description: "The job candidate status."
           default: open
@@ -4097,6 +4113,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
         externalId:
           type: string
@@ -5241,6 +5265,14 @@ components:
                     "cancelled",
                     "interview",
                     "topcoder-rejected",
+                    "applied",
+                    "rejected-pre-screen",
+                    "skills-test",
+                    "phone-screen",
+                    "job-closed",
+                    "offered",
+                    "withdrawn",
+                    "withdrawn-prescreen"
                   ]
                 description: "The job candidate status."
               skills:
