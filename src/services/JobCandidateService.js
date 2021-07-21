@@ -144,6 +144,7 @@ createJobCandidate.schema = Joi.object().keys({
  */
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
+  const oldValue = jobCandidate.toJSON()
   const userId = await helper.getUserId(currentUser.userId)
 
   // check user permission
@@ -155,7 +156,7 @@ async function updateJobCandidate (currentUser, id, data) {
   data.updatedBy = userId
 
   const updated = await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
