@@ -1,11 +1,14 @@
 /*
  * Handle events for JobCandidate.
  */
-
+const { Op } = require('sequelize')
+const _ = require('lodash')
+const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
 const JobService = require('../services/JobService')
+const JobCandidateService = require('../services/JobCandidateService')
 
 /**
  * Once we create at least one JobCandidate for a Job, the Job status should be changed to in-review.
@@ -45,6 +48,84 @@ async function inReviewJob (payload) {
 }
 
 /**
+ * Actual Update Job Candidates
+ *
+ * @param {*} statuses the source status we'll update
+ * @param {*} userId the userID
+ */
+async function updateJobCandidates (statuses, userId) {
+  logger.info({
+    component: 'JobCandidateEventHandler',
+    context: 'updateJobCandidates',
+    message: `Update jobCandidates for user ${userId}`
+  })
+  const filter = { [Op.and]: [] }
+  filter[Op.and].push({ status: statuses })
+  filter[Op.and].push({ userId: userId })
+  const candidates = await models.JobCandidate.findAll({
+    where: filter
+  })
+  if (candidates && candidates.length > 0) {
+    _.each(candidates, async (candidate) => {
+      logger.info({
+        component: 'JobCandidateEventHandler',
+        context: 'updateJobCandidates',
+        message: `Begining update id: ${candidate.id}' candidate with ${candidate.status} status into ${config.STATUS_MAPPING[candidate.status]} for userId: ${userId}`
+      })
+      await JobCandidateService.partiallyUpdateJobCandidate(
+        helper.getAuditM2Muser(),
+        candidate.id,
+        { status: config.STATUS_MAPPING[candidate.status] }
+      ).then(result => {
+        logger.info({
+          component: 'JobCandidateEventHandler',
+          context: 'updateJobCandidates',
+          message: `Finishing update id: ${result.id}' candidate into ${result.status} status for userId: ${userId}`
+        })
+      })
+    })
+  } else {
+    logger.info({
+      component: 'JobCandidateEventHandler',
+      context: 'updateJobCandidates',
+      message: `There are not jobCandidates for user ${userId} that required to be updated.`
+    })
+  }
+}
+
+/**
+ * Update Job Candidates based on business rules
+ *
+ * @param {*} payload the updated jobCandidate info
+ */
+async function withDrawnJobCandidates (payload) {
+  const jobCandidate = payload.value
+  if (jobCandidate.status === 'placed') {
+    const job = await models.Job.findById(payload.value.jobId)
+    if (job.hoursPerWeek > config.JOBS_HOUR_PER_WEEK) {
+      // find all these user's open job Candidate and mark the status as withdrawn or withdrawn-prescreen
+      logger.info({
+        component: 'JobCandidateEventHandler',
+        context: 'withDrawnJobCandidates',
+        message: `Begining update jobCandidates as ${payload.value.id} candidate's new gig is requiring 20 hrs per week`
+      })
+      await updateJobCandidates(['applied', 'skills-test', 'phone-screen', 'open', 'interview', 'selected', 'offered'], payload.value.userId)
+      logger.info({
+        component: 'JobCandidateEventHandler',
+        context: 'withDrawnJobCandidates',
+        message: `Finished update jobCandidates as ${payload.value.id} candidate`
+      })
+    } else {
+      logger.debug({
+        component: 'JobCandidateEventHandler',
+        context: 'withDrawnJobCandidates',
+        message: `id: ${payload.value.id} candidate is not a placed gig requiring 20 hrs per week`
+      })
+    }
+  }
+}
+
+/**
  * Process job candidate create event.
  *
  * @param {Object} payload the event payload
@@ -62,6 +143,7 @@ async function processCreate (payload) {
  */
 async function processUpdate (payload) {
   await inReviewJob(payload)
+  await withDrawnJobCandidates(payload)
 }
 
 module.exports = {
