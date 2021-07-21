@@ -70,7 +70,7 @@ async function updateJobCandidates (statuses, userId) {
       logger.info({
         component: 'JobCandidateEventHandler',
         context: 'updateJobCandidates',
-        message: `Begining update id: ${candidate.id}' candidate with ${candidate.status} status into ${config.STATUS_MAPPING[candidate.status]} for userId: ${userId}`
+        message: `Begin update id: ${candidate.id}' candidate with ${candidate.status} status into ${config.STATUS_MAPPING[candidate.status]} for userId: ${userId}`
       })
       await JobCandidateService.partiallyUpdateJobCandidate(
         helper.getAuditM2Muser(),
@@ -80,7 +80,7 @@ async function updateJobCandidates (statuses, userId) {
         logger.info({
           component: 'JobCandidateEventHandler',
           context: 'updateJobCandidates',
-          message: `Finishing update id: ${result.id}' candidate into ${result.status} status for userId: ${userId}`
+          message: `Finish update id: ${result.id}' candidate into ${result.status} status for userId: ${userId}`
         })
       })
     })
@@ -107,19 +107,19 @@ async function withDrawnJobCandidates (payload) {
       logger.info({
         component: 'JobCandidateEventHandler',
         context: 'withDrawnJobCandidates',
-        message: `Begining update jobCandidates as ${payload.value.id} candidate's new gig is requiring 20 hrs per week`
+        message: `Begin update jobCandidates as ${payload.value.id} candidate's new gig is requiring more than 20 hrs per week`
       })
       await updateJobCandidates(['applied', 'skills-test', 'phone-screen', 'open', 'interview', 'selected', 'offered'], payload.value.userId)
       logger.info({
         component: 'JobCandidateEventHandler',
         context: 'withDrawnJobCandidates',
-        message: `Finished update jobCandidates as ${payload.value.id} candidate`
+        message: `Finish update jobCandidates as ${payload.value.id} candidate`
       })
     } else {
       logger.debug({
         component: 'JobCandidateEventHandler',
         context: 'withDrawnJobCandidates',
-        message: `id: ${payload.value.id} candidate is not a placed gig requiring 20 hrs per week`
+        message: `id: ${payload.value.id} candidate is not placing on a gig requiring 20 hrs per week`
       })
     }
   }
