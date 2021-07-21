@@ -1507,6 +1507,12 @@ paths:
             type: string
           description: comma separated project ids.
         - in: query
+          name: billingAccountId
+          required: false
+          schema:
+            type: integer
+          description: billing account id. 0 represents null value.
+        - in: query
           name: workPeriods.paymentStatus
           required: false
           schema:
@@ -1527,7 +1533,7 @@ paths:
             type: string
             format: date
             pattern: '^\d{4}-\d{2}-\d{2}$'
-          description: The work period start date.
+          description: The work period start date. Should be Sunday.
         - in: query
           name: workPeriods.endDate
           required: false
@@ -1535,13 +1541,33 @@ paths:
             type: string
             format: date
             pattern: '^\d{4}-\d{2}-\d{2}$'
-          description: The work period end date.
+          description: The work period end date. Should be Saturday.
         - in: query
           name: workPeriods.userHandle
           required: false
           schema:
             type: string
           description: The user handle.
+        - in: query
+          name: workPeriods.isFirstWeek
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: |
+            the week which matches workPeriods.startDate is the first one in the RB.
+            workPeriods.startDate is required.
+            only one of workPeriods.isFirstWeek and workPeriods.isLastWeek is allowed.
+        - in: query
+          name: workPeriods.isLastWeek
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: |
+            the week which matches workPeriods.startDate is the last one in the RB.
+            workPeriods.startDate is required.
+            only one of workPeriods.isFirstWeek and workPeriods.isLastWeek is allowed.
         - in: query
           name: workPeriods.payments.status
           required: false
