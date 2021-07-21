@@ -133,7 +133,9 @@ async function withDrawnJobCandidates (payload) {
  */
 async function processCreate (payload) {
   await inReviewJob(payload)
-  await withDrawnJobCandidates(payload)
+  if (payload.value.status === 'placed') {
+    await withDrawnJobCandidates(payload)
+  }
 }
 
 /**
@@ -144,7 +146,9 @@ async function processCreate (payload) {
  */
 async function processUpdate (payload) {
   await inReviewJob(payload)
-  await withDrawnJobCandidates(payload)
+  if (payload.value.status === 'placed' && payload.options.oldValue.status !== 'placed') {
+    await withDrawnJobCandidates(payload)
+  }
 }
 
 module.exports = {
