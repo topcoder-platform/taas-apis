@@ -17,9 +17,9 @@ const { Op } = require('sequelize')
 const models = require('../models')
 const stopWords = require('../../data/stopWords.json')
 const { getAuditM2Muser } = require('../common/helper')
+const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
-const topcoderSkills = {}
 
 const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
   return {
@@ -64,29 +64,19 @@ async function _getJobsByProjectIds (currentUser, projectIds) {
 }
 
 /**
- * Gets topcoder skills and stores their name and compiled
- * regex patters according to Levenshtein distance <=1
+ * compiled regex patters according to Levenshtein distance <=1 for unmatched skills from EMSI
+ * @returns {Array} the unMatched skills with regex pattern
  */
-async function _reloadCachedTopcoderSkills () {
-  // do not reload if cache time is not expired
-  if (!_.isUndefined(topcoderSkills.time)) {
-    const cacheTime = config.TOPCODER_SKILLS_CACHE_TIME * 60 * 1000
-    if (new Date().getTime() - topcoderSkills.time < cacheTime) {
-      return
-    }
-  }
-  // collect all skills
-  const skills = await helper.getAllTopcoderSkills()
-  // set the last cached time
-  topcoderSkills.time = new Date().getTime()
-  topcoderSkills.skills = []
+function compileRegexPatternForNoEmsiSkills () {
+  const unMatched = []
   // store skill names and compiled regex paterns
-  _.each(skills, skill => {
-    topcoderSkills.skills.push({
-      name: skill.name,
-      pattern: _compileRegexPatternForSkillName(skill.name)
+  _.each(unMatchedSkills, skill => {
+    unMatched.push({
+      name: skill,
+      pattern: _compileRegexPatternForSkillName(skill)
     })
   })
+  return unMatched
 }
 
 /**
@@ -835,18 +825,17 @@ getRoleBySkills.schema = Joi.object()
   }).required()
 
 /**
- * Return skills by job description.
+ * Return skills by job description from EMSI.
  *
  * @param {Object} currentUser the user who perform this operation.
  * @param {Object} data the search criteria
  * @returns {Object} the result
  */
 async function getSkillsByJobDescription (data) {
-  // load topcoder skills if needed. Using cached skills helps to avoid
-  // unnecessary api calls which is extremely time comsuming.
-  await _reloadCachedTopcoderSkills()
   // replace markdown tags with spaces
   const description = helper.removeTextFormatting(data.description)
+  // get skill from emsi
+  const emsiTags = await helper.getTags(description)
   // extract words from description
   let words = _.split(description, ' ')
   // remove stopwords from description
@@ -858,11 +847,20 @@ async function getSkillsByJobDescription (data) {
   }
   words = _.concat(words, twoWords)
   let foundSkills = []
+  // add emsi parsed skills
+  _.each(emsiTags, (t) => {
+    if (matchedSkills[t.tag]) {
+      foundSkills.push(matchedSkills[t.tag])
+    }
+  })
+
+  // unmatctched skill
+  const unMatchedTopcoderSkills = compileRegexPatternForNoEmsiSkills()
   const result = []
   // try to match each word with skill names
   // using pre-compiled regex pattern
   _.each(words, word => {
-    _.each(topcoderSkills.skills, skill => {
+    _.each(unMatchedTopcoderSkills, skill => {
       // do not stop searching after a match in order to detect more lookalikes
       if (skill.pattern.test(word)) {
         foundSkills.push(skill.name)
