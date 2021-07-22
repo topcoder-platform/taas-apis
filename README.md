@@ -234,7 +234,8 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
-| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                           |
+| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                                         |
+| `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                          |
 
 ## Import and Export data
 
@@ -348,3 +349,8 @@ When we add, update or delete models and/or endpoints we have to make sure that 
 - **DB Migration**
   - If there are any updates in DB schemas, create a DB migration script inside `migrations` folder which would make any necessary updates to the DB schema.
   - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
+
+## EMSI mapping
+mapping EMSI tags to topcoder skills    
+Run `npm run emsi-mapping` to create the mapping file    
+It will take about 15 minutes to create the mapping file `script/emsi-mapping/emsi-skils-mapping.js`

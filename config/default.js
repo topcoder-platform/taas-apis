@@ -214,5 +214,17 @@ module.exports = {
     FIX_DELAY_STEP_ASSIGN_MEMBER: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ASSIGN_MEMBER || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500),
     // the fix delay after step of activate challenge, unit: ms
     FIX_DELAY_STEP_ACTIVATE_CHALLENGE: parseInt(process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP_ACTIVATE_CHALLENGE || process.env.PAYMENT_PROCESSING_FIX_DELAY_STEP || 500)
+  },
+  // if a job reach this critier, system will automatically withdrawn other job applications.
+  JOBS_HOUR_PER_WEEK: 20,
+  // the mapping includes the status transformation when auto-withdrawn feature is performed on job candidates.
+  WITHDRAWN_STATUS_CHANGE_MAPPING: {
+    applied: 'withdrawn-prescreen',
+    'skills-test': 'withdrawn-prescreen',
+    'phone-screen': 'withdrawn-prescreen',
+    open: 'withdrawn',
+    interview: 'withdrawn',
+    selected: 'withdrawn',
+    offered: 'withdrawn'
   }
 }
