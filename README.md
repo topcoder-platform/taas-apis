@@ -49,7 +49,21 @@
       BUSAPI_URL=http://dockerhost:8002/v5
       ```
 
-      - Values from this file would be automatically used by many `npm` commands.
+   1. In the `./local` folder create `taas-es-processor.env` file with the next environment variables.<br>
+   
+      ```bash
+      # Auth0 config
+      AUTH0_URL=
+      AUTH0_AUDIENCE=
+      AUTH0_CLIENT_ID=
+      AUTH0_CLIENT_SECRET=
+      # Locally deployed services (via docker-compose)
+      KAFKA_URL=kafka:9093
+      ES_HOST=http://elasticsearch:9200
+      BUSAPI_URL=http://tc-bus-api:8002/v5
+      ```
+      
+      - Values from these file would be automatically used by many `npm` commands.
       - ⚠️ Never commit this file or its copy to the repository!
 
    1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
@@ -222,7 +236,6 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
 | `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                                         |
 | `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                          |
-
 
 ## Import and Export data
 
