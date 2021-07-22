@@ -72,8 +72,8 @@ function compileRegexPatternForNoEmsiSkills () {
   // store skill names and compiled regex paterns
   _.each(unMatchedSkills, skill => {
     unMatched.push({
-      name: skill,
-      pattern: _compileRegexPatternForSkillName(skill)
+      name: skill.toLowerCase(),
+      pattern: _compileRegexPatternForSkillName(skill.toLowerCase())
     })
   })
   return unMatched
