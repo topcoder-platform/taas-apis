@@ -22,7 +22,7 @@
     "migrate": "npx sequelize db:migrate",
     "migrate:undo": "npx sequelize db:migrate:undo",
     "test": "mocha test/unit/*.test.js --timeout 30000 --require test/prepare.js --exit",
-    "services:up": "docker-compose -f ./local/docker-compose.yml up -d",
+    "services:up": "docker-compose -f ./local/docker-compose.yml --env-file .env up -d",
     "services:down": "docker-compose -f ./local/docker-compose.yml down",
     "services:logs": "docker-compose -f ./local/docker-compose.yml logs",
     "local:init": "npm run local:reset && npm run data:import -- --force",
