@@ -177,7 +177,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
   rateType: { type: 'keyword' },
-  billingAccountId: { type: 'integer' },
+  billingAccountId: { type: 'integer', null_value: 0 },
   workPeriods: {
     type: 'nested',
     properties: {
@@ -249,6 +249,9 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_ROLE')] = {
       global: { type: 'integer' },
       inCountry: { type: 'integer' },
       offShore: { type: 'integer' },
+      niche: { type: 'integer' },
+      rate20niche: { type: 'integer' },
+      rate30niche: { type: 'integer' },
       rate30Global: { type: 'integer' },
       rate30InCountry: { type: 'integer' },
       rate30OffShore: { type: 'integer' },

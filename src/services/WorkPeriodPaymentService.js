@@ -75,6 +75,10 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
   if (maxPossibleDays <= 0) {
     throw new errors.ConflictError(`There are no days to pay for WorkPeriod: ${correspondingWorkPeriod.id}`)
   }
+  const workPeriodStartTime = moment(`${correspondingWorkPeriod.startDate}T00:00:00.000+12`)
+  if (workPeriodStartTime.isAfter(moment())) {
+    throw new errors.BadRequestError(`Cannot process payments for the future WorkPeriods. You can process after ${workPeriodStartTime.diff(moment(), 'hours')} hours`)
+  }
   workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
   workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
   workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)

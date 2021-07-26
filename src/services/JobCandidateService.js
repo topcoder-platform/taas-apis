@@ -144,6 +144,7 @@ createJobCandidate.schema = Joi.object().keys({
  */
 async function updateJobCandidate (currentUser, id, data) {
   const jobCandidate = await JobCandidate.findById(id)
+  const oldValue = jobCandidate.toJSON()
   const userId = await helper.getUserId(currentUser.userId)
 
   // check user permission
@@ -155,7 +156,7 @@ async function updateJobCandidate (currentUser, id, data) {
   data.updatedBy = userId
 
   const updated = await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON())
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
   const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
@@ -283,6 +284,15 @@ async function searchJobCandidates (currentUser, criteria) {
         }
       })
     })
+
+    // if criteria contains statuses, filter statuses with this value
+    if (criteria.statuses && criteria.statuses.length > 0) {
+      esQuery.body.query.bool.filter.push({
+        terms: {
+          status: criteria.statuses
+        }
+      })
+    }
     logger.debug({ component: 'JobCandidateService', context: 'searchJobCandidates', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
@@ -301,10 +311,13 @@ async function searchJobCandidates (currentUser, criteria) {
     logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
-  const filter = {}
+  const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+  if (criteria.statuses && criteria.statuses.length > 0) {
+    filter[Op.and].push({ status: criteria.statuses })
+  }
 
   // include interviews if user has permission
   const include = []
@@ -340,6 +353,7 @@ searchJobCandidates.schema = Joi.object().keys({
     jobId: Joi.string().uuid(),
     userId: Joi.string().uuid(),
     status: Joi.jobCandidateStatus(),
+    statuses: Joi.array().items(Joi.jobCandidateStatus()),
     externalId: Joi.string()
   }).required()
 }).required()

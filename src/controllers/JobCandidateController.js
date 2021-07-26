@@ -2,6 +2,7 @@
  * Controller for JobCandidate endpoints
  */
 const HttpStatus = require('http-status-codes')
+const _ = require('lodash')
 const service = require('../services/JobCandidateService')
 const helper = require('../common/helper')
 
@@ -57,7 +58,8 @@ async function deleteJobCandidate (req, res) {
  * @param res the response
  */
 async function searchJobCandidates (req, res) {
-  const result = await service.searchJobCandidates(req.authUser, req.query)
+  const query = { ...req.query, statuses: _.get(req, 'body.statuses', []) }
+  const result = await service.searchJobCandidates(req.authUser, query)
   helper.setResHeaders(req, res, result)
   res.send(result.result)
 }

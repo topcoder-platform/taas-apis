@@ -61,6 +61,11 @@ services:
     environment:
       - KAFKA_URL=kafka:9093
       - ES_HOST=http://elasticsearch:9200
+      - BUSAPI_URL=http://tc-bus-api:8002/v5
+      - AUTH0_URL=${AUTH0_URL}
+      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
 
   tc-bus-api:
     container_name: tc-bus-api

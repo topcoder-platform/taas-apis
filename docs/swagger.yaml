@@ -624,6 +624,11 @@ paths:
           schema:
             type: string
           description: The external id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobCandidateSearchBody"
       responses:
         "200":
           description: OK
@@ -1502,6 +1507,12 @@ paths:
             type: string
           description: comma separated project ids.
         - in: query
+          name: billingAccountId
+          required: false
+          schema:
+            type: integer
+          description: billing account id. 0 represents null value.
+        - in: query
           name: workPeriods.paymentStatus
           required: false
           schema:
@@ -1522,7 +1533,7 @@ paths:
             type: string
             format: date
             pattern: '^\d{4}-\d{2}-\d{2}$'
-          description: The work period start date.
+          description: The work period start date. Should be Sunday.
         - in: query
           name: workPeriods.endDate
           required: false
@@ -1530,13 +1541,33 @@ paths:
             type: string
             format: date
             pattern: '^\d{4}-\d{2}-\d{2}$'
-          description: The work period end date.
+          description: The work period end date. Should be Saturday.
         - in: query
           name: workPeriods.userHandle
           required: false
           schema:
             type: string
           description: The user handle.
+        - in: query
+          name: workPeriods.isFirstWeek
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: |
+            the week which matches workPeriods.startDate is the first one in the RB.
+            workPeriods.startDate is required.
+            only one of workPeriods.isFirstWeek and workPeriods.isLastWeek is allowed.
+        - in: query
+          name: workPeriods.isLastWeek
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: |
+            the week which matches workPeriods.startDate is the last one in the RB.
+            workPeriods.startDate is required.
+            only one of workPeriods.isFirstWeek and workPeriods.isLastWeek is allowed.
         - in: query
           name: workPeriods.payments.status
           required: false
@@ -1552,6 +1583,11 @@ paths:
             maximum: 5
             example: 3
           description: The workdays to pay
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceBookingSearchBody"
 
       responses:
         "200":
@@ -3901,6 +3937,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
           description: "The job candidate status."
         externalId:
@@ -3996,6 +4040,14 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    JobCandidateSearchBody:
+      properties:
+        statuses:
+          type: array
+          items:
+            type: string
+            enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected", "applied", "rejected-pre-screen", "skills-test", "phone-screen", "job-closed", "offered", "withdrawn", "withdrawn-prescreen"]
+            description: "The array of job Candidates status"
     JobCandidateRequestBody:
       required:
         - jobId
@@ -4023,6 +4075,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
           description: "The job candidate status."
           default: open
@@ -4053,6 +4113,14 @@ components:
               "cancelled",
               "interview",
               "topcoder-rejected",
+              "applied",
+              "rejected-pre-screen",
+              "skills-test",
+              "phone-screen",
+              "job-closed",
+              "offered",
+              "withdrawn",
+              "withdrawn-prescreen"
             ]
         externalId:
           type: string
@@ -4436,6 +4504,14 @@ components:
           type: string
           example: "topcoder user"
           description: "The user who updated the job last time.(Will get the user info from the token)"
+    ResourceBookingSearchBody:
+      properties:
+        jobIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of job ids"
     ResourceBookingRequestBody:
       required:
         - projectId
@@ -5189,6 +5265,14 @@ components:
                     "cancelled",
                     "interview",
                     "topcoder-rejected",
+                    "applied",
+                    "rejected-pre-screen",
+                    "skills-test",
+                    "phone-screen",
+                    "job-closed",
+                    "offered",
+                    "withdrawn",
+                    "withdrawn-prescreen"
                   ]
                 description: "The job candidate status."
               skills:
@@ -5331,6 +5415,9 @@ components:
         teamDescription:
           type: string
           description: "The description of the team"
+        refCode:
+          type: string
+          description: "Optional referral code"
         positions:
           type: array
           description: "The array of positions"
@@ -5555,12 +5642,11 @@ components:
           example: 300
           description: "The time to interview."
     RoleRates:
-      required:
-        - global
-        - inCountry
-        - offShore
       type: object
       properties:
+        niche:
+          type: integer
+          example: 10
         global:
           type: integer
           example: 10
@@ -5570,6 +5656,9 @@ components:
         offShore:
           type: integer
           example: 30
+        rate30Niche:
+          type: integer
+          example: 10
         rate30Global:
           type: integer
           example: 10
@@ -5579,6 +5668,9 @@ components:
         rate30OffShore:
           type: integer
           example: 30
+        rate20Niche:
+          type: integer
+          example: 10
         rate20Global:
           type: integer
           example: 10
@@ -5772,3 +5864,4 @@ components:
       properties:
         message:
           type: string
+

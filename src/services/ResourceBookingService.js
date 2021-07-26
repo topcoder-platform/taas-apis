@@ -109,7 +109,7 @@ function _checkCriteriaAndGetFields (currentUser, criteria) {
   // Check if any WorkPeriodPayment field will be returned
   result.withWorkPeriodPayments = result.allWorkPeriodPayments || result.fieldsWPP.length > 0
   // Extract the filters from criteria parameter
-  let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder'], key) === -1)
+  let filters = _.filter(Object.keys(criteria), key => _.indexOf(['fromDb', 'fields', 'page', 'perPage', 'sortBy', 'sortOrder', 'jobIds', 'workPeriods.isFirstWeek', 'workPeriods.isLastWeek'], key) === -1)
   filters = _.map(filters, f => {
     if (f === 'projectIds') {
       return 'projectId'
@@ -556,7 +556,8 @@ async function searchResourceBookings (currentUser, criteria, options) {
         body: {
           query: {
             bool: {
-              must: []
+              must: [],
+              filter: []
             }
           },
           from: (page - 1) * perPage,
@@ -589,7 +590,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
       }
       esQuery.body.sort.push(sort)
       // Apply ResourceBooking filters
-      _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
+      _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId', 'billingAccountId']), (value, key) => {
         esQuery.body.query.bool.must.push({
           term: {
             [key]: {
@@ -600,11 +601,29 @@ async function searchResourceBookings (currentUser, criteria, options) {
       })
       // if criteria contains projectIds, filter projectId with this value
       if (criteria.projectIds) {
-        esQuery.body.query.bool.filter = [{
+        esQuery.body.query.bool.filter.push({
           terms: {
             projectId: criteria.projectIds
           }
-        }]
+        })
+      }
+      // if criteria contains jobIds, filter jobIds with this value
+      if (criteria.jobIds && criteria.jobIds.length > 0) {
+        esQuery.body.query.bool.filter.push({
+          terms: {
+            jobId: criteria.jobIds
+          }
+        })
+      }
+      if (criteria['workPeriods.isFirstWeek']) {
+        esQuery.body.query.bool.must.push({
+          range: { startDate: { gte: criteria['workPeriods.startDate'] } }
+        })
+      }
+      if (criteria['workPeriods.isLastWeek']) {
+        esQuery.body.query.bool.must.push({
+          range: { endDate: { lte: moment(criteria['workPeriods.startDate']).add(6, 'day').format('YYYY-MM-DD') } }
+        })
       }
       // Apply WorkPeriod and WorkPeriodPayment filters
       const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
@@ -707,8 +726,20 @@ async function searchResourceBookings (currentUser, criteria, options) {
   _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
+  if (!_.isUndefined(criteria.billingAccountId)) {
+    filter[Op.and].push({ billingAccountId: criteria.billingAccountId === 0 ? null : criteria.billingAccountId })
+  }
   if (criteria.projectIds) {
     filter[Op.and].push({ projectId: criteria.projectIds })
+  }
+  if (criteria.jobIds && criteria.jobIds.length > 0) {
+    filter[Op.and].push({ id: criteria.jobIds })
+  }
+  if (criteria['workPeriods.isFirstWeek']) {
+    filter[Op.and].push({ startDate: { [Op.gte]: criteria['workPeriods.startDate'] } })
+  }
+  if (criteria['workPeriods.isLastWeek']) {
+    filter[Op.and].push({ endDate: { [Op.lte]: moment(criteria['workPeriods.startDate']).add(6, 'day').format('YYYY-MM-DD') } })
   }
   const queryCriteria = {
     where: filter,
@@ -831,19 +862,49 @@ searchResourceBookings.schema = Joi.object().keys({
     endDate: Joi.date().format('YYYY-MM-DD'),
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
+    jobIds: Joi.array().items(Joi.string().uuid()),
     userId: Joi.string().uuid(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),
       Joi.array().items(Joi.number().integer())
     ),
+    billingAccountId: Joi.number().integer(),
     'workPeriods.paymentStatus': Joi.alternatives(
       Joi.string(),
       Joi.array().items(Joi.paymentStatus())
     ),
-    'workPeriods.startDate': Joi.date().format('YYYY-MM-DD'),
-    'workPeriods.endDate': Joi.date().format('YYYY-MM-DD'),
+    'workPeriods.startDate': Joi.date().format('YYYY-MM-DD').custom((value, helpers) => {
+      const date = new Date(value)
+      const weekDay = date.getDay()
+      if (weekDay !== 0) {
+        return helpers.message('workPeriods.startDate should be always Sunday')
+      }
+      return value
+    }),
+    'workPeriods.endDate': Joi.date().format('YYYY-MM-DD').custom((value, helpers) => {
+      const date = new Date(value)
+      const weekDay = date.getDay()
+      if (weekDay !== 6) {
+        return helpers.message('workPeriods.endDate should be always Saturday')
+      }
+      return value
+    }),
     'workPeriods.userHandle': Joi.string(),
+    'workPeriods.isFirstWeek': Joi.when(Joi.ref('workPeriods.startDate', { separator: false }), {
+      is: Joi.exist(),
+      then: Joi.boolean().default(false),
+      otherwise: Joi.boolean().valid(false).messages({
+        'any.only': 'Cannot filter by "isFirstWeek" without "startDate"'
+      })
+    }),
+    'workPeriods.isLastWeek': Joi.boolean().when(Joi.ref('workPeriods.startDate', { separator: false }), {
+      is: Joi.exist(),
+      then: Joi.boolean().default(false),
+      otherwise: Joi.boolean().valid(false).messages({
+        'any.only': 'Cannot filter by "isLastWeek" without "startDate"'
+      })
+    }),
     'workPeriods.payments.status': Joi.workPeriodPaymentStatus(),
     'workPeriods.payments.days': Joi.number().integer().min(0).max(5)
   }).required(),
