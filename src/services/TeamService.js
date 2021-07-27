@@ -874,10 +874,12 @@ async function getSkillsByJobDescription (data) {
     })
   })
   foundSkills = _.uniq(foundSkills)
+  const skillIds = await getSkillIdsByNames(foundSkills)
   // apply desired template
-  _.each(foundSkills, skill => {
+  _.each(foundSkills, (skillTag, idx) => {
     result.push({
-      tag: skill,
+      id: skillIds[idx],
+      tag: skillTag,
       type: 'taas_skill',
       source: 'taas-jd-parser'
     })
@@ -933,12 +935,12 @@ getSkillNamesByIds.schema = Joi.object()
  * @returns {Array<string>} the array of skill ids
  */
 async function getSkillIdsByNames (skills) {
-  const result = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
+  const tcSkills = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
   // endpoint returns the partial matched skills
   // we need to filter by exact match case insensitive
-  const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
-  const skillIds = _.map(filteredSkills, 'id')
-  return skillIds
+  // const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
+  const matchedSkills = _.map(skills, skillTag => tcSkills.find(tcSkill => _.toLower(skillTag) === _.toLower(tcSkill.name)))
+  return _.map(matchedSkills, 'id')
 }
 
 getSkillIdsByNames.schema = Joi.object()
@@ -1051,6 +1053,7 @@ async function createTeam (currentUser, data) {
       numPositions: position.numberOfResources,
       rateType: position.rateType,
       workload: position.workload,
+      hoursPerWeek: position.hoursPerWeek,
       skills: roleSearchRequest.skills,
       description: roleSearchRequest.jobDescription,
       roleIds: [roleSearchRequest.roleId],
@@ -1083,6 +1086,7 @@ createTeam.schema = Joi.object()
           startMonth: Joi.date(),
           rateType: Joi.rateType().default('weekly'),
           workload: Joi.workload().default('full-time'),
+          hoursPerWeek: Joi.number().integer().positive(),
           resourceType: Joi.string()
         }).required()
       ).required()
