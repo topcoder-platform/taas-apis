@@ -3655,6 +3655,9 @@ components:
   schemas:
     SkillItem:
       properties:
+        id:
+          type: string
+          format: uuid
         tag:
           type: string
           example: "Java"
@@ -5440,6 +5443,11 @@ components:
                 example: 10
                 minimum: 1
                 description: "The number of needed resources"
+              hoursPerWeek:
+                type: integer
+                example: 40
+                minimum: 1
+                description: "The amount of working hours per week"
               durationWeeks:
                 type: integer
                 example: 5
