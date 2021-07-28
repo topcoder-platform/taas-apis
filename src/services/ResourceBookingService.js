@@ -908,7 +908,7 @@ searchResourceBookings.schema = Joi.object().keys({
       })
     }),
     'workPeriods.payments.status': Joi.workPeriodPaymentStatus(),
-    'workPeriods.payments.days': Joi.number().integer().min(0).max(5)
+    'workPeriods.payments.days': Joi.number().integer().min(0).max(10)
   }).required(),
   options: Joi.object().keys({
     returnAll: Joi.boolean().default(false),

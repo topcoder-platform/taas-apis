@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e9b3dfd2-60ad-45b3-9c41-87507820461d",
+		"_postman_id": "8ead1433-9679-46de-9baa-d27d59106673",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -16460,7 +16460,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.days\\\" must be less than or equal to 5\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.days\\\" must be less than or equal to 10\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -16478,7 +16478,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId-3}}\",\r\n    \"days\": 6\r\n}",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId-3}}\",\r\n    \"days\": 11\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
