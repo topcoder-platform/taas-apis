@@ -4470,6 +4470,10 @@ components:
           format: float
           example: 13
           description: "The member rate."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         customerRate:
           type: integer
           format: float
@@ -4527,6 +4531,10 @@ components:
           format: uuid
           example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The external id."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         jobId:
           type: string
           format: uuid
@@ -4584,6 +4592,10 @@ components:
           format: float
           example: 13.23
           description: "The member rate."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         customerRate:
           type: number
           format: float
@@ -4620,6 +4632,22 @@ components:
           type: string
           format: uuid
           description: "The resource booking id."
+        sentSurvey:
+          type: boolean
+          example: true
+          description: "whether we've already sent a survey for this WorkPeriod of no"
+        sentSurveyError:
+          description: "error details if error happened during sending survey"
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              example: "error message"
+              description: "The error message"
+            errorCode:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
         userHandle:
           type: string
           example: "eisbilir"
@@ -4695,6 +4723,22 @@ components:
           type: integer
           example: 2
           description: "The count of the days worked for that work period."
+        sentSurvey:
+          type: boolean
+          example: true
+          description: "whether we've already sent a survey for this WorkPeriod of no"
+        sentSurveyError:
+          description: "error details if error happened during sending survey"
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              example: "error message"
+              description: "The error message"
+            errorCode:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
     WorkPeriodPayment:
       required:
         - id

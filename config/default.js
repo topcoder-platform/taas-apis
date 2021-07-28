@@ -180,6 +180,16 @@ module.exports = {
   INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
   // Topcoder skills cache time in minutes
   TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60,
+  // weekly survey scheduler config
+  WEEKLY_SURVEY: {
+    CRON: process.env.WEEKLY_SURVEY_CRON || '0 1 * * 7',
+    BASE_URL: process.env.WEEKLY_SURVEY_BASE_URL || 'https://api.surveymonkey.net/v3/surveys',
+    JWT_TOKEN: process.env.WEEKLY_SURVEY_JWT_TOKEN || '',
+    SURVEY_ID: process.env.WEEKLY_SURVEY_SURVEY_ID || '',
+    SURVEY_MASTER_COLLECTOR_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_COLLECTOR_ID || '',
+    SURVEY_MASTER_MESSAGE_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_MESSAGE_ID || '',
+    SURVEY_CONTACT_GROUP_ID: process.env.WEEKLY_SURVEY_SURVEY_CONTACT_GROUP_ID || ''
+  },
   // payment scheduler config
   PAYMENT_PROCESSING: {
     // switch off actual API calls in Payment Scheduler
