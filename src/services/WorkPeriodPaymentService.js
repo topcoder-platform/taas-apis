@@ -80,7 +80,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     throw new errors.BadRequestError(`Cannot process payments for the future WorkPeriods. You can process after ${workPeriodStartTime.diff(moment(), 'hours')} hours`)
   }
   workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
-  workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
+  workPeriodPayment.amount = workPeriodPayment.days > 0 ? _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2) : workPeriodPayment.amount
   workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
@@ -185,7 +185,8 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
 
 const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
   workPeriodId: Joi.string().uuid().required(),
-  days: Joi.number().integer().min(1).max(5)
+  days: Joi.number().integer().min(0).max(5),
+  amount: Joi.number()
 })
 createWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
