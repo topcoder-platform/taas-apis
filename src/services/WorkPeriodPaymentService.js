@@ -52,6 +52,38 @@ async function _createSingleWorkPeriodPayment (workPeriodPayment, createdBy) {
  * Create single workPeriodPayment
  * @param {Object} workPeriodPayment the workPeriodPayment to be created
  * @param {String} createdBy the authUser id
+ * @returns {Object} the created workPeriodPayment
+ */
+async function _updateChallenge (challengeId, data) {
+  const body = {}
+  if (data.billingAccountId) {
+    body.billing = {
+      billingAccountId: _.toString(data.billingAccountId),
+      markup: 0 //  for TaaS payments we always use 0 markup
+    }
+  }
+  if (data.amount) {
+    body.prizeSets = [{
+      type: 'placement',
+      prizes: [{ type: 'USD', value: data.amount }]
+    }]
+  }
+
+  if (data.billingAccountId || data.amount) {
+    try {
+      await helper.updateChallenge(challengeId, body)
+      logger.debug({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: `Challenge with id ${challengeId} is updated` })
+    } catch (err) {
+      logger.error({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: err.response.text })
+      throw new errors.BadRequestError(`Cannot update the the challenge: ${err.response.text}`)
+    }
+  }
+}
+
+/**
+ * Create single workPeriodPayment
+ * @param {Object} workPeriodPayment the workPeriodPayment to be created
+ * @param {String} createdBy the authUser id
  * @param {Object} correspondingWorkPeriod the workPeriod
  * @param {Object} correspondingResourceBooking the resourceBooking
  * @returns {Object} the created workPeriodPayment
@@ -207,7 +239,15 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
   const workPeriodPayment = await WorkPeriodPayment.findById(id)
+
   const oldValue = workPeriodPayment.toJSON()
+
+  if (oldValue.status === 'in-progress') {
+    _.each(_.pick(data, ['amount', 'days', 'memberRate', 'customerRate', 'billingAccountId']), (value, key) => {
+      throw new errors.BadRequestError(`${key} cannot be updated when workPeriodPayment status is in-progress`)
+    })
+  }
+
   if (data.status === 'cancelled' && oldValue.status === 'in-progress') {
     throw new errors.BadRequestError('You cannot cancel a WorkPeriodPayment which is in-progress')
   }
@@ -222,6 +262,19 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
       throw new errors.BadRequestError('There is no available daysWorked to schedule a payment')
     }
   }
+
+  if (data.days) {
+    const correspondingWorkPeriod = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+    const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
+    if (data.days > maxPossibleDays) {
+      throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
+    }
+  }
+
+  if (oldValue.challengeId) {
+    await _updateChallenge(workPeriodPayment.challengeId, data)
+  }
+
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriodPayment.update(data)
   await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
@@ -243,7 +296,12 @@ partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    status: Joi.workPeriodPaymentUpdateStatus()
+    status: Joi.workPeriodPaymentUpdateStatus(),
+    amount: Joi.number().min(0),
+    days: Joi.number().integer(),
+    memberRate: Joi.number().positive().required(),
+    customerRate: Joi.number().positive().allow(null),
+    billingAccountId: Joi.number().positive().integer().required()
   }).min(1).required()
 }).required()
 

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0bd597ba-4bc2-4ea1-be33-45776b80c1ce",
+		"_postman_id": "9d8bfd2b-8864-49fd-8c6e-4cff10095cc3",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -17279,7 +17279,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17325,7 +17325,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17373,7 +17373,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17421,7 +17421,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17469,7 +17469,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17517,7 +17517,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"cancelled\"\r\n}",
+							"raw": "{\r\n    \"status\": \"cancelled\",\r\n    \"days\":1,\r\n    \"amount\":2,\r\n    \"memberRate\":1,\r\n    \"customerRate\":3,\r\n    \"billingAccountId\": 23\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
