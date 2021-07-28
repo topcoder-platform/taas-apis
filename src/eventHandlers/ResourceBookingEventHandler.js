@@ -188,11 +188,13 @@ async function updateWorkPeriods (payload) {
       const originalFirstWeek = _.find(workPeriods, ['startDate', firstWeek.startDate])
       const existentFirstWeek = _.minBy(workPeriods, 'startDate')
       // recalculate daysWorked for the first week of existent workPeriods and daysWorked have changed
-      if (firstWeek.startDate === existentFirstWeek.startDate && firstWeek.daysWorked !== existentFirstWeek.daysWorked) {
+      if (firstWeek.startDate === existentFirstWeek.startDate && firstWeek.daysWorked !== existentFirstWeek.daysWorked &&
+        existentFirstWeek.daysPaid <= firstWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(firstWeek, { id: originalFirstWeek.id }))
         // if first of intersected workPeriods is not the first one of existent workPeriods
         // we only check if it's daysWorked exceeds the possible maximum
-      } else if (originalFirstWeek.daysWorked > firstWeek.daysWorked) {
+      } else if (originalFirstWeek.daysWorked > firstWeek.daysWorked &&
+        originalFirstWeek.daysPaid <= firstWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(firstWeek, { id: originalFirstWeek.id }))
       }
     }
@@ -201,11 +203,13 @@ async function updateWorkPeriods (payload) {
       const originalLastWeek = _.find(workPeriods, ['startDate', lastWeek.startDate])
       const existentLastWeek = _.maxBy(workPeriods, 'startDate')
       // recalculate daysWorked for the last week of existent workPeriods and daysWorked have changed
-      if (lastWeek.startDate === existentLastWeek.startDate && lastWeek.daysWorked !== existentLastWeek.daysWorked) {
+      if (lastWeek.startDate === existentLastWeek.startDate && lastWeek.daysWorked !== existentLastWeek.daysWorked &&
+        existentLastWeek.daysPaid <= lastWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(lastWeek, { id: originalLastWeek.id }))
         // if last of intersected workPeriods is not the last one of existent workPeriods
         // we only check if it's daysWorked exceeds the possible maximum
-      } else if (originalLastWeek.daysWorked > lastWeek.daysWorked) {
+      } else if (originalLastWeek.daysWorked > lastWeek.daysWorked &&
+        originalLastWeek.daysPaid <= lastWeek.daysWorked) {
         workPeriodsToUpdate.push(_.assign(lastWeek, { id: originalLastWeek.id }))
       }
     }

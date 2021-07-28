@@ -251,6 +251,7 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   _checkForPaidWorkPeriods(workPeriodsToRemove)
   // check if this update makes maximum possible daysWorked value less than daysPaid
+  /* https://github.com/topcoder-platform/taas-apis/issues/428
   _.each(newWorkPeriods, newWP => {
     const wp = _.find(workPeriods, ['startDate', newWP.startDate])
     if (!wp) {
@@ -260,6 +261,7 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
       throw new errors.ConflictError(`Cannot make maximum daysWorked (${newWP.daysWorked}) to the value less than daysPaid (${wp.daysPaid}) for WorkPeriod: ${wp.id}`)
     }
   })
+  */
 }
 
 /**
