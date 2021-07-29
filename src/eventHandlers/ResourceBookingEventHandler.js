@@ -102,11 +102,11 @@ async function assignJob (payload) {
     return
   }
   const job = await models.Job.findById(resourceBooking.jobId)
-  if (job.status === 'placed') {
+  if (job.status === 'placed' || job.status === 'assigned') {
     logger.debug({
       component: 'ResourceBookingEventHandler',
       context: 'assignJob',
-      message: `job with projectId ${job.projectId} is already placed`
+      message: `job with projectId ${job.projectId} is already ${job.status}`
     })
     return
   }

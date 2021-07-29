@@ -5,7 +5,7 @@
 const Joi = require('joi')
   .extend(require('@joi/date'))
 const _ = require('lodash')
-const dateFNS = require('date-fns')
+const moment = require('moment')
 const Report = require('./report')
 const config = require('./config')
 const helper = require('./helper')
@@ -18,12 +18,12 @@ const jobSchema = Joi.object({
   title: Joi.string().required(),
   startDate: Joi.date().format('MM/DD/YYYY').required(),
   endDate: Joi.date().format('MM/DD/YYYY').required(),
-  numPositions: Joi.number().integer().min(1),
+  numPositions: Joi.number().integer().min(1).required(),
   userHandle: Joi.string(),
   customerRate: Joi.number(),
   memberRate: Joi.number(),
   skills: Joi.array().default([]),
-  rateType: Joi.string().default('weekly')
+  rateType: Joi.string().default('weekly').valid('hourly', 'daily', 'weekly', 'monthly', 'annual')
 }).unknown(true)
 
 /**
@@ -67,14 +67,28 @@ async function processJob (job, info = []) {
     data.jobId = result.id
   } catch (err) {
     if (!(err.message && err.message.includes('job not found'))) {
+      err.info = info
       throw err
     }
-    const result = await helper.createJob(_.pick(data, ['projectId', 'externalId', 'title', 'numPositions', 'skills']))
+    const jobData = _.pick(data, ['projectId', 'externalId', 'title', 'numPositions', 'skills'])
+    if (data.numPositions === 1) {
+      jobData.status = 'assigned'
+    }
+    const result = await helper.createJob(jobData)
     info.push({ text: `id: ${result.id} job created`, tag: 'job_created' })
     data.jobId = result.id
   }
-  data.userId = (await helper.getUserByHandle(data.userHandle)).id
-  logger.debug(`userHandle: ${data.userHandle} userId: ${data.userId}`)
+  try {
+    data.userId = (await helper.getUserByHandle(data.userHandle)).id
+    logger.debug(`userHandle: ${data.userHandle} userId: ${data.userId}`)
+  } catch (err) {
+    if (!(err.message && err.message.includes('user not found'))) {
+      err.info = info
+      throw err
+    }
+    info.push({ text: err.message, tag: 'user_not_found' })
+    return { status: constants.ProcessingStatus.Failed, info }
+  }
   // create a resource booking if it does not already exist
   try {
     const result = await helper.getResourceBookingByJobIdAndUserId(data.jobId, data.userId)
@@ -82,18 +96,22 @@ async function processJob (job, info = []) {
     return { status: constants.ProcessingStatus.Successful, info }
   } catch (err) {
     if (!(err.message && err.message.includes('resource booking not found'))) {
+      err.info = info
       throw err
     }
-    const result = await helper.createResourceBooking(_.pick(data, ['projectId', 'jobId', 'userId', 'startDate', 'endDate', 'memberRate', 'customerRate', 'rateType']))
-    info.push({ text: `id: ${result.id} resource booking created`, tag: 'resource_booking_created' })
-    data.resourceBookingId = result.id
+    try {
+      const resourceBookingData = _.pick(data, ['projectId', 'jobId', 'userId', 'memberRate', 'customerRate', 'rateType'])
+      resourceBookingData.startDate = moment(data.startDate).format('YYYY-MM-DD')
+      resourceBookingData.endDate = moment(data.endDate).format('YYYY-MM-DD')
+      resourceBookingData.status = moment(data.endDate).isBefore(moment()) ? 'closed' : 'placed'
+      const result = await helper.createResourceBooking(resourceBookingData)
+      info.push({ text: `id: ${result.id} resource booking created`, tag: 'resource_booking_created' })
+      return { status: constants.ProcessingStatus.Successful, info }
+    } catch (err) {
+      err.info = info
+      throw err
+    }
   }
-  // update the resourceBooking based on startDate and endDate
-  const resourceBookingStatus = dateFNS.isBefore(data.endDate, dateFNS.startOfToday()) ? 'closed' : 'placed'
-  logger.debug(`resourceBookingId: ${data.resourceBookingId} status: ${resourceBookingStatus}`)
-  await helper.updateResourceBookingStatus(data.resourceBookingId, resourceBookingStatus)
-  info.push({ text: `id: ${data.resourceBookingId} status: ${resourceBookingStatus} resource booking updated`, tag: 'resource_booking_status_updated' })
-  return { status: constants.ProcessingStatus.Successful, info }
 }
 
 /**
@@ -111,10 +129,11 @@ async function main () {
       const result = await processJob(job)
       report.add({ lnum: job._lnum, ...result })
     } catch (err) {
+      const info = err.info || []
       if (err.response) {
-        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.response.error.toString().split('\n')[0], tag: 'request_error' }] })
+        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.response.error.toString().split('\n')[0], tag: 'request_error' }, ...info] })
       } else {
-        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.message, tag: 'internal_error' }] })
+        report.add({ lnum: job._lnum, status: constants.ProcessingStatus.Failed, info: [{ text: err.message, tag: 'internal_error' }, ...info] })
       }
     }
     report.print()
