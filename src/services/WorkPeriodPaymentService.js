@@ -49,10 +49,10 @@ async function _createSingleWorkPeriodPayment (workPeriodPayment, createdBy) {
 }
 
 /**
- * Create single workPeriodPayment
- * @param {Object} workPeriodPayment the workPeriodPayment to be created
- * @param {String} createdBy the authUser id
- * @returns {Object} the created workPeriodPayment
+ * update challenge
+ * @param {String} challengeId the challenge id
+ * @param {Object} data        the challenge update data
+ * @returns {undefined}
  */
 async function _updateChallenge (challengeId, data) {
   const body = {}
@@ -243,9 +243,10 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
   const oldValue = workPeriodPayment.toJSON()
 
   if (oldValue.status === 'in-progress') {
-    _.each(_.pick(data, ['amount', 'days', 'memberRate', 'customerRate', 'billingAccountId']), (value, key) => {
-      throw new errors.BadRequestError(`${key} cannot be updated when workPeriodPayment status is in-progress`)
-    })
+    const keys = _.keys(_.pick(data, ['amount', 'days', 'memberRate', 'customerRate', 'billingAccountId']))
+    if (keys.length) {
+      throw new errors.BadRequestError(`${JSON.stringify(keys)} cannot be updated when workPeriodPayment status is in-progress`)
+    }
   }
 
   if (data.status === 'cancelled' && oldValue.status === 'in-progress') {
@@ -265,13 +266,14 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
 
   if (data.days) {
     const correspondingWorkPeriod = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
-    const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
+    const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid - oldValue.days
     if (data.days > maxPossibleDays) {
       throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
     }
   }
 
-  if (oldValue.challengeId) {
+  // challengeId exist and skip dummy challenge
+  if (oldValue.challengeId && oldValue.challengeId !== '00000000-0000-0000-0000-000000000000') {
     await _updateChallenge(workPeriodPayment.challengeId, data)
   }
 
@@ -299,9 +301,9 @@ partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
     status: Joi.workPeriodPaymentUpdateStatus(),
     amount: Joi.number().min(0),
     days: Joi.number().integer(),
-    memberRate: Joi.number().positive().required(),
+    memberRate: Joi.number().positive(),
     customerRate: Joi.number().positive().allow(null),
-    billingAccountId: Joi.number().positive().integer().required()
+    billingAccountId: Joi.number().positive().integer()
   }).min(1).required()
 }).required()
 
