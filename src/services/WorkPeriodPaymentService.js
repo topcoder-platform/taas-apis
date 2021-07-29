@@ -61,26 +61,29 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     throw new errors.ConflictError(`id: ${correspondingResourceBooking.id} "ResourceBooking" Billing account is not assigned to the resource booking`)
   }
   workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
-  if (_.isNil(correspondingResourceBooking.memberRate)) {
-    throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
+  if (!_.has(workPeriodPayment, 'days') || workPeriodPayment.days > 0) {
+    if (_.isNil(correspondingResourceBooking.memberRate)) {
+      throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
+    }
+    if (correspondingResourceBooking.memberRate <= 0) {
+      throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
+    }
+    workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
+    const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
+    if (workPeriodPayment.days > maxPossibleDays) {
+      throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
+    }
+    if (maxPossibleDays <= 0) {
+      throw new errors.ConflictError(`There are no days to pay for WorkPeriod: ${correspondingWorkPeriod.id}`)
+    }
+    const workPeriodStartTime = moment(`${correspondingWorkPeriod.startDate}T00:00:00.000+12`)
+    if (workPeriodStartTime.isAfter(moment())) {
+      throw new errors.BadRequestError(`Cannot process payments for the future WorkPeriods. You can process after ${workPeriodStartTime.diff(moment(), 'hours')} hours`)
+    }
+    workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
+    workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
   }
-  if (correspondingResourceBooking.memberRate <= 0) {
-    throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
-  }
-  workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
-  const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
-  if (workPeriodPayment.days > maxPossibleDays) {
-    throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
-  }
-  if (maxPossibleDays <= 0) {
-    throw new errors.ConflictError(`There are no days to pay for WorkPeriod: ${correspondingWorkPeriod.id}`)
-  }
-  const workPeriodStartTime = moment(`${correspondingWorkPeriod.startDate}T00:00:00.000+12`)
-  if (workPeriodStartTime.isAfter(moment())) {
-    throw new errors.BadRequestError(`Cannot process payments for the future WorkPeriods. You can process after ${workPeriodStartTime.diff(moment(), 'hours')} hours`)
-  }
-  workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
-  workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
+  workPeriodPayment.memberRate = _.defaultTo(workPeriodPayment.memberRate, 0)
   workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
@@ -185,7 +188,14 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
 
 const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
   workPeriodId: Joi.string().uuid().required(),
-  days: Joi.number().integer().min(1).max(5)
+  days: Joi.number().integer().min(0).max(5),
+  amount: Joi.when('days', {
+    is: Joi.number().integer().valid(0).exist(),
+    then: Joi.number().greater(0).required().messages({
+      'any.required': '"amount" has to be provided when processing additional payment for 0 days'
+    }),
+    otherwise: Joi.forbidden()
+  })
 })
 createWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
