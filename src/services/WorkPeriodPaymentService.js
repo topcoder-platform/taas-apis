@@ -68,7 +68,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     if (correspondingResourceBooking.memberRate <= 0) {
       throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
     }
-    workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
+
     const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
     if (workPeriodPayment.days > maxPossibleDays) {
       throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
@@ -83,7 +83,8 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
     workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
   }
-  workPeriodPayment.memberRate = _.defaultTo(workPeriodPayment.memberRate, 0)
+  // TODO: we should allow `memberRate` to be `null` as it's not required for additional payments
+  workPeriodPayment.memberRate = _.defaultTo(correspondingResourceBooking.memberRate, 0)
   workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
