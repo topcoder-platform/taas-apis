@@ -54,15 +54,15 @@ async function getJobByExternalId (externalId) {
  * Update the status of a resource booking.
  *
  * @param {String} resourceBookingId the resource booking id
- * @param {String} status the status for the resource booking
+ * @param {Object} data the data to update
  * @returns {Object} the result
  */
-async function updateResourceBookingStatus (resourceBookingId, status) {
+async function updateResourceBooking (resourceBookingId, data) {
   const token = await getM2MToken()
   const { body: resourceBooking } = await request.patch(`${config.TAAS_API_URL}/resourceBookings/${resourceBookingId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
-    .send({ status })
+    .send(data)
   return resourceBooking
 }
 
@@ -139,7 +139,7 @@ module.exports = {
   getPathnameFromCommandline: commonHelper.getPathnameFromCommandline,
   createJob,
   getJobByExternalId,
-  updateResourceBookingStatus,
+  updateResourceBooking,
   getResourceBookingByJobIdAndUserId,
   createResourceBooking,
   getUserByHandle,
