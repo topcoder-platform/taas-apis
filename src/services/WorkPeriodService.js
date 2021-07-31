@@ -273,9 +273,11 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (_.isNil(thisWeek)) {
     throw new errors.ConflictError('Work Period dates are not compatible with Resource Booking dates')
   }
+  /* https://github.com/topcoder-platform/taas-apis/issues/428
   if (thisWeek.daysWorked < data.daysWorked) {
     throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
   }
+  */
   data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
   data.updatedBy = await helper.getUserId(currentUser.userId)
   const updated = await workPeriod.update(data)
@@ -300,7 +302,7 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    daysWorked: Joi.number().integer().min(0).max(5)
+    daysWorked: Joi.number().integer().min(0).max(10)
   }).required().min(1)
 }).required()
 

@@ -189,7 +189,7 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
 
 const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
   workPeriodId: Joi.string().uuid().required(),
-  days: Joi.number().integer().min(0).max(5),
+  days: Joi.number().integer().min(0).max(10),
   amount: Joi.when('days', {
     is: Joi.number().integer().valid(0).exist(),
     then: Joi.number().greater(0).required().messages({
