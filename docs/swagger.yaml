@@ -4908,6 +4908,30 @@ components:
           type: string
           enum: ["scheduled", "cancelled"]
           description: "The payment status."
+        memberRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The member rate."
+        customerRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The customer rate."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: "the billing account id for payments"
+        days:
+          type: integer
+          minimum: 0
+          example: 3
+          description: "The workdays to pay"
+        amount:
+          type: integer
+          format: float
+          example: 2
+          description: "The amount to be paid."
     CheckRun:
       type: object
       properties:
