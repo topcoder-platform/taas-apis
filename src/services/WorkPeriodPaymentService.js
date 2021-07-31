@@ -56,20 +56,15 @@ async function _createSingleWorkPeriodPayment (workPeriodPayment, createdBy) {
  */
 async function _updateChallenge (challengeId, data) {
   const body = {}
+
   if (data.billingAccountId) {
     body.billing = {
       billingAccountId: _.toString(data.billingAccountId),
       markup: 0 //  for TaaS payments we always use 0 markup
     }
   }
-  if (data.amount) {
-    body.prizeSets = [{
-      type: 'placement',
-      prizes: [{ type: 'USD', value: data.amount }]
-    }]
-  }
 
-  if (data.billingAccountId || data.amount) {
+  if (data.billingAccountId) {
     try {
       await helper.updateChallenge(challengeId, body)
       logger.debug({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: `Challenge with id ${challengeId} is updated` })
@@ -279,9 +274,9 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
 
   if (data.days) {
     const correspondingWorkPeriod = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
-    const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid - oldValue.days
+    const maxPossibleDays = correspondingWorkPeriod.daysWorked - (correspondingWorkPeriod.daysPaid - oldValue.days)
     if (data.days > maxPossibleDays) {
-      throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
+      throw new errors.BadRequestError(`Cannot update days paid to more than ${maxPossibleDays}, otherwise total paid days (${correspondingWorkPeriod.daysPaid - oldValue.days}) would be more that total worked days (${correspondingWorkPeriod.daysWorked}) for the week.`)
     }
   }
 
@@ -312,8 +307,8 @@ partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     status: Joi.workPeriodPaymentUpdateStatus(),
-    amount: Joi.number().min(0),
-    days: Joi.number().integer(),
+    amount: Joi.number().greater(0),
+    days: Joi.number().integer().min(0).max(10),
     memberRate: Joi.number().positive(),
     customerRate: Joi.number().positive().allow(null),
     billingAccountId: Joi.number().positive().integer()
