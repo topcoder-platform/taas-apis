@@ -124,3 +124,6 @@ api.env
 
 # macOS files
 .DS_Store
+
+# rendered html for email template
+scripts/notification-renderer/rendered.html

@@ -100,5 +100,47 @@ module.exports = {
     cc: config.INTERVIEW_INVITATION_CC_LIST,
     recipients: config.INTERVIEW_INVITATION_RECIPIENTS_LIST,
     sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
+  },
+  'candidate-review': {
+    subject: 'Topcoder - {{teamName}} has job candidates available for review',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+  },
+  'interview-coming-up-host': {
+    subject: 'Topcoder - Interview Coming Up: {{jobTitle}} with {{guestFullName}}',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+  },
+  'interview-coming-up-guest': {
+    subject: 'Topcoder - Interview Coming Up: {{jobTitle}} with {{hostFullName}}',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+  },
+  'interview-completed': {
+    subject: 'Topcoder - Interview Awaits Resolution: {{jobTitle}} for {{guestFullName}}',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+  },
+  'post-interview-action': {
+    subject: 'Topcoder - Candidate Action Required in {{teamName}} for {{numCandidates}} candidates',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+  },
+  'resource-booking-expiration': {
+    subject: 'Topcoder - Resource Booking Expiring in {{teamName}} for {{numResourceBookings}} resource bookings',
+    body: '',
+    recipients: [],
+    from: config.NOTIFICATION_SENDER_EMAIL,
+    sendgrid_template_id: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
   }
 }
