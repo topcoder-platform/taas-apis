@@ -61,6 +61,10 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     throw new errors.ConflictError(`id: ${correspondingResourceBooking.id} "ResourceBooking" Billing account is not assigned to the resource booking`)
   }
   workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
+  // TODO: we should allow `memberRate` to be `null` as it's not required for additional payments
+  workPeriodPayment.memberRate = _.defaultTo(correspondingResourceBooking.memberRate, 0)
+  workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
+
   if (!_.has(workPeriodPayment, 'days') || workPeriodPayment.days > 0) {
     if (_.isNil(correspondingResourceBooking.memberRate)) {
       throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
@@ -83,9 +87,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
     workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
   }
-  // TODO: we should allow `memberRate` to be `null` as it's not required for additional payments
-  workPeriodPayment.memberRate = _.defaultTo(correspondingResourceBooking.memberRate, 0)
-  workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
+
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
   workPeriodPayment.createdBy = createdBy
