@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9d8bfd2b-8864-49fd-8c6e-4cff10095cc3",
+		"_postman_id": "8ead1433-9679-46de-9baa-d27d59106673"
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -15486,7 +15486,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.daysWorked\\\" must be less than or equal to 5\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"data.daysWorked\\\" must be less than or equal to 10\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -15504,55 +15504,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"daysWorked\": 6\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/work-periods/{{workPeriodId-1}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"work-periods",
-								"{{workPeriodId-1}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "patch work period with invalid parameter 4",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Maximum allowed daysWorked is (4)\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{token_bookingManager}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"daysWorked\": 5\r\n}",
+							"raw": "{\r\n    \"daysWorked\": 11\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -16508,7 +16460,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.days\\\" must be less than or equal to 5\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayment.days\\\" must be less than or equal to 10\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -16526,7 +16478,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId-3}}\",\r\n    \"days\": 6\r\n}",
+							"raw": "{\r\n    \"workPeriodId\": \"{{workPeriodId-3}}\",\r\n    \"days\": 11\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

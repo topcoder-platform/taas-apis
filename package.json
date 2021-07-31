@@ -25,6 +25,7 @@
     "services:up": "docker-compose -f ./local/docker-compose.yml --env-file .env up -d",
     "services:down": "docker-compose -f ./local/docker-compose.yml down",
     "services:logs": "docker-compose -f ./local/docker-compose.yml logs",
+    "services:rebuild": "docker-compose -f ./local/docker-compose.yml build --no-cache",
     "local:init": "npm run local:reset && npm run data:import -- --force",
     "local:reset": "npm run delete-index -- --force || true && npm run create-index -- --force && npm run init-db force",
     "cov": "nyc --reporter=html --reporter=text npm run test",
