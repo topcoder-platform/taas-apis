@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8ead1433-9679-46de-9baa-d27d59106673",
+		"_postman_id": "7954a27f-3833-404f-9e55-6016a938c86e",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -15940,8 +15940,12 @@
 									"    pm.response.to.have.status(200);\r",
 									"    if(pm.response.status === \"OK\"){\r",
 									"        const response = pm.response.json()\r",
-									"        pm.environment.set(\"workPeriodPaymentId-2\", response[0].id);\r",
-									"        pm.environment.set(\"workPeriodPaymentId-3\", response[1].id);\r",
+									"        if (response[0].id) {\r",
+									"            pm.environment.set(\"workPeriodPaymentId-2\", response[0].id);\r",
+									"        }\r",
+									"        if (response[1].id) {\r",
+									"            pm.environment.set(\"workPeriodPaymentId-3\", response[1].id);\r",
+									"        }\r",
 									"    }\r",
 									"});"
 								],
@@ -15968,12 +15972,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/work-period-payments",
+							"raw": "{{URL}}/work-period-payments/bulk",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"work-period-payments"
+								"work-period-payments",
+								"bulk"
 							]
 						}
 					},
@@ -16498,7 +16503,7 @@
 					"response": []
 				},
 				{
-					"name": "create work period payment with invalid days 2 Copy",
+					"name": "create work period payment with invalid days 3",
 					"event": [
 						{
 							"listen": "test",
@@ -17676,6 +17681,196 @@
 							"path": [
 								"work-period-payments",
 								"{{workPeriodPaymentId-2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment in bulk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId}}\",\r\n        \"status\": \"cancelled\",\r\n        \"days\": 5,\r\n        \"amount\": 10,\r\n        \"memberRate\": 2,\r\n        \"customerRate\": null,\r\n        \"billingAccountId\": 44\r\n    },\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId-2}}\",\r\n        \"status\": \"scheduled\"\r\n    },\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId-3}}\",\r\n        \"days\": 5,\r\n        \"amount\": 10,\r\n        \"memberRate\": 2,\r\n        \"customerRate\": 5,\r\n        \"billingAccountId\": 44\r\n    },\r\n    {\r\n        \"id\": \"{{workPeriodPaymentIdCreatedByM2M}}\",\r\n        \"days\": 3\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/bulk",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment in bulk invalid parameters - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayments[0].status\\\" must be one of [scheduled, cancelled]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId}}\",\r\n        \"status\": \"completed\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/bulk",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment in bulk invalid parameters - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayments[0].days\\\" must be less than or equal to 10\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId}}\",\r\n        \"days\": 11\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/bulk",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch work period payment in bulk invalid parameters - 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"workPeriodPayments[0].amount\\\" must be greater than 0\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"{{workPeriodPaymentId}}\",\r\n        \"amount\": 0\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/work-period-payments/bulk",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"work-period-payments",
+								"bulk"
 							]
 						}
 					},

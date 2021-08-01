@@ -2573,6 +2573,107 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /work-period-payments/bulk:
+    post:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Create Work Period Payments in Bulk.
+
+        **Authorization** Topcoder token with write Work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/WorkPeriodPayment"
+                    - $ref: "#/components/schemas/WorkPeriodPaymentCreatedError"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Partial Update work period payments in bulk.
+
+        **Authorization** Topcoder token with update work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/WorkPeriodPayment"
+                    - $ref: "#/components/schemas/WorkPeriodPaymentUpdatedError"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams:
     get:
       tags:
@@ -4833,10 +4934,15 @@ components:
           description: "The work period id."
         days:
           type: integer
-          minimum: 1
-          maximum: 5
+          minimum: 0
+          maximum: 10
           example: 2
           description: "The workDays to be paid."
+        amount:
+          type: integer
+          minimum: 1
+          example: 200
+          description: "The amount to be paid. Required only if days value is 0, otherwise forbidden."
     WorkPeriodPaymentQueryCreateRequestBody:
       properties:
         status:
@@ -4932,6 +5038,32 @@ components:
           format: float
           example: 2
           description: "The amount to be paid."
+    WorkPeriodPaymentPatchRequestBodyInBulk:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "The work period payment id."
+        - $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBody"
+    WorkPeriodPaymentUpdatedError:
+      allOf:
+        - $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: "The error message"
+                code:
+                  type: integer
+                  example: 429
+                  description: "HTTP code of error"
     CheckRun:
       type: object
       properties:
