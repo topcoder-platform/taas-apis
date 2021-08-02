@@ -2638,7 +2638,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
       responses:
         "200":
           description: OK
