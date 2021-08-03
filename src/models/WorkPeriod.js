@@ -57,7 +57,7 @@ module.exports = (sequelize) => {
         allowNull: false
       },
       sentSurvey: {
-        field: 'send_survey',
+        field: 'sent_survey',
         type: Sequelize.BOOLEAN,
         defaultValue: false,
         allowNull: false

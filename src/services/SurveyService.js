@@ -26,13 +26,12 @@ async function sendSurveys () {
     'workPeriods.sentSurvey': false,
     'workPeriods.sentSurveyError': '',
     jobIds: [],
-    page: 1,
-    perPage: 1000
+    page: 1
   }
 
   const options = {
-    returnAll: false,
-    returnFromDB: false
+    returnAll: true,
+    returnFromDB: true
   }
   try {
     let resourceBookings = await searchResourceBookings(currentUser, criteria, options)
@@ -48,8 +47,6 @@ async function sendSurveys () {
     // so several WorkPeriods for the same week would be included into on collector
     // and gather contacts (members) from each WorkPeriods
     for (const workPeriod of workPeriods) {
-      // await partiallyUpdateWorkPeriod(currentUser, workPeriod.id, {sentSurvey: true})
-      // await partiallyUpdateWorkPeriod(currentUser, workPeriod.id, {sentSurveyError: {errorCode: 23, errorMessage: "sf"}})
       try {
         const collectorName = getCollectorName(workPeriod.endDate)
 
@@ -86,7 +83,6 @@ async function sendSurveys () {
           }
         }
         emailToWorkPeriodIdMap[collectorName][resourceBookingCache[resourceBooking.userId].email] = workPeriod.id
-        // resourceBookingCache[resourceBooking.userId].workPeriodId  = workPeriod.id
         collectors[collectorName].contacts.push(resourceBookingCache[resourceBooking.userId])
       } catch (e) {
         await partiallyUpdateWorkPeriod(currentUser, workPeriod.id, { sentSurveyError: e })
@@ -105,20 +101,22 @@ async function sendSurveys () {
     // send surveys
     for (const collectorName in collectors) {
       const collector = collectors[collectorName]
-      try {
-        await addContactsToSurvey(
-          collector.collectorId,
-          collector.messageId,
-          collector.contacts
-        )
-        await sendSurveyAPI(collector.collectorId, collector.messageId)
-
+      if (collector.contacts.length) {
+        try {
+          await addContactsToSurvey(
+            collector.collectorId,
+            collector.messageId,
+            collector.contacts
+          )
+          await sendSurveyAPI(collector.collectorId, collector.messageId)
+        } catch (e) {
+          for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
+            await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurveyError: e })
+          }
+          continue
+        }
         for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
           await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurvey: true })
-        }
-      } catch (e) {
-        for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
-          await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurveyError: e })
         }
       }
     }
@@ -126,6 +124,7 @@ async function sendSurveys () {
     logger.info({ component: 'SurveyService', context: 'sendSurvey', message: 'send survey successfullly' })
   } catch (e) {
     logger.error({ component: 'SurveyService', context: 'sendSurvey', message: 'Error : ' + e.message })
+    throw e
   }
 }
 

@@ -57,7 +57,7 @@ function getSingleItem (lst, errorMessage) {
  * format `Week Ending yyyy-nth(weeks)`
  */
 function getCollectorName (dt) {
-  return 'Week Ending ' + moment(dt).year() + '-' + moment(dt).format('ww')
+  return 'Week Ending ' + moment(dt).format('M/D/YYYY')
 }
 
 /*
@@ -123,7 +123,6 @@ async function cloneCollector () {
  */
 async function renameCollector (collectorId, name) {
   const body = { name: name }
-  // http.patch(BASE_URL + '/collectors/' + collectorId, body);
   const url = `${config.WEEKLY_SURVEY.BASE_URL}/collectors/${collectorId}`
   try {
     const response = await request
@@ -147,7 +146,6 @@ async function createMessage (collectorId) {
     from_collector_id: `${config.WEEKLY_SURVEY.SURVEY_MASTER_COLLECTOR_ID}`,
     from_message_id: `${config.WEEKLY_SURVEY.SURVEY_MASTER_MESSAGE_ID}`
   }
-  // response = http.post(BASE_URL + '/collectors/' + collectorId + '/messages', body);
   const url = `${config.WEEKLY_SURVEY.BASE_URL}/collectors/${collectorId}/messages`
   try {
     const response = await request
