@@ -489,7 +489,7 @@ async function sendEmail (currentUser, data) {
   }
   const emailData = {
     serviceId: 'email',
-    type: 'taas.notification.request-submitted',
+    type: data.template,
     details: {
       from: data.from || template.from,
       recipients: _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } }),
