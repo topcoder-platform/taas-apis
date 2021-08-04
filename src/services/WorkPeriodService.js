@@ -274,9 +274,6 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (_.isNil(thisWeek)) {
     throw new errors.ConflictError('Work Period dates are not compatible with Resource Booking dates')
   }
-  if (thisWeek.daysWorked < data.daysWorked) {
-    throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
-  }
   data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
   if (!currentUser.isMachine) {
     data.updatedBy = await helper.getUserId(currentUser.userId)
@@ -303,7 +300,7 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    daysWorked: Joi.number().integer().min(0).max(5),
+    daysWorked: Joi.number().integer().min(0).max(10),
     sentSurvey: Joi.boolean(),
     sentSurveyError: Joi.object().keys({
       errorCode: Joi.number().integer().min(0),

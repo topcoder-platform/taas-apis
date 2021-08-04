@@ -49,21 +49,7 @@
       BUSAPI_URL=http://dockerhost:8002/v5
       ```
 
-   1. In the `./local` folder create `taas-es-processor.env` file with the next environment variables.<br>
-   
-      ```bash
-      # Auth0 config
-      AUTH0_URL=
-      AUTH0_AUDIENCE=
-      AUTH0_CLIENT_ID=
-      AUTH0_CLIENT_SECRET=
-      # Locally deployed services (via docker-compose)
-      KAFKA_URL=kafka:9093
-      ES_HOST=http://elasticsearch:9200
-      BUSAPI_URL=http://tc-bus-api:8002/v5
-      ```
-      
-      - Values from these file would be automatically used by many `npm` commands.
+      - Values from this file would be automatically used by many `npm` commands.
       - ⚠️ Never commit this file or its copy to the repository!
 
    1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
@@ -229,13 +215,14 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run services:up`                                                                                                     | Start services via docker-compose for local development.                                                                                           |
 | `npm run services:down`                                                                                                   | Stop services via docker-compose for local development.                                                                                            |
 | `npm run services:logs -- -f <service_name>`                                                                              | View logs of some service inside docker-compose.                                                                                                   |
+| `npm run services:rebuild -- -f <service_name>`                                                                           | Rebuild service container ignoring cache (useful when pushed something to the Git repository of service)                                           |
 | `npm run local:init`                                                                                                      | Recreate Database and Elasticsearch indexes and populate demo data for local development (removes any existent data).                              |
 | `npm run local:reset`                                                                                                     | Recreate Database and Elasticsearch indexes (removes any existent data).                                                                           |
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
-| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                                         |
-| `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                          |
+| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                           |
+| `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                                                               |
 
 ## Import and Export data
 
@@ -351,6 +338,6 @@ When we add, update or delete models and/or endpoints we have to make sure that 
   - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
 
 ## EMSI mapping
-mapping EMSI tags to topcoder skills    
-Run `npm run emsi-mapping` to create the mapping file    
+mapping EMSI tags to topcoder skills
+Run `npm run emsi-mapping` to create the mapping file
 It will take about 15 minutes to create the mapping file `script/emsi-mapping/emsi-skils-mapping.js`
