@@ -6,13 +6,16 @@
 const config = require('config')
 
 module.exports = {
-  /* Report a general issue for a team.
-   *
-   * - projectId: the project ID. Example: 123412
-   * - projectName: the project name. Example: "TaaS API Misc Updates"
-   * - reportText: the body of reported issue. Example: "I have issue with ... \n ... Thank you in advance!"
+  /**
+   * List all the kind of emails which could be sent by the endpoint `POST /taas-teams/email` inside `teamTemplates`.
    */
   teamTemplates: {
+    /* Report a general issue for a team.
+      *
+      * - projectId: the project ID. Example: 123412
+      * - projectName: the project name. Example: "TaaS API Misc Updates"
+      * - reportText: the body of reported issue. Example: "I have issue with ... \n ... Thank you in advance!"
+      */
     'team-issue-report': {
       subject: 'Issue Reported on TaaS Team {{projectName}} ({{projectId}}).',
       body: 'Project Name: {{projectName}}' + '\n' +
@@ -103,6 +106,10 @@ module.exports = {
       sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     }
   },
+
+  /**
+   * List all kind of emails which could be send as Email Notifications by scheduler, API endpoints or anything else.
+   */
   notificationEmailTemplates: {
     'taas.notification.candidates-available-for-review': {
       subject: 'Topcoder - {{teamName}} has job candidates available for review',
