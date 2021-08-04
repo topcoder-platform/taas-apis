@@ -176,6 +176,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   endDate: { type: 'date', format: 'yyyy-MM-dd' },
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
+  sendWeeklySurvey: { type: 'boolean' },
   rateType: { type: 'keyword' },
   billingAccountId: { type: 'integer', null_value: 0 },
   workPeriods: {
@@ -189,6 +190,14 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       },
       projectId: { type: 'integer' },
       userId: { type: 'keyword' },
+      sentSurvey: { type: 'boolean' },
+      sentSurveyError: {
+        type: 'nested',
+        properties: {
+          errorCode: { type: 'integer' },
+          errorMessage: { type: 'keyword' }
+        }
+      },
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
       endDate: { type: 'date', format: 'yyyy-MM-dd' },
       daysWorked: { type: 'integer' },
@@ -2012,6 +2021,7 @@ async function getMembersSuggest (fragment) {
 }
 
 module.exports = {
+  encodeQueryString,
   getParamFromCliArgs,
   promptUser,
   sleep,
