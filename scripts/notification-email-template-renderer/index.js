@@ -12,7 +12,7 @@ function render (filename, data) {
   return output
 }
 
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../../data/notifications.json'), 'utf8'))
+const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../../data/notifications-email-demo-data.json'), 'utf8'))
 
 const key = process.argv.length >= 3 ? process.argv[2] : 'candidatesAvailableForReview'
 
@@ -21,5 +21,12 @@ if (!data[key]) {
   process.exit(1)
 }
 
-const result = render(path.join(__dirname, '../../data/template.html'), data[key])
-fs.writeFileSync(path.join(__dirname, 'rendered.html'), result)
+const outputDir = path.join(__dirname, '../../out')
+const outputFile = path.join(__dirname, '../../out/notifications-email-template-with-data.html')
+const result = render(path.join(__dirname, '../../data/notifications-email-template.html'), data[key])
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir)
+}
+fs.writeFileSync(outputFile, result)
+
+console.log(`Template has been rendered to: ${outputFile}`)

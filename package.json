@@ -19,7 +19,6 @@
     "index:roles": "node scripts/es/reIndexRoles.js",
     "data:export": "node scripts/data/exportData.js",
     "data:import": "node scripts/data/importData.js",
-    "renderTemplate": "node scripts/notification-renderer/index.js",
     "migrate": "npx sequelize db:migrate",
     "migrate:undo": "npx sequelize db:migrate:undo",
     "test": "mocha test/unit/*.test.js --timeout 30000 --require test/prepare.js --exit",
