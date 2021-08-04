@@ -111,12 +111,20 @@ async function sendSurveys () {
           await sendSurveyAPI(collector.collectorId, collector.messageId)
         } catch (e) {
           for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
-            await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurveyError: e })
+            try {
+              await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurveyError: e })
+            } catch (e) {
+              logger.error({ component: 'SurveyService', context: 'sendSurvey', message: 'Error : ' + e.message })
+            }
           }
           continue
         }
         for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
-          await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurvey: true })
+          try {
+            await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurvey: true })
+          } catch (e) {
+            logger.error({ component: 'SurveyService', context: 'sendSurvey', message: 'Error : ' + e.message })
+          }
         }
       }
     }
@@ -124,7 +132,6 @@ async function sendSurveys () {
     logger.info({ component: 'SurveyService', context: 'sendSurvey', message: 'send survey successfullly' })
   } catch (e) {
     logger.error({ component: 'SurveyService', context: 'sendSurvey', message: 'Error : ' + e.message })
-    throw e
   }
 }
 
