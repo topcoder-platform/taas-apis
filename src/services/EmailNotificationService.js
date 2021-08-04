@@ -11,7 +11,6 @@ const JobCandidate = models.JobCandidate
 const Interview = models.Interview
 const ResourceBooking = models.ResourceBooking
 const helper = require('../common/helper')
-const teamService = require('./TeamService')
 const constants = require('../../app-constants')
 const logger = require('../common/logger')
 
@@ -20,6 +19,8 @@ const localLogger = {
   error: (message, context) => logger.error({ component: 'EmailNotificationService', context, message }),
   info: (message, context) => logger.info({ component: 'EmailNotificationService', context, message })
 }
+
+const emailTemplates = helper.getEmailTemplatesForKey('cronEmailTemplates')
 
 /**
  * Returns the project with the given id
@@ -161,7 +162,7 @@ async function sendCandidatesAvailableEmails () {
       })
     }
 
-    teamService.sendEmail({}, {
+    sendEmail({}, {
       template: 'candidate-review',
       recipients: recipientEmails,
       data: {
@@ -233,7 +234,7 @@ async function sendInterviewComingUpEmails () {
     if (!data) { continue }
 
     if (!_.isEmpty(interview.hostEmail)) {
-      teamService.sendEmail({}, {
+      sendEmail({}, {
         template: 'interview-coming-up-host',
         recipients: [interview.hostEmail],
         data: {
@@ -250,7 +251,7 @@ async function sendInterviewComingUpEmails () {
 
     if (!_.isEmpty(interview.guestEmails)) {
       // send guest emails
-      teamService.sendEmail({}, {
+      sendEmail({}, {
         template: 'interview-coming-up-guest',
         recipients: interview.guestEmails,
         data: {
@@ -308,7 +309,7 @@ async function sendInterviewCompletedEmails () {
     const data = await getDataForInterview(interview)
     if (!data) { continue }
 
-    teamService.sendEmail({}, {
+    sendEmail({}, {
       template: 'interview-completed',
       recipients: [interview.hostEmail],
       data: {
@@ -374,7 +375,7 @@ async function sendPostInterviewActionEmails () {
       }
     }
 
-    teamService.sendEmail({}, {
+    sendEmail({}, {
       template: 'post-interview-action',
       recipients: recipientEmails,
       data: {
@@ -448,7 +449,7 @@ async function sendResourceBookingExpirationEmails () {
       }
     }
 
-    teamService.sendEmail({}, {
+    sendEmail({}, {
       template: 'resource-booking-expiration',
       recipients: recipientEmails,
       data: {
@@ -462,6 +463,43 @@ async function sendResourceBookingExpirationEmails () {
       }
     })
   }
+}
+
+/**
+ * Send email through a particular template
+ * @param {Object} currentUser the user who perform this operation
+ * @param {Object} data the email object
+ * @returns {undefined}
+ */
+async function sendEmail (currentUser, data) {
+  const template = emailTemplates[data.template]
+  const dataCC = data.cc || []
+  const templateCC = template.cc || []
+  const dataRecipients = data.recipients || []
+  const templateRecipients = template.recipients || []
+  const subjectBody = {
+    subject: data.subject || template.subject,
+    body: data.body || template.body
+  }
+  for (const key in subjectBody) {
+    subjectBody[key] = await helper.substituteStringByObject(
+      subjectBody[key],
+      data.data
+    )
+  }
+  const emailData = {
+    serviceId: 'email',
+    type: 'taas.notification.request-submitted',
+    details: {
+      from: data.from || template.from,
+      recipients: _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } }),
+      cc: _.map(_.uniq([...dataCC, ...templateCC]), function (r) { return { email: r } }),
+      data: { ...data.data, ...subjectBody },
+      sendgrid_template_id: template.sendgridTemplateId,
+      version: 'v3'
+    }
+  }
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, emailData)
 }
 
 module.exports = {

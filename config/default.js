@@ -147,6 +147,8 @@ module.exports = {
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
+  // the Kafka message topic for creating notifications
+  NOTIFICATIONS_CREATE_TOPIC: process.env.NOTIFICATIONS_CREATE_TOPIC || 'notifications.action.create',
   // the emails address for receiving the issue report
   // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
   REPORT_ISSUE_EMAILS: (process.env.REPORT_ISSUE_EMAILS || '').split(','),
