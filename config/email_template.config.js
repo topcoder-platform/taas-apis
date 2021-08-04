@@ -103,7 +103,7 @@ module.exports = {
       sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     }
   },
-  'cronEmailTemplates': {
+  cronEmailTemplates: {
     'candidate-review': {
       subject: 'Topcoder - {{teamName}} has job candidates available for review',
       body: '',
