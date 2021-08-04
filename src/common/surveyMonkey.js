@@ -57,7 +57,7 @@ function getSingleItem (lst, errorMessage) {
  * format `Week Ending yyyy-nth(weeks)`
  */
 function getCollectorName (dt) {
-  return 'Week Ending ' + moment(dt).format('M/D/YYYY')
+  return config.WEEKLY_SURVEY.SURVEY_COLLECTOR_PREFIX + ' ' + moment(dt).format('M/D/YYYY')
 }
 
 /*
