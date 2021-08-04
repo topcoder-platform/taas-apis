@@ -28,15 +28,15 @@ const localLogger = {
   info: (message, context) => logger.info({ component: 'SurveyMonkeyAPI', context, message })
 }
 
-function getRemainingRequestCountMessge (response) {
+function getRemainingRequestCountMessage (response) {
   return `today has sent ${response.header['x-ratelimit-app-global-day-limit'] - response.header['x-ratelimit-app-global-day-remaining']} requests`
 }
 
-function getErrorMessage (e) {
-  return {
-    errorCode: _.get(e, 'response.body.error.http_status_code', 400),
-    errorMessage: _.get(e, 'response.body.error.message', 'error message')
-  }
+function enrichErrorMessage (e) {
+  e.code = _.get(e, 'response.body.error.http_status_code')
+  e.message = _.get(e, 'response.body.error.message', e.toString())
+
+  return e
 }
 
 function getSingleItem (lst, errorMessage) {
@@ -72,12 +72,13 @@ async function searchCollector (collectorName) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
 
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'searchCollector')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'searchCollector')
 
     return getSingleItem(response.body.data, 'More than 1 collector found by name ' + collectorName)
   } catch (e) {
-    localLogger.error(`URL ${url} ${getErrorMessage(e)}, ${getRemainingRequestCountMessge(e.response)}`, 'searchCollector')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'searchCollector')
+    throw enrichedError
   }
 }
 
@@ -110,11 +111,12 @@ async function cloneCollector () {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send(body)
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'cloneCollector')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'cloneCollector')
     return response.body.id
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'cloneCollector')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'cloneCollector')
+    throw enrichedError
   }
 }
 
@@ -131,10 +133,11 @@ async function renameCollector (collectorId, name) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send(body)
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'renameCollector')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'renameCollector')
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'renameCollector')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'renameCollector')
+    throw enrichedError
   }
 }
 
@@ -154,11 +157,12 @@ async function createMessage (collectorId) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send(body)
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'createMessage')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'createMessage')
     return response.body.id
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'createMessage')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'createMessage')
+    throw enrichedError
   }
 }
 
@@ -182,11 +186,12 @@ async function upsertContactInSurveyMonkey (list) {
       .set('Accept', 'application/json')
       .send(body)
 
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'upsertContactInSurveyMonkey')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'upsertContactInSurveyMonkey')
     return _.concat(response.body.existing, response.body.succeeded)
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'createMessage')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'createMessage')
+    throw enrichedError
   }
 }
 
@@ -200,11 +205,12 @@ async function addContactsToSurvey (collectorId, messageId, contactIds) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send(body)
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'addContactsToSurvey')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'addContactsToSurvey')
     return response.body.id
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'addContactsToSurvey')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ERROR ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'addContactsToSurvey')
+    throw enrichedError
   }
 }
 
@@ -217,11 +223,12 @@ async function sendSurveyAPI (collectorId, messageId) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send({})
-    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessge(response)}`, 'sendSurveyAPI')
+    localLogger.info(`URL ${url}, ${getRemainingRequestCountMessage(response)}`, 'sendSurveyAPI')
     return response.body.id
   } catch (e) {
-    localLogger.error(`URL ${url} ${JSON.stringify(getErrorMessage(e))}, ${getRemainingRequestCountMessge(e.response)}`, 'sendSurveyAPI')
-    throw getErrorMessage(e)
+    const enrichedError = enrichErrorMessage(e)
+    localLogger.error(`URL ${url} ${enrichedError}, ${getRemainingRequestCountMessage(e.response)}`, 'sendSurveyAPI')
+    throw enrichedError
   }
 }
 
