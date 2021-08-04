@@ -22,13 +22,27 @@ async function backup () {
 
   for (let i = 0; i < jobCandidates.length; i++) {
     const jc = jobCandidates[i]
-    const job = await Job.findById(jc.jobId)
-    const rb = await ResourceBooking.findOne({
-      where: {
-        userId: jc.userId,
-        jobId: jc.jobId
-      }
-    })
+    let job = null
+    try {
+      job = await Job.findById(jc.jobId)
+    } catch (error) {
+      // log the error
+      logger.info({ component: currentStep, message: `==> Data integrity issue: Can't find the Job with Id ${jc.jobId}` })
+    }
+    if (!job) continue
+    let rb = null
+    try {
+      rb = await ResourceBooking.findOne({
+        where: {
+          userId: jc.userId,
+          jobId: jc.jobId
+        }
+      })
+    } catch (error) {
+      // log the error
+      logger.info({ component: currentStep, message: `==> Data integrity issue: Can't find the ResourceBooking whose userId is ${jc.userId} and jobId is ${jc.jobId}` })
+    }
+    if (!rb) continue
     let completed = false
     if (rb && rb.endDate) {
       completed = new Date(rb.endDate) < new Date() && new Date(rb.endDate).toDateString() !== new Date().toDateString()
@@ -42,7 +56,7 @@ async function backup () {
         where: filter
       })
       if (candidates && candidates.length > 0) {
-        fs.writeFile(filePath + `jobcandidate-backup.json`, JSON.stringify(
+        fs.writeFile(filePath + 'jobcandidate-backup.json', JSON.stringify(
           candidates
         ), (err) => {
           if (!err) {
