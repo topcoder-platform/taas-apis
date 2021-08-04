@@ -42,7 +42,7 @@ async function backup () {
         where: filter
       })
       if (candidates && candidates.length > 0) {
-        fs.writeFile(filePath + `jobcandidate-backup-${new Date().toString()}.json`, JSON.stringify(
+        fs.writeFile(filePath + `jobcandidate-backup.json`, JSON.stringify(
           candidates
         ), (err) => {
           if (!err) {
