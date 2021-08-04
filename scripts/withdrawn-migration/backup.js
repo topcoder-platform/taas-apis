@@ -26,7 +26,8 @@ async function backup () {
     try {
       job = await Job.findById(jc.jobId)
     } catch (error) {
-      // ignore the error
+      // log the error
+      logger.info({ component: currentStep, message: `==> Data integrity issue: Can't find the Job with Id ${jc.jobId}` })
     }
     if (!job) continue
     let rb = null
@@ -38,7 +39,8 @@ async function backup () {
         }
       })
     } catch (error) {
-      // ignore the error
+      // log the error
+      logger.info({ component: currentStep, message: `==> Data integrity issue: Can't find the ResourceBooking whose userId is ${jc.userId} and jobId is ${jc.jobId}` })
     }
     if (!rb) continue
     let completed = false
