@@ -499,7 +499,9 @@ async function sendEmail (currentUser, data) {
       version: 'v3'
     }
   }
-  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, emailData)
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
+    notifications: [emailData]
+  })
 }
 
 module.exports = {
