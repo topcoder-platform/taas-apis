@@ -22,6 +22,7 @@ const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment')
 const { PaymentStatusRules } = require('../../app-constants')
+const emailTemplateConfig = require('../../config/email_template.config')
 
 const localLogger = {
   debug: (message) =>
@@ -2020,6 +2021,26 @@ async function getMembersSuggest (fragment) {
   return res.body
 }
 
+/**
+ * Returns the email templates for given key
+ * @param key the type of email template ex: teamTemplates
+ * @returns the list of templates for the given key
+ */
+function getEmailTemplatesForKey (key) {
+  if (!_.has(emailTemplateConfig, key)) { return [] }
+
+  return _.mapValues(emailTemplateConfig[key], (template) => {
+    return {
+      subject: template.subject,
+      body: template.body,
+      from: template.from,
+      recipients: template.recipients,
+      cc: template.cc,
+      sendgridTemplateId: template.sendgridTemplateId
+    }
+  })
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2082,5 +2103,6 @@ module.exports = {
   createProject,
   getMemberGroups,
   removeTextFormatting,
-  getMembersSuggest
+  getMembersSuggest,
+  getEmailTemplatesForKey
 }

@@ -147,6 +147,8 @@ module.exports = {
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
+  // the Kafka message topic for creating notifications
+  NOTIFICATIONS_CREATE_TOPIC: process.env.NOTIFICATIONS_CREATE_TOPIC || 'notifications.action.create',
   // the emails address for receiving the issue report
   // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
   REPORT_ISSUE_EMAILS: (process.env.REPORT_ISSUE_EMAILS || '').split(','),
@@ -237,5 +239,25 @@ module.exports = {
     interview: 'withdrawn',
     selected: 'withdrawn',
     offered: 'withdrawn'
-  }
+  },
+  // the sender email
+  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL,
+  // the email notification sendgrid template id
+  NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
+  // hours after interview completed when we should post the notification
+  INTERVIEW_COMPLETED_NOTIFICATION_HOURS: process.env.INTERVIEW_COMPLETED_NOTIFICATION_HOURS || 4,
+  // no of weeks before expiry when we should post the notification
+  RESOURCE_BOOKING_EXPIRY_NOTIFICATION_WEEKS: process.env.RESOURCE_BOOKING_EXPIRY_NOTIFICATION_WEEKS || 3,
+  // frequency of cron checking for available candidates for review
+  CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
+  // frequency of cron checking for coming up interviews
+  // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewComingUpEmails correspondingly
+  CRON_INTERVIEW_COMING_UP: process.env.CRON_INTERVIEW_COMING_UP || '*/5 * * * *',
+  // frequency of cron checking for interview completed
+  // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewCompletedEmails correspondingly
+  CRON_INTERVIEW_COMPLETED: process.env.CRON_INTERVIEW_COMPLETED || '*/5 * * * *',
+  // frequency of cron checking for post interview actions
+  CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
+  // frequency of cron checking for upcoming resource bookings
+  CRON_UPCOMING_RESOURCE_BOOKING: process.env.CRON_UPCOMING_RESOURCE_BOOKING || '00 00 13 * * 1'
 }

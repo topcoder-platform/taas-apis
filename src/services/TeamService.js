@@ -6,7 +6,6 @@ const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
 const config = require('config')
-const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -21,16 +20,7 @@ const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/e
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
 
-const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
-  return {
-    subject: template.subject,
-    body: template.body,
-    from: template.from,
-    recipients: template.recipients,
-    cc: template.cc,
-    sendgridTemplateId: template.sendgridTemplateId
-  }
-})
+const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
 /**
  * Function to get placed resource bookings with specific projectIds
