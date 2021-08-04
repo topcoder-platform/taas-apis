@@ -20,7 +20,7 @@ const localLogger = {
   info: (message, context) => logger.info({ component: 'EmailNotificationService', context, message })
 }
 
-const emailTemplates = helper.getEmailTemplatesForKey('cronEmailTemplates')
+const emailTemplates = helper.getEmailTemplatesForKey('notificationEmailTemplates')
 
 /**
  * Returns the project with the given id
@@ -163,7 +163,7 @@ async function sendCandidatesAvailableEmails () {
     }
 
     sendEmail({}, {
-      template: 'candidate-review',
+      template: 'taas.notification.candidates-available-for-review',
       recipients: recipientEmails,
       data: {
         teamName: project.name,
@@ -235,7 +235,7 @@ async function sendInterviewComingUpEmails () {
 
     if (!_.isEmpty(interview.hostEmail)) {
       sendEmail({}, {
-        template: 'interview-coming-up-host',
+        template: 'taas.notification.interview-coming-up-host',
         recipients: [interview.hostEmail],
         data: {
           ...data,
@@ -252,7 +252,7 @@ async function sendInterviewComingUpEmails () {
     if (!_.isEmpty(interview.guestEmails)) {
       // send guest emails
       sendEmail({}, {
-        template: 'interview-coming-up-guest',
+        template: 'taas.notification.interview-coming-up-guest',
         recipients: interview.guestEmails,
         data: {
           ...data,
@@ -310,7 +310,7 @@ async function sendInterviewCompletedEmails () {
     if (!data) { continue }
 
     sendEmail({}, {
-      template: 'interview-completed',
+      template: 'taas.notification.interview-awaits-resolution',
       recipients: [interview.hostEmail],
       data: {
         ...data,
@@ -376,7 +376,7 @@ async function sendPostInterviewActionEmails () {
     }
 
     sendEmail({}, {
-      template: 'post-interview-action',
+      template: 'taas.notification.post-interview-action-required',
       recipients: recipientEmails,
       data: {
         teamName: project.name,
@@ -450,7 +450,7 @@ async function sendResourceBookingExpirationEmails () {
     }
 
     sendEmail({}, {
-      template: 'resource-booking-expiration',
+      template: 'taas.notification.resource-booking-expiration',
       recipients: recipientEmails,
       data: {
         teamName: project.name,
