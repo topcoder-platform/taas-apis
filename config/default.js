@@ -186,9 +186,10 @@ module.exports = {
     BASE_URL: process.env.WEEKLY_SURVEY_BASE_URL || 'https://api.surveymonkey.net/v3/surveys',
     JWT_TOKEN: process.env.WEEKLY_SURVEY_JWT_TOKEN || '',
     SURVEY_ID: process.env.WEEKLY_SURVEY_SURVEY_ID || '',
+    SURVEY_COLLECTOR_PREFIX: process.env.WEEKLY_SURVEY_SURVEY_COLLECTOR_PREFIX || 'Week ending',
     SURVEY_MASTER_COLLECTOR_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_COLLECTOR_ID || '',
     SURVEY_MASTER_MESSAGE_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_MESSAGE_ID || '',
-    SURVEY_CONTACT_GROUP_ID: process.env.WEEKLY_SURVEY_SURVEY_CONTACT_GROUP_ID || ''
+    SURVEY_CONTACT_GROUP_ID: process.env.WEEKLY_SURVEY_SURVEY_CONTACT_GROUP_ID || '',
   },
   // payment scheduler config
   PAYMENT_PROCESSING: {
