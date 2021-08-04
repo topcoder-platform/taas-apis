@@ -152,6 +152,14 @@ const PaymentSchedulerStatus = {
   CLOSE_CHALLENGE: 'close-challenge'
 }
 
+const JobStatus = {
+  OPEN: 'open'
+}
+
+const JobCandidateStatus = {
+  INTERVIEW: 'interview'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -164,5 +172,7 @@ module.exports = {
   PaymentSchedulerStatus,
   PaymentProcessingSwitch,
   PaymentStatusRules,
-  ActiveWorkPeriodPaymentStatuses
+  ActiveWorkPeriodPaymentStatuses,
+  JobStatus,
+  JobCandidateStatus
 }

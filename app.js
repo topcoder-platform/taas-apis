@@ -14,6 +14,7 @@ const logger = require('./src/common/logger')
 const eventHandlers = require('./src/eventHandlers')
 const interviewService = require('./src/services/InterviewService')
 const { processScheduler } = require('./src/services/PaymentSchedulerService')
+const emailNotificationService = require('./src/services/EmailNotificationService')
 
 // setup express app
 const app = express()
@@ -101,6 +102,12 @@ const server = app.listen(app.get('port'), () => {
 
   // schedule payment processing
   schedule.scheduleJob(config.PAYMENT_PROCESSING.CRON, processScheduler)
+
+  schedule.scheduleJob(config.CRON_CANDIDATE_REVIEW, emailNotificationService.sendCandidatesAvailableEmails)
+  schedule.scheduleJob(config.CRON_INTERVIEW_COMING_UP, emailNotificationService.sendInterviewComingUpEmails)
+  schedule.scheduleJob(config.CRON_INTERVIEW_COMPLETED, emailNotificationService.sendInterviewCompletedEmails)
+  schedule.scheduleJob(config.CRON_POST_INTERVIEW, emailNotificationService.sendPostInterviewActionEmails)
+  schedule.scheduleJob(config.CRON_UPCOMING_RESOURCE_BOOKING, emailNotificationService.sendResourceBookingExpirationEmails)
 })
 
 if (process.env.NODE_ENV === 'test') {
