@@ -1,0 +1,232 @@
+{
+  "candidatesAvailableForReview": {
+    "teamName": "the thing three",
+    "teamJobs": [
+      {
+        "title": "Dummy title - at most 64 characters",
+        "nResourceBookings": 0,
+        "jobCandidates": [
+          {
+            "handle": "testfordevemail",
+            "name": "John Doe",
+            "status": "open"
+          }
+        ],
+        "reviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/36dad9f2-98ed-4d3a-9ea7-2cd3d0f8a51a/candidates/to-review"
+      },
+      {
+        "title": "Dummy title - at most 64 characters",
+        "nResourceBookings": 0,
+        "jobCandidates": [
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "pshah_manager",
+            "name": "pshah manager",
+            "status": "open"
+          },
+          {
+            "handle": "testfordevemail",
+            "name": "John Doe",
+            "status": "open"
+          }
+        ],
+        "reviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/728ff056-63f6-4730-8a9f-3074acad8479/candidates/to-review"
+      }
+    ],
+    "notificationType": {
+      "candidatesAvailableForReview": true
+    },
+    "description": "Candidates are available for review",
+    "subject": "Topcoder - the thing three has job candidates available for review",
+    "body": ""
+  },
+  "interviewComingUpForHost": {
+    "jobTitle": "Dummy title - at most 64 characters",
+    "guestFullName": "name1",
+    "hostFullName": "host name",
+    "candidateName": "John Doe",
+    "handle": "testfordevemail",
+    "attendees": [
+      "name1",
+      "name2",
+      "name3"
+    ],
+    "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+    "duration": 120,
+    "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/36dad9f2-98ed-4d3a-9ea7-2cd3d0f8a51a/candidates/interviews",
+    "notificationType": {
+      "interviewComingUpForHost": true
+    },
+    "description": "Interview Coming Up",
+    "subject": "Topcoder - Interview Coming Up: Dummy title - at most 64 characters with name1",
+    "body": ""
+  },
+
+  "interviewComingUpForGuest": {
+    "jobTitle": "Dummy title - at most 64 characters",
+    "guestFullName": "name1",
+    "hostFullName": "host name",
+    "candidateName": "John Doe",
+    "handle": "testfordevemail",
+    "attendees": [
+      "name1",
+      "name2",
+      "name3"
+    ],
+    "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+    "duration": 120,
+    "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/36dad9f2-98ed-4d3a-9ea7-2cd3d0f8a51a/candidates/interviews",
+    "notificationType": {
+      "interviewComingUpForGuest": true
+    },
+    "description": "Interview Coming Up",
+    "subject": "Topcoder - Interview Coming Up: Dummy title - at most 64 characters with host name",
+    "body": ""
+  },
+
+  "interviewCompleted": {
+    "jobTitle": "Dummy title - at most 64 characters",
+    "guestFullName": "name1",
+    "hostFullName": null,
+    "candidateName": "John Doe",
+    "handle": "testfordevemail",
+    "attendees": [
+      "name1",
+      "name2",
+      "name3"
+    ],
+    "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+    "duration": 120,
+    "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/36dad9f2-98ed-4d3a-9ea7-2cd3d0f8a51a/candidates/interviews",
+    "notificationType": {
+      "interviewCompleted": true
+    },
+    "description": "Interview Completed",
+    "subject": "Topcoder - Interview Awaits Resolution: Dummy title - at most 64 characters for name1",
+    "body": ""
+  },
+
+  "postInterviewCandidateAction": {
+    "teamName": "the thing three",
+    "numCandidates": 3,
+    "teamInterviews": [
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "guestFullName": "name1",
+        "hostFullName": "host name",
+        "candidateName": "John Doe",
+        "handle": "testfordevemail",
+        "attendees": [
+          "name1",
+          "name2",
+          "name3"
+        ],
+        "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+        "duration": 120,
+        "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/36dad9f2-98ed-4d3a-9ea7-2cd3d0f8a51a/candidates/interviews"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "guestFullName": "guest1",
+        "hostFullName": null,
+        "candidateName": "pshah manager",
+        "handle": "pshah_manager",
+        "attendees": [
+          "guest1",
+          "guest2",
+          "guest3"
+        ],
+        "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+        "duration": 30,
+        "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/728ff056-63f6-4730-8a9f-3074acad8479/candidates/interviews"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "guestFullName": "g name1",
+        "hostFullName": null,
+        "candidateName": "John Doe",
+        "handle": "testfordevemail",
+        "attendees": [
+          "g name1",
+          "g name2"
+        ],
+        "startTime": "Tue, 27 Jul 2021 21:21:17 GMT",
+        "duration": 60,
+        "interviewLink": "https://platform.topcoder-dev.com/taas/myteams/111/positions/728ff056-63f6-4730-8a9f-3074acad8479/candidates/interviews"
+      }
+    ],
+    "notificationType": {
+      "postInterviewCandidateAction": true
+    },
+    "description": "Post Interview Candidate Action Reminder",
+    "subject": "Topcoder - Candidate Action Required in the thing three for 3 candidates",
+    "body": ""
+  },
+
+  "upcomingResourceBookingExpiration": {
+    "teamName": "the thing three",
+    "numResourceBookings": 6,
+    "teamResourceBookings": [
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "testcat",
+        "endDate": "2021-04-27"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "sachin-wipro",
+        "endDate": "2020-10-27"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "aaaa",
+        "endDate": "2021-04-27"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "pshah_manager",
+        "endDate": "2021-01-27"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "amy_admin",
+        "endDate": "2021-06-15"
+      },
+      {
+        "jobTitle": "Dummy title - at most 64 characters",
+        "handle": "lakshmiaconnmgr",
+        "endDate": "2021-06-15"
+      }
+    ],
+    "notificationType": {
+      "upcomingResourceBookingExpiration": true
+    },
+    "description": "Upcoming Resource Booking Expiration",
+    "subject": "Topcoder - Resource Booking Expiring in the thing three for 6 resource bookings",
+    "body": ""
+  }
+}
