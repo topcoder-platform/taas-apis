@@ -418,7 +418,7 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     rateType: Joi.rateType(),
-    sendWeeklySurvey: Joi.boolean().allow(null),
+    sendWeeklySurvey: Joi.boolean(),
     billingAccountId: Joi.number().allow(null)
   }).required()
 }).required()
@@ -458,7 +458,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
     status: Joi.resourceBookingStatus().required(),
-    sendWeeklySurvey: Joi.boolean().allow(null),
+    sendWeeklySurvey: Joi.boolean().default(true),
     billingAccountId: Joi.number().allow(null).default(null)
   }).required()
 }).required()
