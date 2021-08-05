@@ -13,13 +13,17 @@ const currentStep = 'Backup'
 async function backup () {
   logger.info({ component: currentStep, message: '*************************** Backup process started ***************************' })
   const filePath = path.join(__dirname, '/temp/')
+  if (fs.existsSync(filePath)) {
+    fs.rmdirSync(filePath, { recursive: true })
+  }
+  fs.mkdirSync(filePath)
   const Op = Sequelize.Op
   const jobCandidates = await JobCandidate.findAll({
     where: {
       status: 'placed'
     }
   })
-
+  let summary = 0
   for (let i = 0; i < jobCandidates.length; i++) {
     const jc = jobCandidates[i]
     let job = null
@@ -56,12 +60,12 @@ async function backup () {
         where: filter
       })
       if (candidates && candidates.length > 0) {
-        fs.writeFile(filePath + 'jobcandidate-backup.json', JSON.stringify(
+        summary += candidates.length
+        fs.writeFile(filePath + `jobcandidate-backup-${i+1}.json`, JSON.stringify(
           candidates
         ), (err) => {
           if (!err) {
-            logger.info({ component: `${currentStep} Summary`, message: `Backup up finished. There are ${candidates.length} jobCandidates that need to be updated` })
-            logger.info({ component: currentStep, message: '*************************** Backup process finished ***************************' })
+            logger.info({ component: `${currentStep} Sub`, message: `There are ${candidates.length} jobCandidates that need to be updated for userId: ${jc.userId}` })
             return
           }
           logger.error({ component: currentStep, message: err.message })
@@ -70,6 +74,8 @@ async function backup () {
       }
     }
   }
+  logger.info({ component: `${currentStep}`, message: `Report: there are ${summary} jobCandidates in total` })
+  logger.info({ component: currentStep, message: '*************************** Backup process finished ***************************' })
 }
 
 backup().then(() => {
