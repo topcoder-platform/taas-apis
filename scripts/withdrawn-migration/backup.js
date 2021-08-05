@@ -15,8 +15,8 @@ async function backup () {
   const filePath = path.join(__dirname, '/temp/')
   if (fs.existsSync(filePath)) {
     fs.rmdirSync(filePath, { recursive: true })
-    fs.mkdirSync(filePath)
   }
+  fs.mkdirSync(filePath)
   const Op = Sequelize.Op
   const jobCandidates = await JobCandidate.findAll({
     where: {
