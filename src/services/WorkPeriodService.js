@@ -241,7 +241,7 @@ createWorkPeriod.schema = Joi.object().keys({
     resourceBookingId: Joi.string().uuid().required(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDate(),
-    sentSurvey: Joi.boolean().default(true),
+    sentSurvey: Joi.boolean().default(false),
     daysWorked: Joi.number().integer().min(0).max(5).required(),
     daysPaid: Joi.number().default(0).forbidden(),
     paymentTotal: Joi.number().default(0).forbidden(),
