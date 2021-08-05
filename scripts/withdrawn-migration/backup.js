@@ -24,8 +24,10 @@ async function backup () {
     }
   })
   let summary = 0
+  const processMapping = {}
   for (let i = 0; i < jobCandidates.length; i++) {
     const jc = jobCandidates[i]
+    if (processMapping[jc.userId]) continue
     let job = null
     try {
       job = await Job.findById(jc.jobId)
@@ -60,17 +62,17 @@ async function backup () {
         where: filter
       })
       if (candidates && candidates.length > 0) {
-        summary += candidates.length
-        fs.writeFile(filePath + `jobcandidate-backup-${i+1}.json`, JSON.stringify(
-          candidates
-        ), (err) => {
-          if (!err) {
-            logger.info({ component: `${currentStep} Sub`, message: `There are ${candidates.length} jobCandidates that need to be updated for userId: ${jc.userId}` })
-            return
-          }
+        try {
+          fs.writeFileSync(filePath + `jobcandidate-backup-${i + 1}.json`, JSON.stringify(
+            candidates
+          ))
+          logger.info({ component: `${currentStep} Sub`, message: `There are ${candidates.length} jobCandidates that need to be updated for userId: ${jc.userId}` })
+          summary += candidates.length
+          processMapping[jc.userId] = true
+        } catch (err) {
           logger.error({ component: currentStep, message: err.message })
           process.exit(1)
-        })
+        }
       }
     }
   }
