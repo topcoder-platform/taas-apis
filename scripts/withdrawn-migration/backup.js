@@ -61,7 +61,7 @@ async function backup () {
       })
       if (candidates && candidates.length > 0) {
         summary += candidates.length
-        fs.writeFile(filePath + `jobcandidate-backup-${jc.userId}.json`, JSON.stringify(
+        fs.writeFile(filePath + `jobcandidate-backup-${i+1}.json`, JSON.stringify(
           candidates
         ), (err) => {
           if (!err) {
