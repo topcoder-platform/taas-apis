@@ -5624,6 +5624,18 @@ components:
             isExternalMember:
               type: boolean
               description: "Is the user external member"
+            matchedSkills:
+              type: array
+              items:
+                type: string
+                example: "java"
+              description: "skills match with the role"
+            unMatchedSkills:
+              type: array
+              items:
+                type: string
+                example: "javascript"
+              description: "skills unmatch with the role"
             skillsMatch:
               type: number
               format: float

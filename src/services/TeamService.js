@@ -803,8 +803,11 @@ async function getRoleBySkills (skills) {
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
+      // role matched skills list
+      role.matchedSkills = _.intersection(role.listOfSkills, skills)
+      role.unMatchedSkills = _.difference(skills, role.matchedSkills)
       // calculate each found roles matching rate
-      role.skillsMatch = _.intersection(role.listOfSkills, skills).length / skills.length
+      role.skillsMatch = role.matchedSkills.length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
