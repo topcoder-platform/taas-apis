@@ -23,7 +23,7 @@ async function resetNotificationRecords () {
   // reset coming up interview records
   localLogger.info('reset coming up interview records')
   const interview = await Interview.findById('976d23a9-5710-453f-99d9-f57a588bb610')
-  const startTimestamp = moment().add(moment.duration(`PT1H`)).add('PT1M').toDate()
+  const startTimestamp = moment().add(moment.duration('PT1H')).add('PT1M').toDate()
   await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName' })
 
   // reset completed interview records
