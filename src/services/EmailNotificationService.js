@@ -495,7 +495,7 @@ async function sendEmail (currentUser, data) {
       recipients: _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } }),
       cc: _.map(_.uniq([...dataCC, ...templateCC]), function (r) { return { email: r } }),
       data: { ...data.data, ...subjectBody },
-      sendgrid_template_id: template.sendgridTemplateId,
+      sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }
   }
