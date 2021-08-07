@@ -15,6 +15,8 @@ This script does 2 things:
     CRON_INTERVIEW_COMPLETED=0 */1 * * * *
     CRON_POST_INTERVIEW=0 */1 * * * *
     CRON_UPCOMING_RESOURCE_BOOKING=0 */1 * * * *
+    INTERVIEW_COMING_UP_MATCH_WINDOW=PT1M
+    INTERVIEW_COMPLETED_MATCH_WINDOW=PT1M
     ```
 
 2. Recreate demo data by:

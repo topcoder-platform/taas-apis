@@ -126,8 +126,6 @@ async function sendCandidatesAvailableEmails () {
     if (!project) { continue }
 
     const recipientEmails = getProjectMembersEmails(project)
-    if (_.isEmpty(recipientEmails)) { continue }
-
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
 
     const teamJobs = []
@@ -348,8 +346,6 @@ async function sendPostInterviewActionEmails () {
     if (!project) { continue }
 
     const recipientEmails = getProjectMembersEmails(project)
-    if (_.isEmpty(recipientEmails)) { continue }
-
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
     const teamInterviews = []
     let numCandidates = 0
@@ -418,8 +414,6 @@ async function sendResourceBookingExpirationEmails () {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
     const recipientEmails = getProjectMembersEmails(project)
-    if (_.isEmpty(recipientEmails)) { continue }
-
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
 
     let numResourceBookings = 0

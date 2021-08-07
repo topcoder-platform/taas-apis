@@ -23,13 +23,13 @@ async function resetNotificationRecords () {
   // reset coming up interview records
   localLogger.info('reset coming up interview records')
   const interview = await Interview.findById('976d23a9-5710-453f-99d9-f57a588bb610')
-  const startTimestamp = moment().add(moment.duration('PT1H')).add('PT1M').toDate()
+  const startTimestamp = moment().add(moment.duration(config.INTERVIEW_COMING_UP_REMIND_TIME[0])).add(config.INTERVIEW_COMING_UP_MATCH_WINDOW).toDate()
   await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName' })
 
   // reset completed interview records
   localLogger.info('reset completed interview records')
-  const pastTime = moment.duration('PT1H')
-  const endTimestamp = moment().subtract(pastTime).toDate()
+  const pastTime = moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME)
+  const endTimestamp = moment().subtract(pastTime).add(config.INTERVIEW_COMPLETED_MATCH_WINDOW).toDate()
   const completedInterview = await Interview.findById('9efd72c3-1dc7-4ce2-9869-8cca81d0adeb')
   const duration = 30
   const completedStartTimestamp = moment().subtract(pastTime).subtract(30, 'm').toDate()
@@ -45,7 +45,8 @@ async function resetNotificationRecords () {
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
   const resourceBooking = await ResourceBooking.findById('62c3f0c9-2bf0-4f24-8647-2c802a39cbcb')
-  await resourceBooking.update({ endDate: moment().add(1, 'weeks').toDate() })
+  const testEnd = moment().add(moment.duration(config.RESOURCE_BOOKING_EXPIRY_TIME)).toDate()
+  await resourceBooking.update({ endDate: testEnd })
 }
 
 /**
