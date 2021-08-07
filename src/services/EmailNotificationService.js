@@ -88,7 +88,7 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
   const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
-  const startTime = _.isEmpty(interview.startTimestamp) ? '' : interview.startTimestamp.toUTCString()
+  const startTime = interview.startTimestamp ? interview.startTimestamp.toUTCString() : ''
 
   return {
     jobTitle: job.title,
@@ -182,43 +182,33 @@ async function sendCandidatesAvailableEmails () {
  */
 async function sendInterviewComingUpEmails () {
   const currentTime = moment.utc()
-  const minutesRange = 5
+  const timestampFilter = {
+    [Op.or]: []
+  }
+  const window = moment.duration(config.INTERVIEW_COMING_UP_MATCH_WINDOW)
+  for (const remindTime of config.INTERVIEW_COMING_UP_REMIND_TIME) {
+    const rangeStart = currentTime.clone().add(moment.duration(remindTime))
+    const rangeEnd = rangeStart.clone().add(window)
 
-  const oneDayFromNow = currentTime.clone().add(24, 'hours')
-  const dayEndTime = oneDayFromNow.clone().add(minutesRange, 'minutes')
+    timestampFilter[Op.or].push({
+      [Op.and]: [
+        {
+          [Op.gt]: rangeStart
+        },
+        {
+          [Op.lte]: rangeEnd
+        }
+      ]
+    })
+  }
 
-  const oneHourFromNow = currentTime.clone().add(1, 'hour')
-  const hourEndTime = oneHourFromNow.clone().add(minutesRange, 'minutes')
   const filter = {
     [Op.and]: [
       {
         status: { [Op.eq]: constants.Interviews.Status.Scheduled }
       },
       {
-        startTimestamp: {
-          [Op.or]: [
-            {
-              [Op.and]: [
-                {
-                  [Op.gt]: oneDayFromNow
-                },
-                {
-                  [Op.lte]: dayEndTime
-                }
-              ]
-            },
-            {
-              [Op.and]: [
-                {
-                  [Op.gt]: oneHourFromNow
-                },
-                {
-                  [Op.lte]: hourEndTime
-                }
-              ]
-            }
-          ]
-        }
+        startTimestamp: timestampFilter
       }
     ]
   }
@@ -272,9 +262,9 @@ async function sendInterviewComingUpEmails () {
  * Sends email reminder to the interview host after it ends to change the interview status
  */
 async function sendInterviewCompletedEmails () {
-  const minutesRange = 5
-  const hoursBeforeNow = moment.utc().subtract(config.INTERVIEW_COMPLETED_NOTIFICATION_HOURS, 'hours')
-  const endTime = hoursBeforeNow.clone().add(minutesRange, 'minutes')
+  const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
+  const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
+  const rangeEnd = rangeStart.clone().add(window)
   const filter = {
     [Op.and]: [
       {
@@ -284,10 +274,10 @@ async function sendInterviewCompletedEmails () {
         endTimestamp: {
           [Op.and]: [
             {
-              [Op.gte]: hoursBeforeNow
+              [Op.gte]: rangeStart
             },
             {
-              [Op.lt]: endTime
+              [Op.lt]: rangeEnd
             }
           ]
         }
@@ -396,7 +386,8 @@ async function sendPostInterviewActionEmails () {
  */
 async function sendResourceBookingExpirationEmails () {
   const currentTime = moment.utc()
-  const maxEndDate = currentTime.clone().add(config.RESOURCE_BOOKING_EXPIRY_NOTIFICATION_WEEKS, 'weeks')
+  const maxEndDate = currentTime.clone().add(moment.duration(config.RESOURCE_BOOKING_EXPIRY_TIME))
+
   const expiringResourceBookings = await ResourceBooking.findAll({
     where: {
       endDate: {

@@ -244,10 +244,6 @@ module.exports = {
   NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL,
   // the email notification sendgrid template id
   NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
-  // hours after interview completed when we should post the notification
-  INTERVIEW_COMPLETED_NOTIFICATION_HOURS: process.env.INTERVIEW_COMPLETED_NOTIFICATION_HOURS || 4,
-  // no of weeks before expiry when we should post the notification
-  RESOURCE_BOOKING_EXPIRY_NOTIFICATION_WEEKS: process.env.RESOURCE_BOOKING_EXPIRY_NOTIFICATION_WEEKS || 3,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews
@@ -259,5 +255,15 @@ module.exports = {
   // frequency of cron checking for post interview actions
   CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for upcoming resource bookings
-  CRON_UPCOMING_RESOURCE_BOOKING: process.env.CRON_UPCOMING_RESOURCE_BOOKING || '00 00 13 * * 1'
+  CRON_UPCOMING_RESOURCE_BOOKING: process.env.CRON_UPCOMING_RESOURCE_BOOKING || '00 00 13 * * 1',
+  // The match window for fetching interviews which are coming up
+  INTERVIEW_COMING_UP_MATCH_WINDOW: process.env.INTERVIEW_COMING_UP_MATCH_WINDOW || 'PT5M',
+  // The remind time for fetching interviews which are coming up
+  INTERVIEW_COMING_UP_REMIND_TIME: (process.env.INTERVIEW_COMING_UP_REMIND_TIME || 'PT1H,PT24H').split(','),
+  // The match window for fetching completed interviews
+  INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
+  // The interview completed past time for fetching interviews
+  INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
+  // The time before resource booking expiry when we should start sending notifications
+  RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D'
 }
