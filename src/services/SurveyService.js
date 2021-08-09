@@ -103,13 +103,13 @@ async function sendSurveys () {
     }
 
     // add contacts
-    for (const collectorName in collectors) {
+    for (const collectorName of _.keys(collectors)) {
       const collector = collectors[collectorName]
       collectors[collectorName].contacts = await upsertContactInSurveyMonkey(collector.contacts)
     }
 
     // send surveys
-    for (const collectorName in collectors) {
+    for (const collectorName of _.keys(collectors)) {
       const collector = collectors[collectorName]
       if (collector.contacts.length) {
         try {
