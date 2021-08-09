@@ -6,7 +6,6 @@ const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
 const config = require('config')
-const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -20,17 +19,9 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
-  return {
-    subject: template.subject,
-    body: template.body,
-    from: template.from,
-    recipients: template.recipients,
-    cc: template.cc,
-    sendgridTemplateId: template.sendgridTemplateId
-  }
-})
+const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
 /**
  * Function to get placed resource bookings with specific projectIds
@@ -803,8 +794,11 @@ async function getRoleBySkills (skills) {
   const roles = await Role.findAll(queryCriteria)
   if (roles.length > 0) {
     let result = _.each(roles, role => {
+      // role matched skills list
+      role.matchedSkills = _.intersection(role.listOfSkills, skills)
+      role.unMatchedSkills = _.difference(skills, role.matchedSkills)
       // calculate each found roles matching rate
-      role.skillsMatch = _.intersection(role.listOfSkills, skills).length / skills.length
+      role.skillsMatch = role.matchedSkills.length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
@@ -874,10 +868,12 @@ async function getSkillsByJobDescription (data) {
     })
   })
   foundSkills = _.uniq(foundSkills)
+  const skillIds = await getSkillIdsByNames(foundSkills)
   // apply desired template
-  _.each(foundSkills, skill => {
+  _.each(foundSkills, (skillTag, idx) => {
     result.push({
-      tag: skill,
+      id: skillIds[idx],
+      tag: skillTag,
       type: 'taas_skill',
       source: 'taas-jd-parser'
     })
@@ -933,12 +929,12 @@ getSkillNamesByIds.schema = Joi.object()
  * @returns {Array<string>} the array of skill ids
  */
 async function getSkillIdsByNames (skills) {
-  const result = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
+  const tcSkills = await helper.getAllTopcoderSkills({ name: _.join(skills, ',') })
   // endpoint returns the partial matched skills
   // we need to filter by exact match case insensitive
-  const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
-  const skillIds = _.map(filteredSkills, 'id')
-  return skillIds
+  // const filteredSkills = _.filter(result, tcSkill => _.some(skills, skill => _.toLower(skill) === _.toLower(tcSkill.name)))
+  const matchedSkills = _.map(skills, skillTag => tcSkills.find(tcSkill => _.toLower(skillTag) === _.toLower(tcSkill.name)))
+  return _.map(matchedSkills, 'id')
 }
 
 getSkillIdsByNames.schema = Joi.object()
@@ -1051,6 +1047,7 @@ async function createTeam (currentUser, data) {
       numPositions: position.numberOfResources,
       rateType: position.rateType,
       workload: position.workload,
+      hoursPerWeek: position.hoursPerWeek,
       skills: roleSearchRequest.skills,
       description: roleSearchRequest.jobDescription,
       roleIds: [roleSearchRequest.roleId],
@@ -1083,6 +1080,7 @@ createTeam.schema = Joi.object()
           startMonth: Joi.date(),
           rateType: Joi.rateType().default('weekly'),
           workload: Joi.workload().default('full-time'),
+          hoursPerWeek: Joi.number().integer().positive(),
           resourceType: Joi.string()
         }).required()
       ).required()
@@ -1158,6 +1156,30 @@ suggestMembers.schema = Joi.object().keys({
   fragment: Joi.string().required()
 }).required()
 
+/**
+ * Calculates total amount
+ * @param {Object} body
+ * @returns {int} totalAmount
+ */
+ async function calculateAmount(body) {
+  const totalAmount = body.numberOfResources * body.rates * body.durationWeeks;
+  return { totalAmount };
+}
+
+/**
+ * Creates token for stripe
+ * @param {int} totalAmount
+ * @returns {string} paymentIntentToken
+ */
+async function createPayment(totalAmount) {
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: totalAmount,
+    currency: process.env.CURRENCY,
+  });
+  return { paymentIntentToken: paymentIntent.client_secret };
+}
+
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -1176,6 +1198,8 @@ module.exports = {
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
+  calculateAmount,
+  createPayment,
   searchSkills,
   suggestMembers
 }

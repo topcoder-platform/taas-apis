@@ -122,6 +122,12 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      sendWeeklySurvey: {
+        field: 'send_weekly_survey',
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+      },
       billingAccountId: {
         field: 'billing_account_id',
         type: Sequelize.BIGINT

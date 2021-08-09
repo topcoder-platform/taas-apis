@@ -22,6 +22,7 @@ const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment')
 const { PaymentStatusRules } = require('../../app-constants')
+const emailTemplateConfig = require('../../config/email_template.config')
 
 const localLogger = {
   debug: (message) =>
@@ -176,6 +177,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
   endDate: { type: 'date', format: 'yyyy-MM-dd' },
   memberRate: { type: 'float' },
   customerRate: { type: 'float' },
+  sendWeeklySurvey: { type: 'boolean' },
   rateType: { type: 'keyword' },
   billingAccountId: { type: 'integer', null_value: 0 },
   workPeriods: {
@@ -189,6 +191,14 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
       },
       projectId: { type: 'integer' },
       userId: { type: 'keyword' },
+      sentSurvey: { type: 'boolean' },
+      sentSurveyError: {
+        type: 'nested',
+        properties: {
+          errorCode: { type: 'integer' },
+          errorMessage: { type: 'keyword' }
+        }
+      },
       startDate: { type: 'date', format: 'yyyy-MM-dd' },
       endDate: { type: 'date', format: 'yyyy-MM-dd' },
       daysWorked: { type: 'integer' },
@@ -2011,7 +2021,28 @@ async function getMembersSuggest (fragment) {
   return res.body
 }
 
+/**
+ * Returns the email templates for given key
+ * @param key the type of email template ex: teamTemplates
+ * @returns the list of templates for the given key
+ */
+function getEmailTemplatesForKey (key) {
+  if (!_.has(emailTemplateConfig, key)) { return [] }
+
+  return _.mapValues(emailTemplateConfig[key], (template) => {
+    return {
+      subject: template.subject,
+      body: template.body,
+      from: template.from,
+      recipients: template.recipients,
+      cc: template.cc,
+      sendgridTemplateId: template.sendgridTemplateId
+    }
+  })
+}
+
 module.exports = {
+  encodeQueryString,
   getParamFromCliArgs,
   promptUser,
   sleep,
@@ -2072,5 +2103,6 @@ module.exports = {
   createProject,
   getMemberGroups,
   removeTextFormatting,
-  getMembersSuggest
+  getMembersSuggest,
+  getEmailTemplatesForKey
 }

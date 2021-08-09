@@ -2573,6 +2573,109 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /work-period-payments/bulk:
+    post:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Create Work Period Payments in Bulk.
+
+        **Authorization** Topcoder token with write Work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkPeriodPaymentCreateRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/WorkPeriodPayment"
+                    - $ref: "#/components/schemas/WorkPeriodPaymentCreatedError"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - WorkPeriodPayments
+      description: |
+        Partial Update work period payments in bulk.
+
+        **Authorization** Topcoder token with update work period payment scope is allowed
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/WorkPeriodPayment"
+                    - $ref: "#/components/schemas/WorkPeriodPaymentUpdatedError"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams:
     get:
       tags:
@@ -3332,6 +3435,110 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /taas-teams/calculateAmount:
+    post:
+      tags:
+        - Teams
+      description: |
+        Calculates total amount for the team.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculateAmountRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalculateAmountResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"  
+  /taas-teams/createPayment:
+    post:
+      tags:
+        - Teams
+      description: |
+        Calculates total amount for the team.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePaymentResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"  
   /taas-teams/members-suggest/{fragment}:
     get:
       tags:
@@ -3655,6 +3862,9 @@ components:
   schemas:
     SkillItem:
       properties:
+        id:
+          type: string
+          format: uuid
         tag:
           type: string
           example: "Java"
@@ -3944,7 +4154,7 @@ components:
               "job-closed",
               "offered",
               "withdrawn",
-              "withdrawn-prescreen"
+              "withdrawn-prescreen",
             ]
           description: "The job candidate status."
         externalId:
@@ -4046,7 +4256,26 @@ components:
           type: array
           items:
             type: string
-            enum: ["open", "placed", "selected", "client rejected - screening", "client rejected - interview", "rejected - other", "cancelled", "interview", "topcoder-rejected", "applied", "rejected-pre-screen", "skills-test", "phone-screen", "job-closed", "offered", "withdrawn", "withdrawn-prescreen"]
+            enum:
+              [
+                "open",
+                "placed",
+                "selected",
+                "client rejected - screening",
+                "client rejected - interview",
+                "rejected - other",
+                "cancelled",
+                "interview",
+                "topcoder-rejected",
+                "applied",
+                "rejected-pre-screen",
+                "skills-test",
+                "phone-screen",
+                "job-closed",
+                "offered",
+                "withdrawn",
+                "withdrawn-prescreen",
+              ]
             description: "The array of job Candidates status"
     JobCandidateRequestBody:
       required:
@@ -4082,7 +4311,7 @@ components:
               "job-closed",
               "offered",
               "withdrawn",
-              "withdrawn-prescreen"
+              "withdrawn-prescreen",
             ]
           description: "The job candidate status."
           default: open
@@ -4120,7 +4349,7 @@ components:
               "job-closed",
               "offered",
               "withdrawn",
-              "withdrawn-prescreen"
+              "withdrawn-prescreen",
             ]
         externalId:
           type: string
@@ -4470,6 +4699,10 @@ components:
           format: float
           example: 13
           description: "The member rate."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         customerRate:
           type: integer
           format: float
@@ -4527,6 +4760,10 @@ components:
           format: uuid
           example: "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
           description: "The external id."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         jobId:
           type: string
           format: uuid
@@ -4584,6 +4821,10 @@ components:
           format: float
           example: 13.23
           description: "The member rate."
+        sendWeeklySurvey:
+          type: boolean
+          example: true,
+          description: "whether we should send weekly survey to this ResourceBooking or no"
         customerRate:
           type: number
           format: float
@@ -4620,6 +4861,22 @@ components:
           type: string
           format: uuid
           description: "The resource booking id."
+        sentSurvey:
+          type: boolean
+          example: true
+          description: "whether we've already sent a survey for this WorkPeriod of no"
+        sentSurveyError:
+          description: "error details if error happened during sending survey"
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              example: "error message"
+              description: "The error message"
+            errorCode:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
         userHandle:
           type: string
           example: "eisbilir"
@@ -4641,7 +4898,7 @@ components:
         daysWorked:
           type: integer
           minimum: 0
-          maximum: 5
+          maximum: 10
           example: 2
           description: "The count of the days worked for that work period."
         daysPaid:
@@ -4693,8 +4950,26 @@ components:
       properties:
         daysWorked:
           type: integer
+          minimum: 0
+          maximum: 10
           example: 2
           description: "The count of the days worked for that work period."
+        sentSurvey:
+          type: boolean
+          example: true
+          description: "whether we've already sent a survey for this WorkPeriod of no"
+        sentSurveyError:
+          description: "error details if error happened during sending survey"
+          type: object
+          properties:
+            errorMessage:
+              type: string
+              example: "error message"
+              description: "The error message"
+            errorCode:
+              type: integer
+              example: 429
+              description: "HTTP code of error"
     WorkPeriodPayment:
       required:
         - id
@@ -4809,10 +5084,15 @@ components:
           description: "The work period id."
         days:
           type: integer
-          minimum: 1
-          maximum: 5
+          minimum: 0
+          maximum: 10
           example: 2
           description: "The workDays to be paid."
+        amount:
+          type: integer
+          minimum: 1
+          example: 200
+          description: "The amount to be paid. Required only if days value is 0, otherwise forbidden."
     WorkPeriodPaymentQueryCreateRequestBody:
       properties:
         status:
@@ -4884,6 +5164,56 @@ components:
           type: string
           enum: ["scheduled", "cancelled"]
           description: "The payment status."
+        memberRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The member rate."
+        customerRate:
+          type: integer
+          format: float
+          example: 13
+          description: "The customer rate."
+        billingAccountId:
+          type: integer
+          example: 80000071
+          description: "the billing account id for payments"
+        days:
+          type: integer
+          minimum: 0
+          example: 3
+          description: "The workdays to pay"
+        amount:
+          type: integer
+          format: float
+          example: 2
+          description: "The amount to be paid."
+    WorkPeriodPaymentPatchRequestBodyInBulk:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "The work period payment id."
+        - $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBody"
+    WorkPeriodPaymentUpdatedError:
+      allOf:
+        - $ref: "#/components/schemas/WorkPeriodPaymentPatchRequestBodyInBulk"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: "The error message"
+                code:
+                  type: integer
+                  example: 429
+                  description: "HTTP code of error"
     CheckRun:
       type: object
       properties:
@@ -5272,7 +5602,7 @@ components:
                     "job-closed",
                     "offered",
                     "withdrawn",
-                    "withdrawn-prescreen"
+                    "withdrawn-prescreen",
                   ]
                 description: "The job candidate status."
               skills:
@@ -5398,6 +5728,18 @@ components:
             isExternalMember:
               type: boolean
               description: "Is the user external member"
+            matchedSkills:
+              type: array
+              items:
+                type: string
+                example: "java"
+              description: "skills match with the role"
+            unMatchedSkills:
+              type: array
+              items:
+                type: string
+                example: "javascript"
+              description: "skills unmatch with the role"
             skillsMatch:
               type: number
               format: float
@@ -5407,6 +5749,32 @@ components:
               type: string
               description: "Optional job title."
               example: "Lead Application Developer"
+    CalculateAmountRequestBody:
+      properties:
+        numberOfResources:
+          type: number
+          description: "No. of resources required."
+        rates:
+          type: number
+          description: "Weekly rates"
+        durationWeeks:
+          type: number
+          description: "No. of weeks"
+    CalculateAmountResponse:
+      properties:
+        totalAmount:
+          type: number
+          description: "Total amount calculated"
+    CreatePaymentRequestBody:
+      properties:
+        totalAmount:
+          type: number
+          description: "Total amount charged to user via stripe"
+    CreatePaymentResponse:
+      properties:
+        paymentIntentToken:
+          type: string
+          description: " Token required by stripe for completing payment."
     SubmitTeamRequestBody:
       properties:
         teamName:
@@ -5440,6 +5808,11 @@ components:
                 example: 10
                 minimum: 1
                 description: "The number of needed resources"
+              hoursPerWeek:
+                type: integer
+                example: 40
+                minimum: 1
+                description: "The amount of working hours per week"
               durationWeeks:
                 type: integer
                 example: 5
@@ -5864,4 +6237,3 @@ components:
       properties:
         message:
           type: string
-

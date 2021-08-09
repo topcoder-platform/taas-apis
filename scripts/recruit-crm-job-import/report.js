@@ -44,6 +44,11 @@ class Report {
     const resourceBookingsCreated = groupsByTag.resource_booking_created || []
     const jobsAlreadyExist = groupsByTag.job_already_exists || []
     const resourceBookingsAlreadyExist = groupsByTag.resource_booking_already_exists || []
+    const validationErrors = groupsByTag.validation_error || []
+    const userNotFound = groupsByTag.user_not_found || []
+    const externalIdMissing = groupsByTag.external_id_missing || []
+    const requestError = groupsByTag.request_error || []
+    const internalError = groupsByTag.internal_error || []
     logger.info('=== summary ===')
     logger.info(`total: ${this.messages.length}`)
     logger.info(`success: ${success.length}`)
@@ -53,6 +58,11 @@ class Report {
     logger.info(`resource bookings created: ${resourceBookingsCreated.length}`)
     logger.info(`jobs already exist: ${jobsAlreadyExist.length}`)
     logger.info(`resource bookings already exist: ${resourceBookingsAlreadyExist.length}`)
+    logger.info(`validation errors: ${validationErrors.length}`)
+    logger.info(`user not found: ${userNotFound.length}`)
+    logger.info(`external id missing: ${externalIdMissing.length}`)
+    logger.info(`request error: ${requestError.length}`)
+    logger.info(`internal error: ${internalError.length}`)
     logger.info('=== summary ===')
   }
 }
