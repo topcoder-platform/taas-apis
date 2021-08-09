@@ -19,6 +19,7 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
@@ -1155,6 +1156,30 @@ suggestMembers.schema = Joi.object().keys({
   fragment: Joi.string().required()
 }).required()
 
+/**
+ * Calculates total amount
+ * @param {Object} body
+ * @returns {int} totalAmount
+ */
+ async function calculateAmount(body) {
+  const totalAmount = body.numberOfResources * body.rates * body.durationWeeks;
+  return { totalAmount };
+}
+
+/**
+ * Creates token for stripe
+ * @param {int} totalAmount
+ * @returns {string} paymentIntentToken
+ */
+async function createPayment(totalAmount) {
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: totalAmount,
+    currency: process.env.CURRENCY,
+  });
+  return { paymentIntentToken: paymentIntent.client_secret };
+}
+
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -1173,6 +1198,8 @@ module.exports = {
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
+  calculateAmount,
+  createPayment,
   searchSkills,
   suggestMembers
 }
