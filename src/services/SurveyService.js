@@ -7,8 +7,6 @@ const { getUserById, getMemberDetailsByHandle } = require('../common/helper')
 const { getCollectorName, createCollector, createMessage, upsertContactInSurveyMonkey, addContactsToSurvey, sendSurveyAPI } = require('../common/surveyMonkey')
 
 const resourceBookingCache = {}
-const contactIdToWorkPeriodIdMap = {}
-const emailToWorkPeriodIdMap = {}
 
 function buildSentSurveyError (e) {
   return {
@@ -62,14 +60,15 @@ async function sendSurveys () {
           const collectorId = await createCollector(collectorName)
           const messageId = await createMessage(collectorId)
           // create map
-          contactIdToWorkPeriodIdMap[collectorName] = {}
-          emailToWorkPeriodIdMap[collectorName] = {}
           collectors[collectorName] = {
+            workPeriodIds: [],
             collectorId,
             messageId,
             contacts: []
           }
         }
+
+        collectors[collectorName].workPeriodIds.push(workPeriod.id)
 
         const resourceBooking = _.find(resourceBookings, (r) => r.id === workPeriod.resourceBookingId)
         const userInfo = {}
@@ -89,7 +88,6 @@ async function sendSurveys () {
             resourceBookingCache[resourceBooking.userId] = userInfo
           }
         }
-        emailToWorkPeriodIdMap[collectorName][resourceBookingCache[resourceBooking.userId].email] = workPeriod.id
         collectors[collectorName].contacts.push(resourceBookingCache[resourceBooking.userId])
       } catch (e) {
         try {
@@ -108,10 +106,6 @@ async function sendSurveys () {
     for (const collectorName in collectors) {
       const collector = collectors[collectorName]
       collectors[collectorName].contacts = await upsertContactInSurveyMonkey(collector.contacts)
-
-      for (const contact of collectors[collectorName].contacts) {
-        contactIdToWorkPeriodIdMap[collectorName][contact.id] = emailToWorkPeriodIdMap[collectorName][contact.email]
-      }
     }
 
     // send surveys
@@ -125,23 +119,23 @@ async function sendSurveys () {
             collector.contacts
           )
           await sendSurveyAPI(collector.collectorId, collector.messageId)
-          for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
+          for (const workPeriodId of collectors[collectorName].workPeriodIds) {
             try {
-              await partiallyUpdateWorkPeriod(currentUser, contactIdToWorkPeriodIdMap[collectorName][contactId], { sentSurvey: true })
+              await partiallyUpdateWorkPeriod(currentUser, workPeriodId, { sentSurvey: true })
             } catch (e) {
-              logger.error({ component: 'SurveyService', context: 'sendSurvey', message: `Error updating survey as sent for Work Period "${contactIdToWorkPeriodIdMap[collectorName][contactId]}": ` + e.message })
+              logger.error({ component: 'SurveyService', context: 'sendSurvey', message: `Error updating survey as sent for Work Period "${workPeriodId}": ` + e.message })
             }
           }
         } catch (e) {
-          for (const contactId in contactIdToWorkPeriodIdMap[collectorName]) {
+          for (const workPeriodId of collectors[collectorName].workPeriodIds) {
             try {
               await partiallyUpdateWorkPeriod(
                 currentUser,
-                contactIdToWorkPeriodIdMap[collectorName][contactId],
+                workPeriodId,
                 { sentSurveyError: buildSentSurveyError(e) }
               )
             } catch (e) {
-              logger.error({ component: 'SurveyService', context: 'sendSurvey', message: `Error updating survey as failed for Work Period "${contactIdToWorkPeriodIdMap[collectorName][contactId]}": ` + e.message })
+              logger.error({ component: 'SurveyService', context: 'sendSurvey', message: `Error updating survey as failed for Work Period "${workPeriodId}": ` + e.message })
             }
           }
         }
