@@ -3435,6 +3435,110 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /taas-teams/calculateAmount:
+    post:
+      tags:
+        - Teams
+      description: |
+        Calculates total amount for the team.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculateAmountRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalculateAmountResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"  
+  /taas-teams/createPayment:
+    post:
+      tags:
+        - Teams
+      description: |
+        Calculates total amount for the team.
+
+        **Authorization** Any Topcoder user with valid token is allowed. For not logged users Topcoder m2m token with create:taas-teams scope is allowed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePaymentResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"  
   /taas-teams/members-suggest/{fragment}:
     get:
       tags:
@@ -5589,6 +5693,32 @@ components:
               type: string
               description: "Optional job title."
               example: "Lead Application Developer"
+    CalculateAmountRequestBody:
+      properties:
+        numberOfResources:
+          type: number
+          description: "No. of resources required."
+        rates:
+          type: number
+          description: "Weekly rates"
+        durationWeeks:
+          type: number
+          description: "No. of weeks"
+    CalculateAmountResponse:
+      properties:
+        totalAmount:
+          type: number
+          description: "Total amount calculated"
+    CreatePaymentRequestBody:
+      properties:
+        totalAmount:
+          type: number
+          description: "Total amount charged to user via stripe"
+    CreatePaymentResponse:
+      properties:
+        paymentIntentToken:
+          type: string
+          description: " Token required by stripe for completing payment."
     SubmitTeamRequestBody:
       properties:
         teamName:

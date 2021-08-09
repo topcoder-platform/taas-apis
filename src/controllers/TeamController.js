@@ -155,6 +155,24 @@ async function suggestMembers (req, res) {
   res.send(await service.suggestMembers(req.authUser, req.params.fragment))
 }
 
+/**
+ *
+ * @param req the request
+ * @param res the response
+ */
+ async function calculateAmount(req, res) {
+  res.send(await service.calculateAmount(req.body));
+}
+
+/**
+ *
+ * @param req the request
+ * @param res the response
+ */
+async function createPayment(req, res) {
+  res.send(await service.createPayment(req.body.totalAmount));
+}
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -169,5 +187,7 @@ module.exports = {
   roleSearchRequest,
   createTeam,
   searchSkills,
-  suggestMembers
+  suggestMembers,
+  createPayment,
+  calculateAmount
 }
