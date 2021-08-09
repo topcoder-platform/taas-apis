@@ -120,6 +120,9 @@ async function sendCandidatesAvailableEmails () {
   const jobs = _.map(jobsDao, dao => dao.dataValues)
 
   const projectIds = _.uniq(_.map(jobs, job => job.projectId))
+
+  localLogger.debug(`[sendCandidatesAvailableEmails]: Found ${projectIds.length} project with Job Candidates awaiting for review.`)
+
   // for each unique project id, send an email
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
@@ -216,6 +219,8 @@ async function sendInterviewComingUpEmails () {
     raw: true
   })
 
+  localLogger.debug(`[sendInterviewComingUpEmails]: Found ${interviews.length} Interviews which are coming soon.`)
+
   for (const interview of interviews) {
     // send host email
     const data = await getDataForInterview(interview)
@@ -288,6 +293,8 @@ async function sendInterviewCompletedEmails () {
     raw: true
   })
 
+  localLogger.debug(`[sendInterviewCompletedEmails]: Found ${interviews.length} Interviews which must be ended by now.`)
+
   for (const interview of interviews) {
     if (_.isEmpty(interview.hostEmail)) {
       localLogger.error(`Interview id: ${interview.id} host email not present`)
@@ -329,6 +336,8 @@ async function sendPostInterviewActionEmails () {
       }
     }]
   })
+
+  localLogger.debug(`[sendPostInterviewActionEmails]: Found ${completedJobCandidates.length} Job Candidates with interview completed awaiting for an action.`)
 
   // get all project ids for this job candidates
   const jobs = await Job.findAll({
@@ -409,6 +418,8 @@ async function sendResourceBookingExpirationEmails () {
     raw: true
   })
   const projectIds = _.uniq(_.map(expiringResourceBookings, rb => rb.projectId))
+
+  localLogger.debug(`[sendResourceBookingExpirationEmails]: Found ${projectIds.length} project with ${expiringResourceBookings.length} Resource Bookings expiring in less than 3 weeks.`)
 
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
