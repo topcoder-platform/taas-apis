@@ -39,7 +39,7 @@ async function processCreate (entity) {
         params: { workPeriodPayment: entity }
       }
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
@@ -75,7 +75,7 @@ async function processUpdate (entity) {
         params: { data: entity }
       }
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 

@@ -26,7 +26,7 @@ async function processCreate (entity, options) {
         params: { workPeriod: entity }
       }
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
@@ -62,7 +62,7 @@ async function processUpdate (entity) {
         params: { data: entity }
       }
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
@@ -121,7 +121,7 @@ async function processDelete (entity) {
         params: { data: entity }
       }
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
