@@ -265,5 +265,8 @@ module.exports = {
   // The interview completed past time for fetching interviews
   INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
   // The time before resource booking expiry when we should start sending notifications
-  RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D'
+  RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
+  // The Stripe
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  CURRENCY: process.env.CURRENCY || 'usd'
 }
