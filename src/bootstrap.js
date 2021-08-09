@@ -26,7 +26,7 @@ Joi.workPeriodPaymentUpdateStatus = () => Joi.string().valid(..._.values(WorkPer
 // See https://joi.dev/api/?v=17.3.0#string fro details why it's like this.
 // In many cases we would like to allow empty string to make it easier to create UI for editing data.
 Joi.stringAllowEmpty = () => Joi.string().allow('')
-Joi.smallint = () => Joi.number().min(-32768).max(32767)
+Joi.smallint = () => Joi.number().integer().min(-32768).max(32767)
 
 function buildServices (dir) {
   const files = fs.readdirSync(dir)
