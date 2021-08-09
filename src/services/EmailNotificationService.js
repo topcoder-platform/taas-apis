@@ -121,9 +121,10 @@ async function sendCandidatesAvailableEmails () {
 
   const projectIds = _.uniq(_.map(jobs, job => job.projectId))
 
-  localLogger.debug(`[sendCandidatesAvailableEmails]: Found ${projectIds.length} project with Job Candidates awaiting for review.`)
+  localLogger.debug(`[sendCandidatesAvailableEmails]: Found ${projectIds.length} projects with Job Candidates awaiting for review.`)
 
   // for each unique project id, send an email
+  let sentCount = 0
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
@@ -175,7 +176,10 @@ async function sendCandidatesAvailableEmails () {
         description: 'Candidates are available for review'
       }
     })
+
+    sentCount++
   }
+  localLogger.debug(`[sendCandidatesAvailableEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates awaiting for review.`)
 }
 
 /**
@@ -219,8 +223,10 @@ async function sendInterviewComingUpEmails () {
     raw: true
   })
 
-  localLogger.debug(`[sendInterviewComingUpEmails]: Found ${interviews.length} Interviews which are coming soon.`)
+  localLogger.debug(`[sendInterviewComingUpEmails]: Found ${interviews.length} interviews which are coming soon.`)
 
+  let sentHostCount = 0
+  let sentGuestCount = 0
   for (const interview of interviews) {
     // send host email
     const data = await getDataForInterview(interview)
@@ -238,6 +244,8 @@ async function sendInterviewComingUpEmails () {
           description: 'Interview Coming Up'
         }
       })
+
+      sentHostCount++
     } else {
       localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewComingUpEmails')
     }
@@ -255,10 +263,14 @@ async function sendInterviewComingUpEmails () {
           description: 'Interview Coming Up'
         }
       })
+
+      sentGuestCount++
     } else {
       localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewComingUpEmails')
     }
   }
+
+  localLogger.debug(`[sendInterviewComingUpEmails]: Sent notifications for ${sentHostCount} hosts and ${sentGuestCount} guest of ${interviews.length} interviews which are coming soon.`)
 }
 
 /**
@@ -293,8 +305,9 @@ async function sendInterviewCompletedEmails () {
     raw: true
   })
 
-  localLogger.debug(`[sendInterviewCompletedEmails]: Found ${interviews.length} Interviews which must be ended by now.`)
+  localLogger.debug(`[sendInterviewCompletedEmails]: Found ${interviews.length} interviews which must be ended by now.`)
 
+  let sentCount = 0
   for (const interview of interviews) {
     if (_.isEmpty(interview.hostEmail)) {
       localLogger.error(`Interview id: ${interview.id} host email not present`)
@@ -315,7 +328,11 @@ async function sendInterviewCompletedEmails () {
         description: 'Interview Completed'
       }
     })
+
+    sentCount++
   }
+
+  localLogger.debug(`[sendInterviewCompletedEmails]: Sent notifications for ${sentCount} of ${interviews.length} interviews which must be ended by now.`)
 }
 
 /**
@@ -337,8 +354,6 @@ async function sendPostInterviewActionEmails () {
     }]
   })
 
-  localLogger.debug(`[sendPostInterviewActionEmails]: Found ${completedJobCandidates.length} Job Candidates with interview completed awaiting for an action.`)
-
   // get all project ids for this job candidates
   const jobs = await Job.findAll({
     where: {
@@ -350,6 +365,10 @@ async function sendPostInterviewActionEmails () {
   })
 
   const projectIds = _.uniq(_.map(jobs, job => job.projectId))
+
+  localLogger.debug(`[sendPostInterviewActionEmails]: Found ${projectIds.length} projects with ${completedJobCandidates.length} Job Candidates with interview completed awaiting for an action.`)
+
+  let sentCount = 0
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
@@ -383,7 +402,11 @@ async function sendPostInterviewActionEmails () {
         description: 'Post Interview Candidate Action Reminder'
       }
     })
+
+    sentCount++
   }
+
+  localLogger.debug(`[sendPostInterviewActionEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates with interview completed awaiting for an action.`)
 }
 
 /**
@@ -419,8 +442,9 @@ async function sendResourceBookingExpirationEmails () {
   })
   const projectIds = _.uniq(_.map(expiringResourceBookings, rb => rb.projectId))
 
-  localLogger.debug(`[sendResourceBookingExpirationEmails]: Found ${projectIds.length} project with ${expiringResourceBookings.length} Resource Bookings expiring in less than 3 weeks.`)
+  localLogger.debug(`[sendResourceBookingExpirationEmails]: Found ${projectIds.length} projects with ${expiringResourceBookings.length} Resource Bookings expiring in less than 3 weeks.`)
 
+  let sentCount = 0
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
@@ -458,7 +482,11 @@ async function sendResourceBookingExpirationEmails () {
         description: 'Upcoming Resource Booking Expiration'
       }
     })
+
+    sentCount++
   }
+
+  localLogger.debug(`[sendResourceBookingExpirationEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Resource Bookings expiring in less than 3 weeks.`)
 }
 
 /**
