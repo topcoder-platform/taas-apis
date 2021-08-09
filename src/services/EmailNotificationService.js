@@ -33,7 +33,7 @@ async function getProjectWithId (projectId) {
     project = await helper.getProjectById(helper.getAuditM2Muser(), projectId)
   } catch (err) {
     localLogger.error(
-      `exception fetching project with id: ${projectId} Status Code: ${err.status} message: ${err.response.text}`, 'getProjectWithId')
+      `exception fetching project with id: ${projectId} Status Code: ${err.status} message: ${_.get(err, 'response.text', err.toString())}`, 'getProjectWithId')
   }
 
   return project
@@ -65,7 +65,7 @@ async function getUserWithId (userId) {
     user = await helper.ensureUserById(userId)
   } catch (err) {
     localLogger.error(
-      `exception fetching user with id: ${userId} Status Code: ${err.status} message: ${err.response.text}`, 'getUserWithId')
+      `exception fetching user with id: ${userId} Status Code: ${err.status} message: ${_.get(err, 'response.text', err.toString())}`, 'getUserWithId')
   }
 
   return user
