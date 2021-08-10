@@ -1201,18 +1201,18 @@ async function getProjectById (currentUser, id) {
 
 /**
  * Function to search skills from v5/skills
- * - only returns skills from Topcoder Skills Provider defined by `TOPCODER_SKILL_PROVIDER_ID`
+ * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
  * @param {Object} criteria the search criteria
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2MUbahnToken()
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
       .query({
-        skillProviderId: config.TOPCODER_SKILL_PROVIDER_ID,
+        taxonomyId: config.TOPCODER_TAXONOMY_ID,
         ...criteria
       })
       .set('Authorization', `Bearer ${token}`)
@@ -1238,7 +1238,7 @@ async function getTopcoderSkills (criteria) {
 
 /**
  * Function to search and retrive all skills from v5/skills
- * - only returns skills from Topcoder Skills Provider defined by `TOPCODER_SKILL_PROVIDER_ID`
+ * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
  * @param {Object} criteria the search criteria
  * @returns the request result
@@ -1260,7 +1260,7 @@ async function getAllTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2MUbahnToken()
+  const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
