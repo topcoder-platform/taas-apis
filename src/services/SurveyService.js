@@ -119,6 +119,7 @@ async function sendSurveys () {
             collector.contacts
           )
           await sendSurveyAPI(collector.collectorId, collector.messageId)
+          logger.debug({ component: 'SurveyService', context: 'sendSurvey', message: `Sent survey for collector "${collectorName}" details:` + JSON.stringify(collector) })
           for (const workPeriodId of collectors[collectorName].workPeriodIds) {
             try {
               await partiallyUpdateWorkPeriod(currentUser, workPeriodId, { sentSurvey: true })
