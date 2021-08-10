@@ -1165,11 +1165,12 @@ suggestMembers.schema = Joi.object().keys({
 
 /**
  * Calculates total amount
- * @param {Object} body
+ * @param {Object} amount
  * @returns {int} totalAmount
  */
- async function calculateAmount(body) {
-  const totalAmount = body.numberOfResources * body.rates * body.durationWeeks;
+ async function calculateAmount(amount) {
+  let totalAmount = 0;
+  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate * amt.durationWeeks)
   return { totalAmount };
 }
 
@@ -1179,8 +1180,9 @@ suggestMembers.schema = Joi.object().keys({
  * @returns {string} paymentIntentToken
  */
 async function createPayment(totalAmount) {
+  const dollarToCents = (totalAmount*100);
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: totalAmount,
+    amount: dollarToCents,
     currency: process.env.CURRENCY,
   });
   return { paymentIntentToken: paymentIntent.client_secret };
