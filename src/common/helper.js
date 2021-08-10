@@ -1217,6 +1217,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -1268,6 +1269,7 @@ async function getAllTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
+  const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Content-Type', 'application/json')
