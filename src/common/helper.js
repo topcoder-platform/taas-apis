@@ -1221,6 +1221,7 @@ async function getTopcoderSkills (criteria) {
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
+      .set('Authorization', `Bearer ${token}`)
       .query({
         taxonomyId: config.TOPCODER_TAXONOMY_ID,
         ...criteria
@@ -1272,6 +1273,7 @@ async function getSkillById (skillId) {
   const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
+    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({
