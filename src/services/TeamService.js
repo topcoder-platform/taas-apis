@@ -19,7 +19,7 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
-const stripe = require("stripe")(config.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(config.STRIPE_SECRET_KEY,{maxNetworkRetries: 5});
 
 const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
@@ -1163,7 +1163,7 @@ suggestMembers.schema = Joi.object().keys({
  */
  async function calculateAmount(amount) {
   let totalAmount = 0;
-  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate * amt.durationWeeks)
+  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate)
   return { totalAmount };
 }
 
