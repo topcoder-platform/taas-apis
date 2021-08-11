@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7954a27f-3833-404f-9e55-6016a938c86e",
+		"_postman_id": "709e8fdf-f5f4-4053-a679-b89504637cc8",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -33541,6 +33541,762 @@
 							]
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Notifications Demo",
+			"item": [
+				{
+					"name": "Before Start",
+					"item": [
+						{
+							"name": "search roles with admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleIdForTeam-1\", response[0].id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{token_administrator}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas-roles",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with administrator using roleId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId1-1\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"{{roleIdForTeam-1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send request with administrator using skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    if(pm.response.status === \"OK\"){\r",
+											"        const response = pm.response.json()\r",
+											"        pm.environment.set(\"roleSearchRequestId1-2\", response.roleSearchRequestId);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_administrator}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"skills\": [\r\n        \"56f46882-26f3-4c39-966d-912cccea0119\",\r\n        \"536865d3-e7c7-4675-b119-6df8bf411624\",\r\n        \"bd417c10-d81a-45b6-85a9-d79efe86b9bb\",\r\n        \"4fce6ced-3610-443c-92eb-3f6d76b34f5c\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/taas-teams/sendRoleSearchRequest",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas-teams",
+										"sendRoleSearchRequest"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "[Create new team] (with 2 jobs)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"createTeamProjectId-1\", response.projectId);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"testCaseNumber\", parseInt(pm.environment.get(\"testCaseNumber\").toString()) + 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"teamName\": \"Notification Test Team {{testCaseNumber}}\",\r\n    \"teamDescription\":\"Notification Test Team {{testCaseNumber}} - Desctiption\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-06-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-2}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-06-15\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/submitTeamRequest",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"submitTeamRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add team member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"handles\": [\n        \"{{teamMemberHandle}}\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/{{createTeamProjectId-1}}/members",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"{{createTeamProjectId-1}}",
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Create new job]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"jobId\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"projectId\": {{createTeamProjectId-1}},\n  \"externalId\": \"1212\",\n  \"description\": \"Job Description Notification Test {{testCaseNumber}}\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Job Notification Test {{testCaseNumber}}\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Candidates are available for review]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\",\n  \"remark\": \"Job Candidate Notifications Test remark {{testCaseNumber}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create another candidate for Interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"jobCandidateId\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"userId\": \"b15feb1a-5a9d-456a-86d9-5fd8fad3ac04\",\n  \"externalId\": \"300234321\",\n  \"resume\": \"http://example.com\",\n  \"remark\": \"Job Candidate Notifications Test remark {{testCaseNumber}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. schedule interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewId\", response.id);\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"calendarEventId-{{testCaseNumber}}\",\r\n    \"hostEmail\": \"{{interviewHostEmail}}\",\r\n    \"guestEmails\": [\"{{interviewGuestEmail}}\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Interview Coming Up in 1 hour + Interview Completed]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var startTimestamp = new Date()",
+									"// add 1 hour and 7 minutes",
+									"startTimestamp.setTime(startTimestamp.getTime() + (1*60*60*1000) + (7*60*1000));",
+									"// add 1 hour and 7 minutes + 30 minutes",
+									"var endTimestamp = new Date()",
+									"endTimestamp.setTime(endTimestamp.getTime() + (1*60*60*1000) + (7*60*1000) + (30*60*1000));",
+									"",
+									"pm.environment.set(\"interviewStartTimestamp\", startTimestamp.toISOString());",
+									"pm.environment.set(\"interviewEndTimestamp\", endTimestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"calendarEventId\": \"1\",\r\n    \"startTimestamp\": \"{{interviewStartTimestamp}}\",\r\n    \"endTimestamp\": \"{{interviewEndTimestamp}}\",\r\n    \"status\": \"Scheduled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"updateInterview",
+								"{{interviewRound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get interviews of the JobCandidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "schedule another interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"interviewId\", response.id);\r",
+									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"calendarEventId-{{testCaseNumber}}\",\r\n    \"hostEmail\": \"{{interviewHostEmail}}\",\r\n    \"guestEmails\": [\"{{interviewGuestEmail}}\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Post Interview Candidate Action Reminder.]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var endTimestamp = new Date()",
+									"// substruct 4 hours minus 7 minutes",
+									"endTimestamp.setTime(endTimestamp.getTime() - (4*60*60*1000 - 7*60*1000));",
+									"",
+									"// end time minus 30 minutes",
+									"var startTimestamp = new Date()",
+									"startTimestamp.setTime(endTimestamp.getTime() - (30*60*1000));",
+									"",
+									"pm.environment.set(\"interviewStartTimestamp\", startTimestamp.toISOString());",
+									"pm.environment.set(\"interviewEndTimestamp\", endTimestamp.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"updateInterview",
+								"{{interviewRound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get interviews of the JobCandidate again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upcoming Resource Booking Expiration]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    if(pm.response.status === \"OK\"){\r",
+									"        const response = pm.response.json()\r",
+									"        pm.environment.set(\"resourceBookingId\", response.id);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var endDate = new Date()",
+									"endDate.setTime(endDate.getTime() + (7*24*60*60*1000));",
+									"var month = endDate.getMonth() + 1;",
+									"var fullMonth = month < 10 ? '0' + month : month;",
+									"var fullYear = endDate.getFullYear();",
+									"pm.environment.set(\"resourceBookingExpiringEndDate\", `${fullYear}-${fullMonth}-${endDate.getDate()}`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{createTeamProjectId-1}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2021-06-27\",\r\n  \"endDate\": \"{{resourceBookingExpiringEndDate}}\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071,\r\n  \"status\": \"placed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
