@@ -5698,12 +5698,9 @@ components:
         numberOfResources:
           type: number
           description: "No. of resources required."
-        rates:
+        rate:
           type: number
           description: "Weekly rates"
-        durationWeeks:
-          type: number
-          description: "No. of weeks"
     CalculateAmountResponse:
       properties:
         totalAmount:
