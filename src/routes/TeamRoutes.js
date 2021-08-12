@@ -127,7 +127,9 @@ module.exports = {
     "/taas-teams/isExternalMember": {
       post: {
         controller: "TeamController",
-        method: "isExternalMember"
+        method: "isExternalMember",
+        auth: 'jwt',
+        scopes: []
       }
     },
 }
