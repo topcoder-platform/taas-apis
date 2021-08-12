@@ -1,6 +1,8 @@
 const Kafka = require('no-kafka')
 const fs = require('fs')
 const config = require('config')
+const axios = require('axios')
+const _ = require('lodash')
 const moment = require('moment')
 const handlebars = require('handlebars')
 const logger = require('../../src/common/logger')
@@ -8,6 +10,7 @@ const { Interview, JobCandidate, ResourceBooking } = require('../../src/models')
 const { Interviews } = require('../../app-constants')
 
 const consumer = new Kafka.GroupConsumer({ connectionString: process.env.KAFKA_URL, groupId: 'test-render-email' })
+const slackURL = null
 
 const localLogger = {
   debug: message => logger.debug({ component: 'render email content', context: 'test', message }),
@@ -64,10 +67,15 @@ async function initConsumer () {
             fs.mkdirSync('out')
           }
           if (message.payload.notifications) {
-            message.payload.notifications.forEach((notification) => {
+            _.forEach(_.filter(message.payload.notifications, ['serviceId', 'email']), (notification) => {
               const email = template(notification.details.data)
               fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
             })
+            for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {
+              if (slackURL) {
+                await axios.post(slackURL, { text: notification.details.text, blocks: notification.details.blocks })
+              }
+            }
           }
         }
       }

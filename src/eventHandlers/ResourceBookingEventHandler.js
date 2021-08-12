@@ -4,6 +4,7 @@
 
 const { Op } = require('sequelize')
 const _ = require('lodash')
+const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -67,6 +68,50 @@ async function placeJobCandidate (payload) {
       message: `id: ${result.id} candidate got selected.`
     })
   })))
+  const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.resource-booking-placed']
+  const project = await helper.getProjectById({ isMachine: true }, resourceBooking.projectId)
+  const user = await helper.getUserById(resourceBooking.userId)
+  const job = await models.Job.findById(resourceBooking.jobId)
+  const recipients = _.map(project.members, m => _.pick(m, 'email'))
+  const emailData = {
+    serviceId: 'email',
+    type: 'taas.notification.resource-booking-placed',
+    details: {
+      from: template.from,
+      recipients,
+      data: {
+        subject: template.subject,
+        teamName: project.name,
+        jobTitle: job.title,
+        userHandle: user.handle,
+        startDate: resourceBooking.startDate,
+        endDate: resourceBooking.endDate,
+        notificationType: {
+          resourceBookingPlaced: true
+        },
+        description: 'Send notification if Resource Bookings was created with status "placed" or existent record updated to status "placed"'
+      },
+      sendgridTemplateId: template.sendgridTemplateId,
+      version: 'v3'
+    }
+  }
+  const webData = {
+    serviceId: 'web',
+    type: 'taas.notification.resource-booking-placed',
+    details: {
+      recipients,
+      contents: { teamName: project.name, projectId: project.id, userHandle: user.handle, jobTitle: job.title },
+      version: 1
+    }
+  }
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
+    notifications: [emailData, webData]
+  })
+  logger.debug({
+    component: 'ResourceBookingEventHandler',
+    context: 'placeJobCandidate',
+    message: `send notifications, teamName: ${project.name}, jobTitle: ${job.title}, projectId: ${project.id}, userHandle: ${user.handle}`
+  })
 }
 
 /**

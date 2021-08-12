@@ -240,6 +240,102 @@
                             {{/each}}
                           </table>
                           {{/if}}
+                          {{#if notificationType.newTeamCreated}}
+                          <span style="font-weight:bold;">Team Name:</span>
+                          {{teamName}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Duration</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Start Date</td>
+                            </tr>
+                            {{#each jobList}}
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.title}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.duration}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startDate}}</td>
+                            </tr>
+                            {{/each}}
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.newJobCreated}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Duration</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Start Date</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{teamName}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
+                            </tr>
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.overlappingInterview}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team URL</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job URL</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview End Date</td>
+                            </tr>
+                            {{#each interviews}}
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.teamName}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.teamURL}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobURL}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.candidateUserHandle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.endTime}}</td>
+                            </tr>
+                            {{/each}}
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.candidateSelected}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job URL</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Candidate User Handle</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{teamName}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobUrl}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
+                            </tr>
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.resourceBookingPlaced}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Bookings Handle</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Bookings Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Bookings End Date</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{teamName}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{startDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{endDate}}</td>
+                            </tr>
+                          </table>
+                          {{/if}}
 
                           <br/>
                           If you have any questions about this process or if you encounter any issues coordinating your availability, you may reply to this email or send a separate email to <a href="mailto:talent@topcoder.com">our Gig Work operations team</a>.

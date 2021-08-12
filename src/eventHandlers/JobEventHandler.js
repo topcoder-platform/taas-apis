@@ -3,6 +3,8 @@
  */
 
 const { Op } = require('sequelize')
+const config = require('config')
+const _ = require('lodash')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -65,6 +67,55 @@ async function processUpdate (payload) {
   await cancelJob(payload)
 }
 
+/**
+ * Process job create event.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function processCreate (payload) {
+  if (payload.options.onTeamCreating) {
+    logger.debug({
+      component: 'JobEventHandler',
+      context: 'jobCreate',
+      message: 'skip these jobs which are created together with the Team'
+    })
+    return
+  }
+  const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-created']
+  const project = await helper.getProjectById({ isMachine: true }, payload.value.projectId)
+  const emailData = {
+    serviceId: 'email',
+    type: 'taas.notification.job-created',
+    details: {
+      from: template.from,
+      recipients: _.map(project.members, m => _.pick(m, 'email')),
+      data: {
+        subject: template.subject,
+        teamName: project.name,
+        jobTitle: payload.value.title,
+        jobDuration: payload.value.duration,
+        jobStartDate: payload.value.startDate,
+        notificationType: {
+          newJobCreated: true
+        },
+        description: 'Send notification a new Job was created'
+      },
+      sendgridTemplateId: template.sendgridTemplateId,
+      version: 'v3'
+    }
+  }
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
+    notifications: [emailData]
+  })
+  logger.debug({
+    component: 'JobEventHandler',
+    context: 'jobCreate',
+    message: `teamName: ${project.name}, jobTitle: ${payload.value.title}, jobDuration: ${payload.value.duration}, jobStartDate: ${payload.value.startDate}`
+  })
+}
+
 module.exports = {
-  processUpdate
+  processUpdate,
+  processCreate
 }
