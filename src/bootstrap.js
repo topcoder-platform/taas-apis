@@ -51,7 +51,7 @@ buildServices(path.join(__dirname, 'services'))
 const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
   ...Object.values(PaymentProcessingSwitch)
 )
-const weeklySurveySwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
+const weeklySurveySwitchSchema = Joi.string().label('WEEKLY_SURVEY_SWITCH').valid(
   ...Object.values(WeeklySurveySwitch)
 )
 try {
