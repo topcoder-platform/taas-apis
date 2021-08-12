@@ -793,7 +793,8 @@ async function getRoleBySkills (skills) {
     where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
-  const roles = await Role.findAll(queryCriteria)
+  let roles = await Role.findAll(queryCriteria)
+  roles = _.filter(roles, role => _.find(role.rates, r => r.global))
   if (roles.length > 0) {
     let result = _.each(roles, role => {
       // role matched skills list
