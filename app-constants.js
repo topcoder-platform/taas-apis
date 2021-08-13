@@ -143,6 +143,11 @@ const PaymentProcessingSwitch = {
   OFF: 'OFF'
 }
 
+const WeeklySurveySwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
+}
+
 const PaymentSchedulerStatus = {
   START_PROCESS: 'start-process',
   CREATE_CHALLENGE: 'create-challenge',
@@ -172,6 +177,7 @@ module.exports = {
   PaymentSchedulerStatus,
   PaymentProcessingSwitch,
   PaymentStatusRules,
+  WeeklySurveySwitch,
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
   JobCandidateStatus

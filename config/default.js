@@ -184,6 +184,7 @@ module.exports = {
   TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60,
   // weekly survey scheduler config
   WEEKLY_SURVEY: {
+    SWITCH: process.env.WEEKLY_SURVEY_SWITCH || 'OFF',
     CRON: process.env.WEEKLY_SURVEY_CRON || '0 1 * * 7',
     BASE_URL: process.env.WEEKLY_SURVEY_BASE_URL || 'https://api.surveymonkey.net/v3/surveys',
     JWT_TOKEN: process.env.WEEKLY_SURVEY_JWT_TOKEN || '',
