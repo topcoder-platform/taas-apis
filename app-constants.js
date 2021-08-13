@@ -5,8 +5,11 @@
 const UserRoles = {
   BookingManager: 'bookingmanager',
   Administrator: 'administrator',
-  ConnectManager: 'Connect Manager'
+  ConnectManager: 'Connect Manager',
+  TopcoderUser: 'Topcoder User'
 }
+
+const TopCoderUserPermissionRole = UserRoles.TopcoderUser
 
 const FullManagePermissionRoles = [
   UserRoles.BookingManager,
@@ -162,6 +165,7 @@ const JobCandidateStatus = {
 
 module.exports = {
   UserRoles,
+  TopCoderUserPermissionRole,
   FullManagePermissionRoles,
   Scopes,
   Interviews,

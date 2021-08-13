@@ -240,6 +240,11 @@
                             {{/each}}
                           </table>
                           {{/if}}
+                          {{#if notificationType.jobCandidateResumeViewed}}
+                            Hi {{jobCandidateUserHandle}}.  <br/> </br>
+
+                            Your resume for the job "{{jobName}}" has been viewed by the client. <br/>
+                          {{/if}}
 
                           <br/>
                           If you have any questions about this process or if you encounter any issues coordinating your availability, you may reply to this email or send a separate email to <a href="mailto:talent@topcoder.com">our Gig Work operations team</a>.

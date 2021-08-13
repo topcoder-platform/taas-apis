@@ -131,6 +131,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
   jobId: { type: 'keyword' },
   userId: { type: 'keyword' },
   status: { type: 'keyword' },
+  viewedByCustomer: { type: 'boolean' },
   externalId: { type: 'keyword' },
   resume: { type: 'text' },
   remark: { type: 'keyword' },
@@ -1070,6 +1071,15 @@ async function getTopcoderUserById (userId) {
     )
   }
   return user
+}
+
+/**
+ * Function to download resume
+ * @param {String} resumeUrl the resume id
+ * @returns the request result
+ */
+async function downloadResume (resumeUrl) {
+  return request.get(resumeUrl)
 }
 
 /**
@@ -2063,6 +2073,7 @@ module.exports = {
     }
     return ensureUbahnUserId({ userId })
   },
+  downloadResume,
   getUserByExternalId,
   getM2MToken,
   getM2MUbahnToken,

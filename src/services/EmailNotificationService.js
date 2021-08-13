@@ -529,6 +529,7 @@ async function sendEmail (currentUser, data) {
 }
 
 module.exports = {
+  sendEmail,
   sendCandidatesAvailableEmails,
   sendInterviewComingUpEmails,
   sendInterviewCompletedEmails,
