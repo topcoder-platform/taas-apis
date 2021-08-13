@@ -814,8 +814,8 @@ async function getRoleBySkills (skills) {
   }
   // if no matching role found then return Custom role or empty object
   const customRole =  await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
-  customRole.rates[0].rate20Global = customRole.rates[0].global * 0.75
-  customRole.rates[0].rate30Global = customRole.rates[0].global * 0.5
+  customRole.rates[0].rate30Global = customRole.rates[0].global * 0.75
+  customRole.rates[0].rate20Global = customRole.rates[0].global * 0.5
   return customRole
 }
 
