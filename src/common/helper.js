@@ -1100,10 +1100,7 @@ async function getUserById (userId, enrich) {
   const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
 
   if (enrich) {
-    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => {
-      const skill = await getSkillById(userSkill.skillId)
-      return _.pick(skill, ['id', 'name'])
-    }))
+    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => getSkillById(userSkill.skillId)))
     const attributes = _.get(res, 'body.attributes', [])
     user.attributes = _.map(attributes, (attr) =>
       _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
@@ -1226,7 +1223,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -1279,7 +1276,7 @@ async function getAllTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2MToken()
+  const token = await getM2MUbahnToken()
   const res = await request
     .get(`${config.TC_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
@@ -1289,7 +1286,7 @@ async function getSkillById (skillId) {
     context: 'getSkillById',
     message: `response body: ${JSON.stringify(res.body)}`
   })
-  return res.body
+  return _.pick(res.body, ['id', 'name'])
 }
 
 /**

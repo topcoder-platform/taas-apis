@@ -328,13 +328,16 @@ async function getTeam (currentUser, id) {
   const teamDetail = result[0]
 
   // add job skills for result
+  let jobSkills = []
   if (teamDetail && teamDetail.jobs) {
     for (const job of teamDetail.jobs) {
       if (job.skills) {
-        job.skills = await Promise.all(job.skills.map(async (skillId) => {
-          const skill = await helper.getSkillById(skillId)
-          return _.pick(skill, ['id', 'name'])
-        }))
+        const usersPromises = []
+        _.map(job.skills, (skillId) => {
+          usersPromises.push(helper.getSkillById(skillId))
+        })
+        jobSkills = await Promise.all(usersPromises)
+        job.skills = jobSkills
       }
     }
   }
@@ -373,10 +376,7 @@ async function getTeamJob (currentUser, id, jobId) {
 
   if (job.skills) {
     result.skills = await Promise.all(
-      _.map(job.skills, async (skillId) => {
-        const skill = await helper.getSkillById(skillId)
-        return _.pick(skill, ['id', 'name'])
-      })
+      _.map(job.skills, (skillId) => helper.getSkillById(skillId))
     )
   }
 
