@@ -9,8 +9,6 @@ const UserRoles = {
   TopcoderUser: 'Topcoder User'
 }
 
-const TopCoderUserPermissionRole = UserRoles.TopcoderUser
-
 const FullManagePermissionRoles = [
   UserRoles.BookingManager,
   UserRoles.Administrator
@@ -165,7 +163,6 @@ const JobCandidateStatus = {
 
 module.exports = {
   UserRoles,
-  TopCoderUserPermissionRole,
   FullManagePermissionRoles,
   Scopes,
   Interviews,

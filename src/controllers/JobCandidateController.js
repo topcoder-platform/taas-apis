@@ -69,12 +69,9 @@ async function searchJobCandidates (req, res) {
  * @param req the request
  * @param res the response
  */
-async function downlaodJobCandidateResume (req, res) {
-  const { body, res: { headers } } = await service.downlaodJobCandidateResume(req.authUser, req.params.id)
-  for (const h in headers) {
-    res.setHeader(h, headers[h])
-  }
-  res.send(body)
+async function downloadJobCandidateResume (req, res) {
+  const resumeUrl = await service.downloadJobCandidateResume(req.authUser, req.params.id)
+  res.redirect(resumeUrl)
 }
 
 module.exports = {
@@ -84,5 +81,5 @@ module.exports = {
   fullyUpdateJobCandidate,
   deleteJobCandidate,
   searchJobCandidates,
-  downlaodJobCandidateResume
+  downloadJobCandidateResume
 }

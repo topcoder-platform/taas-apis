@@ -47,7 +47,7 @@ module.exports = {
   '/jobCandidates/:id/resume': {
     get: {
       controller: 'JobCandidateController',
-      method: 'downlaodJobCandidateResume',
+      method: 'downloadJobCandidateResume',
       auth: 'jwt',
       scopes: [constants.Scopes.READ_JOB_CANDIDATE, constants.Scopes.ALL_JOB_CANDIDATE]
     }

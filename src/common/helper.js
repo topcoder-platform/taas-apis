@@ -1074,15 +1074,6 @@ async function getTopcoderUserById (userId) {
 }
 
 /**
- * Function to download resume
- * @param {String} resumeUrl the resume id
- * @returns the request result
- */
-async function downloadResume (resumeUrl) {
-  return request.get(resumeUrl)
-}
-
-/**
  * Function to get users
  * @param {String} userId the user id
  * @returns the request result
@@ -2073,7 +2064,6 @@ module.exports = {
     }
     return ensureUbahnUserId({ userId })
   },
-  downloadResume,
   getUserByExternalId,
   getM2MToken,
   getM2MUbahnToken,
