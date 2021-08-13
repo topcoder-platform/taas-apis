@@ -68,11 +68,27 @@ async function placeJobCandidate (payload) {
       message: `id: ${result.id} candidate got selected.`
     })
   })))
+}
+
+/**
+ * When ResourceBooking's status is changed to `placed`
+ * send notifications to user
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function sendPlacedNotifications (payload) {
+  if (payload.value.status !== 'placed' || _.get(payload, 'options.oldValue.status') === 'placed') {
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.resource-booking-placed']
   const project = await helper.getProjectById({ isMachine: true }, resourceBooking.projectId)
   const user = await helper.getUserById(resourceBooking.userId)
   const job = await models.Job.findById(resourceBooking.jobId)
   const recipients = _.map(project.members, m => _.pick(m, 'email'))
+  const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
+  const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.resource-booking-placed',
@@ -82,14 +98,16 @@ async function placeJobCandidate (payload) {
       data: {
         subject: template.subject,
         teamName: project.name,
+        teamUrl,
         jobTitle: job.title,
+        jobUrl,
         userHandle: user.handle,
         startDate: resourceBooking.startDate,
         endDate: resourceBooking.endDate,
         notificationType: {
           resourceBookingPlaced: true
         },
-        description: 'Send notification if Resource Bookings was created with status "placed" or existent record updated to status "placed"'
+        description: 'Resource Booking is Placed'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
@@ -386,6 +404,7 @@ async function processCreate (payload) {
   await placeJobCandidate(payload)
   await assignJob(payload)
   await createWorkPeriods(payload)
+  await sendPlacedNotifications(payload)
 }
 
 /**
@@ -398,6 +417,7 @@ async function processUpdate (payload) {
   await placeJobCandidate(payload)
   await assignJob(payload)
   await updateWorkPeriods(payload)
+  await sendPlacedNotifications(payload)
 }
 
 /**

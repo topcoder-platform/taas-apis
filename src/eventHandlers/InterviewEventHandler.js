@@ -9,6 +9,7 @@ const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
 const teamService = require('../services/TeamService')
+const Constants = require('../../app-constants')
 
 /**
  * Once we request Interview for a JobCandidate, the invitation emails to be sent out.
@@ -45,27 +46,34 @@ async function sendInvitationEmail (payload) {
  */
 async function checkOverlapping (payload) {
   const interview = payload.value
+  if (_.includes([Constants.Interviews.Status.Cancelled, Constants.Interviews.Status.Completed], interview.status)) {
+    return
+  }
   const overlappingInterview = await models.Interview.findAll({
     where: {
-      [Op.or]: [{
-        startTimestamp: {
-          [Op.lt]: interview.endTimestamp,
-          [Op.gte]: interview.startTimestamp
-        }
+      [Op.and]: [{
+        status: _.values(_.omit(Constants.Interviews.Status, 'Completed', 'Cancelled'))
       }, {
-        endTimestamp: {
-          [Op.lte]: interview.endTimestamp,
-          [Op.gt]: interview.startTimestamp
-        }
-      }, {
-        [Op.and]: [{
+        [Op.or]: [{
           startTimestamp: {
-            [Op.lt]: interview.startTimestamp
+            [Op.lt]: interview.endTimestamp,
+            [Op.gte]: interview.startTimestamp
           }
         }, {
           endTimestamp: {
-            [Op.gt]: interview.endTimestamp
+            [Op.lte]: interview.endTimestamp,
+            [Op.gt]: interview.startTimestamp
           }
+        }, {
+          [Op.and]: [{
+            startTimestamp: {
+              [Op.lt]: interview.startTimestamp
+            }
+          }, {
+            endTimestamp: {
+              [Op.gt]: interview.endTimestamp
+            }
+          }]
         }]
       }]
     }
@@ -87,8 +95,8 @@ async function checkOverlapping (payload) {
         jobTitle: job.title,
         jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`,
         candidateUserHandle: user.handle,
-        startTime: oli.startTimestamp,
-        endTime: oli.endTimestamp
+        startTime: helper.formatDate(oli.startTimestamp),
+        endTime: helper.formatDate(oli.endTimestamp)
       })
     }
 
@@ -104,7 +112,7 @@ async function checkOverlapping (payload) {
           notificationType: {
             overlappingInterview: true
           },
-          description: 'Send notification if there is a new Interview created which overlaps existent interview by time (from "startTimestamp" till "endTimestamp"). Do the same if we update start/end timestamp for Some Interview and now it overlaps with another one'
+          description: 'Overlapping Interview Invites'
         },
         sendgridTemplateId: template.sendgridTemplateId,
         version: 'v3'
@@ -120,25 +128,19 @@ async function checkOverlapping (payload) {
           type: 'context',
           elements: [{
             type: 'mrkdwn',
-            text: `teamName: *${iv.teamName}*`
+            text: `teamName: <${iv.teamURL}|*${iv.teamName}*>`
           }, {
             type: 'mrkdwn',
-            text: `teamURL: ${iv.teamURL}`
-          }, {
-            type: 'mrkdwn',
-            text: `jobTitle: *${iv.jobTitle}*`
-          }, {
-            type: 'mrkdwn',
-            text: `jobURL: ${iv.jobURL}`
+            text: `jobTitle: <${iv.jobURL}|*${iv.jobTitle}*>`
           }, {
             type: 'mrkdwn',
             text: `candidateUserHandle: *${iv.candidateUserHandle}*`
           }, {
             type: 'mrkdwn',
-            text: `startTime: *${iv.startTime.toISOString()}*`
+            text: `startTime: *${helper.formatDate(iv.startTime)}*`
           }, {
             type: 'mrkdwn',
-            text: `endTime: *${iv.endTime.toISOString()}*`
+            text: `endTime: *${helper.formatDate(iv.endTime)}*`
           }]
         }, { type: 'divider' }])
       }

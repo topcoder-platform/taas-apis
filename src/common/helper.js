@@ -1914,13 +1914,7 @@ async function getTags (description) {
  * @returns {Object} the project created
  */
 async function createProject (currentUser, data) {
-  let token
-  if (currentUser.hasManagePermission || currentUser.isMachine) {
-    const m2mToken = await getM2MToken()
-    token = `Bearer ${m2mToken}`
-  } else {
-    token = currentUser.jwtToken
-  }
+  const token = currentUser.jwtToken
   const res = await request
     .post(`${config.TC_API}/projects/`)
     .set('Authorization', token)
@@ -2047,6 +2041,19 @@ function getEmailTemplatesForKey (key) {
   })
 }
 
+/**
+ * Format date to be used in email
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDate (date) {
+  if (date) {
+    const tzName = date.toLocaleString('en', { timeZoneName: 'short' }).split(' ').pop()
+    return `${moment(date).format('MMM D, YYYY, h:mm:ss a')} ${tzName}`
+  }
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2110,5 +2117,6 @@ module.exports = {
   getMemberGroups,
   removeTextFormatting,
   getMembersSuggest,
-  getEmailTemplatesForKey
+  getEmailTemplatesForKey,
+  formatDate
 }

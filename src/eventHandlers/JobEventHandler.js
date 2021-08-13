@@ -68,12 +68,12 @@ async function processUpdate (payload) {
 }
 
 /**
- * Process job create event.
+ * When Job is created, send notification to user.
  *
  * @param {Object} payload the event payload
  * @returns {undefined}
  */
-async function processCreate (payload) {
+async function sendNotifications (payload) {
   if (payload.options.onTeamCreating) {
     logger.debug({
       component: 'JobEventHandler',
@@ -93,13 +93,15 @@ async function processCreate (payload) {
       data: {
         subject: template.subject,
         teamName: project.name,
+        teamURL: `${config.TAAS_APP_URL}/${project.id}`,
         jobTitle: payload.value.title,
+        jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${payload.value.id}`,
         jobDuration: payload.value.duration,
-        jobStartDate: payload.value.startDate,
+        jobStartDate: helper.formatDate(payload.value.startDate),
         notificationType: {
           newJobCreated: true
         },
-        description: 'Send notification a new Job was created'
+        description: 'New Job created'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
@@ -113,6 +115,16 @@ async function processCreate (payload) {
     context: 'jobCreate',
     message: `teamName: ${project.name}, jobTitle: ${payload.value.title}, jobDuration: ${payload.value.duration}, jobStartDate: ${payload.value.startDate}`
   })
+}
+
+/**
+ * Process job create event.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function processCreate (payload) {
+  await sendNotifications(payload)
 }
 
 module.exports = {

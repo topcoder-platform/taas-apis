@@ -154,6 +154,7 @@ async function sendJobCandidateSelectedNotification (payload) {
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-candidate-selected']
   const project = await helper.getProjectById({ isMachine: true }, job.projectId)
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
+  const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-candidate-selected',
@@ -163,15 +164,16 @@ async function sendJobCandidateSelectedNotification (payload) {
       data: {
         subject: template.subject,
         teamName: project.name,
+        teamUrl,
         jobTitle: job.title,
         jobDuration: job.duration,
-        jobStartDate: job.startDate,
+        jobStartDate: helper.formatDate(job.startDate),
         userHandle: user.handle,
         jobUrl,
         notificationType: {
           candidateSelected: true
         },
-        description: 'Send notification if Job Candidate status has been change to "selected" or Job Candidate has been created with "selected" status'
+        description: 'Job Candidate is Selected'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
@@ -187,22 +189,19 @@ async function sendJobCandidateSelectedNotification (payload) {
         type: 'context',
         elements: [{
           type: 'mrkdwn',
-          text: `teamName: *${project.name}*`
+          text: `teamName: <${teamUrl}|*${project.name}*>`
         }, {
           type: 'mrkdwn',
-          text: `jobTitle: *${job.title}*`
+          text: `jobTitle: <${jobUrl}|*${job.title}*>`
         }, {
           type: 'mrkdwn',
           text: `jobDuration: *${job.duration}*`
         }, {
           type: 'mrkdwn',
-          text: `jobStartDate: *${job.startDate.toISOString()}*`
+          text: `jobStartDate: *${helper.formatDate(job.startDate)}*`
         }, {
           type: 'mrkdwn',
           text: `userHandle: *${user.handle}*`
-        }, {
-          type: 'mrkdwn',
-          text: `jobUrl: ${jobUrl}`
         }]
       }]
     }

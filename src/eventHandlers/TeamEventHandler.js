@@ -24,11 +24,17 @@ async function sendNotificationEmail (payload) {
       data: {
         subject: template.subject,
         teamName: payload.project.name,
-        jobList: _.map(payload.jobs, j => _.pick(j, 'title', 'duration', 'startDate')),
+        teamUrl: `${config.TAAS_APP_URL}/${payload.project.id}`,
+        jobList: _.map(payload.jobs, j => ({
+          title: j.title,
+          duration: j.duration,
+          startDate: helper.formatDate(j.startDate),
+          jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
+        })),
         notificationType: {
           newTeamCreated: true
         },
-        description: 'Send notification when a new Team was created using endpoint "POST /taas-teams/submitTeamRequest"'
+        description: 'New Team created'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
