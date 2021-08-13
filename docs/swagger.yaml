@@ -5842,6 +5842,9 @@ components:
         refCode:
           type: string
           description: "Optional referral code"
+        intakeSource:
+          type: string
+          description: "The source of the intake."
         positions:
           type: array
           description: "The array of positions"

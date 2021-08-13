@@ -1038,7 +1038,8 @@ async function createTeam (currentUser, data) {
     details: {
       positions: data.positions,
       utm: {
-        code: data.refCode
+        code: data.refCode,
+        intakeSource: data.intakeSource
       }
     }
   }
@@ -1077,6 +1078,7 @@ createTeam.schema = Joi.object()
       teamName: Joi.string().required(),
       teamDescription: Joi.string(),
       refCode: Joi.string(),
+      intakeSource: Joi.string(),
       positions: Joi.array().items(
         Joi.object().keys({
           roleName: Joi.string().required(),
