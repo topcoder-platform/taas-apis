@@ -173,6 +173,15 @@ async function createPayment (req, res) {
   res.send(await service.createPayment(req.body.totalAmount))
 }
 
+/**
+ *
+ * @param req the request
+ * @param res the response
+ */
+async function isExternalMember (req, res) {
+  res.send(await service.isExternalMember(req.body.memberId))
+}
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -189,5 +198,6 @@ module.exports = {
   searchSkills,
   suggestMembers,
   createPayment,
-  calculateAmount
+  calculateAmount,
+  isExternalMember
 }

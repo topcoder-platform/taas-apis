@@ -410,5 +410,5 @@ module.exports = {
   fullyUpdateJobCandidate,
   deleteJobCandidate,
   searchJobCandidates,
-  downloadJobCandidateResume 
+  downloadJobCandidateResume
 }

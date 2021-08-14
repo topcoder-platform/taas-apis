@@ -794,7 +794,8 @@ async function getRoleBySkills (skills) {
     where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
-  const roles = await Role.findAll(queryCriteria)
+  let roles = await Role.findAll(queryCriteria)
+  roles = _.filter(roles, role => _.find(role.rates, r => r.global && r.rate20Global && r.rate30Global))
   if (roles.length > 0) {
     let result = _.each(roles, role => {
       // role matched skills list
@@ -813,7 +814,10 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  const customRole = await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  customRole.rates[0].rate30Global = customRole.rates[0].global * 0.75
+  customRole.rates[0].rate20Global = customRole.rates[0].global * 0.5
+  return customRole
 }
 
 getRoleBySkills.schema = Joi.object()
@@ -1035,7 +1039,8 @@ async function createTeam (currentUser, data) {
     details: {
       positions: data.positions,
       utm: {
-        code: data.refCode
+        code: data.refCode,
+        intakeSource: data.intakeSource
       }
     }
   }
@@ -1075,6 +1080,7 @@ createTeam.schema = Joi.object()
       teamName: Joi.string().required(),
       teamDescription: Joi.string(),
       refCode: Joi.string(),
+      intakeSource: Joi.string(),
       positions: Joi.array().items(
         Joi.object().keys({
           roleName: Joi.string().required(),

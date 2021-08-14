@@ -123,5 +123,13 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.CREATE_TAAS_TEAM]
     }
+  },
+  '/taas-teams/isExternalMember': {
+    post: {
+      controller: 'TeamController',
+      method: 'isExternalMember',
+      auth: 'jwt',
+      scopes: []
+    }
   }
 }
