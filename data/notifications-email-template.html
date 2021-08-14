@@ -240,10 +240,102 @@
                             {{/each}}
                           </table>
                           {{/if}}
+
                           {{#if notificationType.jobCandidateResumeViewed}}
                             Hi {{jobCandidateUserHandle}}.  <br/> </br>
 
                             Your resume for the job "{{jobName}}" has been viewed by the client. <br/>
+                          {{/if}}
+                        
+                          {{#if notificationType.newTeamCreated}}
+                          <span style="font-weight:bold;">Team:</span>
+                          <a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a>
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
+                            </tr>
+                            {{#each jobList}}
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.title}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.duration}}</td>
+                            </tr>
+                            {{/each}}
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.newJobCreated}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{teamURL}} target="_blank" rel="noopener noreferrer">{{teamName}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{jobURL}} target="_blank" rel="noopener noreferrer">{{jobTitle}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
+                            </tr>
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.overlappingInterview}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview End Date</td>
+                            </tr>
+                            {{#each interviews}}
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{this.teamURL}} target="_blank" rel="noopener noreferrer">{{this.teamName}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{this.jobURL}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.candidateUserHandle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.endTime}}</td>
+                            </tr>
+                            {{/each}}
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.candidateSelected}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{jobUrl}} target="_blank" rel="noopener noreferrer">{{jobTitle}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
+                            </tr>
+                          </table>
+                          {{/if}}
+                          {{#if notificationType.resourceBookingPlaced}}
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Booking Handle</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Booking Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Resource Booking End Date</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{jobUrl}} target="_blank" rel="noopener noreferrer">{{jobTitle}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{startDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{endDate}}</td>
+                            </tr>
+                          </table>
                           {{/if}}
 
                           <br/>

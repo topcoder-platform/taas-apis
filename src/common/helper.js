@@ -20,7 +20,7 @@ const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const { PaymentStatusRules } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 
@@ -2042,6 +2042,30 @@ function getEmailTemplatesForKey (key) {
   })
 }
 
+/**
+ * Format date and time in EDT timezone
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDateTimeEDT (date) {
+  if (date) {
+    return moment(date).tz('America/New_York').format('MMM D, YYYY, HH:mm z')
+  }
+}
+
+/**
+ * Format date in EDT timezone
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDateEDT (date) {
+  if (date) {
+    return moment(date).tz('America/New_York').format('MMM D, YYYY')
+  }
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2105,5 +2129,7 @@ module.exports = {
   getMemberGroups,
   removeTextFormatting,
   getMembersSuggest,
-  getEmailTemplatesForKey
+  getEmailTemplatesForKey,
+  formatDateTimeEDT,
+  formatDateEDT
 }
