@@ -5,7 +5,8 @@
 const UserRoles = {
   BookingManager: 'bookingmanager',
   Administrator: 'administrator',
-  ConnectManager: 'Connect Manager'
+  ConnectManager: 'Connect Manager',
+  TopcoderUser: 'Topcoder User'
 }
 
 const FullManagePermissionRoles = [

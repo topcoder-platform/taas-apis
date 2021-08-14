@@ -43,5 +43,13 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.DELETE_JOB_CANDIDATE, constants.Scopes.ALL_JOB_CANDIDATE]
     }
+  },
+  '/jobCandidates/:id/resume': {
+    get: {
+      controller: 'JobCandidateController',
+      method: 'downloadJobCandidateResume',
+      auth: 'jwt',
+      scopes: [constants.Scopes.READ_JOB_CANDIDATE, constants.Scopes.ALL_JOB_CANDIDATE]
+    }
   }
 }

@@ -240,6 +240,13 @@
                             {{/each}}
                           </table>
                           {{/if}}
+
+                          {{#if notificationType.jobCandidateResumeViewed}}
+                            Hi {{jobCandidateUserHandle}}.  <br/> </br>
+
+                            Your resume for the job "{{jobName}}" has been viewed by the client. <br/>
+                          {{/if}}
+                        
                           {{#if notificationType.newTeamCreated}}
                           <span style="font-weight:bold;">Team:</span>
                           <a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a>

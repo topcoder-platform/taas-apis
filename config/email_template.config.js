@@ -111,6 +111,13 @@ module.exports = {
    * List all kind of emails which could be send as Email Notifications by scheduler, API endpoints or anything else.
    */
   notificationEmailTemplates: {
+    'taas.notification.job-candidate-resume-viewed': {
+      subject: 'Topcoder -  job candidate resume viewed',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
     'taas.notification.candidates-available-for-review': {
       subject: 'Topcoder - {{teamName}} has job candidates available for review',
       body: '',

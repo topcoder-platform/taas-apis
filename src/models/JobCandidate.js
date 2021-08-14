@@ -51,6 +51,12 @@ module.exports = (sequelize) => {
         type: Sequelize.UUID,
         allowNull: false
       },
+      viewedByCustomer: {
+        field: 'viewed_by_customer',
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      },
       status: {
         type: Sequelize.STRING(255),
         allowNull: false
