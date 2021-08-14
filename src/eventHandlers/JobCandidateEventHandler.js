@@ -136,6 +136,84 @@ async function processCreate (payload) {
   if (payload.value.status === 'placed') {
     await withDrawnJobCandidates(payload)
   }
+  if (payload.value.status === 'selected') {
+    await sendJobCandidateSelectedNotification(payload)
+  }
+}
+
+/**
+ * Send job candidate selected notification.
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function sendJobCandidateSelectedNotification (payload) {
+  const jobCandidate = payload.value
+  const job = await models.Job.findById(jobCandidate.jobId)
+  const user = await helper.getUserById(jobCandidate.userId)
+  const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-candidate-selected']
+  const project = await helper.getProjectById({ isMachine: true }, job.projectId)
+  const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
+  const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
+  const emailData = {
+    serviceId: 'email',
+    type: 'taas.notification.job-candidate-selected',
+    details: {
+      from: template.from,
+      recipients: template.recipients,
+      data: {
+        subject: template.subject,
+        teamName: project.name,
+        teamUrl,
+        jobTitle: job.title,
+        jobDuration: job.duration,
+        jobStartDate: helper.formatDate(job.startDate),
+        userHandle: user.handle,
+        jobUrl,
+        notificationType: {
+          candidateSelected: true
+        },
+        description: 'Job Candidate is Selected'
+      },
+      sendgridTemplateId: template.sendgridTemplateId,
+      version: 'v3'
+    }
+  }
+  const slackData = {
+    serviceId: 'slack',
+    type: 'taas.notification.job-candidate-selected',
+    details: {
+      channel: config.NOTIFICATION_SLACK_CHANNEL,
+      text: template.subject,
+      blocks: [{
+        type: 'context',
+        elements: [{
+          type: 'mrkdwn',
+          text: `teamName: <${teamUrl}|*${project.name}*>`
+        }, {
+          type: 'mrkdwn',
+          text: `jobTitle: <${jobUrl}|*${job.title}*>`
+        }, {
+          type: 'mrkdwn',
+          text: `jobDuration: *${job.duration}*`
+        }, {
+          type: 'mrkdwn',
+          text: `jobStartDate: *${helper.formatDate(job.startDate)}*`
+        }, {
+          type: 'mrkdwn',
+          text: `userHandle: *${user.handle}*`
+        }]
+      }]
+    }
+  }
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
+    notifications: [emailData, slackData]
+  })
+  logger.debug({
+    component: 'JobCandidateEventHandler',
+    context: 'sendJobCandidateSelectedNotification',
+    message: `teamName: ${project.name}, jobTitle: ${payload.value.title}, jobDuration: ${payload.value.duration}, jobStartDate: ${payload.value.startDate}`
+  })
 }
 
 /**
@@ -148,6 +226,9 @@ async function processUpdate (payload) {
   await inReviewJob(payload)
   if (payload.value.status === 'placed' && payload.options.oldValue.status !== 'placed') {
     await withDrawnJobCandidates(payload)
+  }
+  if (payload.value.status === 'selected' && payload.options.oldValue.status !== 'selected') {
+    await sendJobCandidateSelectedNotification(payload)
   }
 }
 

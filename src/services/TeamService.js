@@ -9,6 +9,7 @@ const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const eventDispatcher = require('../common/eventDispatcher')
 const JobService = require('./JobService')
 const ResourceBookingService = require('./ResourceBookingService')
 const HttpStatus = require('http-status-codes')
@@ -19,7 +20,7 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
-const stripe = require("stripe")(config.STRIPE_SECRET_KEY,{maxNetworkRetries: 5});
+const stripe = require('stripe')(config.STRIPE_SECRET_KEY, { maxNetworkRetries: 5 })
 
 const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
@@ -1041,7 +1042,7 @@ async function createTeam (currentUser, data) {
   // create project with given data
   const project = await helper.createProject(currentUser, projectRequestBody)
   // create jobs for the given positions.
-  await Promise.all(_.map(data.positions, async position => {
+  const jobs = await Promise.all(_.map(data.positions, async position => {
     const roleSearchRequest = roleSearchRequests[position.roleSearchRequestId]
     const job = {
       projectId: project.id,
@@ -1061,8 +1062,9 @@ async function createTeam (currentUser, data) {
     if (position.durationWeeks) {
       job.duration = position.durationWeeks
     }
-    await JobService.createJob(currentUser, job)
+    return await JobService.createJob(currentUser, job, true)
   }))
+  await eventDispatcher.handleEvent(config.TAAS_TEAM_CREATE_TOPIC, { project, jobs })
   return { projectId: project.id }
 }
 
@@ -1163,10 +1165,9 @@ suggestMembers.schema = Joi.object().keys({
  * @param {Object} amount
  * @returns {int} totalAmount
  */
- async function calculateAmount(amount) {
-  let totalAmount = 0;
-  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate)
-  return { totalAmount };
+async function calculateAmount (amount) {
+  const totalAmount = _.sum(_.map(amount, amt => amt.numberOfResources * amt.rate))
+  return { totalAmount }
 }
 
 /**
@@ -1174,15 +1175,14 @@ suggestMembers.schema = Joi.object().keys({
  * @param {int} totalAmount
  * @returns {string} paymentIntentToken
  */
-async function createPayment(totalAmount) {
-  const dollarToCents = (totalAmount*100);
+async function createPayment (totalAmount) {
+  const dollarToCents = (totalAmount * 100)
   const paymentIntent = await stripe.paymentIntents.create({
     amount: dollarToCents,
-    currency: config.CURRENCY,
-  });
-  return { paymentIntentToken: paymentIntent.client_secret };
+    currency: config.CURRENCY
+  })
+  return { paymentIntentToken: paymentIntent.client_secret }
 }
-
 
 module.exports = {
   searchTeams,

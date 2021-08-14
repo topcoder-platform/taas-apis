@@ -142,6 +142,8 @@ module.exports = {
   TAAS_ROLE_UPDATE_TOPIC: process.env.TAAS_ROLE_UPDATE_TOPIC || 'taas.role.update',
   // the delete role entity Kafka message topic
   TAAS_ROLE_DELETE_TOPIC: process.env.TAAS_ROLE_DELETE_TOPIC || 'taas.role.delete',
+  // the create team entity message topic, only used for eventHandler
+  TAAS_TEAM_CREATE_TOPIC: process.env.TAAS_TEAM_CREATE_TOPIC || 'taas.team.create',
   // special kafka topics
   TAAS_ACTION_RETRY_TOPIC: process.env.TAAS_ACTION_RETRY_TOPIC || 'taas.action.retry',
 
@@ -161,6 +163,10 @@ module.exports = {
   // INTERVIEW_INVITATION_RECIPIENTS_LIST may contain comma-separated list of email which is converted to array
   // scheduler@x.ai should be in the RECIPIENTS list
   INTERVIEW_INVITATION_RECIPIENTS_LIST: (process.env.INTERVIEW_INVITATION_RECIPIENTS_LIST || 'scheduler@topcoder.com').split(','),
+  // the emails address for overlapping interview
+  NOTIFICATION_OPS_EMAILS: (process.env.NOTIFICATION_OPS_EMAILS || 'overlapping@topcoder.com').split(','),
+  // the slack channel for sending notifications
+  NOTIFICATION_SLACK_CHANNEL: process.env.NOTIFICATION_SLACK_CHANNEL || '#dev-general',
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
@@ -268,5 +274,7 @@ module.exports = {
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-  CURRENCY: process.env.CURRENCY || 'usd'
+  CURRENCY: process.env.CURRENCY || 'usd',
+  // The slack webhook url to send slack notifications
+  SLACK_WEBHOOK_URL: process.env.SLACK_WEBHOOK_URL
 }

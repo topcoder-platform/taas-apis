@@ -108,20 +108,20 @@ module.exports = {
       scopes: []
     }
   },
-  "/taas-teams/calculateAmount": {
+  '/taas-teams/calculateAmount': {
     post: {
-      controller: "TeamController",
-      method: "calculateAmount",
+      controller: 'TeamController',
+      method: 'calculateAmount',
       auth: 'jwt',
       scopes: [constants.Scopes.CREATE_TAAS_TEAM]
-    },
+    }
   },
-  "/taas-teams/createPayment": {
+  '/taas-teams/createPayment': {
     post: {
-      controller: "TeamController",
-      method: "createPayment",
+      controller: 'TeamController',
+      method: 'createPayment',
       auth: 'jwt',
       scopes: [constants.Scopes.CREATE_TAAS_TEAM]
-    },
-}
+    }
+  }
 }

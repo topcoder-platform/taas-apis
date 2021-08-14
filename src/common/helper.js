@@ -2041,6 +2041,19 @@ function getEmailTemplatesForKey (key) {
   })
 }
 
+/**
+ * Format date to be used in email
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDate (date) {
+  if (date) {
+    const tzName = date.toLocaleString('en', { timeZoneName: 'short' }).split(' ').pop()
+    return `${moment(date).format('MMM D, YYYY, h:mm:ss a')} ${tzName}`
+  }
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2104,5 +2117,6 @@ module.exports = {
   getMemberGroups,
   removeTextFormatting,
   getMembersSuggest,
-  getEmailTemplatesForKey
+  getEmailTemplatesForKey,
+  formatDate
 }

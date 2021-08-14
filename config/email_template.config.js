@@ -152,6 +152,41 @@ module.exports = {
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.team-created': {
+      subject: 'Topcoder - Team Created',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.job-created': {
+      subject: 'Topcoder - Job Created',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interviews-overlapping': {
+      subject: 'Topcoder - Interviews overlapping',
+      body: '',
+      recipients: config.NOTIFICATION_OPS_EMAILS,
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.job-candidate-selected': {
+      subject: 'Topcoder - Job Candidate Selected',
+      body: '',
+      recipients: config.NOTIFICATION_OPS_EMAILS,
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.resource-booking-placed': {
+      subject: 'Topcoder - Resource Booking Placed',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
     }
   }
 }

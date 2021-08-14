@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "709e8fdf-f5f4-4053-a679-b89504637cc8",
+		"_postman_id": "99905d78-e7c8-42ee-8aca-2c7fe3f8df4a",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -33806,6 +33806,9 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -34280,6 +34283,326 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n  \"projectId\": {{createTeamProjectId-1}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2021-06-27\",\r\n  \"endDate\": \"{{resourceBookingExpiringEndDate}}\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071,\r\n  \"status\": \"placed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/resourceBookings",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"resourceBookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[New Team created]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"teamName\": \"New Team created notification\",\r\n    \"teamDescription\":\"New Team created notification description\",\r\n    \"positions\": [\r\n        {\r\n            \"roleName\": \"Dev Ops Engineer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-1}}\",\r\n            \"numberOfResources\": 10,\r\n            \"durationWeeks\": 7,\r\n            \"startMonth\": \"2021-08-15\"\r\n        },\r\n        {\r\n            \"roleName\": \"Salesforce Developer\",\r\n            \"roleSearchRequestId\": \"{{roleSearchRequestId1-2}}\",\r\n            \"numberOfResources\": 5,\r\n            \"durationWeeks\": 5,\r\n            \"startMonth\": \"2021-08-15\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/taas-teams/submitTeamRequest",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"taas-teams",
+								"submitTeamRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[New Job created]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"jobId\",data.id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"externalId\": \"1212\",\r\n  \"description\": \"Dummy Description\",\r\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\r\n  \"duration\": 1,\r\n  \"numPositions\": 13,\r\n  \"resourceType\": \"Dummy Resource Type\",\r\n  \"rateType\": \"hourly\",\r\n  \"workload\": \"full-time\",\r\n  \"skills\": [\r\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\r\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\r\n    \"cbac57a3-7180-4316-8769-73af64893158\",\r\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\r\n  ],\r\n  \"title\": \"Dummy title - at most 64 characters\",\r\n  \"minSalary\": 100,\r\n  \"maxSalary\": 200,\r\n  \"hoursPerWeek\": 20,\r\n  \"jobLocation\": \"Any location\",\r\n  \"jobTimezone\": \"GMT\",\r\n  \"currency\": \"USD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Overlapping Interview Invites prepare]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startTimestamp\": \"2022-08-12T12:54:54.948Z\",\r\n    \"endTimestamp\": \"2022-08-12T13:24:54.948Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/827ee401-df04-42e1-abbe-7b97ce7937ff/updateInterview/2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"827ee401-df04-42e1-abbe-7b97ce7937ff",
+								"updateInterview",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Overlapping Interview Invites]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startTimestamp\": \"2022-08-12T13:00:54.948Z\",\r\n    \"endTimestamp\": \"2022-08-12T13:30:54.948Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/a4ea7bcf-5b99-4381-b99c-a9bd05d83a36/updateInterview/3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
+								"updateInterview",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Job Candidate is Selected]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"userId\": \"b15feb1a-5a9d-456a-86d9-5fd8fad3ac04\",\r\n  \"externalId\": \"300234321\",\r\n  \"resume\": \"http://example.com\",\r\n  \"remark\": \"Job Candidate Notifications Test remark {{testCaseNumber}}\",\r\n  \"status\": \"selected\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Resource Booking is Placed]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_administrator}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"projectId\": {{projectId}},\r\n  \"userId\": \"a55fe1bc-1754-45fa-9adc-cf3d6d7c377a\",\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"startDate\": \"2020-09-27\",\r\n  \"endDate\": \"2020-10-27\",\r\n  \"memberRate\": 13.23,\r\n  \"customerRate\": 13,\r\n  \"rateType\": \"hourly\",\r\n  \"billingAccountId\": 80000071\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
