@@ -95,8 +95,8 @@ async function checkOverlapping (payload) {
         jobTitle: job.title,
         jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`,
         candidateUserHandle: user.handle,
-        startTime: helper.formatDate(oli.startTimestamp),
-        endTime: helper.formatDate(oli.endTimestamp)
+        startTime: helper.formatDateTimeEDT(oli.startTimestamp),
+        endTime: helper.formatDateTimeEDT(oli.endTimestamp)
       })
     }
 
@@ -112,37 +112,43 @@ async function checkOverlapping (payload) {
           notificationType: {
             overlappingInterview: true
           },
-          description: 'Overlapping Interview Invites'
+          description: 'Overlapping Job Candidate Interviews'
         },
         sendgridTemplateId: template.sendgridTemplateId,
         version: 'v3'
       }
     }
+    const renderInterview = (iv) => (
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: [
+            `*Team Name*: <${iv.teamURL}|${iv.teamName}>`,
+            `*Job Title*: <${iv.jobURL}|${iv.jobTitle}>`,
+            `*Job Candidate*: ${iv.candidateUserHandle}`,
+            `*Start Time*: ${helper.formatDateTimeEDT(iv.startTime)}`,
+            `*End Time*: ${helper.formatDateTimeEDT(iv.endTime)}`
+          ].join('\n')
+        }
+      }
+    )
     const slackData = {
       serviceId: 'slack',
       type: 'taas.notification.interviews-overlapping',
       details: {
         channel: config.NOTIFICATION_SLACK_CHANNEL,
         text: template.subject,
-        blocks: _.flatMap(interviews, iv => [{
-          type: 'context',
-          elements: [{
-            type: 'mrkdwn',
-            text: `teamName: <${iv.teamURL}|*${iv.teamName}*>`
-          }, {
-            type: 'mrkdwn',
-            text: `jobTitle: <${iv.jobURL}|*${iv.jobTitle}*>`
-          }, {
-            type: 'mrkdwn',
-            text: `candidateUserHandle: *${iv.candidateUserHandle}*`
-          }, {
-            type: 'mrkdwn',
-            text: `startTime: *${helper.formatDate(iv.startTime)}*`
-          }, {
-            type: 'mrkdwn',
-            text: `endTime: *${helper.formatDate(iv.endTime)}*`
-          }]
-        }, { type: 'divider' }])
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: '*:last_quarter_moon: Overlapping Job Candidate Interviews*'
+            }
+          },
+          ..._.map(interviews, renderInterview)
+        ]
       }
     }
     await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {

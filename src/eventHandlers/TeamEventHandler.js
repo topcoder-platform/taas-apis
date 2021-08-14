@@ -28,13 +28,13 @@ async function sendNotificationEmail (payload) {
         jobList: _.map(payload.jobs, j => ({
           title: j.title,
           duration: j.duration,
-          startDate: helper.formatDate(j.startDate),
+          startDate: helper.formatDateEDT(j.startDate),
           jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
         })),
         notificationType: {
           newTeamCreated: true
         },
-        description: 'New Team created'
+        description: 'New Team Created'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'

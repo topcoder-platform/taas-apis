@@ -167,13 +167,13 @@ async function sendJobCandidateSelectedNotification (payload) {
         teamUrl,
         jobTitle: job.title,
         jobDuration: job.duration,
-        jobStartDate: helper.formatDate(job.startDate),
+        jobStartDate: helper.formatDateEDT(job.startDate),
         userHandle: user.handle,
         jobUrl,
         notificationType: {
           candidateSelected: true
         },
-        description: 'Job Candidate is Selected'
+        description: 'Job Candidate Selected'
       },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
@@ -185,25 +185,28 @@ async function sendJobCandidateSelectedNotification (payload) {
     details: {
       channel: config.NOTIFICATION_SLACK_CHANNEL,
       text: template.subject,
-      blocks: [{
-        type: 'context',
-        elements: [{
-          type: 'mrkdwn',
-          text: `teamName: <${teamUrl}|*${project.name}*>`
-        }, {
-          type: 'mrkdwn',
-          text: `jobTitle: <${jobUrl}|*${job.title}*>`
-        }, {
-          type: 'mrkdwn',
-          text: `jobDuration: *${job.duration}*`
-        }, {
-          type: 'mrkdwn',
-          text: `jobStartDate: *${helper.formatDate(job.startDate)}*`
-        }, {
-          type: 'mrkdwn',
-          text: `userHandle: *${user.handle}*`
-        }]
-      }]
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*:ballot_box_with_check: Job Candidate is Selected*'
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: [
+              `*Team Name*: <${teamUrl}|${project.name}>`,
+              `*Job Title*: <${jobUrl}|${job.title}>`,
+              `*Job Start Date*: ${helper.formatDateEDT(job.startDate)}`,
+              `*Job Duration*: ${job.duration}`,
+              `*Job Candidate*: ${user.handle}`
+            ].join('\n')
+          }
+        }
+      ]
     }
   }
   await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
