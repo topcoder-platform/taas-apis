@@ -274,7 +274,5 @@ module.exports = {
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-  CURRENCY: process.env.CURRENCY || 'usd',
-  // The slack webhook url to send slack notifications
-  SLACK_WEBHOOK_URL: process.env.SLACK_WEBHOOK_URL
+  CURRENCY: process.env.CURRENCY || 'usd'
 }

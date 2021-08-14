@@ -71,8 +71,8 @@ async function initConsumer () {
               fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
             })
             for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {
-              if (config.SLACK_WEBHOOK_URL) {
-                await axios.post(config.SLACK_WEBHOOK_URL, { text: notification.details.text, blocks: notification.details.blocks })
+              if (process.env.SLACK_WEBHOOK_URL) {
+                await axios.post(process.env.SLACK_WEBHOOK_URL, { text: notification.details.text, blocks: notification.details.blocks })
               }
             }
           }
