@@ -166,7 +166,7 @@ module.exports = {
   // the emails address for overlapping interview
   NOTIFICATION_OPS_EMAILS: (process.env.NOTIFICATION_OPS_EMAILS || 'overlapping@topcoder.com').split(','),
   // the slack channel for sending notifications
-  NOTIFICATION_SLACK_CHANNEL: process.env.NOTIFICATION_SLACK_CHANNEL || '#dev-general',
+  NOTIFICATION_SLACK_CHANNEL: process.env.NOTIFICATION_SLACK_CHANNEL || '#tass-notification',
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
