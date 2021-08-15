@@ -101,25 +101,23 @@
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">No of resource bookings</td>
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Candidates</td>
-                                <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Status</td>
+                                <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Review</td>
                               </tr>
                               {{#each teamJobs}}
                               <tr style="border:1px solid black;border-collapse:collapse">
-                                <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.title}}</td>
+                                <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                  <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.title}}</a>
+                                </td>
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.nResourceBookings}}</td>
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
                                   <ul style="list-style-type:none;margin:0;padding:0;">
                                     {{#each this.jobCandidates}}
-                                    <li><a href={{../reviewLink}} target="_blank" rel="noopener noreferrer">{{this.handle}}</a></li>
+                                    <li>{{this.handle}}</li>
                                     {{/each}}
                                   </ul>
                                 </td>
                                 <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                  <ul style="list-style-type:none;margin:0;padding:0;">
-                                    {{#each this.jobCandidates}}
-                                    <li>{{this.status}}</li>
-                                    {{/each}}
-                                  </ul>
+                                  <a href={{this.reviewLink}} target="_blank" rel="noopener noreferrer">Link</a>
                                 </td>
                               </tr>
                               {{/each}}
@@ -136,7 +134,9 @@
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Date and Time</td>
                             </tr>
                             <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                              </td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
                                 <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Link</a></td>
@@ -160,7 +160,9 @@
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviews</td>
                             </tr>
                             <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                              </td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
                                 <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Link</a></td>
@@ -178,7 +180,9 @@
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviews</td>
                             </tr>
                             <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                              </td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
@@ -205,7 +209,9 @@
                             </tr>
                             {{#each teamInterviews}}
                             <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                              </td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
@@ -224,7 +230,7 @@
 
                           {{#if notificationType.upcomingResourceBookingExpiration}}
                           <span style="font-weight:bold;">Team Name:</span>
-                          {{teamName}}
+                          <a href={{this.teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a>
                           <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
                             <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
@@ -233,8 +239,12 @@
                             </tr>
                             {{#each teamResourceBookings}}
                             <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.jobTitle}}</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                              </td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                <a href={{this.resourceBookingUrl}} target="_blank" rel="noopener noreferrer">{{this.handle}}</a>
+                              </td>
                               <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.endDate}}</td>
                             </tr>
                             {{/each}}
@@ -246,7 +256,7 @@
 
                             Your resume for the job "{{jobName}}" has been viewed by the client. <br/>
                           {{/if}}
-                        
+
                           {{#if notificationType.newTeamCreated}}
                           <span style="font-weight:bold;">Team:</span>
                           <a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a>

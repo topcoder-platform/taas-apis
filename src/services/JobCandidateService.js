@@ -14,7 +14,7 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const JobService = require('./JobService')
-const EmailNotificationService = require('./EmailNotificationService')
+const NotificationSchedulerService = require('./NotificationsSchedulerService')
 const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
 
@@ -376,7 +376,7 @@ async function downloadJobCandidateResume (currentUser, id) {
       const { handle } = await helper.getUserById(jobCandidate.userId, true)
       const { email } = await helper.getMemberDetailsByHandle(handle)
 
-      await EmailNotificationService.sendEmail(currentUser, {
+      await NotificationSchedulerService.sendNotification(currentUser, {
         template: 'taas.notification.job-candidate-resume-viewed',
         recipients: [email],
         data: {
