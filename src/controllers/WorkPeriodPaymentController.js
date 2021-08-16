@@ -23,6 +23,24 @@ async function createWorkPeriodPayment (req, res) {
 }
 
 /**
+ * Create workPeriodPayments in bulk
+ * @param req the request
+ * @param res the response
+ */
+async function createBulkOfWorkPeriodPayments (req, res) {
+  res.send(await service.createBulkOfWorkPeriodPayments(req.authUser, req.body))
+}
+
+/**
+ * Update workPeriodPayments in bulk
+ * @param req the request
+ * @param res the response
+ */
+async function updateBulkOfWorkPeriodPayments (req, res) {
+  res.send(await service.updateBulkOfWorkPeriodPayments(req.authUser, req.body))
+}
+
+/**
  * Partially update workPeriodPayment by id
  * @param req the request
  * @param res the response
@@ -54,6 +72,8 @@ async function createQueryWorkPeriodPayments (req, res) {
 module.exports = {
   getWorkPeriodPayment,
   createWorkPeriodPayment,
+  createBulkOfWorkPeriodPayments,
+  updateBulkOfWorkPeriodPayments,
   createQueryWorkPeriodPayments,
   partiallyUpdateWorkPeriodPayment,
   searchWorkPeriodPayments

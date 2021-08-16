@@ -13,7 +13,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const { WorkPeriodPaymentStatus } = require('../../app-constants')
+const { WorkPeriodPaymentStatus, ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const { searchResourceBookings } = require('./ResourceBookingService')
 const {
   processCreate,
@@ -55,6 +55,33 @@ async function _createSingleWorkPeriodPayment (workPeriodPayment, createdBy) {
 }
 
 /**
+ * update challenge
+ * @param {String} challengeId the challenge id
+ * @param {Object} data        the challenge update data
+ * @returns {undefined}
+ */
+async function _updateChallenge (challengeId, data) {
+  const body = {}
+
+  if (data.billingAccountId) {
+    body.billing = {
+      billingAccountId: _.toString(data.billingAccountId),
+      markup: 0 //  for TaaS payments we always use 0 markup
+    }
+  }
+
+  if (data.billingAccountId) {
+    try {
+      await helper.updateChallenge(challengeId, body)
+      logger.debug({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: `Challenge with id ${challengeId} is updated` })
+    } catch (err) {
+      logger.error({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: _.get(err, 'response.text', err.toString()) })
+      throw new errors.BadRequestError(`Cannot update the the challenge: ${_.get(err, 'response.text', err.toString())}`)
+    }
+  }
+}
+
+/**
  * Create single workPeriodPayment
  * @param {Object} workPeriodPayment the workPeriodPayment to be created
  * @param {String} createdBy the authUser id
@@ -67,6 +94,10 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     throw new errors.ConflictError(`id: ${correspondingResourceBooking.id} "ResourceBooking" Billing account is not assigned to the resource booking`)
   }
   workPeriodPayment.billingAccountId = correspondingResourceBooking.billingAccountId
+  // TODO: we should allow `memberRate` to be `null` as it's not required for additional payments
+  workPeriodPayment.memberRate = _.defaultTo(correspondingResourceBooking.memberRate, 0)
+  workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
+
   if (!_.has(workPeriodPayment, 'days') || workPeriodPayment.days > 0) {
     if (_.isNil(correspondingResourceBooking.memberRate)) {
       throw new errors.ConflictError(`Can't find a member rate in ResourceBooking: ${correspondingResourceBooking.id} to calculate the amount`)
@@ -74,7 +105,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     if (correspondingResourceBooking.memberRate <= 0) {
       throw new errors.ConflictError(`Can't process payment with member rate: ${correspondingResourceBooking.memberRate}. It must be higher than 0`)
     }
-    workPeriodPayment.memberRate = correspondingResourceBooking.memberRate
+
     const maxPossibleDays = correspondingWorkPeriod.daysWorked - correspondingWorkPeriod.daysPaid
     if (workPeriodPayment.days > maxPossibleDays) {
       throw new errors.BadRequestError(`Days cannot be more than not paid days which is ${maxPossibleDays}`)
@@ -89,8 +120,7 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     workPeriodPayment.days = _.defaultTo(workPeriodPayment.days, maxPossibleDays)
     workPeriodPayment.amount = _.round(workPeriodPayment.memberRate * workPeriodPayment.days / 5, 2)
   }
-  workPeriodPayment.memberRate = _.defaultTo(workPeriodPayment.memberRate, 0)
-  workPeriodPayment.customerRate = _.defaultTo(correspondingResourceBooking.customerRate, null)
+
   workPeriodPayment.id = uuid.v4()
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
   workPeriodPayment.createdBy = createdBy
@@ -190,25 +220,12 @@ async function createWorkPeriodPayment (currentUser, workPeriodPayment) {
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
   const createdBy = await helper.getUserId(currentUser.userId)
 
-  if (_.isArray(workPeriodPayment)) {
-    const result = []
-    for (const wp of workPeriodPayment) {
-      try {
-        const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
-        result.push(successResult)
-      } catch (e) {
-        result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
-      }
-    }
-    return result
-  } else {
-    return await _createSingleWorkPeriodPayment(workPeriodPayment, createdBy)
-  }
+  return await _createSingleWorkPeriodPayment(workPeriodPayment, createdBy)
 }
 
 const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
   workPeriodId: Joi.string().uuid().required(),
-  days: Joi.number().integer().min(0).max(5),
+  days: Joi.number().integer().min(0).max(10),
   amount: Joi.when('days', {
     is: Joi.number().integer().valid(0).exist(),
     then: Joi.number().greater(0).required().messages({
@@ -216,28 +233,59 @@ const singleCreateWorkPeriodPaymentSchema = Joi.object().keys({
     }),
     otherwise: Joi.forbidden()
   })
-})
+}).required()
+
 createWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  workPeriodPayment: Joi.alternatives().try(
-    singleCreateWorkPeriodPaymentSchema.required(),
-    Joi.array().min(1).items(singleCreateWorkPeriodPaymentSchema).required()
-  ).required()
+  workPeriodPayment: singleCreateWorkPeriodPaymentSchema
+})
+
+/**
+ * Create workPeriodPayments in bulk
+ * @param {Object} currentUser the user who perform this operation
+ * @param {Array<Object>} workPeriodPayments the workPeriodPayment to be created
+ * @returns {Array<Object>} the created workPeriodPayments
+ */
+async function createBulkOfWorkPeriodPayments (currentUser, workPeriodPayments) {
+  // check permission
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  const createdBy = await helper.getUserId(currentUser.userId)
+
+  const result = []
+  for (const wp of workPeriodPayments) {
+    try {
+      const successResult = await _createSingleWorkPeriodPayment(wp, createdBy)
+      result.push(successResult)
+    } catch (e) {
+      result.push(_.extend(_.pick(wp, 'workPeriodId'), { error: { message: e.message, code: e.httpStatus } }))
+    }
+  }
+  return result
+}
+
+createBulkOfWorkPeriodPayments.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  workPeriodPayments: Joi.array().min(1).items(singleCreateWorkPeriodPaymentSchema).required()
 }).required()
 
 /**
  * Update workPeriodPayment
- * @param {Object} currentUser the user who perform this operation
  * @param {String} id the workPeriod id
  * @param {Object} data the data to be updated
  * @returns {Object} the updated workPeriodPayment
  */
-async function updateWorkPeriodPayment (currentUser, id, data) {
-  // check permission
-  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
-
+async function updateWorkPeriodPayment (id, data) {
   const workPeriodPayment = await WorkPeriodPayment.findById(id)
+
   const oldValue = workPeriodPayment.toJSON()
+
+  if (oldValue.status === 'in-progress') {
+    const keys = _.keys(_.pick(data, ['amount', 'days', 'memberRate', 'customerRate', 'billingAccountId']))
+    if (keys.length) {
+      throw new errors.BadRequestError(`${JSON.stringify(keys)} cannot be updated when workPeriodPayment status is in-progress`)
+    }
+  }
+
   if (data.status === 'cancelled' && oldValue.status === 'in-progress') {
     throw new errors.BadRequestError('You cannot cancel a WorkPeriodPayment which is in-progress')
   }
@@ -252,7 +300,21 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
       throw new errors.BadRequestError('There is no available daysWorked to schedule a payment')
     }
   }
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+
+  if (data.days) {
+    const correspondingWorkPeriod = await helper.ensureWorkPeriodById(workPeriodPayment.workPeriodId) // ensure work period exists
+    const maxPossibleDays = correspondingWorkPeriod.daysWorked - (correspondingWorkPeriod.daysPaid -
+      (_.includes(ActiveWorkPeriodPaymentStatuses, oldValue.status) ? oldValue.days : 0))
+    if (data.days > maxPossibleDays) {
+      throw new errors.BadRequestError(`Cannot update days paid to more than ${maxPossibleDays}, otherwise total paid days (${correspondingWorkPeriod.daysPaid -
+        (_.includes(ActiveWorkPeriodPaymentStatuses, oldValue.status) ? oldValue.days : 0)}) would be more that total worked days (${correspondingWorkPeriod.daysWorked}) for the week.`)
+    }
+  }
+
+  // challengeId exist and skip dummy challenge
+  if (oldValue.challengeId && oldValue.challengeId !== '00000000-0000-0000-0000-000000000000') {
+    await _updateChallenge(workPeriodPayment.challengeId, data)
+  }
 
   const key = `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}`
   let entity
@@ -281,15 +343,56 @@ async function updateWorkPeriodPayment (currentUser, id, data) {
  * @returns {Object} the updated workPeriodPayment
  */
 async function partiallyUpdateWorkPeriodPayment (currentUser, id, data) {
-  return updateWorkPeriodPayment(currentUser, id, data)
+  // check permission
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  data.updatedBy = await helper.getUserId(currentUser.userId)
+  return updateWorkPeriodPayment(id, data)
 }
+
+const updateWorkPeriodPaymentSchema = Joi.object().keys({
+  status: Joi.workPeriodPaymentUpdateStatus(),
+  amount: Joi.number().greater(0),
+  days: Joi.number().integer().min(0).max(10),
+  memberRate: Joi.number().positive(),
+  customerRate: Joi.number().positive().allow(null),
+  billingAccountId: Joi.number().positive().integer()
+}).min(1).required()
 
 partiallyUpdateWorkPeriodPayment.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
-  data: Joi.object().keys({
-    status: Joi.workPeriodPaymentUpdateStatus()
-  }).min(1).required()
+  data: updateWorkPeriodPaymentSchema
+}).required()
+
+/**
+ * Partially update workPeriodPayment in bulk
+ * @param {Object} currentUser the user who perform this operation
+ * @param {Array<Object>} workPeriodPayments the workPeriodPayments data to be updated
+ * @returns {Array<Object>} the updated workPeriodPayment
+ */
+async function updateBulkOfWorkPeriodPayments (currentUser, workPeriodPayments) {
+  // check permission
+  _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
+  const updatedBy = await helper.getUserId(currentUser.userId)
+  const result = []
+  for (const wpp of workPeriodPayments) {
+    try {
+      const successResult = await updateWorkPeriodPayment(wpp.id, _.assign(_.omit(wpp, 'id'), { updatedBy }))
+      result.push(successResult)
+    } catch (e) {
+      result.push(_.assign(wpp, { error: { message: e.message, code: e.httpStatus } }))
+    }
+  }
+  return result
+}
+
+updateBulkOfWorkPeriodPayments.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  workPeriodPayments: Joi.array().min(1).items(
+    updateWorkPeriodPaymentSchema.keys({
+      id: Joi.string().uuid().required()
+    }).min(2).required()
+  ).required()
 }).required()
 
 /**
@@ -501,7 +604,9 @@ createQueryWorkPeriodPayments.schema = Joi.object().keys({
 module.exports = {
   getWorkPeriodPayment,
   createWorkPeriodPayment,
+  createBulkOfWorkPeriodPayments,
   createQueryWorkPeriodPayments,
   partiallyUpdateWorkPeriodPayment,
+  updateBulkOfWorkPeriodPayments,
   searchWorkPeriodPayments
 }

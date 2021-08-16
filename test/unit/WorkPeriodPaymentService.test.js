@@ -7,7 +7,7 @@ const commonData = require('./common/CommonData')
 const testData = require('./common/WorkPeriodPaymentData')
 const helper = require('../../src/common/helper')
 const busApiClient = helper.getBusApiClient()
-describe('workPeriod service test', () => {
+describe('workPeriodPayment service test', () => {
   beforeEach(() => {
     sinon.stub(busApiClient, 'postEvent').callsFake(async () => {})
   })

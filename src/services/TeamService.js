@@ -6,7 +6,6 @@ const _ = require('lodash')
 const Joi = require('joi')
 const dateFNS = require('date-fns')
 const config = require('config')
-const emailTemplateConfig = require('../../config/email_template.config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -20,17 +19,9 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
+const stripe = require("stripe")(config.STRIPE_SECRET_KEY,{maxNetworkRetries: 5});
 
-const emailTemplates = _.mapValues(emailTemplateConfig, (template) => {
-  return {
-    subject: template.subject,
-    body: template.body,
-    from: template.from,
-    recipients: template.recipients,
-    cc: template.cc,
-    sendgridTemplateId: template.sendgridTemplateId
-  }
-})
+const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
 /**
  * Function to get placed resource bookings with specific projectIds
@@ -750,6 +741,8 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
+    role.matchedSkills = role.listOfSkills
+    role.unMatchedSkills = []
     role.skillsMatch = 1
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
@@ -800,11 +793,15 @@ async function getRoleBySkills (skills) {
     where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
-  const roles = await Role.findAll(queryCriteria)
+  let roles = await Role.findAll(queryCriteria)
+  roles = _.filter(roles, role => _.find(role.rates, r => r.global && r.rate20Global && r.rate30Global))
   if (roles.length > 0) {
     let result = _.each(roles, role => {
+      // role matched skills list
+      role.matchedSkills = _.intersection(role.listOfSkills, skills)
+      role.unMatchedSkills = _.difference(skills, role.matchedSkills)
       // calculate each found roles matching rate
-      role.skillsMatch = _.intersection(role.listOfSkills, skills).length / skills.length
+      role.skillsMatch = role.matchedSkills.length / skills.length
       // each role can have multiple rates, get the maximum of global rates
       role.maxGlobal = _.maxBy(role.rates, 'global').global
     })
@@ -816,7 +813,10 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  const customRole =  await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  customRole.rates[0].rate30Global = customRole.rates[0].global * 0.75
+  customRole.rates[0].rate20Global = customRole.rates[0].global * 0.5
+  return customRole
 }
 
 getRoleBySkills.schema = Joi.object()
@@ -1038,7 +1038,8 @@ async function createTeam (currentUser, data) {
     details: {
       positions: data.positions,
       utm: {
-        code: data.refCode
+        code: data.refCode,
+        intakeSource: data.intakeSource
       }
     }
   }
@@ -1077,6 +1078,7 @@ createTeam.schema = Joi.object()
       teamName: Joi.string().required(),
       teamDescription: Joi.string(),
       refCode: Joi.string(),
+      intakeSource: Joi.string(),
       positions: Joi.array().items(
         Joi.object().keys({
           roleName: Joi.string().required(),
@@ -1162,6 +1164,32 @@ suggestMembers.schema = Joi.object().keys({
   fragment: Joi.string().required()
 }).required()
 
+/**
+ * Calculates total amount
+ * @param {Object} amount
+ * @returns {int} totalAmount
+ */
+ async function calculateAmount(amount) {
+  let totalAmount = 0;
+  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate)
+  return { totalAmount };
+}
+
+/**
+ * Creates token for stripe
+ * @param {int} totalAmount
+ * @returns {string} paymentIntentToken
+ */
+async function createPayment(totalAmount) {
+  const dollarToCents = (totalAmount*100);
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: dollarToCents,
+    currency: config.CURRENCY,
+  });
+  return { paymentIntentToken: paymentIntent.client_secret };
+}
+
+
 module.exports = {
   searchTeams,
   getTeam,
@@ -1180,6 +1208,8 @@ module.exports = {
   createRoleSearchRequest,
   isExternalMember,
   createTeam,
+  calculateAmount,
+  createPayment,
   searchSkills,
   suggestMembers
 }

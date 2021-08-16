@@ -56,6 +56,26 @@ module.exports = (sequelize) => {
         type: Sequelize.UUID,
         allowNull: false
       },
+      sentSurvey: {
+        field: 'sent_survey',
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+      },
+      sentSurveyError: {
+        field: 'sent_survey_error',
+        allowNull: true,
+        type: Sequelize.JSONB({
+          errorCode: {
+            field: 'error_code',
+            type: Sequelize.INTEGER
+          },
+          errorMessage: {
+            field: 'error_message',
+            type: Sequelize.STRING(255)
+          }
+        })
+      },
       userHandle: {
         field: 'user_handle',
         type: Sequelize.STRING(50),

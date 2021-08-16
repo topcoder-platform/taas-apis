@@ -256,6 +256,7 @@ createWorkPeriod.schema = Joi.object().keys({
     resourceBookingId: Joi.string().uuid().required(),
     startDate: Joi.workPeriodStartDate(),
     endDate: Joi.workPeriodEndDate(),
+    sentSurvey: Joi.boolean().default(false),
     daysWorked: Joi.number().integer().min(0).max(5).required(),
     daysPaid: Joi.number().default(0).forbidden(),
     paymentTotal: Joi.number().default(0).forbidden(),
@@ -288,12 +289,10 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (_.isNil(thisWeek)) {
     throw new errors.ConflictError('Work Period dates are not compatible with Resource Booking dates')
   }
-  if (thisWeek.daysWorked < data.daysWorked) {
-    throw new errors.BadRequestError(`Maximum allowed daysWorked is (${thisWeek.daysWorked})`)
-  }
   data.paymentStatus = helper.calculateWorkPeriodPaymentStatus(_.assign({}, oldValue, data))
-  data.updatedBy = await helper.getUserId(currentUser.userId)
-
+  if (!currentUser.isMachine) {
+    data.updatedBy = await helper.getUserId(currentUser.userId)
+  }
   const key = `resourceBooking.id:${workPeriod.resourceBookingId}`
   let entity
   try {
@@ -330,7 +329,12 @@ partiallyUpdateWorkPeriod.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
-    daysWorked: Joi.number().integer().min(0).max(5)
+    daysWorked: Joi.number().integer().min(0).max(10),
+    sentSurvey: Joi.boolean(),
+    sentSurveyError: Joi.object().keys({
+      errorCode: Joi.number().integer().min(0),
+      errorMessage: Joi.string()
+    })
   }).required().min(1)
 }).required()
 
@@ -540,6 +544,11 @@ searchWorkPeriods.schema = Joi.object().keys({
     userHandle: Joi.string(),
     projectId: Joi.number().integer(),
     resourceBookingId: Joi.string().uuid(),
+    sentSurvey: Joi.boolean(),
+    sentSurveyError: Joi.object().keys({
+      errorCode: Joi.number().integer().min(0),
+      errorMessage: Joi.string()
+    }),
     resourceBookingIds: Joi.alternatives(
       Joi.string(),
       Joi.array().items(Joi.string().uuid())

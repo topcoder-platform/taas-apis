@@ -257,16 +257,6 @@ async function _ensurePaidWorkPeriodsNotDeleted (resourceBookingId, oldValue, ne
   // we can't delete workperiods with paymentStatus 'partially-completed', 'completed' or 'in-progress',
   // or any of it's WorkPeriodsPayment has status 'completed' or 'in-progress'.
   _checkForPaidWorkPeriods(workPeriodsToRemove)
-  // check if this update makes maximum possible daysWorked value less than daysPaid
-  _.each(newWorkPeriods, newWP => {
-    const wp = _.find(workPeriods, ['startDate', newWP.startDate])
-    if (!wp) {
-      return
-    }
-    if (wp.daysPaid > newWP.daysWorked) {
-      throw new errors.ConflictError(`Cannot make maximum daysWorked (${newWP.daysWorked}) to the value less than daysPaid (${wp.daysPaid}) for WorkPeriod: ${wp.id}`)
-    }
-  })
 }
 
 /**
@@ -373,6 +363,7 @@ createResourceBooking.schema = Joi.object().keys({
     projectId: Joi.number().integer().required(),
     userId: Joi.string().uuid().required(),
     jobId: Joi.string().uuid().allow(null),
+    sendWeeklySurvey: Joi.boolean().default(true),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null),
     endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
       is: Joi.exist(),
@@ -459,6 +450,7 @@ partiallyUpdateResourceBooking.schema = Joi.object().keys({
     memberRate: Joi.number().allow(null),
     customerRate: Joi.number().allow(null),
     rateType: Joi.rateType(),
+    sendWeeklySurvey: Joi.boolean(),
     billingAccountId: Joi.number().allow(null)
   }).required()
 }).required()
@@ -498,6 +490,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
     customerRate: Joi.number().allow(null).default(null),
     rateType: Joi.rateType().required(),
     status: Joi.resourceBookingStatus().required(),
+    sendWeeklySurvey: Joi.boolean().default(true),
     billingAccountId: Joi.number().allow(null).default(null)
   }).required()
 }).required()
@@ -587,6 +580,10 @@ async function searchResourceBookings (currentUser, criteria, options) {
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
   }
+
+  if (_.has(criteria, 'workPeriods.sentSurveyError') && !criteria['workPeriods.sentSurveyError']) {
+    criteria['workPeriods.sentSurveyError'] = null
+  }
   // this option to return data from DB is only for internal usage, and it cannot be passed from the endpoint
   if (!options.returnFromDB) {
     try {
@@ -631,7 +628,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
       }
       esQuery.body.sort.push(sort)
       // Apply ResourceBooking filters
-      _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId', 'billingAccountId']), (value, key) => {
+      _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId', 'billingAccountId']), (value, key) => {
         esQuery.body.query.bool.must.push({
           term: {
             [key]: {
@@ -667,7 +664,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
         })
       }
       // Apply WorkPeriod and WorkPeriodPayment filters
-      const workPeriodFilters = _.pick(criteria, ['workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
+      const workPeriodFilters = _.pick(criteria, ['workPeriods.sentSurveyError', 'workPeriods.sentSurvey', 'workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
       const workPeriodPaymentFilters = _.pick(criteria, ['workPeriods.payments.status', 'workPeriods.payments.days'])
       if (!_.isEmpty(workPeriodFilters) || !_.isEmpty(workPeriodPaymentFilters)) {
         const workPeriodsMust = []
@@ -678,7 +675,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
                 [key]: value
               }
             })
-          } else {
+          } else if (key !== 'workPeriods.sentSurveyError') {
             workPeriodsMust.push({
               term: {
                 [key]: {
@@ -707,6 +704,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
             }
           })
         }
+
         esQuery.body.query.bool.must.push({
           nested: {
             path: 'workPeriods',
@@ -729,7 +727,9 @@ async function searchResourceBookings (currentUser, criteria, options) {
           r.workPeriods = _.filter(r.workPeriods, wp => {
             return _.every(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
               key = key.split('.')[1]
-              if (key === 'paymentStatus') {
+              if (key === 'sentSurveyError' && !workPeriodFilters['workPeriods.sentSurveyError']) {
+                return !wp[key]
+              } else if (key === 'paymentStatus') {
                 return _.includes(value, wp[key])
               } else {
                 return wp[key] === value
@@ -764,7 +764,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   // Apply ResourceBooking filters
-  _.each(_.pick(criteria, ['status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
+  _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (!_.isUndefined(criteria.billingAccountId)) {
@@ -814,7 +814,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
       queryCriteria.include[0].attributes = { exclude: _.map(queryOpt.excludeWP, f => _.split(f, '.')[1]) }
     }
     // Apply WorkPeriod filters
-    _.each(_.pick(criteria, ['workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.paymentStatus']), (value, key) => {
+    _.each(_.pick(criteria, ['workPeriods.sentSurveyError', 'workPeriods.sentSurvey', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.paymentStatus']), (value, key) => {
       key = key.split('.')[1]
       queryCriteria.include[0].where[Op.and].push({ [key]: value })
     })
@@ -910,6 +910,7 @@ searchResourceBookings.schema = Joi.object().keys({
       Joi.string(),
       Joi.array().items(Joi.number().integer())
     ),
+    sendWeeklySurvey: Joi.boolean(),
     billingAccountId: Joi.number().integer(),
     'workPeriods.paymentStatus': Joi.alternatives(
       Joi.string(),
@@ -932,6 +933,11 @@ searchResourceBookings.schema = Joi.object().keys({
       return value
     }),
     'workPeriods.userHandle': Joi.string(),
+    'workPeriods.sentSurvey': Joi.boolean(),
+    'workPeriods.sentSurveyError': Joi.object().keys({
+      errorCode: Joi.number().integer().min(0),
+      errorMessage: Joi.string()
+    }).allow('').optional(),
     'workPeriods.isFirstWeek': Joi.when(Joi.ref('workPeriods.startDate', { separator: false }), {
       is: Joi.exist(),
       then: Joi.boolean().default(false),
@@ -947,7 +953,7 @@ searchResourceBookings.schema = Joi.object().keys({
       })
     }),
     'workPeriods.payments.status': Joi.workPeriodPaymentStatus(),
-    'workPeriods.payments.days': Joi.number().integer().min(0).max(5)
+    'workPeriods.payments.days': Joi.number().integer().min(0).max(10)
   }).required(),
   options: Joi.object().keys({
     returnAll: Joi.boolean().default(false),
