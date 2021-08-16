@@ -33,10 +33,12 @@ module.exports = {
 
   // the Topcoder v5 url
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
+  // the Topcoder Beta API url currently v5.1
+  TC_BETA_API: process.env.TC_BETA_API || 'https://api.topcoder-dev.com/v5.1',
   // the organization id
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
-  // the referenced skill provider id
-  TOPCODER_SKILL_PROVIDER_ID: process.env.TOPCODER_SKILL_PROVIDER_ID || '9cc0795a-6e12-4c84-9744-15858dba1861',
+  // the referenced taxonomy id
+  TOPCODER_TAXONOMY_ID: process.env.TOPCODER_TAXONOMY_ID || '7637ae1a-3b7c-44eb-a5ed-10ea02f1885d',
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
   // the api to find topcoder members
