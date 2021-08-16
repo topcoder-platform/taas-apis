@@ -104,7 +104,7 @@ async function sendNotifications (payload) {
     type: 'taas.notification.job-created',
     details: {
       from: template.from,
-      recipients: _.map(project.members, m => _.pick(m, 'email')),
+      recipients: _.map(project.members, m => _.pick(m, 'userId')),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'

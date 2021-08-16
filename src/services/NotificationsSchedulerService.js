@@ -40,18 +40,18 @@ async function getProjectWithId (projectId) {
 }
 
 /**
- * extract the members emails from the given project
+ * extract the members of projects and build recipients list out of them
+ * we can use `userId` to identify recipients
  * @param project the project
- * @returns {string[]} array of emails
+ * @returns {string[]} array of recipients
  */
-function getProjectMembersEmails (project) {
-  let recipientEmails = _.map(_.get(project, 'members', []), member => member.email)
-  recipientEmails = _.filter(recipientEmails, email => email)
-  if (_.isEmpty(recipientEmails)) {
-    localLogger.error(`No recipients for projectId:${project.id}`, 'getProjectMembersEmails')
+function buildProjectTeamRecipients (project) {
+  const recipients = _.unionBy(_.map(project.members, m => _.pick(m, 'userId')), 'userId')
+  if (_.isEmpty(recipients)) {
+    localLogger.error(`No recipients for projectId:${project.id}`, 'buildProjectTeamRecipients')
   }
 
-  return recipientEmails
+  return recipients
 }
 
 /**
@@ -131,7 +131,7 @@ async function sendCandidatesAvailableNotifications () {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
 
-    const recipientEmails = getProjectMembersEmails(project)
+    const projectTeamRecipients = buildProjectTeamRecipients(project)
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
 
     const teamJobs = []
@@ -170,7 +170,7 @@ async function sendCandidatesAvailableNotifications () {
 
     sendNotification({}, {
       template: 'taas.notification.candidates-available-for-review',
-      recipients: recipientEmails,
+      recipients: projectTeamRecipients,
       data: {
         teamName: project.name,
         teamJobs,
@@ -379,7 +379,7 @@ async function sendPostInterviewActionNotifications () {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
     const webNotifications = []
-    const recipientEmails = getProjectMembersEmails(project)
+    const projectTeamRecipients = buildProjectTeamRecipients(project)
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
     const teamInterviews = []
     let numCandidates = 0
@@ -395,7 +395,7 @@ async function sendPostInterviewActionNotifications () {
             serviceId: 'web',
             type: template,
             details: {
-              recipients: _.map(_.uniq(recipientEmails), function (re) { return { email: re } }),
+              recipients: projectTeamRecipients,
               contents: {
                 jobTitle: d.jobTitle,
                 teamName: project.name,
@@ -414,7 +414,7 @@ async function sendPostInterviewActionNotifications () {
 
     sendNotification({}, {
       template,
-      recipients: recipientEmails,
+      recipients: projectTeamRecipients,
       data: {
         teamName: project.name,
         numCandidates,
@@ -472,7 +472,7 @@ async function sendResourceBookingExpirationNotifications () {
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
-    const recipientEmails = getProjectMembersEmails(project)
+    const projectTeamRecipients = buildProjectTeamRecipients(project)
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
 
     let numResourceBookings = 0
@@ -501,7 +501,7 @@ async function sendResourceBookingExpirationNotifications () {
       serviceId: 'web',
       type: template,
       details: {
-        recipients: _.map(_.uniq(recipientEmails), function (re) { return { email: re } }),
+        recipients: projectTeamRecipients,
         contents: {
           teamName: project.name,
           projectId,
@@ -515,7 +515,7 @@ async function sendResourceBookingExpirationNotifications () {
 
     sendNotification({}, {
       template,
-      recipients: recipientEmails,
+      recipients: projectTeamRecipients,
       data: {
         teamName: project.name,
         numResourceBookings,

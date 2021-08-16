@@ -37,7 +37,7 @@ async function sendNotificationEmail (payload) {
     type: 'taas.notification.team-created',
     details: {
       from: template.from,
-      recipients: _.map(payload.project.members, m => _.pick(m, 'email')),
+      recipients: _.map(payload.project.members, m => _.pick(m, 'userId')),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
