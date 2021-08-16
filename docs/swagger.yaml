@@ -3538,7 +3538,56 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"  
+                $ref: "#/components/schemas/Error"
+  /taas-teams/isExternalMember:
+    post:
+      tags:
+        - Teams
+      description: |
+        Finds whether member is internal or external
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IsExternalMemberRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IsExternalMemberResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /taas-teams/members-suggest/{fragment}:
     get:
       tags:
@@ -5754,12 +5803,9 @@ components:
         numberOfResources:
           type: number
           description: "No. of resources required."
-        rates:
+        rate:
           type: number
           description: "Weekly rates"
-        durationWeeks:
-          type: number
-          description: "No. of weeks"
     CalculateAmountResponse:
       properties:
         totalAmount:
@@ -5775,6 +5821,16 @@ components:
         paymentIntentToken:
           type: string
           description: " Token required by stripe for completing payment."
+    IsExternalMemberRequestBody:
+      properties:
+        totalAmount:
+          type: number
+          description: "Member id"
+    IsExternalMemberResponse:
+      properties:
+        paymentIntentToken:
+          type: boolean
+          description: "Is the user external member"
     SubmitTeamRequestBody:
       properties:
         teamName:
@@ -5786,6 +5842,9 @@ components:
         refCode:
           type: string
           description: "Optional referral code"
+        intakeSource:
+          type: string
+          description: "The source of the intake."
         positions:
           type: array
           description: "The array of positions"

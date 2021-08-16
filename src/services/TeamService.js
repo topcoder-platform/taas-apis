@@ -19,7 +19,7 @@ const { getAuditM2Muser } = require('../common/helper')
 const { matchedSkills, unMatchedSkills } = require('../../scripts/emsi-mapping/esmi-skills-mapping')
 const Role = models.Role
 const RoleSearchRequest = models.RoleSearchRequest
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(config.STRIPE_SECRET_KEY,{maxNetworkRetries: 5});
 
 const emailTemplates = helper.getEmailTemplatesForKey('teamTemplates')
 
@@ -741,6 +741,8 @@ async function roleSearchRequest (currentUser, data) {
   if (!_.isUndefined(data.roleId)) {
     role = await Role.findById(data.roleId)
     role = role.toJSON()
+    role.matchedSkills = role.listOfSkills
+    role.unMatchedSkills = []
     role.skillsMatch = 1
     // if skills is provided then use skills to find role
   } else if (!_.isUndefined(data.skills)) {
@@ -791,7 +793,8 @@ async function getRoleBySkills (skills) {
     where: { listOfSkills: { [Op.overlap]: skills } },
     raw: true
   }
-  const roles = await Role.findAll(queryCriteria)
+  let roles = await Role.findAll(queryCriteria)
+  roles = _.filter(roles, role => _.find(role.rates, r => r.global && r.rate20Global && r.rate30Global))
   if (roles.length > 0) {
     let result = _.each(roles, role => {
       // role matched skills list
@@ -810,7 +813,10 @@ async function getRoleBySkills (skills) {
     }
   }
   // if no matching role found then return Custom role or empty object
-  return await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  const customRole =  await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
+  customRole.rates[0].rate30Global = customRole.rates[0].global * 0.75
+  customRole.rates[0].rate20Global = customRole.rates[0].global * 0.5
+  return customRole
 }
 
 getRoleBySkills.schema = Joi.object()
@@ -1032,7 +1038,8 @@ async function createTeam (currentUser, data) {
     details: {
       positions: data.positions,
       utm: {
-        code: data.refCode
+        code: data.refCode,
+        intakeSource: data.intakeSource
       }
     }
   }
@@ -1071,6 +1078,7 @@ createTeam.schema = Joi.object()
       teamName: Joi.string().required(),
       teamDescription: Joi.string(),
       refCode: Joi.string(),
+      intakeSource: Joi.string(),
       positions: Joi.array().items(
         Joi.object().keys({
           roleName: Joi.string().required(),
@@ -1158,11 +1166,12 @@ suggestMembers.schema = Joi.object().keys({
 
 /**
  * Calculates total amount
- * @param {Object} body
+ * @param {Object} amount
  * @returns {int} totalAmount
  */
- async function calculateAmount(body) {
-  const totalAmount = body.numberOfResources * body.rates * body.durationWeeks;
+ async function calculateAmount(amount) {
+  let totalAmount = 0;
+  _.forEach(amount, amt => totalAmount += amt.numberOfResources * amt.rate)
   return { totalAmount };
 }
 
@@ -1172,9 +1181,10 @@ suggestMembers.schema = Joi.object().keys({
  * @returns {string} paymentIntentToken
  */
 async function createPayment(totalAmount) {
+  const dollarToCents = (totalAmount*100);
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: totalAmount,
-    currency: process.env.CURRENCY,
+    amount: dollarToCents,
+    currency: config.CURRENCY,
   });
   return { paymentIntentToken: paymentIntent.client_secret };
 }

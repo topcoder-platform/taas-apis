@@ -112,12 +112,24 @@ module.exports = {
     post: {
       controller: "TeamController",
       method: "calculateAmount",
+      auth: 'jwt',
+      scopes: [constants.Scopes.CREATE_TAAS_TEAM]
     },
   },
   "/taas-teams/createPayment": {
     post: {
       controller: "TeamController",
       method: "createPayment",
+      auth: 'jwt',
+      scopes: [constants.Scopes.CREATE_TAAS_TEAM]
     },
-}
+  },
+    "/taas-teams/isExternalMember": {
+      post: {
+        controller: "TeamController",
+        method: "isExternalMember",
+        auth: 'jwt',
+        scopes: []
+      }
+    },
 }

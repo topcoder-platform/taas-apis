@@ -96,7 +96,7 @@ async function createChallenge (challenge, token) {
     return challengeId
   } catch (err) {
     localLogger.error({ context: 'createChallenge', message: `Status Code: ${err.status}` })
-    localLogger.error({ context: 'createChallenge', message: err.response.text })
+    localLogger.error({ context: 'createChallenge', message: _.get(err, 'response.text', err.toString()) })
     throw err
   }
 }
@@ -126,7 +126,7 @@ async function addResourceToChallenge (id, handle, token) {
       }
     }
     localLogger.error({ context: 'addResourceToChallenge', message: `Status Code: ${err.status}` })
-    localLogger.error({ context: 'addResourceToChallenge', message: err.response.text })
+    localLogger.error({ context: 'addResourceToChallenge', message: _.get(err, 'response.text', err.toString()) })
     throw err
   }
 }
@@ -153,7 +153,7 @@ async function activateChallenge (id, token) {
       }
     }
     localLogger.error({ context: 'activateChallenge', message: `Status Code: ${err.status}` })
-    localLogger.error({ context: 'activateChallenge', message: err.response.text })
+    localLogger.error({ context: 'activateChallenge', message: _.get(err, 'response.text', err.toString()) })
     throw err
   }
 }
@@ -189,7 +189,7 @@ async function closeChallenge (id, userId, userHandle, token) {
       }
     }
     localLogger.error({ context: 'closeChallenge', message: `Status Code: ${err.status}` })
-    localLogger.error({ context: 'closeChallenge', message: err.response.text })
+    localLogger.error({ context: 'closeChallenge', message: _.get(err, 'response.text', err.toString()) })
     throw err
   }
 }

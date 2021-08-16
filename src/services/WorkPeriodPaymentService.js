@@ -69,8 +69,8 @@ async function _updateChallenge (challengeId, data) {
       await helper.updateChallenge(challengeId, body)
       logger.debug({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: `Challenge with id ${challengeId} is updated` })
     } catch (err) {
-      logger.error({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: err.response.text })
-      throw new errors.BadRequestError(`Cannot update the the challenge: ${err.response.text}`)
+      logger.error({ component: 'WorkPeriodPaymentService', context: 'updateChallenge', message: _.get(err, 'response.text', err.toString()) })
+      throw new errors.BadRequestError(`Cannot update the the challenge: ${_.get(err, 'response.text', err.toString())}`)
     }
   }
 }
