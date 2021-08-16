@@ -13,6 +13,11 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const {
+  processCreate,
+  processUpdate,
+  processDelete
+} = require('../esProcessors/ResourceBookingProcessor')
 const constants = require('../../app-constants')
 const moment = require('moment')
 
@@ -21,6 +26,8 @@ const WorkPeriod = models.WorkPeriod
 const WorkPeriodPayment = models.WorkPeriodPayment
 const esClient = helper.getESClient()
 const cachedModelFields = _cacheModelFields()
+
+const sequelize = models.sequelize
 
 /**
  * Get the fields of the ResourceBooking model and the nested WorkPeriod model
@@ -342,9 +349,21 @@ async function createResourceBooking (currentUser, resourceBooking) {
   resourceBooking.id = uuid()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
 
-  const created = await ResourceBooking.create(resourceBooking)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, created.toJSON())
-  return created.dataValues
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const created = await ResourceBooking.create(resourceBooking, { transaction: t })
+      entity = created.toJSON()
+      await processCreate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'resourcebooking.create')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, entity)
+  return entity
 }
 
 createResourceBooking.schema = Joi.object().keys({
@@ -394,9 +413,22 @@ async function updateResourceBooking (currentUser, id, data) {
 
   data.updatedBy = await helper.getUserId(currentUser.userId)
 
-  const updated = await resourceBooking.update(data)
-  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  return updated.dataValues
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await resourceBooking.update(data, { transaction: t })
+
+      entity = updated.toJSON()
+      await processUpdate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'resourcebooking.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, entity, { oldValue: oldValue })
+  return entity
 }
 
 /**
@@ -484,7 +516,16 @@ async function deleteResourceBooking (currentUser, id) {
   // we can't delete workperiods with paymentStatus 'partially-completed' or 'completed'.
   await _ensurePaidWorkPeriodsNotDeleted(id)
   const resourceBooking = await ResourceBooking.findById(id)
-  await resourceBooking.destroy()
+
+  try {
+    await sequelize.transaction(async (t) => {
+      await resourceBooking.destroy({ transaction: t })
+      await processDelete({ id })
+    })
+  } catch (e) {
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'resourcebooking.delete')
+    throw e
+  }
   await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
