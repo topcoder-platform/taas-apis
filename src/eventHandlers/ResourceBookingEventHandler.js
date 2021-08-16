@@ -89,26 +89,28 @@ async function sendPlacedNotifications (payload) {
   const recipients = _.map(project.members, m => _.pick(m, 'email'))
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
   const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
+  const data = {
+    subject: template.subject,
+    teamName: project.name,
+    teamUrl,
+    jobTitle: job.title,
+    jobUrl,
+    userHandle: user.handle,
+    startDate: resourceBooking.startDate,
+    endDate: resourceBooking.endDate,
+    notificationType: {
+      resourceBookingPlaced: true
+    },
+    description: 'Resource Booking is Placed'
+  }
+  data.subject = await helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.resource-booking-placed',
     details: {
       from: template.from,
       recipients,
-      data: {
-        subject: template.subject,
-        teamName: project.name,
-        teamUrl,
-        jobTitle: job.title,
-        jobUrl,
-        userHandle: user.handle,
-        startDate: resourceBooking.startDate,
-        endDate: resourceBooking.endDate,
-        notificationType: {
-          resourceBookingPlaced: true
-        },
-        description: 'Resource Booking is Placed'
-      },
+      data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }

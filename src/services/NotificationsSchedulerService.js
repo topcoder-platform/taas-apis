@@ -1,5 +1,5 @@
 /**
- * Email notification service - has the cron handlers for sending different types of email notifications
+ * Notification scheduler service - has the cron handlers for sending different types of notifications (email, web etc)
  */
 const _ = require('lodash')
 const { Op } = require('sequelize')
@@ -15,9 +15,9 @@ const constants = require('../../app-constants')
 const logger = require('../common/logger')
 
 const localLogger = {
-  debug: (message, context) => logger.debug({ component: 'EmailNotificationService', context, message }),
-  error: (message, context) => logger.error({ component: 'EmailNotificationService', context, message }),
-  info: (message, context) => logger.info({ component: 'EmailNotificationService', context, message })
+  debug: (message, context) => logger.debug({ component: 'NotificationSchedulerService', context, message }),
+  error: (message, context) => logger.error({ component: 'NotificationSchedulerService', context, message }),
+  info: (message, context) => logger.info({ component: 'NotificationSchedulerService', context, message })
 }
 
 const emailTemplates = helper.getEmailTemplatesForKey('notificationEmailTemplates')
@@ -88,7 +88,8 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
   const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
-  const startTime = interview.startTimestamp ? interview.startTimestamp.toUTCString() : ''
+  const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
+  const jobUrl = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}`
 
   return {
     jobTitle: job.title,
@@ -99,14 +100,15 @@ async function getDataForInterview (interview, jobCandidate, job) {
     attendees: interview.guestNames,
     startTime: startTime,
     duration: interview.duration,
-    interviewLink
+    interviewLink,
+    jobUrl
   }
 }
 
 /**
- * Sends email notifications to all the teams which have candidates available for review
+ * Sends notifications to all the teams which have candidates available for review
  */
-async function sendCandidatesAvailableEmails () {
+async function sendCandidatesAvailableNotifications () {
   const jobsDao = await Job.findAll({
     include: [{
       model: JobCandidate,
@@ -121,7 +123,7 @@ async function sendCandidatesAvailableEmails () {
 
   const projectIds = _.uniq(_.map(jobs, job => job.projectId))
 
-  localLogger.debug(`[sendCandidatesAvailableEmails]: Found ${projectIds.length} projects with Job Candidates awaiting for review.`)
+  localLogger.debug(`[sendCandidatesAvailableNotifications]: Found ${projectIds.length} projects with Job Candidates awaiting for review.`)
 
   // for each unique project id, send an email
   let sentCount = 0
@@ -156,15 +158,17 @@ async function sendCandidatesAvailableEmails () {
         }
       })
 
+      const jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
       teamJobs.push({
         title: projectJob.title,
         nResourceBookings,
         jobCandidates,
-        reviewLink
+        reviewLink,
+        jobUrl
       })
     }
 
-    sendEmail({}, {
+    sendNotification({}, {
       template: 'taas.notification.candidates-available-for-review',
       recipients: recipientEmails,
       data: {
@@ -179,13 +183,13 @@ async function sendCandidatesAvailableEmails () {
 
     sentCount++
   }
-  localLogger.debug(`[sendCandidatesAvailableEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates awaiting for review.`)
+  localLogger.debug(`[sendCandidatesAvailableNotifications]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates awaiting for review.`)
 }
 
 /**
- * Sends email reminders to the hosts and guests about their upcoming interview(s)
+ * Sends reminders to the hosts and guests about their upcoming interview(s)
  */
-async function sendInterviewComingUpEmails () {
+async function sendInterviewComingUpNotifications () {
   const currentTime = moment.utc()
   const timestampFilter = {
     [Op.or]: []
@@ -223,7 +227,7 @@ async function sendInterviewComingUpEmails () {
     raw: true
   })
 
-  localLogger.debug(`[sendInterviewComingUpEmails]: Found ${interviews.length} interviews which are coming soon.`)
+  localLogger.debug(`[sendInterviewComingUpNotifications]: Found ${interviews.length} interviews which are coming soon.`)
 
   let sentHostCount = 0
   let sentGuestCount = 0
@@ -233,7 +237,7 @@ async function sendInterviewComingUpEmails () {
     if (!data) { continue }
 
     if (!_.isEmpty(interview.hostEmail)) {
-      sendEmail({}, {
+      sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
         recipients: [interview.hostEmail],
         data: {
@@ -247,12 +251,12 @@ async function sendInterviewComingUpEmails () {
 
       sentHostCount++
     } else {
-      localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewComingUpEmails')
+      localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewComingUpNotifications')
     }
 
     if (!_.isEmpty(interview.guestEmails)) {
       // send guest emails
-      sendEmail({}, {
+      sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
         recipients: interview.guestEmails,
         data: {
@@ -266,17 +270,17 @@ async function sendInterviewComingUpEmails () {
 
       sentGuestCount++
     } else {
-      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewComingUpEmails')
+      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewComingUpNotifications')
     }
   }
 
-  localLogger.debug(`[sendInterviewComingUpEmails]: Sent notifications for ${sentHostCount} hosts and ${sentGuestCount} guest of ${interviews.length} interviews which are coming soon.`)
+  localLogger.debug(`[sendInterviewComingUpNotifications]: Sent notifications for ${sentHostCount} hosts and ${sentGuestCount} guest of ${interviews.length} interviews which are coming soon.`)
 }
 
 /**
- * Sends email reminder to the interview host after it ends to change the interview status
+ * Sends reminder to the interview host after it ends to change the interview status
  */
-async function sendInterviewCompletedEmails () {
+async function sendInterviewCompletedNotifications () {
   const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
   const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
   const rangeEnd = rangeStart.clone().add(window)
@@ -305,7 +309,7 @@ async function sendInterviewCompletedEmails () {
     raw: true
   })
 
-  localLogger.debug(`[sendInterviewCompletedEmails]: Found ${interviews.length} interviews which must be ended by now.`)
+  localLogger.debug(`[sendInterviewCompletedNotifications]: Found ${interviews.length} interviews which must be ended by now.`)
 
   let sentCount = 0
   for (const interview of interviews) {
@@ -317,7 +321,7 @@ async function sendInterviewCompletedEmails () {
     const data = await getDataForInterview(interview)
     if (!data) { continue }
 
-    sendEmail({}, {
+    sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
       recipients: [interview.hostEmail],
       data: {
@@ -332,14 +336,14 @@ async function sendInterviewCompletedEmails () {
     sentCount++
   }
 
-  localLogger.debug(`[sendInterviewCompletedEmails]: Sent notifications for ${sentCount} of ${interviews.length} interviews which must be ended by now.`)
+  localLogger.debug(`[sendInterviewCompletedNotifications]: Sent notifications for ${sentCount} of ${interviews.length} interviews which must be ended by now.`)
 }
 
 /**
- * Sends email reminder to the all members of teams which have interview completed to take action
+ * Sends reminder to the all members of teams which have interview completed to take action
  * to update the job candidate status
  */
-async function sendPostInterviewActionEmails () {
+async function sendPostInterviewActionNotifications () {
   const completedJobCandidates = await JobCandidate.findAll({
     where: {
       status: constants.JobCandidateStatus.INTERVIEW
@@ -366,13 +370,15 @@ async function sendPostInterviewActionEmails () {
 
   const projectIds = _.uniq(_.map(jobs, job => job.projectId))
 
-  localLogger.debug(`[sendPostInterviewActionEmails]: Found ${projectIds.length} projects with ${completedJobCandidates.length} Job Candidates with interview completed awaiting for an action.`)
+  localLogger.debug(`[sendPostInterviewActionNotifications]: Found ${projectIds.length} projects with ${completedJobCandidates.length} Job Candidates with interview completed awaiting for an action.`)
 
   let sentCount = 0
+  const template = 'taas.notification.post-interview-action-required'
+
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
-
+    const webNotifications = []
     const recipientEmails = getProjectMembersEmails(project)
     const projectJobs = _.filter(jobs, job => job.projectId === projectId)
     const teamInterviews = []
@@ -384,13 +390,30 @@ async function sendPostInterviewActionEmails () {
         for (const interview of projectJc.interviews) {
           const d = await getDataForInterview(interview, projectJc, projectJob)
           if (!d) { continue }
+          d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
+          webNotifications.push({
+            serviceId: 'web',
+            type: template,
+            details: {
+              recipients: _.map(_.uniq(recipientEmails), function (re) { return { email: re } }),
+              contents: {
+                jobTitle: d.jobTitle,
+                teamName: project.name,
+                projectId,
+                jobId: projectJob.id,
+                userHandle: d.handle
+              },
+              version: 1
+            }
+          })
+
           teamInterviews.push(d)
         }
       }
     }
 
-    sendEmail({}, {
-      template: 'taas.notification.post-interview-action-required',
+    sendNotification({}, {
+      template,
       recipients: recipientEmails,
       data: {
         teamName: project.name,
@@ -401,18 +424,18 @@ async function sendPostInterviewActionEmails () {
         },
         description: 'Post Interview Candidate Action Reminder'
       }
-    })
+    }, webNotifications)
 
     sentCount++
   }
 
-  localLogger.debug(`[sendPostInterviewActionEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates with interview completed awaiting for an action.`)
+  localLogger.debug(`[sendPostInterviewActionNotifications]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Job Candidates with interview completed awaiting for an action.`)
 }
 
 /**
- * Sends reminder emails to all members of teams which have atleast one upcoming resource booking expiration
+ * Sends reminders to all members of teams which have atleast one upcoming resource booking expiration
  */
-async function sendResourceBookingExpirationEmails () {
+async function sendResourceBookingExpirationNotifications () {
   const currentTime = moment.utc()
   const maxEndDate = currentTime.clone().add(moment.duration(config.RESOURCE_BOOKING_EXPIRY_TIME))
 
@@ -442,9 +465,10 @@ async function sendResourceBookingExpirationEmails () {
   })
   const projectIds = _.uniq(_.map(expiringResourceBookings, rb => rb.projectId))
 
-  localLogger.debug(`[sendResourceBookingExpirationEmails]: Found ${projectIds.length} projects with ${expiringResourceBookings.length} Resource Bookings expiring in less than 3 weeks.`)
+  localLogger.debug(`[sendResourceBookingExpirationNotifications]: Found ${projectIds.length} projects with ${expiringResourceBookings.length} Resource Bookings expiring in less than 3 weeks.`)
 
   let sentCount = 0
+  const template = 'taas.notification.resource-booking-expiration'
   for (const projectId of projectIds) {
     const project = await getProjectWithId(projectId)
     if (!project) { continue }
@@ -461,16 +485,36 @@ async function sendResourceBookingExpirationEmails () {
         const user = await getUserWithId(booking.userId)
         if (!user) { continue }
 
+        const jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
+        const resourceBookingUrl = `${config.TAAS_APP_URL}/${projectId}/rb/${booking.id}`
         teamResourceBookings.push({
           jobTitle: projectJob.title,
           handle: user.handle,
-          endDate: booking.endDate
+          endDate: booking.endDate,
+          jobUrl,
+          resourceBookingUrl
         })
       }
     }
 
-    sendEmail({}, {
-      template: 'taas.notification.resource-booking-expiration',
+    const webData = {
+      serviceId: 'web',
+      type: template,
+      details: {
+        recipients: _.map(_.uniq(recipientEmails), function (re) { return { email: re } }),
+        contents: {
+          teamName: project.name,
+          projectId,
+          numOfExpiringResourceBookings: numResourceBookings
+        },
+        version: 1
+      }
+    }
+
+    const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
+
+    sendNotification({}, {
+      template,
       recipients: recipientEmails,
       data: {
         teamName: project.name,
@@ -479,23 +523,24 @@ async function sendResourceBookingExpirationEmails () {
         notificationType: {
           upcomingResourceBookingExpiration: true
         },
+        teamUrl,
         description: 'Upcoming Resource Booking Expiration'
       }
-    })
+    }, [webData])
 
     sentCount++
   }
 
-  localLogger.debug(`[sendResourceBookingExpirationEmails]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Resource Bookings expiring in less than 3 weeks.`)
+  localLogger.debug(`[sendResourceBookingExpirationNotifications]: Sent notifications for ${sentCount} of ${projectIds.length} projects with Resource Bookings expiring in less than 3 weeks.`)
 }
 
 /**
- * Send email through a particular template
+ * Send notification through a particular template
  * @param {Object} currentUser the user who perform this operation
  * @param {Object} data the email object
- * @returns {undefined}
+ * @param {Array} webNotifications the optional list of web notifications
  */
-async function sendEmail (currentUser, data) {
+async function sendNotification (currentUser, data, webNotifications = []) {
   const template = emailTemplates[data.template]
   const dataCC = data.cc || []
   const templateCC = template.cc || []
@@ -511,28 +556,32 @@ async function sendEmail (currentUser, data) {
       data.data
     )
   }
+
+  const recipients = _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } })
   const emailData = {
     serviceId: 'email',
     type: data.template,
     details: {
       from: data.from || template.from,
-      recipients: _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } }),
+      recipients,
       cc: _.map(_.uniq([...dataCC, ...templateCC]), function (r) { return { email: r } }),
       data: { ...data.data, ...subjectBody },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }
   }
+
+  const notifications = [emailData, ...webNotifications]
   await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
-    notifications: [emailData]
+    notifications
   })
 }
 
 module.exports = {
-  sendEmail,
-  sendCandidatesAvailableEmails,
-  sendInterviewComingUpEmails,
-  sendInterviewCompletedEmails,
-  sendPostInterviewActionEmails,
-  sendResourceBookingExpirationEmails
+  sendNotification,
+  sendCandidatesAvailableNotifications,
+  sendInterviewComingUpNotifications,
+  sendInterviewCompletedNotifications,
+  sendPostInterviewActionNotifications,
+  sendResourceBookingExpirationNotifications
 }

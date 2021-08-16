@@ -112,7 +112,7 @@ module.exports = {
    */
   notificationEmailTemplates: {
     'taas.notification.job-candidate-resume-viewed': {
-      subject: 'Topcoder -  job candidate resume viewed',
+      subject: 'Topcoder - Client View Resume for Job {{jobName}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
@@ -161,14 +161,14 @@ module.exports = {
       sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.team-created': {
-      subject: 'Topcoder - Team Created',
+      subject: 'Topcoder - New Team {{teamName}} Created',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.job-created': {
-      subject: 'Topcoder - Job Created',
+      subject: 'Topcoder - New Job {{jobTitle}} Created in Team {{teamName}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
@@ -182,14 +182,14 @@ module.exports = {
       sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.job-candidate-selected': {
-      subject: 'Topcoder - Job Candidate Selected',
+      subject: 'Topcoder - Job Candidate {{userHandle}} Selected for {{jobTitle}} in Team {{teamName}}',
       body: '',
       recipients: config.NOTIFICATION_OPS_EMAILS,
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.resource-booking-placed': {
-      subject: 'Topcoder - Resource Booking Placed',
+      subject: 'Topcoder - Resource Booking {{userHandle}} Placed for Job {{jobTitle}} in Team {{teamName}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,

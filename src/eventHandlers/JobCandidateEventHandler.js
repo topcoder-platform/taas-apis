@@ -155,26 +155,28 @@ async function sendJobCandidateSelectedNotification (payload) {
   const project = await helper.getProjectById({ isMachine: true }, job.projectId)
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
   const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
+  const data = {
+    subject: template.subject,
+    teamName: project.name,
+    teamUrl,
+    jobTitle: job.title,
+    jobDuration: job.duration,
+    jobStartDate: helper.formatDateEDT(job.startDate),
+    userHandle: user.handle,
+    jobUrl,
+    notificationType: {
+      candidateSelected: true
+    },
+    description: 'Job Candidate Selected'
+  }
+  data.subject = await helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-candidate-selected',
     details: {
       from: template.from,
       recipients: template.recipients,
-      data: {
-        subject: template.subject,
-        teamName: project.name,
-        teamUrl,
-        jobTitle: job.title,
-        jobDuration: job.duration,
-        jobStartDate: helper.formatDateEDT(job.startDate),
-        userHandle: user.handle,
-        jobUrl,
-        notificationType: {
-          candidateSelected: true
-        },
-        description: 'Job Candidate Selected'
-      },
+      data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }

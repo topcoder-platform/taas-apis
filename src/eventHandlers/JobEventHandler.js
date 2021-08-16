@@ -84,25 +84,28 @@ async function sendNotifications (payload) {
   }
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-created']
   const project = await helper.getProjectById({ isMachine: true }, payload.value.projectId)
+  const data = {
+    subject: template.subject,
+    teamName: project.name,
+    teamURL: `${config.TAAS_APP_URL}/${project.id}`,
+    jobTitle: payload.value.title,
+    jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${payload.value.id}`,
+    jobDuration: payload.value.duration,
+    jobStartDate: helper.formatDateEDT(payload.value.startDate),
+    notificationType: {
+      newJobCreated: true
+    },
+    description: 'New Job Created'
+  }
+  data.subject = await helper.substituteStringByObject(data.subject, data)
+
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-created',
     details: {
       from: template.from,
       recipients: _.map(project.members, m => _.pick(m, 'email')),
-      data: {
-        subject: template.subject,
-        teamName: project.name,
-        teamURL: `${config.TAAS_APP_URL}/${project.id}`,
-        jobTitle: payload.value.title,
-        jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${payload.value.id}`,
-        jobDuration: payload.value.duration,
-        jobStartDate: helper.formatDateEDT(payload.value.startDate),
-        notificationType: {
-          newJobCreated: true
-        },
-        description: 'New Job Created'
-      },
+      data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }
