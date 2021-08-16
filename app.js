@@ -16,6 +16,7 @@ const interviewService = require('./src/services/InterviewService')
 const { processScheduler } = require('./src/services/PaymentSchedulerService')
 const { sendSurveys } = require('./src/services/SurveyService')
 const notificationSchedulerService = require('./src/services/NotificationsSchedulerService')
+const { WeeklySurveySwitch } = require('./app-constants')
 
 // setup express app
 const app = express()
@@ -101,7 +102,9 @@ const server = app.listen(app.get('port'), () => {
   // schedule updateCompletedInterviews to run every hour
   schedule.scheduleJob('0 0 * * * *', interviewService.updateCompletedInterviews)
   // schedule sendSurveys
-  schedule.scheduleJob(config.WEEKLY_SURVEY.CRON, sendSurveys)
+  if (WeeklySurveySwitch.ON === config.WEEKLY_SURVEY.SWITCH) {
+    schedule.scheduleJob(config.WEEKLY_SURVEY.CRON, sendSurveys)
+  }
   // schedule payment processing
   schedule.scheduleJob(config.PAYMENT_PROCESSING.CRON, processScheduler)
 
