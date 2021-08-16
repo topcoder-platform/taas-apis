@@ -15,27 +15,30 @@ const helper = require('../common/helper')
  */
 async function sendNotificationEmail (payload) {
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.team-created']
+  const data = {
+    subject: template.subject,
+    teamName: payload.project.name,
+    teamUrl: `${config.TAAS_APP_URL}/${payload.project.id}`,
+    jobList: _.map(payload.jobs, j => ({
+      title: j.title,
+      duration: j.duration,
+      startDate: helper.formatDateEDT(j.startDate),
+      jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
+    })),
+    notificationType: {
+      newTeamCreated: true
+    },
+    description: 'New Team Created'
+  }
+  data.subject = await helper.substituteStringByObject(data.subject, data)
+
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.team-created',
     details: {
       from: template.from,
       recipients: _.map(payload.project.members, m => _.pick(m, 'email')),
-      data: {
-        subject: template.subject,
-        teamName: payload.project.name,
-        teamUrl: `${config.TAAS_APP_URL}/${payload.project.id}`,
-        jobList: _.map(payload.jobs, j => ({
-          title: j.title,
-          duration: j.duration,
-          startDate: helper.formatDateEDT(j.startDate),
-          jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
-        })),
-        notificationType: {
-          newTeamCreated: true
-        },
-        description: 'New Team Created'
-      },
+      data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
     }
