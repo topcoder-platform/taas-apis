@@ -551,7 +551,7 @@ async function sendNotification (currentUser, data, webNotifications = []) {
     body: data.body || template.body
   }
   for (const key in subjectBody) {
-    subjectBody[key] = await helper.substituteStringByObject(
+    subjectBody[key] = helper.substituteStringByObject(
       subjectBody[key],
       data.data
     )

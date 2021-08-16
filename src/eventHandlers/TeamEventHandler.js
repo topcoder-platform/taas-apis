@@ -30,7 +30,7 @@ async function sendNotificationEmail (payload) {
     },
     description: 'New Team Created'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
 
   const emailData = {
     serviceId: 'email',

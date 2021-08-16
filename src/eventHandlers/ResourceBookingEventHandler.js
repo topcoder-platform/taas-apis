@@ -103,7 +103,7 @@ async function sendPlacedNotifications (payload) {
     },
     description: 'Resource Booking is Placed'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.resource-booking-placed',

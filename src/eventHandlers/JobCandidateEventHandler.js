@@ -169,7 +169,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     },
     description: 'Job Candidate Selected'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-candidate-selected',

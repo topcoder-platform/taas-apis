@@ -97,7 +97,7 @@ async function sendNotifications (payload) {
     },
     description: 'New Job Created'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
 
   const emailData = {
     serviceId: 'email',
