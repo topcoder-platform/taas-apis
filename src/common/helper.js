@@ -1226,7 +1226,7 @@ async function getTopcoderSkills (criteria) {
   const token = await getM2MUbahnToken()
   try {
     const res = await request
-      .get(`${config.TC_API}/skills`)
+      .get(`${config.TC_BETA_API}/skills`)
       .query({
         taxonomyId: config.TOPCODER_TAXONOMY_ID,
         ...criteria
@@ -1278,7 +1278,7 @@ async function getAllTopcoderSkills (criteria) {
 async function getSkillById (skillId) {
   const token = await getM2MUbahnToken()
   const res = await request
-    .get(`${config.TC_API}/skills/${skillId}`)
+    .get(`${config.TC_BETA_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')

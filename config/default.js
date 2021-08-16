@@ -33,6 +33,8 @@ module.exports = {
 
   // the Topcoder v5 url
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
+  // the Topcoder Beta API url currently v5.1
+  TC_BETA_API: process.env.TC_BETA_API || 'https://api.topcoder-dev.com/v5.1',
   // the organization id
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
   // the referenced taxonomy id
