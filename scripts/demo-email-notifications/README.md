@@ -18,19 +18,24 @@ This script does 2 things:
     INTERVIEW_COMING_UP_MATCH_WINDOW=PT1M
     INTERVIEW_COMPLETED_MATCH_WINDOW=PT1M
     ```
+2. Config `SLACK_WEBHOOK_URL` env, if you want to send slack notifications
 
-2. Recreate demo data by:
+    ```sh
+    SLACK_WEBHOOK_URL=https://hooks.slack.com/services/***
+    ```
+
+3. Recreate demo data by:
 
     ```sh
     npm run local:init`
 
-3. Run TaaS API by:
+4. Run TaaS API by:
 
     ```sh
     npm run dev
     ```
 
-4. Run this demo script:
+5. Run this demo script:
 
    ```sh
    node scripts/demo-email-notifications

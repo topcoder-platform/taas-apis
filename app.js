@@ -15,7 +15,7 @@ const eventHandlers = require('./src/eventHandlers')
 const interviewService = require('./src/services/InterviewService')
 const { processScheduler } = require('./src/services/PaymentSchedulerService')
 const { sendSurveys } = require('./src/services/SurveyService')
-const emailNotificationService = require('./src/services/EmailNotificationService')
+const notificationSchedulerService = require('./src/services/NotificationsSchedulerService')
 const { WeeklySurveySwitch } = require('./app-constants')
 
 // setup express app
@@ -108,11 +108,11 @@ const server = app.listen(app.get('port'), () => {
   // schedule payment processing
   schedule.scheduleJob(config.PAYMENT_PROCESSING.CRON, processScheduler)
 
-  schedule.scheduleJob(config.CRON_CANDIDATE_REVIEW, emailNotificationService.sendCandidatesAvailableEmails)
-  schedule.scheduleJob(config.CRON_INTERVIEW_COMING_UP, emailNotificationService.sendInterviewComingUpEmails)
-  schedule.scheduleJob(config.CRON_INTERVIEW_COMPLETED, emailNotificationService.sendInterviewCompletedEmails)
-  schedule.scheduleJob(config.CRON_POST_INTERVIEW, emailNotificationService.sendPostInterviewActionEmails)
-  schedule.scheduleJob(config.CRON_UPCOMING_RESOURCE_BOOKING, emailNotificationService.sendResourceBookingExpirationEmails)
+  schedule.scheduleJob(config.CRON_CANDIDATE_REVIEW, notificationSchedulerService.sendCandidatesAvailableNotifications)
+  schedule.scheduleJob(config.CRON_INTERVIEW_COMING_UP, notificationSchedulerService.sendInterviewComingUpNotifications)
+  schedule.scheduleJob(config.CRON_INTERVIEW_COMPLETED, notificationSchedulerService.sendInterviewCompletedNotifications)
+  schedule.scheduleJob(config.CRON_POST_INTERVIEW, notificationSchedulerService.sendPostInterviewActionNotifications)
+  schedule.scheduleJob(config.CRON_UPCOMING_RESOURCE_BOOKING, notificationSchedulerService.sendResourceBookingExpirationNotifications)
 })
 
 if (process.env.NODE_ENV === 'test') {

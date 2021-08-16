@@ -8,13 +8,13 @@ const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
-const { Scopes } = require('../../app-constants')
+const { Scopes, UserRoles } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const JobService = require('./JobService')
-
+const NotificationSchedulerService = require('./NotificationsSchedulerService')
 const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
 
@@ -178,6 +178,7 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
   data: Joi.object().keys({
     status: Joi.jobCandidateStatus(),
     externalId: Joi.string().allow(null),
+    viewedByCustomer: Joi.boolean().allow(null),
     resume: Joi.string().uri().allow(null),
     remark: Joi.stringAllowEmpty().allow(null)
   }).required()
@@ -205,6 +206,7 @@ fullyUpdateJobCandidate.schema = Joi.object()
         jobId: Joi.string().uuid().required(),
         userId: Joi.string().uuid().required(),
         status: Joi.jobCandidateStatus().default('open'),
+        viewedByCustomer: Joi.boolean().allow(null),
         externalId: Joi.string().allow(null).default(null),
         resume: Joi.string().uri().allow('').allow(null).default(null),
         remark: Joi.stringAllowEmpty().allow(null)
@@ -358,11 +360,55 @@ searchJobCandidates.schema = Joi.object().keys({
   }).required()
 }).required()
 
+/**
+ * Download jobCandidate resume
+ * @params {Object} currentUser the user who perform this operation
+ * @params {String} id the jobCandidate id
+ */
+async function downloadJobCandidateResume (currentUser, id) {
+  const jobCandidate = await JobCandidate.findById(id)
+  const { id: currentUserUserId } = await helper.getUserByExternalId(currentUser.userId)
+
+  // customer role
+  if (!jobCandidate.viewedByCustomer && currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
+    try {
+      const job = await models.Job.findById(jobCandidate.jobId)
+      const { handle } = await helper.getUserById(jobCandidate.userId, true)
+      const { email } = await helper.getMemberDetailsByHandle(handle)
+
+      await NotificationSchedulerService.sendNotification(currentUser, {
+        template: 'taas.notification.job-candidate-resume-viewed',
+        recipients: [email],
+        data: {
+          jobCandidateUserHandle: handle,
+          jobName: job.title,
+          description: 'Client Viewed Resume',
+          notificationType: {
+            jobCandidateResumeViewed: true
+          }
+        }
+      })
+
+      await updateJobCandidate(currentUser, jobCandidate.id, { viewedByCustomer: true })
+    } catch (err) {
+      logger.logFullError(err, { component: 'JobCandidateService', context: 'downloadJobCandidateResume' })
+    }
+  }
+
+  return jobCandidate.resume
+}
+
+downloadJobCandidateResume.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
+  id: Joi.string().uuid().required()
+}).required()
+
 module.exports = {
   getJobCandidate,
   createJobCandidate,
   partiallyUpdateJobCandidate,
   fullyUpdateJobCandidate,
   deleteJobCandidate,
-  searchJobCandidates
+  searchJobCandidates,
+  downloadJobCandidateResume
 }
