@@ -131,24 +131,24 @@ createRole.schema = Joi.object().keys({
     description: Joi.string().max(1000),
     listOfSkills: Joi.array().items(Joi.string().max(50).required()),
     rates: Joi.array().items(Joi.object().keys({
-      global: Joi.smallint(),
-      inCountry: Joi.smallint(),
-      offShore: Joi.smallint(),
-      niche: Joi.smallint(),
-      rate30Niche: Joi.smallint(),
-      rate30Global: Joi.smallint(),
-      rate30InCountry: Joi.smallint(),
-      rate30OffShore: Joi.smallint(),
-      rate20Niche: Joi.smallint(),
-      rate20Global: Joi.smallint(),
-      rate20InCountry: Joi.smallint(),
-      rate20OffShore: Joi.smallint()
+      global: Joi.smallint().min(1),
+      inCountry: Joi.smallint().min(1),
+      offShore: Joi.smallint().min(1),
+      niche: Joi.smallint().min(1),
+      rate30Niche: Joi.smallint().min(1),
+      rate30Global: Joi.smallint().min(1),
+      rate30InCountry: Joi.smallint().min(1),
+      rate30OffShore: Joi.smallint().min(1),
+      rate20Niche: Joi.smallint().min(1),
+      rate20Global: Joi.smallint().min(1),
+      rate20InCountry: Joi.smallint().min(1),
+      rate20OffShore: Joi.smallint().min(1)
     }).required()).required(),
-    numberOfMembers: Joi.number(),
-    numberOfMembersAvailable: Joi.smallint(),
+    numberOfMembers: Joi.number().integer().min(1),
+    numberOfMembersAvailable: Joi.smallint().min(1),
     imageUrl: Joi.string().uri().max(255),
-    timeToCandidate: Joi.smallint(),
-    timeToInterview: Joi.smallint()
+    timeToCandidate: Joi.smallint().min(1),
+    timeToInterview: Joi.smallint().min(1)
   }).required()
 }).required()
 
@@ -189,24 +189,24 @@ updateRole.schema = Joi.object().keys({
     description: Joi.string().max(1000).allow(null),
     listOfSkills: Joi.array().items(Joi.string().max(50).required()).allow(null),
     rates: Joi.array().items(Joi.object().keys({
-      global: Joi.smallint().required(),
-      inCountry: Joi.smallint().required(),
-      offShore: Joi.smallint().required(),
-      niche: Joi.smallint(),
-      rate30Niche: Joi.smallint(),
-      rate30Global: Joi.smallint(),
-      rate30InCountry: Joi.smallint(),
-      rate30OffShore: Joi.smallint(),
-      rate20Global: Joi.smallint(),
-      rate20Niche: Joi.smallint(),
-      rate20InCountry: Joi.smallint(),
-      rate20OffShore: Joi.smallint()
+      global: Joi.smallint().min(1).required(),
+      inCountry: Joi.smallint().min(1).required(),
+      offShore: Joi.smallint().min(1).required(),
+      niche: Joi.smallint().min(1),
+      rate30Niche: Joi.smallint().min(1),
+      rate30Global: Joi.smallint().min(1),
+      rate30InCountry: Joi.smallint().min(1),
+      rate30OffShore: Joi.smallint().min(1),
+      rate20Global: Joi.smallint().min(1),
+      rate20Niche: Joi.smallint().min(1),
+      rate20InCountry: Joi.smallint().min(1),
+      rate20OffShore: Joi.smallint().min(1)
     }).required()),
-    numberOfMembers: Joi.number().allow(null),
-    numberOfMembersAvailable: Joi.smallint().allow(null),
+    numberOfMembers: Joi.number().integer().min(1).allow(null),
+    numberOfMembersAvailable: Joi.smallint().min(1).allow(null),
     imageUrl: Joi.string().uri().max(255).allow(null),
-    timeToCandidate: Joi.smallint().allow(null),
-    timeToInterview: Joi.smallint().allow(null)
+    timeToCandidate: Joi.smallint().min(1).allow(null),
+    timeToInterview: Joi.smallint().min(1).allow(null)
   }).required()
 }).required()
 

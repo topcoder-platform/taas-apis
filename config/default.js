@@ -150,6 +150,8 @@ module.exports = {
 
   // the Kafka message topic for sending email
   EMAIL_TOPIC: process.env.EMAIL_TOPIC || 'external.action.email',
+  // the Kafka message topic for creating notifications
+  NOTIFICATIONS_CREATE_TOPIC: process.env.NOTIFICATIONS_CREATE_TOPIC || 'notifications.action.create',
   // the emails address for receiving the issue report
   // REPORT_ISSUE_EMAILS may contain comma-separated list of email which is converted to array
   REPORT_ISSUE_EMAILS: (process.env.REPORT_ISSUE_EMAILS || '').split(','),
@@ -178,11 +180,22 @@ module.exports = {
   DEFAULT_TIMELINE_TEMPLATE_ID: process.env.DEFAULT_TIMELINE_TEMPLATE_ID || '53a307ce-b4b3-4d6f-b9a1-3741a58f77e6',
   DEFAULT_TRACK_ID: process.env.DEFAULT_TRACK_ID || '9b6fc876-f4d9-4ccb-9dfd-419247628825',
   // the minimum matching rate when searching roles by skills
-  ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.70,
+  ROLE_MATCHING_RATE: process.env.ROLE_MATCHING_RATE || 0.66,
   // member groups representing Wipro or TopCoder employee
   INTERNAL_MEMBER_GROUPS: process.env.INTERNAL_MEMBER_GROUPS || ['20000000', '20000001', '20000003', '20000010', '20000015'],
   // Topcoder skills cache time in minutes
   TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60,
+  // weekly survey scheduler config
+  WEEKLY_SURVEY: {
+    CRON: process.env.WEEKLY_SURVEY_CRON || '0 1 * * 7',
+    BASE_URL: process.env.WEEKLY_SURVEY_BASE_URL || 'https://api.surveymonkey.net/v3/surveys',
+    JWT_TOKEN: process.env.WEEKLY_SURVEY_JWT_TOKEN || '',
+    SURVEY_ID: process.env.WEEKLY_SURVEY_SURVEY_ID || '',
+    SURVEY_COLLECTOR_PREFIX: process.env.WEEKLY_SURVEY_SURVEY_COLLECTOR_PREFIX || 'Week ending',
+    SURVEY_MASTER_COLLECTOR_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_COLLECTOR_ID || '',
+    SURVEY_MASTER_MESSAGE_ID: process.env.WEEKLY_SURVEY_SURVEY_MASTER_MESSAGE_ID || '',
+    SURVEY_CONTACT_GROUP_ID: process.env.WEEKLY_SURVEY_SURVEY_CONTACT_GROUP_ID || ''
+  },
   // payment scheduler config
   PAYMENT_PROCESSING: {
     // switch off actual API calls in Payment Scheduler
@@ -229,5 +242,34 @@ module.exports = {
     interview: 'withdrawn',
     selected: 'withdrawn',
     offered: 'withdrawn'
-  }
+  },
+  // the sender email
+  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL,
+  // the email notification sendgrid template id
+  NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
+  // frequency of cron checking for available candidates for review
+  CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
+  // frequency of cron checking for coming up interviews
+  // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewComingUpEmails correspondingly
+  CRON_INTERVIEW_COMING_UP: process.env.CRON_INTERVIEW_COMING_UP || '*/5 * * * *',
+  // frequency of cron checking for interview completed
+  // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewCompletedEmails correspondingly
+  CRON_INTERVIEW_COMPLETED: process.env.CRON_INTERVIEW_COMPLETED || '*/5 * * * *',
+  // frequency of cron checking for post interview actions
+  CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
+  // frequency of cron checking for upcoming resource bookings
+  CRON_UPCOMING_RESOURCE_BOOKING: process.env.CRON_UPCOMING_RESOURCE_BOOKING || '00 00 13 * * 1',
+  // The match window for fetching interviews which are coming up
+  INTERVIEW_COMING_UP_MATCH_WINDOW: process.env.INTERVIEW_COMING_UP_MATCH_WINDOW || 'PT5M',
+  // The remind time for fetching interviews which are coming up
+  INTERVIEW_COMING_UP_REMIND_TIME: (process.env.INTERVIEW_COMING_UP_REMIND_TIME || 'PT1H,PT24H').split(','),
+  // The match window for fetching completed interviews
+  INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
+  // The interview completed past time for fetching interviews
+  INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
+  // The time before resource booking expiry when we should start sending notifications
+  RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
+  // The Stripe
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  CURRENCY: process.env.CURRENCY || 'usd'
 }
