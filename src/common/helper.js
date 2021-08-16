@@ -951,14 +951,7 @@ async function listUsersByExternalId (externalId) {
     message: `response body: ${JSON.stringify(res.body)}`
   })
 
-  const users = res.body
-  // populate skill data for each user skill
-  await Promise.all(users.map(user => Promise.all(user.skills.map(async userSkill => {
-    const skill = await getSkillById(userSkill.skillId)
-    userSkill.skill = skill
-  }))))
-
-  return users
+  return res.body
 }
 
 /**
