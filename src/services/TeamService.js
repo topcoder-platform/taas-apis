@@ -328,16 +328,11 @@ async function getTeam (currentUser, id) {
   const teamDetail = result[0]
 
   // add job skills for result
-  let jobSkills = []
   if (teamDetail && teamDetail.jobs) {
+    const allSkills = await helper.searchAllSkills()
     for (const job of teamDetail.jobs) {
       if (job.skills) {
-        const usersPromises = []
-        _.map(job.skills, (skillId) => {
-          usersPromises.push(helper.getSkillById(skillId))
-        })
-        jobSkills = await Promise.all(usersPromises)
-        job.skills = jobSkills
+        job.skills = job.skills.map((skillId) => _.pick(allSkills.find(skill => skill.id === skillId), ['id', 'name']))
       }
     }
   }
@@ -375,9 +370,8 @@ async function getTeamJob (currentUser, id, jobId) {
   }
 
   if (job.skills) {
-    result.skills = await Promise.all(
-      _.map(job.skills, (skillId) => helper.getSkillById(skillId))
-    )
+    const allSkills = await helper.searchAllSkills()
+    result.skills = job.skills.map((skillId) => _.pick(allSkills.find(skill => skill.id === skillId), ['id', 'name']))
   }
 
   // If the job has candidates, the following data for each candidate would be populated:

@@ -952,11 +952,11 @@ async function listUsersByExternalId (externalId) {
   })
 
   const users = res.body
+  const allSkills = await searchAllSkills()
   // populate skill data for each user skill
-  await Promise.all(users.map(user => Promise.all(user.skills.map(async userSkill => {
-    const skill = await getSkillById(userSkill.skillId)
-    userSkill.skill = skill
-  }))))
+  users.map(user => user.skills.map(userSkill => {
+    userSkill.skill = allSkills.find(skill => skill.id === userSkill.skillId)
+  }))
 
   return users
 }
@@ -1100,7 +1100,8 @@ async function getUserById (userId, enrich) {
   const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
 
   if (enrich) {
-    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => getSkillById(userSkill.skillId)))
+    const allSkills = await searchAllSkills()
+    user.skills = (res.body.skills || []).map((userSkill) => allSkills.find(skill => skill.id === userSkill.skillId))
     const attributes = _.get(res, 'body.attributes', [])
     user.attributes = _.map(attributes, (attr) =>
       _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
@@ -1217,25 +1218,21 @@ async function getProjectById (currentUser, id) {
 
 /**
  * Function to search skills from v5/skills
- * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
  * @param {Object} criteria the search criteria
  * @returns the request result
  */
-async function getTopcoderSkills (criteria) {
+async function searchSkills (criteria) {
   const token = await getM2MUbahnToken()
   try {
     const res = await request
       .get(`${config.TC_BETA_API}/skills`)
-      .query({
-        taxonomyId: config.TOPCODER_TAXONOMY_ID,
-        ...criteria
-      })
+      .query(criteria)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
     localLogger.debug({
-      context: 'getTopcoderSkills',
+      context: 'searchSkills',
       message: `response body: ${JSON.stringify(res.body)}`
     })
     return {
@@ -1253,6 +1250,37 @@ async function getTopcoderSkills (criteria) {
 }
 
 /**
+ * Function to search skills from v5/skills
+ * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
+ *
+ * @param {Object} criteria the search criteria
+ * @returns the request result
+ */
+async function getTopcoderSkills (criteria) {
+  return searchSkills({
+    taxonomyId: config.TOPCODER_TAXONOMY_ID,
+    ...criteria
+  })
+}
+
+/**
+ * Function to search and retrive all skills from v5/skills
+ *
+ * @param {Object} criteria the search criteria
+ * @returns the request result
+ */
+async function searchAllSkills (criteria) {
+  const skills = await searchSkills(_.assign(criteria, { page: 1, perPage: 100 }))
+  while (skills.page * skills.perPage <= skills.total) {
+    const newSkills = await searchSkills(_.assign(criteria, { page: skills.page + 1, perPage: 100 }))
+    skills.result = [...skills.result, ...newSkills.result]
+    skills.page = newSkills.page
+    skills.total = newSkills.total
+  }
+  return skills.result
+}
+
+/**
  * Function to search and retrive all skills from v5/skills
  * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
@@ -1260,14 +1288,10 @@ async function getTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getAllTopcoderSkills (criteria) {
-  const skills = await getTopcoderSkills(_.assign(criteria, { page: 1, perPage: 100 }))
-  while (skills.page * skills.perPage <= skills.total) {
-    const newSkills = await getTopcoderSkills(_.assign(criteria, { page: skills.page + 1, perPage: 100 }))
-    skills.result = [...skills.result, ...newSkills.result]
-    skills.page = newSkills.page
-    skills.total = newSkills.total
-  }
-  return skills.result
+  return searchAllSkills({
+    taxonomyId: config.TOPCODER_TAXONOMY_ID,
+    ...criteria
+  })
 }
 
 /**
@@ -2081,6 +2105,7 @@ module.exports = {
   getProjectById,
   getTopcoderSkills,
   getAllTopcoderSkills,
+  searchAllSkills,
   getSkillById,
   ensureJobById,
   ensureResourceBookingById,
