@@ -186,7 +186,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     type: 'taas.notification.job-candidate-selected',
     details: {
       channel: config.NOTIFICATION_SLACK_CHANNEL,
-      text: template.subject,
+      text: data.subject,
       blocks: [
         {
           type: 'section',
