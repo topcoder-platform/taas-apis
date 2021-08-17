@@ -545,7 +545,7 @@ async function sendNotification (currentUser, data, webNotifications = []) {
   const dataCC = data.cc || []
   const templateCC = template.cc || []
   const dataRecipients = data.recipients || []
-  const templateRecipients = template.recipients || []
+  const templateRecipients = (template.recipients || []).map(email => ({ email }))
   const subjectBody = {
     subject: data.subject || template.subject,
     body: data.body || template.body

@@ -175,7 +175,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     type: 'taas.notification.job-candidate-selected',
     details: {
       from: template.from,
-      recipients: template.recipients,
+      recipients: (template.recipients || []).map(email => ({ email })),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
