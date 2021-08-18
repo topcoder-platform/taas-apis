@@ -69,6 +69,7 @@ workflows:
               only:
                 - dev
                 - change-validatations-in-job-jc
+                - feature/enriching-skills-data-with-api-2
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
