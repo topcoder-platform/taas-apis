@@ -86,7 +86,7 @@ async function sendPlacedNotifications (payload) {
   const project = await helper.getProjectById({ isMachine: true }, resourceBooking.projectId)
   const user = await helper.getUserById(resourceBooking.userId)
   const job = await models.Job.findById(resourceBooking.jobId)
-  const recipients = _.map(project.members, m => _.pick(m, 'email'))
+  const recipients = _.map(project.members, m => _.pick(m, 'userId'))
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
   const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
   const data = {
@@ -103,7 +103,7 @@ async function sendPlacedNotifications (payload) {
     },
     description: 'Resource Booking is Placed'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.resource-booking-placed',

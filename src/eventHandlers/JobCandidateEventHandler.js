@@ -154,6 +154,7 @@ async function sendJobCandidateSelectedNotification (payload) {
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-candidate-selected']
   const project = await helper.getProjectById({ isMachine: true }, job.projectId)
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
+  const rcrmJobUrl = `${config.RCRM_APP_URL}/job/${job.externalId}`
   const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
   const data = {
     subject: template.subject,
@@ -164,18 +165,19 @@ async function sendJobCandidateSelectedNotification (payload) {
     jobStartDate: helper.formatDateEDT(job.startDate),
     userHandle: user.handle,
     jobUrl,
+    rcrmJobUrl,
     notificationType: {
       candidateSelected: true
     },
     description: 'Job Candidate Selected'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-candidate-selected',
     details: {
       from: template.from,
-      recipients: template.recipients,
+      recipients: (template.recipients || []).map(email => ({ email })),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
@@ -186,7 +188,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     type: 'taas.notification.job-candidate-selected',
     details: {
       channel: config.NOTIFICATION_SLACK_CHANNEL,
-      text: template.subject,
+      text: data.subject,
       blocks: [
         {
           type: 'section',
@@ -201,7 +203,7 @@ async function sendJobCandidateSelectedNotification (payload) {
             type: 'mrkdwn',
             text: [
               `*Team Name*: <${teamUrl}|${project.name}>`,
-              `*Job Title*: <${jobUrl}|${job.title}>`,
+              `*Job Title*: <${jobUrl}|${job.title}> (<${rcrmJobUrl}|Open in RCRM>)`,
               `*Job Start Date*: ${helper.formatDateEDT(job.startDate)}`,
               `*Job Duration*: ${job.duration}`,
               `*Job Candidate*: ${user.handle}`

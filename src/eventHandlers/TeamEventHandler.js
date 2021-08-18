@@ -30,14 +30,14 @@ async function sendNotificationEmail (payload) {
     },
     description: 'New Team Created'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
 
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.team-created',
     details: {
       from: template.from,
-      recipients: _.map(payload.project.members, m => _.pick(m, 'email')),
+      recipients: _.map(payload.project.members, m => _.pick(m, 'userId')),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'

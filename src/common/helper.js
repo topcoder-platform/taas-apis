@@ -1878,7 +1878,7 @@ async function getUserByHandle (userHandle) {
  * @param {*} object of json that would be replaced in string
  * @returns
  */
-async function substituteStringByObject (string, object) {
+function substituteStringByObject (string, object) {
   for (var key in object) {
     if (!Object.prototype.hasOwnProperty.call(object, key)) {
       continue

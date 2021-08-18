@@ -97,14 +97,14 @@ async function sendNotifications (payload) {
     },
     description: 'New Job Created'
   }
-  data.subject = await helper.substituteStringByObject(data.subject, data)
+  data.subject = helper.substituteStringByObject(data.subject, data)
 
   const emailData = {
     serviceId: 'email',
     type: 'taas.notification.job-created',
     details: {
       from: template.from,
-      recipients: _.map(project.members, m => _.pick(m, 'email')),
+      recipients: _.map(project.members, m => _.pick(m, 'userId')),
       data,
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'

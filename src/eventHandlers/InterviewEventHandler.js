@@ -105,7 +105,7 @@ async function checkOverlapping (payload) {
       type: 'taas.notification.interviews-overlapping',
       details: {
         from: template.from,
-        recipients: template.recipients,
+        recipients: (template.recipients || []).map(email => ({ email })),
         data: {
           subject: template.subject,
           interviews,

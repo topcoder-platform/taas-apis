@@ -277,5 +277,7 @@ module.exports = {
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-  CURRENCY: process.env.CURRENCY || 'usd'
+  CURRENCY: process.env.CURRENCY || 'usd',
+  // RCRM base URL
+  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io'
 }
