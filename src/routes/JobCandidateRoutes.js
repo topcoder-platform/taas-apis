@@ -47,9 +47,13 @@ module.exports = {
   '/jobCandidates/:id/resume': {
     get: {
       controller: 'JobCandidateController',
-      method: 'downloadJobCandidateResume',
-      auth: 'jwt',
-      scopes: [constants.Scopes.READ_JOB_CANDIDATE, constants.Scopes.ALL_JOB_CANDIDATE]
+      method: 'downloadJobCandidateResume'
+      // TODO: we have to protect this endpoint somehow
+      //       but at the moment in the client app we are clicking this link
+      //       as a regular download link and we cannot pass JWT token to it
+      //       how to deal with it?
+      // auth: 'jwt',
+      // scopes: [constants.Scopes.READ_JOB_CANDIDATE, constants.Scopes.ALL_JOB_CANDIDATE]
     }
   }
 }
