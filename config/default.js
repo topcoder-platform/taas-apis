@@ -33,10 +33,12 @@ module.exports = {
 
   // the Topcoder v5 url
   TC_API: process.env.TC_API || 'https://api.topcoder-dev.com/v5',
+  // the Topcoder Beta API url currently v5.1
+  TC_BETA_API: process.env.TC_BETA_API || 'https://api.topcoder-dev.com/v5.1',
   // the organization id
   ORG_ID: process.env.ORG_ID || '36ed815b-3da1-49f1-a043-aaed0a4e81ad',
-  // the referenced skill provider id
-  TOPCODER_SKILL_PROVIDER_ID: process.env.TOPCODER_SKILL_PROVIDER_ID || '9cc0795a-6e12-4c84-9744-15858dba1861',
+  // the referenced taxonomy id
+  TOPCODER_TAXONOMY_ID: process.env.TOPCODER_TAXONOMY_ID || '9cc0795a-6e12-4c84-9744-15858dba1861',
 
   TOPCODER_USERS_API: process.env.TOPCODER_USERS_API || 'https://api.topcoder-dev.com/v3/users',
   // the api to find topcoder members
@@ -142,6 +144,8 @@ module.exports = {
   TAAS_ROLE_UPDATE_TOPIC: process.env.TAAS_ROLE_UPDATE_TOPIC || 'taas.role.update',
   // the delete role entity Kafka message topic
   TAAS_ROLE_DELETE_TOPIC: process.env.TAAS_ROLE_DELETE_TOPIC || 'taas.role.delete',
+  // the create team entity message topic, only used for eventHandler
+  TAAS_TEAM_CREATE_TOPIC: process.env.TAAS_TEAM_CREATE_TOPIC || 'taas.team.create',
   // special kafka topics
   TAAS_ACTION_RETRY_TOPIC: process.env.TAAS_ACTION_RETRY_TOPIC || 'taas.action.retry',
 
@@ -161,6 +165,10 @@ module.exports = {
   // INTERVIEW_INVITATION_RECIPIENTS_LIST may contain comma-separated list of email which is converted to array
   // scheduler@x.ai should be in the RECIPIENTS list
   INTERVIEW_INVITATION_RECIPIENTS_LIST: (process.env.INTERVIEW_INVITATION_RECIPIENTS_LIST || 'scheduler@topcoder.com').split(','),
+  // the emails address for overlapping interview
+  NOTIFICATION_OPS_EMAILS: (process.env.NOTIFICATION_OPS_EMAILS || 'overlapping@topcoder.com').split(','),
+  // the slack channel for sending notifications
+  NOTIFICATION_SLACK_CHANNEL: process.env.NOTIFICATION_SLACK_CHANNEL || '#tass-notification',
   // SendGrid email template ID for reporting issue
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
@@ -184,6 +192,7 @@ module.exports = {
   TOPCODER_SKILLS_CACHE_TIME: process.env.TOPCODER_SKILLS_CACHE_TIME || 60,
   // weekly survey scheduler config
   WEEKLY_SURVEY: {
+    SWITCH: process.env.WEEKLY_SURVEY_SWITCH || 'OFF',
     CRON: process.env.WEEKLY_SURVEY_CRON || '0 1 * * 7',
     BASE_URL: process.env.WEEKLY_SURVEY_BASE_URL || 'https://api.surveymonkey.net/v3/surveys',
     JWT_TOKEN: process.env.WEEKLY_SURVEY_JWT_TOKEN || '',
@@ -268,5 +277,7 @@ module.exports = {
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-  CURRENCY: process.env.CURRENCY || 'usd'
+  CURRENCY: process.env.CURRENCY || 'usd',
+  // RCRM base URL
+  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io'
 }

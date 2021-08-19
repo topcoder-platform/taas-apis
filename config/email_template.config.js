@@ -111,6 +111,13 @@ module.exports = {
    * List all kind of emails which could be send as Email Notifications by scheduler, API endpoints or anything else.
    */
   notificationEmailTemplates: {
+    'taas.notification.job-candidate-resume-viewed': {
+      subject: 'Topcoder - Client View Resume for Job {{jobName}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
     'taas.notification.candidates-available-for-review': {
       subject: 'Topcoder - {{teamName}} has job candidates available for review',
       body: '',
@@ -148,6 +155,41 @@ module.exports = {
     },
     'taas.notification.resource-booking-expiration': {
       subject: 'Topcoder - Resource Booking Expiring in {{teamName}} for {{numResourceBookings}} resource bookings',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.team-created': {
+      subject: 'Topcoder - New Team {{teamName}} Created',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.job-created': {
+      subject: 'Topcoder - New Job {{jobTitle}} Created in Team {{teamName}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interviews-overlapping': {
+      subject: 'Topcoder - Interviews overlapping',
+      body: '',
+      recipients: config.NOTIFICATION_OPS_EMAILS,
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.job-candidate-selected': {
+      subject: 'Topcoder - Job Candidate {{userHandle}} Selected for {{jobTitle}} in Team {{teamName}}',
+      body: '',
+      recipients: config.NOTIFICATION_OPS_EMAILS,
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.resource-booking-placed': {
+      subject: 'Topcoder - Resource Booking {{userHandle}} Placed for Job {{jobTitle}} in Team {{teamName}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,

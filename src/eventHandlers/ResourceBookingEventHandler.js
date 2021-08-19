@@ -4,6 +4,7 @@
 
 const { Op } = require('sequelize')
 const _ = require('lodash')
+const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
@@ -67,6 +68,70 @@ async function placeJobCandidate (payload) {
       message: `id: ${result.id} candidate got selected.`
     })
   })))
+}
+
+/**
+ * When ResourceBooking's status is changed to `placed`
+ * send notifications to user
+ *
+ * @param {Object} payload the event payload
+ * @returns {undefined}
+ */
+async function sendPlacedNotifications (payload) {
+  if (payload.value.status !== 'placed' || _.get(payload, 'options.oldValue.status') === 'placed') {
+    return
+  }
+  const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
+  const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.resource-booking-placed']
+  const project = await helper.getProjectById({ isMachine: true }, resourceBooking.projectId)
+  const user = await helper.getUserById(resourceBooking.userId)
+  const job = await models.Job.findById(resourceBooking.jobId)
+  const recipients = _.map(project.members, m => _.pick(m, 'userId'))
+  const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
+  const teamUrl = `${config.TAAS_APP_URL}/${project.id}`
+  const data = {
+    subject: template.subject,
+    teamName: project.name,
+    teamUrl,
+    jobTitle: job.title,
+    jobUrl,
+    userHandle: user.handle,
+    startDate: resourceBooking.startDate,
+    endDate: resourceBooking.endDate,
+    notificationType: {
+      resourceBookingPlaced: true
+    },
+    description: 'Resource Booking is Placed'
+  }
+  data.subject = helper.substituteStringByObject(data.subject, data)
+  const emailData = {
+    serviceId: 'email',
+    type: 'taas.notification.resource-booking-placed',
+    details: {
+      from: template.from,
+      recipients,
+      data,
+      sendgridTemplateId: template.sendgridTemplateId,
+      version: 'v3'
+    }
+  }
+  const webData = {
+    serviceId: 'web',
+    type: 'taas.notification.resource-booking-placed',
+    details: {
+      recipients,
+      contents: { teamName: project.name, projectId: project.id, userHandle: user.handle, jobTitle: job.title },
+      version: 1
+    }
+  }
+  await helper.postEvent(config.NOTIFICATIONS_CREATE_TOPIC, {
+    notifications: [emailData, webData]
+  })
+  logger.debug({
+    component: 'ResourceBookingEventHandler',
+    context: 'placeJobCandidate',
+    message: `send notifications, teamName: ${project.name}, jobTitle: ${job.title}, projectId: ${project.id}, userHandle: ${user.handle}`
+  })
 }
 
 /**
@@ -341,6 +406,7 @@ async function processCreate (payload) {
   await placeJobCandidate(payload)
   await assignJob(payload)
   await createWorkPeriods(payload)
+  await sendPlacedNotifications(payload)
 }
 
 /**
@@ -353,6 +419,7 @@ async function processUpdate (payload) {
   await placeJobCandidate(payload)
   await assignJob(payload)
   await updateWorkPeriods(payload)
+  await sendPlacedNotifications(payload)
 }
 
 /**
