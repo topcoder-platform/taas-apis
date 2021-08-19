@@ -2062,6 +2062,8 @@ function formatDateTimeEDT (date) {
 function formatDateEDT (date) {
   if (date) {
     return moment(date).tz('America/New_York').format('MMM D, YYYY')
+  } else {
+    return 'TBD'
   }
 }
 
