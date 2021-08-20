@@ -1925,7 +1925,8 @@ async function createProject (currentUser, data) {
     context: 'createProject',
     message: `response body: ${JSON.stringify(res)}`
   })
-  return _.get(res, 'body')
+  const result = _.get(res, 'body')
+  return _.extend(result, { name: _.unescape(_.get(result, 'name')) })
 }
 
 /**
