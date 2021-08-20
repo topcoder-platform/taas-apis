@@ -109,6 +109,7 @@ async function getDataForInterview (interview, jobCandidate, job) {
  * Sends notifications to all the teams which have candidates available for review
  */
 async function sendCandidatesAvailableNotifications () {
+  localLogger.debug('[sendCandidatesAvailableNotifications]: Looking for due records...')
   const jobsDao = await Job.findAll({
     include: [{
       model: JobCandidate,
@@ -190,6 +191,7 @@ async function sendCandidatesAvailableNotifications () {
  * Sends reminders to the hosts and guests about their upcoming interview(s)
  */
 async function sendInterviewComingUpNotifications () {
+  localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
   const currentTime = moment.utc()
   const timestampFilter = {
     [Op.or]: []
@@ -281,6 +283,7 @@ async function sendInterviewComingUpNotifications () {
  * Sends reminder to the interview host after it ends to change the interview status
  */
 async function sendInterviewCompletedNotifications () {
+  localLogger.debug('[sendInterviewCompletedNotifications]: Looking for due records...')
   const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
   const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
   const rangeEnd = rangeStart.clone().add(window)
@@ -344,6 +347,7 @@ async function sendInterviewCompletedNotifications () {
  * to update the job candidate status
  */
 async function sendPostInterviewActionNotifications () {
+  localLogger.debug('[sendPostInterviewActionNotifications]: Looking for due records...')
   const completedJobCandidates = await JobCandidate.findAll({
     where: {
       status: constants.JobCandidateStatus.INTERVIEW
@@ -436,6 +440,7 @@ async function sendPostInterviewActionNotifications () {
  * Sends reminders to all members of teams which have atleast one upcoming resource booking expiration
  */
 async function sendResourceBookingExpirationNotifications () {
+  localLogger.debug('[sendResourceBookingExpirationNotifications]: Looking for due records...')
   const currentTime = moment.utc()
   const maxEndDate = currentTime.clone().add(moment.duration(config.RESOURCE_BOOKING_EXPIRY_TIME))
 
