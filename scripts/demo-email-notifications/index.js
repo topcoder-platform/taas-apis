@@ -45,7 +45,7 @@ async function resetNotificationRecords () {
   await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const jobCandidateWithinOneDay = await JobCandidate.findById('827ee401-df04-42e1-abbe-7b97ce7937ff')
   await jobCandidateWithinOneDay.update({ status: 'interview', jobId: 'ff76b81d-f49b-4019-b50e-c7932a818f19' })
-  const interviewWithinOneDay = await Interview.findById('b1f7ba76-640f-47e2-9463-59e51b51ec60')
+  const interviewWithinOneDay = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
   await interviewWithinOneDay.update({ startTimestamp: completedStartTimestamp, duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
 
   // reset upcoming resource booking expiration records
