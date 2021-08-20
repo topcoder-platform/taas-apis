@@ -353,7 +353,10 @@ async function sendPostInterviewActionNotifications () {
       as: 'interviews',
       required: true,
       where: {
-        status: constants.Interviews.Status.Completed
+        status: constants.Interviews.Status.Completed,
+        startTimestamp: {
+          [Op.lte]: moment.utc().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW))
+        }
       }
     }]
   })
