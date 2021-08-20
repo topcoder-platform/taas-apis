@@ -239,7 +239,7 @@ async function sendInterviewComingUpNotifications () {
     if (!_.isEmpty(interview.hostEmail)) {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
-        recipients: [interview.hostEmail],
+        recipients: [{ email: interview.hostEmail }],
         data: {
           ...data,
           notificationType: {
@@ -258,7 +258,7 @@ async function sendInterviewComingUpNotifications () {
       // send guest emails
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
-        recipients: interview.guestEmails,
+        recipients: interview.guestEmails.map((email) => ({ email })),
         data: {
           ...data,
           notificationType: {
@@ -323,7 +323,7 @@ async function sendInterviewCompletedNotifications () {
 
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
-      recipients: [interview.hostEmail],
+      recipients: [{ email: interview.hostEmail }],
       data: {
         ...data,
         notificationType: {
@@ -543,7 +543,7 @@ async function sendResourceBookingExpirationNotifications () {
 async function sendNotification (currentUser, data, webNotifications = []) {
   const template = emailTemplates[data.template]
   const dataCC = data.cc || []
-  const templateCC = template.cc || []
+  const templateCC = (template.cc || []).map(email => ({ email }))
   const dataRecipients = data.recipients || []
   const templateRecipients = (template.recipients || []).map(email => ({ email }))
   const subjectBody = {
@@ -557,14 +557,14 @@ async function sendNotification (currentUser, data, webNotifications = []) {
     )
   }
 
-  const recipients = _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } })
+  const recipients = _.uniq([...dataRecipients, ...templateRecipients])
   const emailData = {
     serviceId: 'email',
     type: data.template,
     details: {
       from: data.from || template.from,
       recipients,
-      cc: _.map(_.uniq([...dataCC, ...templateCC]), function (r) { return { email: r } }),
+      cc: _.uniq([...dataCC, ...templateCC]),
       data: { ...data.data, ...subjectBody },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'
