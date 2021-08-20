@@ -49,7 +49,7 @@ async function sendNotificationEmail (payload) {
   logger.debug({
     component: 'TeamEventHandler',
     context: 'sendNotificationEmail',
-    message: `project id: ${payload.project.id} created with jobs: ${_.join(_.map(payload.jobs, 'id'), ',')}`
+    message: `project id: ${payload.project.id}, subject: ${data.subject}, created with jobs: ${_.join(_.map(payload.jobs, 'id'), ',')}`
   })
 }
 
