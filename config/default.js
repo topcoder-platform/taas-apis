@@ -250,7 +250,7 @@ module.exports = {
     offered: 'withdrawn'
   },
   // the sender email
-  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL,
+  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
   // the email notification sendgrid template id
   NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
