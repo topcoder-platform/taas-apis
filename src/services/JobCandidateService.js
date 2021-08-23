@@ -370,15 +370,14 @@ async function downloadJobCandidateResume (currentUser, id) {
   const { id: currentUserUserId } = await helper.getUserByExternalId(currentUser.userId)
 
   // customer role
-  if (!jobCandidate.viewedByCustomer && currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
+  if (currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
     try {
       const job = await models.Job.findById(jobCandidate.jobId)
       const { handle } = await helper.getUserById(jobCandidate.userId, true)
-      const { email } = await helper.getMemberDetailsByHandle(handle)
 
       await NotificationSchedulerService.sendNotification(currentUser, {
         template: 'taas.notification.job-candidate-resume-viewed',
-        recipients: [email],
+        recipients: [{ handle }],
         data: {
           jobCandidateUserHandle: handle,
           jobName: job.title,
