@@ -370,7 +370,7 @@ async function downloadJobCandidateResume (currentUser, id) {
   const { id: currentUserUserId } = await helper.getUserByExternalId(currentUser.userId)
 
   // customer role
-  if (currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
+  if (!jobCandidate.viewedByCustomer && currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
     try {
       const job = await models.Job.findById(jobCandidate.jobId)
       const { handle } = await helper.getUserById(jobCandidate.userId, true)
