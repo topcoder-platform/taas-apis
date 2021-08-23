@@ -250,7 +250,7 @@ module.exports = {
     offered: 'withdrawn'
   },
   // the sender email
-  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL,
+  NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
   // the email notification sendgrid template id
   NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
@@ -275,6 +275,8 @@ module.exports = {
   INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
   // The time before resource booking expiry when we should start sending notifications
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
+  // The match window for fetching post interview actions
+  POST_INTERVIEW_ACTION_MATCH_WINDOW: process.env.POST_INTERVIEW_ACTION_MATCH_WINDOW || 'P1D',
   // The Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   CURRENCY: process.env.CURRENCY || 'usd',

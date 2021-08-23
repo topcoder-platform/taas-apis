@@ -109,6 +109,7 @@ async function getDataForInterview (interview, jobCandidate, job) {
  * Sends notifications to all the teams which have candidates available for review
  */
 async function sendCandidatesAvailableNotifications () {
+  localLogger.debug('[sendCandidatesAvailableNotifications]: Looking for due records...')
   const jobsDao = await Job.findAll({
     include: [{
       model: JobCandidate,
@@ -190,6 +191,7 @@ async function sendCandidatesAvailableNotifications () {
  * Sends reminders to the hosts and guests about their upcoming interview(s)
  */
 async function sendInterviewComingUpNotifications () {
+  localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
   const currentTime = moment.utc()
   const timestampFilter = {
     [Op.or]: []
@@ -239,7 +241,7 @@ async function sendInterviewComingUpNotifications () {
     if (!_.isEmpty(interview.hostEmail)) {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
-        recipients: [interview.hostEmail],
+        recipients: [{ email: interview.hostEmail }],
         data: {
           ...data,
           notificationType: {
@@ -258,7 +260,7 @@ async function sendInterviewComingUpNotifications () {
       // send guest emails
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
-        recipients: interview.guestEmails,
+        recipients: interview.guestEmails.map((email) => ({ email })),
         data: {
           ...data,
           notificationType: {
@@ -281,6 +283,7 @@ async function sendInterviewComingUpNotifications () {
  * Sends reminder to the interview host after it ends to change the interview status
  */
 async function sendInterviewCompletedNotifications () {
+  localLogger.debug('[sendInterviewCompletedNotifications]: Looking for due records...')
   const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
   const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
   const rangeEnd = rangeStart.clone().add(window)
@@ -323,7 +326,7 @@ async function sendInterviewCompletedNotifications () {
 
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
-      recipients: [interview.hostEmail],
+      recipients: [{ email: interview.hostEmail }],
       data: {
         ...data,
         notificationType: {
@@ -344,6 +347,7 @@ async function sendInterviewCompletedNotifications () {
  * to update the job candidate status
  */
 async function sendPostInterviewActionNotifications () {
+  localLogger.debug('[sendPostInterviewActionNotifications]: Looking for due records...')
   const completedJobCandidates = await JobCandidate.findAll({
     where: {
       status: constants.JobCandidateStatus.INTERVIEW
@@ -353,7 +357,10 @@ async function sendPostInterviewActionNotifications () {
       as: 'interviews',
       required: true,
       where: {
-        status: constants.Interviews.Status.Completed
+        status: constants.Interviews.Status.Completed,
+        startTimestamp: {
+          [Op.lte]: moment.utc().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW))
+        }
       }
     }]
   })
@@ -436,6 +443,7 @@ async function sendPostInterviewActionNotifications () {
  * Sends reminders to all members of teams which have atleast one upcoming resource booking expiration
  */
 async function sendResourceBookingExpirationNotifications () {
+  localLogger.debug('[sendResourceBookingExpirationNotifications]: Looking for due records...')
   const currentTime = moment.utc()
   const maxEndDate = currentTime.clone().add(moment.duration(config.RESOURCE_BOOKING_EXPIRY_TIME))
 
@@ -543,7 +551,7 @@ async function sendResourceBookingExpirationNotifications () {
 async function sendNotification (currentUser, data, webNotifications = []) {
   const template = emailTemplates[data.template]
   const dataCC = data.cc || []
-  const templateCC = template.cc || []
+  const templateCC = (template.cc || []).map(email => ({ email }))
   const dataRecipients = data.recipients || []
   const templateRecipients = (template.recipients || []).map(email => ({ email }))
   const subjectBody = {
@@ -557,14 +565,14 @@ async function sendNotification (currentUser, data, webNotifications = []) {
     )
   }
 
-  const recipients = _.map(_.uniq([...dataRecipients, ...templateRecipients]), function (r) { return { email: r } })
+  const recipients = _.uniq([...dataRecipients, ...templateRecipients])
   const emailData = {
     serviceId: 'email',
     type: data.template,
     details: {
       from: data.from || template.from,
       recipients,
-      cc: _.map(_.uniq([...dataCC, ...templateCC]), function (r) { return { email: r } }),
+      cc: _.uniq([...dataCC, ...templateCC]),
       data: { ...data.data, ...subjectBody },
       sendgridTemplateId: template.sendgridTemplateId,
       version: 'v3'

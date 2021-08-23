@@ -1038,7 +1038,7 @@ async function getProjects (currentUser, criteria = {}) {
     message: `response body: ${JSON.stringify(res.body)}`
   })
   const result = _.map(res.body, (item) => {
-    return _.pick(item, ['id', 'name', 'invites', 'members'])
+    return _.extend(_.pick(item, ['id', 'invites', 'members']), { name: _.unescape(item.name) })
   })
   return {
     total: Number(_.get(res.headers, 'x-total')),
@@ -1195,7 +1195,7 @@ async function getProjectById (currentUser, id) {
       context: 'getProjectById',
       message: `response body: ${JSON.stringify(res.body)}`
     })
-    return _.pick(res.body, ['id', 'name', 'invites', 'members'])
+    return _.extend(_.pick(res.body, ['id', 'invites', 'members']), { name: _.unescape(res.body.name) })
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
       throw new errors.ForbiddenError(
@@ -1925,7 +1925,8 @@ async function createProject (currentUser, data) {
     context: 'createProject',
     message: `response body: ${JSON.stringify(res)}`
   })
-  return _.get(res, 'body')
+  const result = _.get(res, 'body')
+  return _.extend(result, { name: _.unescape(_.get(result, 'name')) })
 }
 
 /**
@@ -2062,6 +2063,8 @@ function formatDateTimeEDT (date) {
 function formatDateEDT (date) {
   if (date) {
     return moment(date).tz('America/New_York').format('MMM D, YYYY')
+  } else {
+    return 'TBD'
   }
 }
 
