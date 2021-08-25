@@ -14,7 +14,13 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const JobService = require('./JobService')
+const {
+  processCreate,
+  processUpdate,
+  processDelete
+} = require('../esProcessors/JobCandidateProcessor')
 
+const sequelize = models.sequelize
 const JobCandidate = models.JobCandidate
 const esClient = helper.getESClient()
 
@@ -118,9 +124,21 @@ async function createJobCandidate (currentUser, jobCandidate) {
   jobCandidate.id = uuid()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
 
-  const created = await JobCandidate.create(jobCandidate)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, created.toJSON())
-  return created.dataValues
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const created = await JobCandidate.create(jobCandidate, { transaction: t })
+      entity = created.toJSON()
+      await processCreate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.create')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, entity)
+  return entity
 }
 
 createJobCandidate.schema = Joi.object().keys({
@@ -155,8 +173,20 @@ async function updateJobCandidate (currentUser, id, data) {
 
   data.updatedBy = userId
 
-  const updated = await jobCandidate.update(data)
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await jobCandidate.update(data, { transaction: t })
+      entity = updated.toJSON()
+      await processUpdate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, entity, { oldValue: oldValue })
   const result = _.assign(jobCandidate.dataValues, data)
   return result
 }
@@ -225,7 +255,15 @@ async function deleteJobCandidate (currentUser, id) {
   }
 
   const jobCandidate = await JobCandidate.findById(id)
-  await jobCandidate.destroy()
+  try {
+    await sequelize.transaction(async (t) => {
+      await jobCandidate.destroy({ transaction: t })
+      await processDelete({ id })
+    })
+  } catch (e) {
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'jobcandidate.delete')
+    throw e
+  }
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
