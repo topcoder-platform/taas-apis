@@ -169,7 +169,7 @@ getJob.schema = Joi.object().keys({
  * @params {Object} job the job to be created
  * @returns {Object} the created job
  */
-async function createJob (currentUser, job) {
+async function createJob (currentUser, job, onTeamCreating) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
@@ -201,7 +201,7 @@ async function createJob (currentUser, job) {
     }
     throw e
   }
-  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity)
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity, { onTeamCreating })
   return entity
 }
 
@@ -231,7 +231,8 @@ createJob.schema = Joi.object()
         currency: Joi.stringAllowEmpty().allow(null),
         roleIds: Joi.array().items(Joi.string().uuid().required())
       })
-      .required()
+      .required(),
+    onTeamCreating: Joi.boolean().default(false)
   })
   .required()
 

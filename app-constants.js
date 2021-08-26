@@ -5,7 +5,8 @@
 const UserRoles = {
   BookingManager: 'bookingmanager',
   Administrator: 'administrator',
-  ConnectManager: 'Connect Manager'
+  ConnectManager: 'Connect Manager',
+  TopcoderUser: 'Topcoder User'
 }
 
 const FullManagePermissionRoles = [
@@ -113,11 +114,11 @@ const WorkPeriodPaymentStatus = {
  * The top rule has priority over the bottom rules.
  */
 const PaymentStatusRules = [
-  { paymentStatus: AggregatePaymentStatus.NO_DAYS, condition: { daysWorked: 0 } },
   { paymentStatus: AggregatePaymentStatus.IN_PROGRESS, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.SCHEDULED, WorkPeriodPaymentStatus.IN_PROGRESS] } },
   { paymentStatus: AggregatePaymentStatus.COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: false } },
   { paymentStatus: AggregatePaymentStatus.PARTIALLY_COMPLETED, condition: { hasWorkPeriodPaymentStatus: [WorkPeriodPaymentStatus.COMPLETED], hasDueDays: true } },
-  { paymentStatus: AggregatePaymentStatus.PENDING, condition: { hasDueDays: true } }
+  { paymentStatus: AggregatePaymentStatus.PENDING, condition: { hasDueDays: true } },
+  { paymentStatus: AggregatePaymentStatus.NO_DAYS, condition: { daysWorked: 0 } }
 ]
 
 /**
@@ -139,6 +140,11 @@ const WorkPeriodPaymentUpdateStatus = {
 }
 
 const PaymentProcessingSwitch = {
+  ON: 'ON',
+  OFF: 'OFF'
+}
+
+const WeeklySurveySwitch = {
   ON: 'ON',
   OFF: 'OFF'
 }
@@ -172,6 +178,7 @@ module.exports = {
   PaymentSchedulerStatus,
   PaymentProcessingSwitch,
   PaymentStatusRules,
+  WeeklySurveySwitch,
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
   JobCandidateStatus

@@ -20,7 +20,7 @@ const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const { PaymentStatusRules } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 
@@ -131,6 +131,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
   jobId: { type: 'keyword' },
   userId: { type: 'keyword' },
   status: { type: 'keyword' },
+  viewedByCustomer: { type: 'boolean' },
   externalId: { type: 'keyword' },
   resume: { type: 'text' },
   remark: { type: 'keyword' },
@@ -950,6 +951,7 @@ async function listUsersByExternalId (externalId) {
     context: 'listUserByExternalId',
     message: `response body: ${JSON.stringify(res.body)}`
   })
+
   return res.body
 }
 
@@ -1056,7 +1058,7 @@ async function getProjects (currentUser, criteria = {}) {
     message: `response body: ${JSON.stringify(res.body)}`
   })
   const result = _.map(res.body, (item) => {
-    return _.pick(item, ['id', 'name', 'invites', 'members'])
+    return _.extend(_.pick(item, ['id', 'invites', 'members']), { name: _.unescape(item.name) })
   })
   return {
     total: Number(_.get(res.headers, 'x-total')),
@@ -1112,9 +1114,7 @@ async function getUserById (userId, enrich) {
   const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
 
   if (enrich) {
-    user.skills = (res.body.skills || []).map((skillObj) =>
-      _.pick(skillObj.skill, ['id', 'name'])
-    )
+    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => getSkillById(userSkill.skillId)))
     const attributes = _.get(res, 'body.attributes', [])
     user.attributes = _.map(attributes, (attr) =>
       _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
@@ -1215,7 +1215,7 @@ async function getProjectById (currentUser, id) {
       context: 'getProjectById',
       message: `response body: ${JSON.stringify(res.body)}`
     })
-    return _.pick(res.body, ['id', 'name', 'invites', 'members'])
+    return _.extend(_.pick(res.body, ['id', 'invites', 'members']), { name: _.unescape(res.body.name) })
   } catch (err) {
     if (err.status === HttpStatus.FORBIDDEN) {
       throw new errors.ForbiddenError(
@@ -1231,7 +1231,7 @@ async function getProjectById (currentUser, id) {
 
 /**
  * Function to search skills from v5/skills
- * - only returns skills from Topcoder Skills Provider defined by `TOPCODER_SKILL_PROVIDER_ID`
+ * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
  * @param {Object} criteria the search criteria
  * @returns the request result
@@ -1240,9 +1240,9 @@ async function getTopcoderSkills (criteria) {
   const token = await getM2MUbahnToken()
   try {
     const res = await request
-      .get(`${config.TC_API}/skills`)
+      .get(`${config.TC_BETA_API}/skills`)
       .query({
-        skillProviderId: config.TOPCODER_SKILL_PROVIDER_ID,
+        taxonomyId: config.TOPCODER_TAXONOMY_ID,
         ...criteria
       })
       .set('Authorization', `Bearer ${token}`)
@@ -1268,7 +1268,7 @@ async function getTopcoderSkills (criteria) {
 
 /**
  * Function to search and retrive all skills from v5/skills
- * - only returns skills from Topcoder Skills Provider defined by `TOPCODER_SKILL_PROVIDER_ID`
+ * - only returns skills from Topcoder Skills API defined by `TOPCODER_TAXONOMY_ID`
  *
  * @param {Object} criteria the search criteria
  * @returns the request result
@@ -1292,7 +1292,7 @@ async function getAllTopcoderSkills (criteria) {
 async function getSkillById (skillId) {
   const token = await getM2MUbahnToken()
   const res = await request
-    .get(`${config.TC_API}/skills/${skillId}`)
+    .get(`${config.TC_BETA_API}/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
@@ -1898,7 +1898,7 @@ async function getUserByHandle (userHandle) {
  * @param {*} object of json that would be replaced in string
  * @returns
  */
-async function substituteStringByObject (string, object) {
+function substituteStringByObject (string, object) {
   for (var key in object) {
     if (!Object.prototype.hasOwnProperty.call(object, key)) {
       continue
@@ -1945,7 +1945,8 @@ async function createProject (currentUser, data) {
     context: 'createProject',
     message: `response body: ${JSON.stringify(res)}`
   })
-  return _.get(res, 'body')
+  const result = _.get(res, 'body')
+  return _.extend(result, { name: _.unescape(_.get(result, 'name')) })
 }
 
 /**
@@ -2061,6 +2062,32 @@ function getEmailTemplatesForKey (key) {
   })
 }
 
+/**
+ * Format date and time in EDT timezone
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDateTimeEDT (date) {
+  if (date) {
+    return moment(date).tz('America/New_York').format('MMM D, YYYY, HH:mm z')
+  }
+}
+
+/**
+ * Format date in EDT timezone
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDateEDT (date) {
+  if (date) {
+    return moment(date).tz('America/New_York').format('MMM D, YYYY')
+  } else {
+    return 'TBD'
+  }
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2125,5 +2152,7 @@ module.exports = {
   getMemberGroups,
   removeTextFormatting,
   getMembersSuggest,
-  getEmailTemplatesForKey
+  getEmailTemplatesForKey,
+  formatDateTimeEDT,
+  formatDateEDT
 }

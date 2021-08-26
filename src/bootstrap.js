@@ -3,7 +3,7 @@ const Joi = require('joi')
 const config = require('config')
 const path = require('path')
 const _ = require('lodash')
-const { Interviews, AggregatePaymentStatus, WorkPeriodPaymentStatus, WorkPeriodPaymentUpdateStatus, PaymentProcessingSwitch } = require('../app-constants')
+const { Interviews, AggregatePaymentStatus, WorkPeriodPaymentStatus, WorkPeriodPaymentUpdateStatus, PaymentProcessingSwitch, WeeklySurveySwitch } = require('../app-constants')
 const logger = require('./common/logger')
 
 const allowedInterviewStatuses = _.values(Interviews.Status)
@@ -51,8 +51,12 @@ buildServices(path.join(__dirname, 'services'))
 const paymentProcessingSwitchSchema = Joi.string().label('PAYMENT_PROCESSING_SWITCH').valid(
   ...Object.values(PaymentProcessingSwitch)
 )
+const weeklySurveySwitchSchema = Joi.string().label('WEEKLY_SURVEY_SWITCH').valid(
+  ...Object.values(WeeklySurveySwitch)
+)
 try {
   Joi.attempt(config.PAYMENT_PROCESSING.SWITCH, paymentProcessingSwitchSchema)
+  Joi.attempt(config.WEEKLY_SURVEY.SWITCH, weeklySurveySwitchSchema)
 } catch (err) {
   console.error(err.message)
   process.exit(1)

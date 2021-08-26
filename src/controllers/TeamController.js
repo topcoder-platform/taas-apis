@@ -160,8 +160,8 @@ async function suggestMembers (req, res) {
  * @param req the request
  * @param res the response
  */
- async function calculateAmount(req, res) {
-  res.send(await service.calculateAmount(req.body));
+async function calculateAmount (req, res) {
+  res.send(await service.calculateAmount(req.body))
 }
 
 /**
@@ -169,8 +169,8 @@ async function suggestMembers (req, res) {
  * @param req the request
  * @param res the response
  */
-async function createPayment(req, res) {
-  res.send(await service.createPayment(req.body.totalAmount));
+async function createPayment (req, res) {
+  res.send(await service.createPayment(req.body.totalAmount))
 }
 
 /**
@@ -178,10 +178,9 @@ async function createPayment(req, res) {
  * @param req the request
  * @param res the response
  */
- async function isExternalMember(req, res) {
-  res.send(await service.isExternalMember(req.body.memberId));
+async function isExternalMember (req, res) {
+  res.send(await service.isExternalMember(req.body.memberId))
 }
-
 
 module.exports = {
   searchTeams,

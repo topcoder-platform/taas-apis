@@ -64,11 +64,22 @@ async function searchJobCandidates (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Download jobCandidate resume
+ * @param req the request
+ * @param res the response
+ */
+async function downloadJobCandidateResume (req, res) {
+  const resumeUrl = await service.downloadJobCandidateResume(req.authUser, req.params.id)
+  res.redirect(resumeUrl)
+}
+
 module.exports = {
   getJobCandidate,
   createJobCandidate,
   partiallyUpdateJobCandidate,
   fullyUpdateJobCandidate,
   deleteJobCandidate,
-  searchJobCandidates
+  searchJobCandidates,
+  downloadJobCandidateResume
 }

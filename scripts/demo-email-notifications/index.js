@@ -1,6 +1,8 @@
 const Kafka = require('no-kafka')
 const fs = require('fs')
 const config = require('config')
+const axios = require('axios')
+const _ = require('lodash')
 const moment = require('moment')
 const handlebars = require('handlebars')
 const logger = require('../../src/common/logger')
@@ -40,7 +42,11 @@ async function resetNotificationRecords () {
   const jobCandidate = await JobCandidate.findById('881a19de-2b0c-4bb9-b36a-4cb5e223bdb5')
   await jobCandidate.update({ status: 'interview' })
   const c2Interview = await Interview.findById('077aa2ca-5b60-4ad9-a965-1b37e08a5046')
-  await c2Interview.update({ startTimestamp: completedStartTimestamp, duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const jobCandidateWithinOneDay = await JobCandidate.findById('827ee401-df04-42e1-abbe-7b97ce7937ff')
+  await jobCandidateWithinOneDay.update({ status: 'interview' })
+  const interviewWithinOneDay = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
+  await interviewWithinOneDay.update({ startTimestamp: completedStartTimestamp, duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
 
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
@@ -64,10 +70,15 @@ async function initConsumer () {
             fs.mkdirSync('out')
           }
           if (message.payload.notifications) {
-            message.payload.notifications.forEach((notification) => {
+            _.forEach(_.filter(message.payload.notifications, ['serviceId', 'email']), (notification) => {
               const email = template(notification.details.data)
               fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
             })
+            for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {
+              if (process.env.SLACK_WEBHOOK_URL) {
+                await axios.post(process.env.SLACK_WEBHOOK_URL, { text: notification.details.text, blocks: notification.details.blocks })
+              }
+            }
           }
         }
       }
