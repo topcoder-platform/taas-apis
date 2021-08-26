@@ -68,7 +68,7 @@ workflows:
             branches:
               only:
                 - dev
-                - change-validatations-in-job-jc
+                - feature/shapeup4-cqrs-update
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
