@@ -922,6 +922,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /jobCandidates/{id}/resume:
+    get:
+      tags:
+        - JobCandidates
+      description: |
+        Get job candidate resume by id.
+
+        **Authorization** Topcoder token with read job candidate scope is allowed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The job candidate id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/msword:
+              schema:
+                $ref: "#/components/schemas/JobCandidateResume"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /jobCandidates/{jobCandidateId}/requestInterview:
     patch:
       tags:
@@ -3157,7 +3212,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UbahnSkill"
+                  $ref: "#/components/schemas/SkillInSkillsAPI"
           headers:
             X-Next-Page:
               schema:
@@ -4326,6 +4381,9 @@ components:
                 "withdrawn-prescreen",
               ]
             description: "The array of job Candidates status"
+    JobCandidateResume:
+        type: string
+        format: binary
     JobCandidateRequestBody:
       required:
         - jobId
@@ -5516,17 +5574,25 @@ components:
           type: string
           example: "React"
           description: The skill name.
-    UbahnSkill:
-      type: object
+    SkillInSkillsAPI:
+      required:
+        - "id"
+        - "name"
+        - "taxonomyId"
+        - "taxonomyName"
+        - "metadata"
       properties:
         id:
           type: "string"
           format: "UUID"
           description: "The skill id"
-        skillProviderId:
+        taxonomyId:
           type: "string"
           format: "UUID"
-          description: "The referenced skill provider id"
+          description: "The referenced taxonomy id"
+        taxonomyName:
+          type: "string"
+          description: "The referenced taxonomy name"
         name:
           type: "string"
           description: "The name of the skill"
@@ -5536,22 +5602,20 @@ components:
         uri:
           type: "string"
           description: "The uri for the skill"
-        created:
-          type: "string"
-          format: "date-time"
-          description: "When the entity was created."
-        updated:
-          type: "string"
-          format: "date-time"
-          description: "When the entity was updated."
-        createdBy:
-          type: "string"
-          format: "UUID"
-          description: "Creator of the entity."
-        updatedBy:
-          type: "string"
-          format: "UUID"
-          description: "User that last updated the entity."
+        metadata:
+          type: "object"
+          description: "The metadata for the skill"
+          properties:
+            updated:
+              type: "string"
+              format: "date-time"
+              description: "The last updated timestamp of the skill"
+            challengeProminence:
+              type: "string"
+              description: "The challenge prominence ranging from [0, 1]"
+            memberProminence:
+              type: "string"
+              description: "The member prominence ranging from [0, 1]"
     JobForTeam:
       properties:
         id:
