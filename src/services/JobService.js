@@ -201,7 +201,8 @@ async function createJob (currentUser, job, onTeamCreating) {
     }
     throw e
   }
-  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity)
+
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity, { onTeamCreating })
   return entity
 }
 
