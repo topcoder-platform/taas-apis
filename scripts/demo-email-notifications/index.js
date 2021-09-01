@@ -17,18 +17,18 @@ const localLogger = {
 }
 
 const templateFileMap = {
-  [config.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/candidate-was-viewed-by-client-email-template.html', 'utf8')),
-  [config.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/candidates-are-available-for-review-email-template.html', 'utf8')),
-  [config.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/customer-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/members-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/interview-completed-email-template.html', 'utf8')),
-  [config.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/post-interview-action-reminder-email-template.html', 'utf8')),
-  [config.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/upcoming-resource-booking-expiration-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/new-team-created-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/new-job-added-to-existing-project-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/interviews-overlapping-email-template.html', 'utf8')),
-  [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/job-candidate-selected-email-template.html', 'utf8')),
-  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/resource-placed-email-template.html', 'utf8'))
+  [config.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidate-was-viewed-by-client-email-template.html', 'utf8')),
+  [config.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidates-are-available-for-review-email-template.html', 'utf8')),
+  [config.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/customer-interview-coming-up-email-template.html', 'utf8')),
+  [config.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/members-interview-coming-up-email-template.html', 'utf8')),
+  [config.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-completed-email-template.html', 'utf8')),
+  [config.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/post-interview-action-reminder-email-template.html', 'utf8')),
+  [config.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/upcoming-resource-booking-expiration-email-template.html', 'utf8')),
+  [config.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-team-created-email-template.html', 'utf8')),
+  [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-job-added-to-existing-project-email-template.html', 'utf8')),
+  [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interviews-overlapping-email-template.html', 'utf8')),
+  [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/job-candidate-selected-email-template.html', 'utf8')),
+  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/resource-placed-email-template.html', 'utf8'))
 }
 
 /**
