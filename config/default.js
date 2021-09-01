@@ -273,6 +273,10 @@ module.exports = {
   NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of resource placed
   NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interviews overlapping
+  NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of job candidate selected
+  NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews

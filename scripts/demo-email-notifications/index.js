@@ -26,6 +26,8 @@ const templateFileMap = {
   [config.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/upcoming-resource-booking-expiration-email-template.html', 'utf8')),
   [config.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/new-team-created-email-template.html', 'utf8')),
   [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/new-job-added-to-existing-project-email-template.html', 'utf8')),
+  [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/interviews-overlapping-email-template.html', 'utf8')),
+  [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/job-candidate-selected-email-template.html', 'utf8')),
   [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/resource-placed-email-template.html', 'utf8'))
 }
 

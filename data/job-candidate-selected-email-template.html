@@ -52,7 +52,7 @@
                 <tr style="border-top-left-radius:6px;border-top-right-radius:6px;margin:0;padding:0">
                   <td
                           style="border-top-left-radius:6px;border-top-right-radius:6px;color:#ededf2;font-size:20px;font-weight:normal;margin:0;padding:0;text-align:center">
-                    Update on Your Application</td>
+                    Topcoder Gig Work</td>
                 </tr>
                 </tbody>
               </table>
@@ -72,7 +72,7 @@
                           class="CToWUd"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0;width:10px"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0">
-                    Client Has Viewed Your Profile
+                    {{description}}
                   </td>
                 </tr>
                 </tbody>
@@ -95,17 +95,28 @@
                         </td>
                         <td
                                 style="color:#151516;font-size:13px;line-height:20px;margin:0;padding:0;vertical-align:middle">
-                          </br>
-                          Thanks for applying for a Topcoder Gig. This is an update to let you know that the client has viewed your profile. We will notify you about next steps.
-                          
-                          </br>
-                          </br>
-                          To check the status of all your Gig Work applications, log in to your Topcoder account and head to My Gigs → Open Applications.
+
+                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
+                            </tr>
+                            <tr>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{jobUrl}} target="_blank" rel="noopener noreferrer">{{jobTitle}}</a></td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
+                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
+                            </tr>
+                          </table>
 
                           <br/>
-                          <br/>
-                          Thanks!
-                          <p>
+                          If you have any questions about this process or if you encounter any issues coordinating your availability, you may reply to this email or send a separate email to <a href="mailto:talent@topcoder.com">our Gig Work operations team</a>.
+
+                          <p>Thanks!<br/>
                             The Topcoder Team
                           </p>
                         </td>

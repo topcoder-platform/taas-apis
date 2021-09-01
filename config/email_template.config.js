@@ -179,14 +179,14 @@ module.exports = {
       body: '',
       recipients: config.NOTIFICATION_OPS_EMAILS,
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.job-candidate-selected': {
       subject: 'Topcoder - Job Candidate {{userHandle}} Selected for {{jobTitle}} in Team {{teamName}}',
       body: '',
       recipients: config.NOTIFICATION_OPS_EMAILS,
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.resource-booking-placed': {
       subject: 'Your Topcoder talent is confirmed! How to start working with them.',
