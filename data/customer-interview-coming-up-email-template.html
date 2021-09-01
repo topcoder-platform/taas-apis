@@ -52,7 +52,7 @@
                 <tr style="border-top-left-radius:6px;border-top-right-radius:6px;margin:0;padding:0">
                   <td
                           style="border-top-left-radius:6px;border-top-right-radius:6px;color:#ededf2;font-size:20px;font-weight:normal;margin:0;padding:0;text-align:center">
-                    Topcoder Gig Work</td>
+                    interview Coming Up</td>
                 </tr>
                 </tbody>
               </table>
@@ -72,7 +72,13 @@
                           class="CToWUd"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0;width:10px"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0">
-                    {{description}}
+                    Reminder: You Have an Upcoming Interview
+                    </br>
+                    </br>
+                    Ohhh the butterflies before a first date. Just kidding, this is totally professional. But meeting someone who could potentially make your life a lot easier is very exciting. 
+                    </br>
+                    </br>
+                    This is your reminder that you have an interview coming up with an awesome Topcoder freelance candidate. Click the link below to review their resume and profile before the big event.
                   </td>
                 </tr>
                 </tbody>
@@ -95,50 +101,35 @@
                         </td>
                         <td
                                 style="color:#151516;font-size:13px;line-height:20px;margin:0;padding:0;vertical-align:middle">
-
-                          {{#if notificationType.overlappingInterview}}
-                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
-                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview Start Date</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interview End Date</td>
-                            </tr>
-                            {{#each interviews}}
-                            <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{this.teamURL}} target="_blank" rel="noopener noreferrer">{{this.teamName}}</a></td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{this.jobURL}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a></td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.candidateUserHandle}}</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.endTime}}</td>
-                            </tr>
-                            {{/each}}
-                          </table>
-                          {{/if}}
-                          {{#if notificationType.candidateSelected}}
-                          <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
-                            <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Team Name</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Title</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Start Date</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Duration</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job Candidate</td>
-                            </tr>
-                            <tr>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{teamUrl}} target="_blank" rel="noopener noreferrer">{{teamName}}</a></td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;"><a href={{jobUrl}} target="_blank" rel="noopener noreferrer">{{jobTitle}}</a></td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobStartDate}}</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{jobDuration}}</td>
-                              <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{userHandle}}</td>
-                            </tr>
-                          </table>
-                          {{/if}}
+                                <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:95%;">
+                                  <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Candidate Handle</td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviews</td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Attendees</td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Date and Time</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                      <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
+                                    </td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                      <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Link</a></td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
+                                      <ul style="list-style-type:none;margin:0;padding:0;">
+                                        {{#each this.attendees}}
+                                        <li>{{this}}</li>
+                                        {{/each}}
+                                      </ul>
+                                    </td>
+                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
+                                  </tr>
+                                </table>
 
                           <br/>
-                          If you have any questions about this process or if you encounter any issues coordinating your availability, you may reply to this email or send a separate email to <a href="mailto:talent@topcoder.com">our Gig Work operations team</a>.
-
-                          <p>Thanks!<br/>
+                          Can’t wait to hear how it goes,
+                          <p>
                             The Topcoder Team
                           </p>
                         </td>

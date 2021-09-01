@@ -253,6 +253,26 @@ module.exports = {
   NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
   // the email notification sendgrid template id
   NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidate was viewed by client
+  NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidates are available for review
+  NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for customer
+  NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for member
+  NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview completed
+  NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of post interview action reminder
+  NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of upcoming resource booking expiration
+  NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new team created
+  NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new job added to existing project
+  NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of resource placed
+  NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews
