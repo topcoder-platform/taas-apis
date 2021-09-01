@@ -214,7 +214,12 @@ async function sendInterviewComingUpNotifications () {
   const filter = {
     [Op.and]: [
       {
-        status: { [Op.eq]: constants.Interviews.Status.Scheduled }
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled
+          ]
+        }
       },
       {
         startTimestamp: timestampFilter
@@ -276,10 +281,16 @@ async function sendInterviewCompletedNotifications () {
   const filter = {
     [Op.and]: [
       {
-        status: { [Op.eq]: constants.Interviews.Status.Scheduled }
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled,
+            constants.Interviews.Status.Completed
+          ]
+        }
       },
       {
-        endTimestamp: {
+        startTimestamp: {
           [Op.and]: [
             {
               [Op.gte]: rangeStart
@@ -337,7 +348,13 @@ async function sendPostInterviewActionNotifications () {
       as: 'interviews',
       required: true,
       where: {
-        status: constants.Interviews.Status.Completed,
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled,
+            constants.Interviews.Status.Completed
+          ]
+        },
         startTimestamp: {
           [Op.lte]: moment.utc().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW))
         }

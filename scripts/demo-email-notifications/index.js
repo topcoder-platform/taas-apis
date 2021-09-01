@@ -44,22 +44,28 @@ async function resetNotificationRecords () {
   // reset completed interview records
   localLogger.info('reset completed interview records')
   const pastTime = moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME)
-  const endTimestamp = moment().subtract(pastTime).add(config.INTERVIEW_COMPLETED_MATCH_WINDOW).toDate()
+  const completedStartTimestamp = moment().subtract(pastTime).add(config.INTERVIEW_COMPLETED_MATCH_WINDOW).toDate()
   const completedInterview = await Interview.findById('9efd72c3-1dc7-4ce2-9869-8cca81d0adeb')
   const duration = 30
-  const completedStartTimestamp = moment().subtract(pastTime).subtract(30, 'm').toDate()
-  await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const completedEndTimestamp = moment(completedStartTimestamp).clone().add(30, 'm').toDate()
+  await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
 
   // reset post interview candidate action reminder records
   localLogger.info('reset post interview candidate action reminder records')
   const jobCandidate = await JobCandidate.findById('881a19de-2b0c-4bb9-b36a-4cb5e223bdb5')
   await jobCandidate.update({ status: 'interview' })
   const c2Interview = await Interview.findById('077aa2ca-5b60-4ad9-a965-1b37e08a5046')
-  await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const jobCandidateWithinOneDay = await JobCandidate.findById('827ee401-df04-42e1-abbe-7b97ce7937ff')
   await jobCandidateWithinOneDay.update({ status: 'interview' })
   const interviewWithinOneDay = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
-  await interviewWithinOneDay.update({ startTimestamp: completedStartTimestamp, duration, endTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  await interviewWithinOneDay.update({
+    startTimestamp: moment(completedStartTimestamp).clone().add(config.INTERVIEW_COMPLETED_MATCH_WINDOW), // add WINDOW to not receive "completed interview" email
+    duration,
+    endTimeStamp: moment(completedEndTimestamp).clone().add(config.INTERVIEW_COMPLETED_MATCH_WINDOW), // add WINDOW to not receive "completed interview" email
+    guestNames: ['guest1', 'guest2'],
+    hostName: 'hostName'
+  })
 
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
