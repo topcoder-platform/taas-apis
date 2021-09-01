@@ -253,8 +253,6 @@ module.exports = {
   },
   // the sender email
   NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
-  // the email notification sendgrid template id
-  NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of candidate was viewed by client
   NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of candidates are available for review
