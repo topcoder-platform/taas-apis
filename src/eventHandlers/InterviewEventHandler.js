@@ -108,7 +108,11 @@ async function checkOverlapping (payload) {
         recipients: (template.recipients || []).map(email => ({ email })),
         data: {
           subject: template.subject,
-          interviews
+          interviews,
+          notificationType: {
+            overlappingInterview: true
+          },
+          description: 'Overlapping Job Candidate Interviews'
         },
         sendgridTemplateId: template.sendgridTemplateId,
         version: 'v3'

@@ -165,7 +165,11 @@ async function sendJobCandidateSelectedNotification (payload) {
     jobStartDate: helper.formatDateEDT(job.startDate),
     userHandle: user.handle,
     jobUrl,
-    rcrmJobUrl
+    rcrmJobUrl,
+    notificationType: {
+      candidateSelected: true
+    },
+    description: 'Job Candidate Selected'
   }
   data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {
