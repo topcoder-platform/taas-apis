@@ -16,20 +16,7 @@ const localLogger = {
   info: message => logger.info({ component: 'render email content', context: 'test', message })
 }
 
-const templateFileMap = {
-  [config.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidate-was-viewed-by-client-email-template.html', 'utf8')),
-  [config.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidates-are-available-for-review-email-template.html', 'utf8')),
-  [config.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/customer-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/members-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-completed-email-template.html', 'utf8')),
-  [config.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/post-interview-action-reminder-email-template.html', 'utf8')),
-  [config.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/upcoming-resource-booking-expiration-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-team-created-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-job-added-to-existing-project-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interviews-overlapping-email-template.html', 'utf8')),
-  [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/job-candidate-selected-email-template.html', 'utf8')),
-  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/resource-placed-email-template.html', 'utf8'))
-}
+const template = handlebars.compile(fs.readFileSync('./data/notifications-email-template.html', 'utf8'))
 
 /**
  * Reset notification records
@@ -90,7 +77,7 @@ async function initConsumer () {
           }
           if (message.payload.notifications) {
             _.forEach(_.filter(message.payload.notifications, ['serviceId', 'email']), (notification) => {
-              const email = templateFileMap[notification.details.sendgridTemplateId](notification.details.data)
+              const email = template(notification.details.data)
               fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
             })
             for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {

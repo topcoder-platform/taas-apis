@@ -91,7 +91,11 @@ async function sendNotifications (payload) {
     jobTitle: payload.value.title,
     jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${payload.value.id}`,
     jobDuration: payload.value.duration,
-    jobStartDate: helper.formatDateEDT(payload.value.startDate)
+    jobStartDate: helper.formatDateEDT(payload.value.startDate),
+    notificationType: {
+      newJobCreated: true
+    },
+    description: 'New Job Created'
   }
   data.subject = helper.substituteStringByObject(data.subject, data)
 
