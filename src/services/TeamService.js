@@ -791,7 +791,7 @@ roleSearchRequest.schema = Joi.object()
 async function getRoleBySkills (skills) {
   // find all roles which includes any of the given skills
 
-  logger.debug(`getRoleBySkills: ${JSON.parse(skills)}`)
+  logger.debug(`getRoleBySkills: ${JSON.stringify(skills)}`)
 
   const queryCriteria = {
     where: { listOfSkills: { [Op.overlap]: skills } },
@@ -815,7 +815,7 @@ async function getRoleBySkills (skills) {
     // sort roles by skillsMatch, global rate and name
     result = _.orderBy(result, ['skillsMatch', 'maxGlobal', 'name'], ['desc', 'desc', 'asc'])
 
-    logger.debug(`after sorting result: ${JSON.parse(result)}`)
+    logger.debug(`after sorting result: ${JSON.stringify(result)}`)
 
     if (result[0].skillsMatch >= config.ROLE_MATCHING_RATE) {
       // return the 1st role
@@ -825,7 +825,7 @@ async function getRoleBySkills (skills) {
   // if no matching role found then return Custom role or empty object
   const customRole = await Role.findOne({ where: { name: { [Op.iLike]: 'Custom' } }, raw: true }) || {}
 
-  logger.debug(`got custom role: ${JSON.parse(customRole)}`)
+  logger.debug(`got custom role: ${JSON.stringify(customRole)}`)
 
   customRole.rates[0].rate30Global = customRole.rates[0].global * 0.75
   customRole.rates[0].rate20Global = customRole.rates[0].global * 0.5
