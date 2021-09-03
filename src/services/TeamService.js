@@ -799,7 +799,7 @@ async function getRoleBySkills (skills) {
   }
   let roles = await Role.findAll(queryCriteria)
 
-  logger.debug(`find roles: ${JSON.parse(roles)}`)
+  logger.debug(`find roles: ${JSON.stringify(roles)}`)
 
   roles = _.filter(roles, role => _.find(role.rates, r => r.global && r.rate20Global && r.rate30Global))
   if (roles.length > 0) {
