@@ -16,7 +16,7 @@ async function processCreate (entity) {
     index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
     id: entity.id,
     body: entity,
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
@@ -31,7 +31,7 @@ async function processUpdate (entity) {
     body: {
       doc: entity
     },
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
@@ -43,7 +43,7 @@ async function processDelete (entity) {
   await esClient.delete({
     index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
     id: entity.id,
-    refresh: 'wait_for'
+    refresh: 'true'
   })
 }
 
