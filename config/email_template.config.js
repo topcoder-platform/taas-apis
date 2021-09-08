@@ -154,7 +154,7 @@ module.exports = {
       sendgridTemplateId: config.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.resource-booking-expiration': {
-      subject: 'Reminder: 3 weeks left in your Angular Developer’s gig',
+      subject: 'Reminder: 3 weeks left for your Topcoder Freelancer(s)',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
