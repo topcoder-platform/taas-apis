@@ -119,6 +119,12 @@ paths:
             type: integer
           description: The project id.
         - in: query
+          name: isApplicationPageActive 
+          required: false
+          schema:
+            type: boolean 
+          description: Is application page active.
+        - in: query
           name: projectIds
           required: false
           schema:
