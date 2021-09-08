@@ -15,6 +15,12 @@ const errors = require('../common/errors')
 const models = require('../models')
 const { WorkPeriodPaymentStatus, ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const { searchResourceBookings } = require('./ResourceBookingService')
+const {
+  processCreate,
+  processUpdate
+} = require('../esProcessors/WorkPeriodPaymentProcessor')
+
+const sequelize = models.sequelize
 
 const WorkPeriodPayment = models.WorkPeriodPayment
 const WorkPeriod = models.WorkPeriod
@@ -119,9 +125,23 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
   workPeriodPayment.status = WorkPeriodPaymentStatus.SCHEDULED
   workPeriodPayment.createdBy = createdBy
 
-  const created = await WorkPeriodPayment.create(workPeriodPayment)
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, created.toJSON(), { key: `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}` })
-  return created.dataValues
+  const key = `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}`
+
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const created = await WorkPeriodPayment.create(workPeriodPayment, { transaction: t })
+      entity = created.toJSON()
+      await processCreate({ ...entity, key })
+    })
+  } catch (err) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'workperiodpayment.create')
+    }
+    throw err
+  }
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_CREATE_TOPIC, entity, { key })
+  return entity
 }
 
 /**
@@ -296,9 +316,23 @@ async function updateWorkPeriodPayment (id, data) {
     await _updateChallenge(workPeriodPayment.challengeId, data)
   }
 
-  const updated = await workPeriodPayment.update(data)
-  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue, key: `workPeriodPayment.billingAccountId:${updated.billingAccountId}` })
-  return updated.dataValues
+  const key = `workPeriodPayment.billingAccountId:${workPeriodPayment.billingAccountId}`
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await workPeriodPayment.update(data, { transaction: t })
+      entity = updated.toJSON()
+
+      await processUpdate({ ...entity, key })
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'workperiodpayment.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_WORK_PERIOD_PAYMENT_UPDATE_TOPIC, entity, { oldValue: oldValue, key })
+  return entity
 }
 
 /**

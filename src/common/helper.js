@@ -1000,6 +1000,26 @@ async function postEvent (topic, payload, options = {}) {
 }
 
 /**
+ * Send error event to Kafka
+ * @params {String} topic the topic name
+ * @params {Object} payload the payload
+ * @params {String} action for which operation error occurred
+ */
+async function postErrorEvent (topic, payload, action) {
+  _.set(payload, 'apiAction', action)
+  const client = getBusApiClient()
+  const message = {
+    topic,
+    originator: config.KAFKA_MESSAGE_ORIGINATOR,
+    timestamp: new Date().toISOString(),
+    'mime-type': 'application/json',
+    payload
+  }
+  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message, null, 2)}`)
+  await client.postEvent(message)
+}
+
+/**
  * Test if an error is document missing exception
  *
  * @param {Object} err the err
@@ -2094,6 +2114,7 @@ module.exports = {
   getM2MToken,
   getM2MUbahnToken,
   postEvent,
+  postErrorEvent,
   getBusApiClient,
   isDocumentMissingException,
   getProjects,

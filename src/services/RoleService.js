@@ -11,7 +11,13 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const {
+  processCreate,
+  processUpdate,
+  processDelete
+} = require('../esProcessors/RoleProcessor')
 
+const sequelize = models.sequelize
 const Role = models.Role
 const esClient = helper.getESClient()
 
@@ -118,10 +124,21 @@ async function createRole (currentUser, role) {
   role.id = uuid.v4()
   role.createdBy = await helper.getUserId(currentUser.userId)
 
-  const created = await Role.create(role)
-
-  await helper.postEvent(config.TAAS_ROLE_CREATE_TOPIC, created.toJSON())
-  return created.toJSON()
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const created = await Role.create(role, { transaction: t })
+      entity = created.toJSON()
+      await processCreate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'role.create')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_ROLE_CREATE_TOPIC, entity)
+  return entity
 }
 
 createRole.schema = Joi.object().keys({
@@ -175,10 +192,22 @@ async function updateRole (currentUser, id, data) {
   }
 
   data.updatedBy = await helper.getUserId(currentUser.userId)
-  const updated = await role.update(data)
 
-  await helper.postEvent(config.TAAS_ROLE_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
-  return updated.toJSON()
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await role.update(data, { transaction: t })
+      entity = updated.toJSON()
+      await processUpdate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'role.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, entity, { oldValue: oldValue })
+  return entity
 }
 
 updateRole.schema = Joi.object().keys({
@@ -220,7 +249,16 @@ async function deleteRole (currentUser, id) {
   await _checkUserPermissionForWriteDeleteRole(currentUser)
 
   const role = await Role.findById(id)
-  await role.destroy()
+
+  try {
+    await sequelize.transaction(async (t) => {
+      await role.destroy({ transaction: t })
+      await processDelete({ id })
+    })
+  } catch (e) {
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'role.delete')
+    throw e
+  }
   await helper.postEvent(config.TAAS_ROLE_DELETE_TOPIC, { id })
 }
 

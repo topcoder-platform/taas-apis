@@ -12,11 +12,18 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const {
+  processCreate,
+  processUpdate,
+  processDelete
+} = require('../esProcessors/WorkPeriodProcessor')
 const constants = require('../../app-constants')
 const moment = require('moment')
 
 const WorkPeriod = models.WorkPeriod
 const esClient = helper.getESClient()
+
+const sequelize = models.sequelize
 
 // "startDate" and "endDate" should always represent one week:
 // "startDate" should be always Monday and "endDate" should be always Sunday of the same week.
@@ -221,19 +228,27 @@ async function createWorkPeriod (workPeriod) {
   workPeriod.id = uuid.v4()
   workPeriod.createdBy = config.m2m.M2M_AUDIT_USER_ID
 
-  let created = null
+  const key = `resourceBooking.id:${workPeriod.resourceBookingId}`
+
+  let entity
   try {
-    created = await WorkPeriod.create(workPeriod)
+    await sequelize.transaction(async (t) => {
+      const created = await WorkPeriod.create(workPeriod, { transaction: t })
+      entity = created.toJSON()
+      await processCreate({ ...entity, key })
+    })
   } catch (err) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'workperiod.create')
+    }
     if (!_.isUndefined(err.original)) {
       throw new errors.BadRequestError(err.original.detail)
     } else {
       throw err
     }
   }
-
-  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, created.toJSON(), { key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
-  return created.dataValues
+  await helper.postEvent(config.TAAS_WORK_PERIOD_CREATE_TOPIC, entity, { key })
+  return entity
 }
 
 createWorkPeriod.schema = Joi.object().keys({
@@ -278,11 +293,25 @@ async function updateWorkPeriod (currentUser, id, data) {
   if (!currentUser.isMachine) {
     data.updatedBy = await helper.getUserId(currentUser.userId)
   }
-  const updated = await workPeriod.update(data)
-  const updatedDataWithoutPayments = _.omit(updated.toJSON(), ['payments'])
+  const key = `resourceBooking.id:${workPeriod.resourceBookingId}`
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await workPeriod.update(data, { transaction: t })
+      entity = updated.toJSON()
+
+      entity = _.omit(entity, ['payments'])
+      await processUpdate({ ...entity, key })
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'workperiod.update')
+    }
+    throw e
+  }
   const oldValueWithoutPayments = _.omit(oldValue, ['payments'])
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, updatedDataWithoutPayments, { oldValue: oldValueWithoutPayments, key: `resourceBooking.id:${updated.resourceBookingId}` })
-  return updatedDataWithoutPayments
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, entity, { oldValue: oldValueWithoutPayments, key })
+  return entity
 }
 
 /**
@@ -318,13 +347,24 @@ async function deleteWorkPeriod (id) {
   if (_.some(workPeriod.payments, payment => constants.ActiveWorkPeriodPaymentStatuses.indexOf(payment.status) !== -1)) {
     throw new errors.BadRequestError(`Can't delete WorkPeriod as it has associated WorkPeriodsPayment with one of statuses ${constants.ActiveWorkPeriodPaymentStatuses.join(', ')}`)
   }
-  await models.WorkPeriodPayment.destroy({
-    where: {
-      workPeriodId: id
-    }
-  })
-  await workPeriod.destroy()
-  await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id }, { key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
+
+  const key = `resourceBooking.id:${workPeriod.resourceBookingId}`
+  try {
+    await sequelize.transaction(async (t) => {
+      await models.WorkPeriodPayment.destroy({
+        where: {
+          workPeriodId: id
+        },
+        transaction: t
+      })
+      await workPeriod.destroy({ transaction: t })
+      await processDelete({ id, key })
+    })
+  } catch (e) {
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'workperiod.delete')
+    throw e
+  }
+  await helper.postEvent(config.TAAS_WORK_PERIOD_DELETE_TOPIC, { id }, { key })
 }
 
 deleteWorkPeriod.schema = Joi.object().keys({

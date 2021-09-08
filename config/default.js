@@ -95,6 +95,9 @@ module.exports = {
   KAFKA_ERROR_TOPIC: process.env.KAFKA_ERROR_TOPIC || 'common.error.reporting',
   // The originator value for the kafka messages
   KAFKA_MESSAGE_ORIGINATOR: process.env.KAFKA_MESSAGE_ORIGINATOR || 'taas-api',
+
+  // topics for error
+  TAAS_ERROR_TOPIC: process.env.TAAS_ERROR_TOPIC || 'taas.action.error',
   // topics for job service
   // the create job entity Kafka message topic
   TAAS_JOB_CREATE_TOPIC: process.env.TAAS_JOB_CREATE_TOPIC || 'taas.job.create',
