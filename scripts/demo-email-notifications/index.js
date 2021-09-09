@@ -36,6 +36,8 @@ async function resetNotificationRecords () {
   const duration = 30
   const completedEndTimestamp = moment(completedStartTimestamp).clone().add(30, 'm').toDate()
   await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const completedInterview2 = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
+  await completedInterview2.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
 
   // reset post interview candidate action reminder records
   localLogger.info('reset post interview candidate action reminder records')
@@ -43,16 +45,6 @@ async function resetNotificationRecords () {
   await jobCandidate.update({ status: 'interview' })
   const c2Interview = await Interview.findById('077aa2ca-5b60-4ad9-a965-1b37e08a5046')
   await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
-  const jobCandidateWithinOneDay = await JobCandidate.findById('827ee401-df04-42e1-abbe-7b97ce7937ff')
-  await jobCandidateWithinOneDay.update({ status: 'interview' })
-  const interviewWithinOneDay = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
-  await interviewWithinOneDay.update({
-    startTimestamp: moment(completedStartTimestamp).clone().add(config.INTERVIEW_COMPLETED_MATCH_WINDOW), // add WINDOW to not receive "completed interview" email
-    duration,
-    endTimeStamp: moment(completedEndTimestamp).clone().add(config.INTERVIEW_COMPLETED_MATCH_WINDOW), // add WINDOW to not receive "completed interview" email
-    guestNames: ['guest1', 'guest2'],
-    hostName: 'hostName'
-  })
 
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
