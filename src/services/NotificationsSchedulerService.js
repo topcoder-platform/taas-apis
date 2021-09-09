@@ -318,10 +318,11 @@ async function sendInterviewCompletedNotifications () {
     ]
   }
 
-  const interviews = await Interview.findAll({
+  let interviews = await Interview.findAll({
     where: filter,
     raw: true
   })
+  interviews = _.map(_.values(_.groupBy(interviews, 'jobCandidateId')), (interviews) => _.maxBy(interviews, 'round'))
 
   localLogger.debug(`[sendInterviewCompletedNotifications]: Found ${interviews.length} interviews which must be ended by now.`)
 
@@ -411,28 +412,27 @@ async function sendPostInterviewActionNotifications () {
       const projectJcs = _.filter(completedJobCandidates, jc => jc.jobId === projectJob.id)
       numCandidates += projectJcs.length
       for (const projectJc of projectJcs) {
-        for (const interview of projectJc.interviews) {
-          const d = await getDataForInterview(interview, projectJc, projectJob)
-          if (!d) { continue }
-          d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
-          webNotifications.push({
-            serviceId: 'web',
-            type: template,
-            details: {
-              recipients: projectTeamRecipients,
-              contents: {
-                jobTitle: d.jobTitle,
-                teamName: project.name,
-                projectId,
-                jobId: projectJob.id,
-                userHandle: d.handle
-              },
-              version: 1
-            }
-          })
+        const interview = _.maxBy(projectJc.interviews, 'round')
+        const d = await getDataForInterview(interview, projectJc, projectJob)
+        if (!d) { continue }
+        d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
+        webNotifications.push({
+          serviceId: 'web',
+          type: template,
+          details: {
+            recipients: projectTeamRecipients,
+            contents: {
+              jobTitle: d.jobTitle,
+              teamName: project.name,
+              projectId,
+              jobId: projectJob.id,
+              userHandle: d.handle
+            },
+            version: 1
+          }
+        })
 
-          teamInterviews.push(d)
-        }
+        teamInterviews.push(d)
       }
     }
 
