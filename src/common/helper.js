@@ -106,7 +106,7 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
   externalId: { type: 'keyword' },
   description: { type: 'text' },
   title: { type: 'text' },
-  startDate: { type: 'date' },
+  startDate: { type: 'date', format: 'yyyy-MM-dd' },
   duration: { type: 'integer' },
   numPositions: { type: 'integer' },
   resourceType: { type: 'keyword' },
@@ -2075,6 +2075,20 @@ function formatDateTimeEDT (date) {
 }
 
 /**
+ * Format date
+ *
+ * @param {Date} date date to be formatted
+ * @returns {String} formatted date
+ */
+function formatDate (date) {
+  if (date) {
+    return moment(date).format('MMM D, YYYY')
+  } else {
+    return 'TBD'
+  }
+}
+
+/**
  * Format date in EDT timezone
  *
  * @param {Date} date date to be formatted
@@ -2153,6 +2167,7 @@ module.exports = {
   removeTextFormatting,
   getMembersSuggest,
   getEmailTemplatesForKey,
+  formatDate,
   formatDateTimeEDT,
   formatDateEDT
 }

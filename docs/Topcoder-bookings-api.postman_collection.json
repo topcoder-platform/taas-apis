@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7993a8d5-36d9-45f6-a6ea-e779598139cf",
+		"_postman_id": "d53e9443-d401-4795-98c6-2d349f7f0313",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -33,7 +33,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -77,7 +77,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -120,7 +120,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -164,7 +164,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\",\n    \"7d076384-ccf6-4e43-a45d-1b24b1e624aa\",\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -207,7 +207,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -250,7 +250,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"full-time\",\n  \"skills\": [\n    \"56fdc405-eccc-4189-9e83-c78abf844f50\",\n    \"f91ae184-aba2-4485-a8cb-9336988c05ab\",\n    \"edfc7b4f-636f-44bd-96fc-949ffc58e38b\",\n    \"4ca63bb6-f515-4ab0-a6bc-c2d8531e084f\",\n    \"ee03c041-d53b-4c08-b7d9-80d7461da3e4\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -990,7 +990,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1023,7 +1023,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\",\n    \"a2b4bc11-c641-4a19-9eb7-33980378f82e\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1056,7 +1056,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1102,7 +1102,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1135,7 +1135,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description updated\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1168,7 +1168,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1201,7 +1201,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"projectId\": {{projectId}},\n  \"externalId\": \"1212\",\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"cc41ddc4-cacc-4570-9bdb-1229c12b9784\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1234,7 +1234,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1267,7 +1267,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"cbac57a3-7180-4316-8769-73af64893158\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1300,7 +1300,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1346,7 +1346,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1379,7 +1379,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description updated 2\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"23e00d92-207a-4b5b-b3c9-4c5662644941\"\n  ],\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1412,7 +1412,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1445,7 +1445,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27T04:17:23.131Z\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
+							"raw": "{\n  \"description\": \"Dummy Description\",\n  \"startDate\": \"2020-09-27\",\n  \"duration\": 1,\n  \"numPositions\": 13,\n  \"resourceType\": \"Dummy Resource Type\",\n  \"rateType\": \"hourly\",\n  \"workload\": \"fractional\",\n  \"skills\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ],\n  \"status\": \"sourcing\",\n  \"title\": \"Dummy title - at most 64 characters\",\n  \"minSalary\": 100,\n  \"maxSalary\": 200,\n  \"hoursPerWeek\": 20,\n  \"jobLocation\": \"Any location\",\n  \"jobTimezone\": \"GMT\",\n  \"currency\": \"USD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

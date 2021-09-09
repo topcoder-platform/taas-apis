@@ -67,7 +67,7 @@ module.exports = (sequelize) => {
       },
       startDate: {
         field: 'start_date',
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       duration: {
         field: 'duration',
