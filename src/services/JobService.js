@@ -453,6 +453,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     }
 
     _.each(_.pick(criteria, [
+      'isApplicationPageActive',
       'projectId',
       'externalId',
       'description',
@@ -532,6 +533,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, [
+    'isApplicationPageActive',
     'projectId',
     'externalId',
     'startDate',
@@ -595,6 +597,7 @@ searchJobs.schema = Joi.object().keys({
     sortOrder: Joi.string().valid('desc', 'asc'),
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
+    isApplicationPageActive: Joi.boolean(),
     description: Joi.string(),
     title: Joi.title(),
     startDate: Joi.date(),

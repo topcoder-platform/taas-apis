@@ -19,7 +19,7 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "in-review",
-            "isApplicationPageActive": false,
+            "isApplicationPageActive": true,
             "minSalary": 100,
             "maxSalary": 200,
             "hoursPerWeek": 20,
@@ -51,7 +51,7 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "in-review",
-            "isApplicationPageActive": false,
+            "isApplicationPageActive": true,
             "minSalary": 100,
             "maxSalary": 200,
             "hoursPerWeek": 80,
@@ -83,7 +83,7 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "in-review",
-            "isApplicationPageActive": false,
+            "isApplicationPageActive": true,
             "minSalary": 100,
             "maxSalary": 200,
             "hoursPerWeek": 90,
@@ -115,7 +115,7 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "in-review",
-            "isApplicationPageActive": false,
+            "isApplicationPageActive": true,
             "minSalary": 100,
             "maxSalary": 200,
             "hoursPerWeek": 20,
@@ -148,7 +148,7 @@
                 "0b104b7c-0792-4118-8bc7-a274e9ee19e3"
             ],
             "status": "closed",
-            "isApplicationPageActive": false,
+            "isApplicationPageActive": true,
             "minSalary": null,
             "maxSalary": null,
             "hoursPerWeek": null,
