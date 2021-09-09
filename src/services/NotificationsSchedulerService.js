@@ -323,12 +323,19 @@ async function sendInterviewCompletedNotifications () {
     raw: true
   })
 
+  const jobCandidates = await JobCandidate.findAll({ where: { id: _.map(interviews, 'jobCandidateId') } })
+  const jcMap = _.keyBy(jobCandidates, 'id')
+
   localLogger.debug(`[sendInterviewCompletedNotifications]: Found ${interviews.length} interviews which must be ended by now.`)
 
   let sentCount = 0
   for (const interview of interviews) {
     if (_.isEmpty(interview.hostEmail)) {
       localLogger.error(`Interview id: ${interview.id} host email not present`)
+      continue
+    }
+    if (!jcMap[interview.jobCandidateId] || jcMap[interview.jobCandidateId].status !== constants.JobCandidateStatus.INTERVIEW) {
+      localLogger.error(`Interview id: ${interview.id} job candidate status is not ${constants.JobCandidateStatus.INTERVIEW}`)
       continue
     }
 

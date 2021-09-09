@@ -36,6 +36,8 @@ async function resetNotificationRecords () {
   const duration = 30
   const completedEndTimestamp = moment(completedStartTimestamp).clone().add(30, 'm').toDate()
   await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const completedInterview2 = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
+  await completedInterview2.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
 
   // reset post interview candidate action reminder records
   localLogger.info('reset post interview candidate action reminder records')
