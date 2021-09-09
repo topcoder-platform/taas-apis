@@ -339,7 +339,7 @@ async function sendInterviewCompletedNotifications () {
       continue
     }
 
-    const data = await getDataForInterview(interview)
+    const data = await getDataForInterview(interview, jcMap[interview.jobCandidateId])
     if (!data) { continue }
 
     sendNotification({}, {
