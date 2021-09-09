@@ -13,7 +13,15 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-
+const {
+  processRequestInterview,
+  processUpdateInterview,
+  processBulkUpdateInterviews
+} = require('../esProcessors/InterviewProcessor')
+const {
+  processUpdate: jobCandidateProcessUpdate
+} = require('../esProcessors/JobCandidateProcessor')
+const sequelize = models.sequelize
 const Interview = models.Interview
 const esClient = helper.getESClient()
 
@@ -245,25 +253,35 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
     return (foundGuestMember !== undefined) ? `${foundGuestMember.firstName} ${foundGuestMember.lastName}` : guestEmail.split('@')[0]
   })
 
+  let entity
+  let jobCandidateEntity
   try {
-    // create the interview
-    const created = await Interview.create(interview)
-    await helper.postEvent(config.TAAS_INTERVIEW_REQUEST_TOPIC, created.toJSON())
-    // update jobCandidate.status to Interview
-    const [, affectedRows] = await models.JobCandidate.update(
-      { status: 'interview' },
-      { where: { id: created.jobCandidateId }, returning: true }
-    )
-    const updatedJobCandidate = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
-    await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, updatedJobCandidate)
-    // return created interview
-    return created.dataValues
+    await sequelize.transaction(async (t) => {
+      // create the interview
+      const created = await Interview.create(interview, { transaction: t })
+      entity = created.toJSON()
+      await processRequestInterview(entity)
+      // update jobCandidate.status to Interview
+      const [, affectedRows] = await models.JobCandidate.update(
+        { status: 'interview' },
+        { where: { id: created.jobCandidateId }, returning: true, transaction: t }
+      )
+      jobCandidateEntity = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
+      await jobCandidateProcessUpdate(jobCandidateEntity)
+    })
   } catch (err) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'interview.request')
+    }
     // gracefully handle if one of the common sequelize errors
     handleSequelizeError(err, jobCandidateId)
     // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
     throw err
   }
+  await helper.postEvent(config.TAAS_INTERVIEW_REQUEST_TOPIC, entity)
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, jobCandidateEntity)
+  // return created interview
+  return entity
 }
 
 requestInterview.schema = Joi.object().keys({
@@ -301,16 +319,24 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
   }
 
   data.updatedBy = await helper.getUserId(currentUser.userId)
+  let entity
   try {
-    const updated = await interview.update(data)
-    await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, updated.toJSON(), { oldValue: interview.toJSON() })
-    return updated.dataValues
+    await sequelize.transaction(async (t) => {
+      const updated = await interview.update(data, { transaction: t })
+      entity = updated.toJSON()
+      await processUpdateInterview(entity)
+    })
   } catch (err) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'interview.update')
+    }
     // gracefully handle if one of the common sequelize errors
     handleSequelizeError(err, interview.jobCandidateId)
     // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
     throw err
   }
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interview.toJSON() })
+  return entity
 }
 
 /**
@@ -571,38 +597,58 @@ searchInterviews.schema = Joi.object().keys({
 async function updateCompletedInterviews () {
   logger.info({ component: 'InterviewService', context: 'updateCompletedInterviews', message: 'Running the scheduled job...' })
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-  const [affectedCount, updatedRows] = await Interview.update(
-    // '00000000-0000-0000-0000-000000000000' - to indicate it's updated by the system job
-    { status: InterviewConstants.Status.Completed, updatedBy: '00000000-0000-0000-0000-000000000000' },
-    {
-      where: {
-        status: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-        startTimestamp: {
-          [Op.lte]: oneHourAgo
-        }
-      },
-      returning: true
-    }
-  )
 
-  // post event if there are affected/updated interviews
-  if (affectedCount > 0) {
-    // payload format:
-    // {
-    //   jobCandidateId: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
-    //   jobCandidateId2: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
-    //   ...
-    // }
-    const bulkUpdatePayload = {}
-    // construct payload
-    _.forEach(updatedRows, row => {
-      const interview = row.toJSON()
-      const affectedFields = _.pick(interview, ['status', 'updatedBy', 'updatedAt'])
-      _.set(bulkUpdatePayload, [interview.jobCandidateId, interview.id], affectedFields)
+  let entity
+  let affectedCount
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await Interview.update(
+        // '00000000-0000-0000-0000-000000000000' - to indicate it's updated by the system job
+        { status: InterviewConstants.Status.Completed, updatedBy: '00000000-0000-0000-0000-000000000000' },
+        {
+          where: {
+            status: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
+            startTimestamp: {
+              [Op.lte]: oneHourAgo
+            }
+          },
+          returning: true,
+          transaction: t
+        }
+      )
+      let updatedRows
+      [affectedCount, updatedRows] = updated
+
+      // post event if there are affected/updated interviews
+      if (affectedCount > 0) {
+        // payload format:
+        // {
+        //   jobCandidateId: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
+        //   jobCandidateId2: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
+        //   ...
+        // }
+        const bulkUpdatePayload = {}
+        // construct payload
+        _.forEach(updatedRows, row => {
+          const interview = row.toJSON()
+          const affectedFields = _.pick(interview, ['status', 'updatedBy', 'updatedAt'])
+          _.set(bulkUpdatePayload, [interview.jobCandidateId, interview.id], affectedFields)
+        })
+        entity = bulkUpdatePayload
+        await processBulkUpdateInterviews(bulkUpdatePayload)
+      }
     })
-    // post event
-    await helper.postEvent(config.TAAS_INTERVIEW_BULK_UPDATE_TOPIC, bulkUpdatePayload)
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'interview.bulkupdate')
+    }
+    throw e
   }
+  if (affectedCount) {
+    // post event
+    await helper.postEvent(config.TAAS_INTERVIEW_BULK_UPDATE_TOPIC, entity)
+  }
+
   logger.info({ component: 'InterviewService', context: 'updateCompletedInterviews', message: `Completed running. Updated ${affectedCount} interviews.` })
 }
 

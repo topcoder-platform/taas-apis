@@ -190,7 +190,7 @@ async function sendCandidatesAvailableNotifications () {
  */
 async function sendInterviewComingUpNotifications () {
   localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
-  const currentTime = moment.utc()
+  const currentTime = moment.utc().startOf('minute')
   const timestampFilter = {
     [Op.or]: []
   }
@@ -202,10 +202,10 @@ async function sendInterviewComingUpNotifications () {
     timestampFilter[Op.or].push({
       [Op.and]: [
         {
-          [Op.gt]: rangeStart
+          [Op.gte]: rangeStart
         },
         {
-          [Op.lte]: rangeEnd
+          [Op.lt]: rangeEnd
         }
       ]
     })
@@ -276,7 +276,7 @@ async function sendInterviewComingUpNotifications () {
 async function sendInterviewCompletedNotifications () {
   localLogger.debug('[sendInterviewCompletedNotifications]: Looking for due records...')
   const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
-  const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
+  const rangeStart = moment.utc().startOf('minute').subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
   const rangeEnd = rangeStart.clone().add(window)
   const filter = {
     [Op.and]: [

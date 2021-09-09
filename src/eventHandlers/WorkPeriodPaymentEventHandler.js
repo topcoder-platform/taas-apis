@@ -9,7 +9,11 @@ const logger = require('../common/logger')
 const helper = require('../common/helper')
 const { ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const WorkPeriod = models.WorkPeriod
+const {
+  processUpdate: processUpdateEs
+} = require('../esProcessors/WorkPeriodProcessor')
 
+const sequelize = models.sequelize
 /**
  * When a WorkPeriodPayment is updated or created, the workPeriod related to
  * that WorkPeriodPayment should be updated also.
@@ -39,8 +43,25 @@ async function updateWorkPeriod (payload) {
     })
     return
   }
-  const updated = await workPeriodModel.update(data)
-  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, _.omit(updated.toJSON(), 'payments'), { oldValue: workPeriod, key: `resourceBooking.id:${workPeriod.resourceBookingId}` })
+
+  const key = `resourceBooking.id:${workPeriod.resourceBookingId}`
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await workPeriodModel.update(data, { transaction: t })
+      entity = updated.toJSON()
+
+      entity = _.omit(entity, ['payments'])
+      await processUpdateEs({ ...entity, key })
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'workperiod.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_WORK_PERIOD_UPDATE_TOPIC, entity, { oldValue: workPeriod, key })
+
   logger.debug({
     component: 'WorkPeriodPaymentEventHandler',
     context: 'updateWorkPeriod',
