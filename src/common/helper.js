@@ -2088,20 +2088,6 @@ function formatDate (date) {
   }
 }
 
-/**
- * Format date in EDT timezone
- *
- * @param {Date} date date to be formatted
- * @returns {String} formatted date
- */
-function formatDateEDT (date) {
-  if (date) {
-    return moment(date).tz('America/New_York').format('MMM D, YYYY')
-  } else {
-    return 'TBD'
-  }
-}
-
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2168,6 +2154,5 @@ module.exports = {
   getMembersSuggest,
   getEmailTemplatesForKey,
   formatDate,
-  formatDateTimeEDT,
-  formatDateEDT
+  formatDateTimeEDT
 }

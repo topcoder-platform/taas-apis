@@ -162,7 +162,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     teamUrl,
     jobTitle: job.title,
     jobDuration: job.duration,
-    jobStartDate: helper.formatDateEDT(job.startDate),
+    jobStartDate: helper.formatDate(job.startDate),
     userHandle: user.handle,
     jobUrl,
     rcrmJobUrl,
@@ -204,7 +204,7 @@ async function sendJobCandidateSelectedNotification (payload) {
             text: [
               `*Team Name*: <${teamUrl}|${project.name}>`,
               `*Job Title*: <${jobUrl}|${job.title}> (<${rcrmJobUrl}|Open in RCRM>)`,
-              `*Job Start Date*: ${helper.formatDateEDT(job.startDate)}`,
+              `*Job Start Date*: ${helper.formatDate(job.startDate)}`,
               `*Job Duration*: ${job.duration}`,
               `*Job Candidate*: ${user.handle}`
             ].join('\n')

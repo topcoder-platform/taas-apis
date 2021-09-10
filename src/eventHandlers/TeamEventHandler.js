@@ -22,7 +22,7 @@ async function sendNotificationEmail (payload) {
     jobList: _.map(payload.jobs, j => ({
       title: j.title,
       duration: j.duration,
-      startDate: helper.formatDateEDT(j.startDate),
+      startDate: helper.formatDate(j.startDate),
       jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
     })),
     notificationType: {
