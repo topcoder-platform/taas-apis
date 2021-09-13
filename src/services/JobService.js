@@ -38,7 +38,8 @@ async function _getJobCandidates (jobId) {
             value: jobId
           }
         }
-      }
+      },
+      size: 10000
     }
   })
 
