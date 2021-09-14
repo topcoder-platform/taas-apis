@@ -1,0 +1,29 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly"
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.projectId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 222,
+            "rateType": "hourly"
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.userId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001"
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.rateType\" is required"
+    }
+]

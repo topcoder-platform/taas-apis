@@ -1,0 +1,92 @@
+[
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 100,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 100,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodPaymentId-1"
+    },
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 200,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 200,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodPaymentId-2"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 300,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 300,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodPaymentId-3"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 400,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 400,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodPaymentId-4"
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 100,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 100,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodPaymentId-5"
+    }
+]

@@ -1,0 +1,40 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "httpStatus": 400,
+        "requestBody": {},
+        "message": "\"data\" must contain at least one of \\[handles, emails\\]"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "httpStatus": 400,
+        "requestBody": {
+            "emails": [
+                "test",
+                "test"
+            ]
+        },
+        "message": "\"data.emails\\[0\\]\" must be a valid email"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "httpStatus": 400,
+        "requestBody": {
+            "handles": [
+                "userhandle",
+                "user"
+            ],
+            "emails": [
+                "test@test.com",
+                "test@gmail.com"
+            ],
+            "ids": [
+                "id"
+            ]
+        },
+        "message": "\"data.ids\" is not allowed"
+    }
+]

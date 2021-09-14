@@ -1,0 +1,92 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 150,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 150,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "admin_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-2",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 250,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 250,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-3",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 350,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 350,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-4",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 450,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 450,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "manager_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-5",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 150,
+            "status": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 150,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+]

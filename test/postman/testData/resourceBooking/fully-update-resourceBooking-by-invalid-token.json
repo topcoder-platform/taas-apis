@@ -1,0 +1,50 @@
+[
+    {
+        "token": "invalid_token_1",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

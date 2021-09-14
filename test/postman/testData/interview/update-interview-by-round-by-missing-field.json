@@ -1,0 +1,43 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {},
+        "httpStatus": 400,
+        "message": "\"data\" must have at least 1 key"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "status": "Scheduled"
+        },
+        "httpStatus": 400,
+        "message": "\"data.calendarEventId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "status": "Scheduled",
+            "calendarEventId": "someid"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startTimestamp\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "status": "Scheduled",
+            "calendarEventId": "someid",
+            "startTimestamp": "3000-01-01"
+        },
+        "httpStatus": 400,
+        "message": "\"data.endTimestamp\" is required"
+    }
+]

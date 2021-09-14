@@ -1,0 +1,50 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"JobCandidate\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "invalid_id",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestBody": {
+            "jobId": "{{missing_id}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "{{missing_id}}",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"user\" not found"
+    }
+]

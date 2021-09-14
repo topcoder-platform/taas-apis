@@ -1,0 +1,132 @@
+[
+    {
+        "token": "admin_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "isApplicationPageActive": true
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to set/update the value of field \"isApplicationPageActive\"."
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "skills": [
+                "00000000-0000-0000-0000-000000000000"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "Invalid skills: \\[00000000-0000-0000-0000-000000000000\\]"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "projectId": 111
+        },
+        "httpStatus": 400,
+        "message": "\"data.projectId\" is not allowed"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "externalId": 1212
+        },
+        "httpStatus": 400,
+        "message": "\"data.externalId\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "title": 111
+        },
+        "httpStatus": 400,
+        "message": "\"data.title\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "description": 111
+        },
+        "httpStatus": 400,
+        "message": "\"data.description\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "startDate": "today"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startDate\" must be a valid date"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "duration": -1
+        },
+        "httpStatus": 400,
+        "message": "\"data.duration\" must be greater than or equal to 1"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "numPositions": -13
+        },
+        "httpStatus": 400,
+        "message": "\"data.numPositions\" must be greater than or equal to 1"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "resourceType": 111
+        },
+        "httpStatus": 400,
+        "message": "\"data.resourceType\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "rateType": "year"
+        },
+        "httpStatus": 400,
+        "message": "\"data.rateType\" must be one of \\[hourly, daily, weekly, monthly, null\\]"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "workload": "never"
+        },
+        "httpStatus": 400,
+        "message": "\"data.workload\" must be one of \\[full-time, fractional, null\\]"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "skills": [
+                "23e00d92"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"data.skills\\[0\\]\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-1",
+        "requestBody": {
+            "other": "other"
+        },
+        "httpStatus": 400,
+        "message": "\"data.other\" is not allowed"
+    }
+]

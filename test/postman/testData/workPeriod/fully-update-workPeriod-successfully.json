@@ -1,0 +1,132 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 3,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 3,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "completed",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-2",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 5,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "partially-completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 5,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "partially-completed",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-3",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 1,
+            "memberRate": 15,
+            "customerRate": 15,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 1,
+            "memberRate": 15,
+            "customerRate": 15,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-4",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-5",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-04-25",
+            "endDate": "2021-05-01",
+            "daysWorked": 3,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "completed"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-04-25",
+            "endDate": "2021-05-01",
+            "daysWorked": 3,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "completed",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+]

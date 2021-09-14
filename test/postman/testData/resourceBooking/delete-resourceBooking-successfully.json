@@ -1,0 +1,17 @@
+[
+    {
+        "token": "admin_token",
+        "resourceBookingId": "ResourceBookingId-3",
+        "httpStatus": 204
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-4",
+        "httpStatus": 204
+    },
+    {
+        "token": "manager_token",
+        "resourceBookingId": "ResourceBookingId-5",
+        "httpStatus": 204
+    }
+]

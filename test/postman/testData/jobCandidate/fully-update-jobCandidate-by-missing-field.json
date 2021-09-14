@@ -1,0 +1,24 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 400,
+        "message": "\"data.jobId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 400,
+        "message": "\"data.userId\" is required"
+    }
+]

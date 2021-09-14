@@ -1,0 +1,12 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"JobCandidate\" doesn't exists."
+    }
+]

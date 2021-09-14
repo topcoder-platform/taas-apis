@@ -1,0 +1,92 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "userHandle",
+            "startDate": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "daysWorked",
+            "endDate": "2021-05-22"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "userHandle": "userHandle"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "endDate",
+            "projectId": 111
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "id",
+            "resourceBookingId": "{{ResourceBookingId-1}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "resourceBookingIds": "{{ResourceBookingId-1}},{{ResourceBookingId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "projectId": 111
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "projectId": 111
+        },
+        "httpStatus": 200
+    }
+]

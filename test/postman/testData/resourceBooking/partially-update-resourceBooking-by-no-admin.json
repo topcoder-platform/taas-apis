@@ -1,0 +1,22 @@
+[
+    {
+        "token": "user_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "workPeriodId": "{{missing_id}}"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriod\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "missing_id",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriodPayment\" doesn't exists"
+    }
+]

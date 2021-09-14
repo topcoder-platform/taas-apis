@@ -40,7 +40,12 @@
     "migrate:restore-rcrm-status": "node scripts/job-rcrm-status-migration/restore.js",
     "migrate:backup-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/backup.js",
     "migrate:migration-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/migration.js",
-    "migrate:restore-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/restore.js"
+    "migrate:restore-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/restore.js",
+    "demo-payment": "node scripts/demo-payment",
+    "start:test": "cross-env NODE_ENV=test node app.js",
+    "mock-api": "cross-env NODE_ENV=test node mock-api/mock-api",
+    "test:newman": "cross-env NODE_ENV=test node test/postman/newman.js",
+    "test:newman:clear": "cross-env NODE_ENV=test node test/postman/clearTestData.js"
   },
   "keywords": [],
   "author": "",
@@ -83,15 +88,18 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "cross-env": "^7.0.3",
     "csv-parser": "^3.0.0",
     "handlebars": "^4.7.7",
     "mocha": "^8.1.3",
     "no-kafka": "^3.4.3",
+    "newman": "^5.2.3",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
     "sequelize-cli": "^6.2.0",
     "sinon": "^9.2.0",
-    "standard": "^14.3.4"
+    "standard": "^14.3.4",
+    "tc-api-testing-lib": "git+https://github.com/mfrank37/api-automated-testing.git"
   },
   "standard": {
     "ignore": [

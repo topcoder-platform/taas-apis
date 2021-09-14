@@ -1,0 +1,26 @@
+[
+    {
+        "token": "invalid_token_1",
+        "interviewId": "InterviewId-1",
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "interviewId": "InterviewId-1",
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "interviewId": "InterviewId-1",
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "interviewId": "InterviewId-1",
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

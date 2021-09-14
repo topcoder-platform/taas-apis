@@ -1,0 +1,14 @@
+[
+    {
+        "token": "user_token",
+        "jobId": "JobId-4",
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "copilot_token",
+        "jobId": "JobId-4",
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    }
+]

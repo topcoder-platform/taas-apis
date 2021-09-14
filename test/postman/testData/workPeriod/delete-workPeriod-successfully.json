@@ -1,0 +1,17 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-3",
+        "httpStatus": 204
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-4",
+        "httpStatus": 204
+    },
+    {
+        "token": "manager_token",
+        "workPeriodId": "WorkPeriodId-5",
+        "httpStatus": 204
+    }
+]

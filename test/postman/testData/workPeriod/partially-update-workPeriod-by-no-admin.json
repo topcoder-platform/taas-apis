@@ -1,0 +1,26 @@
+[
+    {
+        "token": "copilot_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

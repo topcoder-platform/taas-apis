@@ -1,0 +1,12 @@
+[
+    {
+        "token": "user_token",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

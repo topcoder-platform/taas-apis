@@ -1,0 +1,30 @@
+[
+    {
+        "token": "invalid_token_1",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {},
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestBody": {},
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "jobCandidateId": "JobCandidateId-3",
+        "requestBody": {},
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "jobCandidateId": "JobCandidateId-4",
+        "requestBody": {},
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

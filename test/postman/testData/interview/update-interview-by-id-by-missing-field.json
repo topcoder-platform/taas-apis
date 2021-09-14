@@ -1,0 +1,42 @@
+[
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {},
+        "httpStatus": 400,
+        "message": "\"data.xaiId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "status": "Scheduled"
+        },
+        "httpStatus": 400,
+        "message": "\"data.calendarEventId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "status": "Scheduled",
+            "calendarEventId": "someid"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startTimestamp\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "status": "Scheduled",
+            "calendarEventId": "someid",
+            "startTimestamp": "3000-01-01"
+        },
+        "httpStatus": 400,
+        "message": "\"data.endTimestamp\" is required"
+    }
+]

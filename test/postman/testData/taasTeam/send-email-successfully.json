@@ -1,0 +1,62 @@
+[
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 204
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "template": "member-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 204
+    },
+    {
+        "token": "copilot_token",
+        "requestBody": {
+            "template": "extension-request",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 204
+    },
+    {
+        "token": "user_token",
+        "requestBody": {
+            "template": "interview-invitation",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 204
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 204
+    }
+]

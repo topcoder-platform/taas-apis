@@ -1,0 +1,26 @@
+
+export AUTH_SECRET="UgL4(SEAM*~yc7L~vWrKKN&GHrwyc9N[@nVxm,X?#b4}7:xbzM"
+export AUTH0_URL=https://topcoder-dev.auth0.com/oauth/token
+export AUTH0_AUDIENCE=https://m2m.topcoder-dev.com/
+export AUTH0_AUDIENCE_UBAHN=https://u-bahn.topcoder.com
+export AUTH0_CLIENT_ID=gZ6jt50HYHLBf4vhxjUhXPZOR7Q5lk4k
+export AUTH0_CLIENT_SECRET=zb-OV1Rl3QpUkt4BexJ-Rs58jYMazCre1_97aU4PJIvQdVB-DmQIs61W3gCfPyP4
+export BUSAPI_URL=http://localhost:8002/v5
+export AUTH_V2_URL=https://topcoder-dev.auth0.com/oauth/ro
+export AUTH_V2_CLIENT_ID=JFDo7HMkf0q2CkVFHojy3zHWafziprhT
+export AUTH_V3_URL=https://api.topcoder-dev.com/v3/authorizations
+export ADMIN_CREDENTIALS_USERNAME=jcori
+export ADMIN_CREDENTIALS_PASSWORD=appirio123
+export MANAGER_CREDENTIALS_USERNAME=TonyJ
+export MANAGER_CREDENTIALS_PASSWORD=appirio123
+export COPILOT_CREDENTIALS_USERNAME=TCConnCopilot
+export COPILOT_CREDENTIALS_PASSWORD=appirio123
+export USER_CREDENTIALS_USERNAME=isbilir
+export USER_CREDENTIALS_PASSWORD=@Topcoder123
+export ES_HOST=http://localhost:9200
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+export MOCK_API_PORT=4000
+export API_BASE_URL=http://localhost:3000
+export TC_API=http://localhost:4000/v5
+export TOPCODER_USERS_API=http://localhost:4000/v3/users
+export TOPCODER_MEMBERS_API=http://localhost:4000/v3/members

@@ -1,0 +1,44 @@
+[
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id",
+            "jobId": "{{JobId-1}}"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id"
+        },
+        "httpStatus": 403,
+        "message": "Not allowed without filtering by \"jobId\""
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id",
+            "jobId": "{{JobId-1}}"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id"
+        },
+        "httpStatus": 403,
+        "message": "Not allowed without filtering by \"jobId\""
+    }
+]

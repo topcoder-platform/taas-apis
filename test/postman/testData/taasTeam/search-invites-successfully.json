@@ -1,0 +1,57 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": "111",
+        "requestParameters": {
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "invites": 1
+        }
+    },
+    {
+        "token": "copilot_token",
+        "teamId": "112",
+        "requestParameters": {
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "invites": 1
+        }
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "113",
+        "requestParameters": {
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "invites": 1
+        }
+    },
+    {
+        "token": "user_token",
+        "teamId": "222",
+        "requestParameters": {
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "invites": 1
+        }
+    },
+    {
+        "token": "manager_token",
+        "teamId": "222",
+        "requestParameters": {
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "invites": 1
+        }
+    }
+]

@@ -1,0 +1,80 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": "111",
+        "requestParameters": {
+            "role": "role",
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 40158994
+            },
+            {
+                "userId": 88774634
+            }
+        ]
+    },
+    {
+        "token": "copilot_token",
+        "teamId": "112",
+        "requestParameters": {
+            "role": "role",
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 40158994
+            },
+            {
+                "userId": 88774634
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "113",
+        "requestParameters": {
+            "role": "role",
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 40158994
+            },
+            {
+                "userId": 88774634
+            }
+        ]
+    },
+    {
+        "token": "user_token",
+        "teamId": "222",
+        "requestParameters": {
+            "role": "role",
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": []
+    },
+    {
+        "token": "manager_token",
+        "teamId": "111",
+        "requestParameters": {
+            "role": "role",
+            "fields": "fields"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 40158994
+            },
+            {
+                "userId": 88774634
+            }
+        ]
+    }
+]

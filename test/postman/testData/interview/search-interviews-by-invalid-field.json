@@ -1,0 +1,50 @@
+[
+    {
+        "token": "admin_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "round",
+            "createdAt": "today"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.createdAt\" must be a valid date"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "round",
+            "updatedAt": "yesterday"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.updatedAt\" must be a valid date"
+    },
+    {
+        "token": "copilot_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "createdAt",
+            "status": "ready"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.status\" must be one of \\[Scheduling, Scheduled, Requested for reschedule, Rescheduled, Completed, Cancelled\\]"
+    },
+    {
+        "token": "user_token",
+        "jobCandidateId": "invalid_id",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "updatedAt",
+            "status": "Completed"
+        },
+        "httpStatus": 400,
+        "message": "\"jobCandidateId\" must be a valid GUID"
+    }
+]

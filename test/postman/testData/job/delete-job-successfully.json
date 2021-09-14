@@ -1,0 +1,17 @@
+[
+    {
+        "token": "admin_token",
+        "jobId": "JobId-3",
+        "httpStatus": 204
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "JobId-4",
+        "httpStatus": 204
+    },
+    {
+        "token": "manager_token",
+        "jobId": "JobId-5",
+        "httpStatus": 204
+    }
+]

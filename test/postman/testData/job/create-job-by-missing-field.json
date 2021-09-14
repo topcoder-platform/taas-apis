@@ -1,0 +1,76 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.projectId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.title\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.numPositions\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time"
+        },
+        "httpStatus": 400,
+        "message": "\"job.skills\" is required"
+    }
+]

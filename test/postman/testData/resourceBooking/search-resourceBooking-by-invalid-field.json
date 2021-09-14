@@ -1,0 +1,75 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "status": "placed",
+            "projectId": "222",
+            "fields": "workPeriods"
+        },
+        "httpStatus": 400,
+        "message": "Can not filter or sort by some field which is not included in fields"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "fields": "projectId"
+        },
+        "httpStatus": 400,
+        "message": "Can not filter or sort by some field which is not included in fields"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "workPeriods.startDate": "2021-05-23"
+        },
+        "httpStatus": 400,
+        "message": "Can not filter or sort by some field which is not included in fields"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "fields": "workPeriods",
+            "sortBy": "workPeriods.daysWorked"
+        },
+        "httpStatus": 400,
+        "message": "Can not sort by workPeriod field without filtering by workPeriods.startDate or workPeriods.endDate"
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5
+        },
+        "httpStatus": 403,
+        "message": "Not allowed without filtering by \"projectId\""
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "fields": "memberRate"
+        },
+        "httpStatus": 403,
+        "message": "You don't have access to view memberRate"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "memberRate": 3
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.memberRate\" is not allowed"
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "token": "copilot_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.hostEmail\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.templateUrl\" is required"
+    }
+]

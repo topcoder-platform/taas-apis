@@ -1,0 +1,32 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": 111,
+        "memberId": 40158994,
+        "httpStatus": 204
+    },
+    {
+        "token": "manager_token",
+        "teamId": 111,
+        "memberId": 88774634,
+        "httpStatus": 204
+    },
+    {
+        "token": "m2m_token",
+        "teamId": 112,
+        "memberId": 88774634,
+        "httpStatus": 204
+    },
+    {
+        "token": "copilot_token",
+        "teamId": 113,
+        "memberId": 40158994,
+        "httpStatus": 204
+    },
+    {
+        "token": "user_token",
+        "teamId": 111,
+        "memberId": 88774634,
+        "httpStatus": 204
+    }
+]

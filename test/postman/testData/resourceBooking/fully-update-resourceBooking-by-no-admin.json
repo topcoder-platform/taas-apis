@@ -1,0 +1,34 @@
+[
+    {
+        "token": "user_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "memberRate": 15,
+            "customerRate": 13,
+            "rateType": "weekly",
+            "billingAccountId": 80000071,
+            "status": "placed"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "jobId": "{{JobId-2}}",
+            "memberRate": 20,
+            "customerRate": 10,
+            "rateType": "weekly",
+            "billingAccountId": 80000071,
+            "status": "placed"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

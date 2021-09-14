@@ -1,0 +1,172 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "new",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.status\" must be one of \\[placed, closed, cancelled\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "{{invalid_id}}",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.userId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{invalid_id}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.jobId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "today",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.startDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "maybe tomorrow",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.endDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-04-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "endDate cannot be earlier than startDate"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": "one",
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.memberRate\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": "two",
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.customerRate\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "every second",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.rateType\" must be one of \\[hourly, daily, weekly, monthly\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "status": "placed",
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": "some id"
+        },
+        "httpStatus": 400,
+        "message": "\"resourceBooking.billingAccountId\" must be a number"
+    }
+]

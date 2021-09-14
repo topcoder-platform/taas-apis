@@ -1,0 +1,161 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "status": "placed"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "status",
+            "startDate": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "endDate": "2021-05-29"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "memberRate",
+            "rateType": "hourly"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "jobId": "{{JobId-1}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "customerRate",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "rateType",
+            "projectId": "111"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "projectIds": "111,222"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "id",
+            "fields": "workPeriods",
+            "workPeriods.paymentStatus": "pending"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "fields": "workPeriods,startDate",
+            "workPeriods.startDate": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "fields": "workPeriods,startDate",
+            "workPeriods.endDate": "2021-05-29"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "fields": "workPeriods,startDate",
+            "workPeriods.userHandle": "userHandle"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "fields": "projectId,userId,startDate,endDate,memberRate,workPeriods.daysWorked,workPeriods.paymentStatus"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "projectId": 111,
+            "sortBy": "workPeriods.daysWorked",
+            "fields": "projectId,userId,startDate,endDate,workPeriods.startDate,workPeriods.daysWorked,workPeriods.paymentStatus",
+            "workPeriods.startDate": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "workPeriods.paymentStatus",
+            "sortOrder": "asc",
+            "projectId": 111,
+            "fields": "projectId,userId,startDate,endDate,workPeriods.startDate,workPeriods.daysWorked,workPeriods.paymentStatus",
+            "workPeriods.startDate": "2021-05-23"
+        },
+        "httpStatus": 200
+    }
+]

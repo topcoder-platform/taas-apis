@@ -1,0 +1,34 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "150",
+        "requestBody": {
+            "handles": [
+                "userhandle",
+                "user"
+            ],
+            "emails": [
+                "test@test.com",
+                "test@gmail.com"
+            ]
+        },
+        "httpStatus": 404,
+        "message": "id: 150 project not found"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "id",
+        "requestBody": {
+            "handles": [
+                "userhandle",
+                "user"
+            ],
+            "emails": [
+                "test@test.com",
+                "test@gmail.com"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"id\" must be a number"
+    }
+]

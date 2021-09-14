@@ -1,0 +1,186 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": "111",
+        "jobId": "JobId-2",
+        "httpStatus": 200,
+        "responseBody": {
+            "title": "POSTMANE2E-Dummy title edit",
+            "skills": [
+                {
+                    "id": "cbac57a3-7180-4316-8769-73af64893158",
+                    "name": "NGINX"
+                },
+                {
+                    "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e",
+                    "name": "Machine Learning"
+                }
+            ],
+            "candidates": [
+                {
+                    "status": "interview",
+                    "resume": "http://example2.com",
+                    "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+                    "interviews": [
+                        {
+                            "templateType": "sometype",
+                            "calendarEventId": "someid",
+                            "hostName": "firstName lastName",
+                            "updatedBy": "00000000-0000-0000-0000-000000000000",
+                            "rescheduleUrl": null,
+                            "templateId": "someid",
+                            "title": "test",
+                            "templateUrl": "interview-30",
+                            "duration": 30,
+                            "guestNames": [
+                                "firstName lastName",
+                                "attendee1",
+                                "attendee2"
+                            ],
+                            "deletedAt": null,
+                            "xaiId": "someid",
+                            "round": 1,
+                            "guestEmails": [
+                                "test@gmail.com",
+                                "attendee1@yopmail.com",
+                                "attendee2@yopmail.com"
+                            ],
+                            "createdBy": "00000000-0000-0000-0000-000000000000",
+                            "locationDetails": "details",
+                            "hostEmail": "POSTMANE2E-@yopmail.com",
+                            "endTimestamp": null,
+                            "startTimestamp": null,
+                            "status": "Scheduling"
+                        },
+                        {
+                            "templateType": "sometype",
+                            "calendarEventId": "someid",
+                            "hostName": "firstName lastName",
+                            "updatedBy": "00000000-0000-0000-0000-000000000000",
+                            "rescheduleUrl": null,
+                            "templateId": "someid",
+                            "title": "test",
+                            "templateUrl": "interview-30",
+                            "duration": 60,
+                            "guestNames": [
+                                "firstName lastName",
+                                "attendee1",
+                                "attendee2"
+                            ],
+                            "deletedAt": null,
+                            "xaiId": "someid",
+                            "round": 2,
+                            "guestEmails": [
+                                "test@gmail.com",
+                                "attendee1@yopmail.com",
+                                "attendee2@yopmail.com"
+                            ],
+                            "createdBy": "00000000-0000-0000-0000-000000000000",
+                            "locationDetails": "details",
+                            "hostEmail": "POSTMANE2E-@yopmail.com",
+                            "endTimestamp": null,
+                            "startTimestamp": null,
+                            "status": "Scheduling"
+                        },
+                        {
+                            "templateType": null,
+                            "calendarEventId": "someid",
+                            "hostName": "firstName lastName",
+                            "updatedBy": "00000000-0000-0000-0000-000000000000",
+                            "rescheduleUrl": null,
+                            "templateId": null,
+                            "title": null,
+                            "templateUrl": "interview-30",
+                            "duration": 30,
+                            "guestNames": [
+                                "firstName lastName",
+                                "attendee1",
+                                "attendee2"
+                            ],
+                            "deletedAt": null,
+                            "xaiId": null,
+                            "round": 3,
+                            "guestEmails": [
+                                "test@gmail.com",
+                                "attendee1@yopmail.com",
+                                "attendee2@yopmail.com"
+                            ],
+                            "createdBy": "00000000-0000-0000-0000-000000000000",
+                            "locationDetails": null,
+                            "hostEmail": "POSTMANE2E-@yopmail.com",
+                            "endTimestamp": null,
+                            "startTimestamp": null,
+                            "status": "Scheduling"
+                        }
+                    ],
+                    "handle": "userHandle",
+                    "firstName": "firstName",
+                    "lastName": "lastName",
+                    "skills": []
+                }
+            ]
+        }
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "222",
+        "jobId": "JobId-1",
+        "httpStatus": 200,
+        "responseBody": {
+            "title": "POSTMANE2E-Dummy title edit",
+            "skills": [
+                {
+                    "id": "cbac57a3-7180-4316-8769-73af64893158",
+                    "name": "NGINX"
+                },
+                {
+                    "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e",
+                    "name": "Machine Learning"
+                }
+            ],
+            "candidates": [
+                {
+                    "status": "interview",
+                    "resume": "http://example2.com",
+                    "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+                    "interviews": [
+                        {
+                            "templateType": "sometype",
+                            "calendarEventId": "someid",
+                            "hostName": "firstName lastName",
+                            "updatedBy": "00000000-0000-0000-0000-000000000000",
+                            "rescheduleUrl": null,
+                            "templateId": "someid",
+                            "title": "test",
+                            "templateUrl": "interview-30",
+                            "duration": 30,
+                            "guestNames": [
+                                "firstName lastName",
+                                "attendee1",
+                                "attendee2"
+                            ],
+                            "deletedAt": null,
+                            "xaiId": "someid",
+                            "round": 1,
+                            "guestEmails": [
+                                "test@gmail.com",
+                                "attendee1@yopmail.com",
+                                "attendee2@yopmail.com"
+                            ],
+                            "createdBy": "00000000-0000-0000-0000-000000000000",
+                            "locationDetails": "details",
+                            "hostEmail": "POSTMANE2E-@yopmail.com",
+                            "endTimestamp": null,
+                            "startTimestamp": null,
+                            "status": "Scheduling"
+                        }
+                    ],
+                    "handle": "userHandle",
+                    "firstName": "firstName",
+                    "lastName": "lastName",
+                    "skills": []
+                }
+            ]
+        }
+    }
+]

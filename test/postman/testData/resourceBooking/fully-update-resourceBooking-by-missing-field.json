@@ -1,0 +1,46 @@
+[
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 400,
+        "message": "\"data.projectId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 400,
+        "message": "\"data.userId\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "status": "placed"
+        },
+        "httpStatus": 400,
+        "message": "\"data.rateType\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "projectId": 222,
+            "rateType": "hourly",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001"
+        },
+        "httpStatus": 400,
+        "message": "\"data.status\" is required"
+    }
+]

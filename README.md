@@ -208,6 +208,7 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run build`                                                                                                           | Build source code for production run into `dist` folder.                                                                                           |
 | `npm run start`                                                                                                           | Start app in the production mode from prebuilt `dist` folder.                                                                                      |
 | `npm run dev`                                                                                                             | Start app in the development mode using `nodemon`.                                                                                                 |
+| `npm run start:test`                                                                                                      | Start app in the test mode.                                                                                                                        |
 | `npm run test`                                                                                                            | Run tests.                                                                                                                                         |
 | `npm run init-db`                                                                                                         | Initializes Database.                                                                                                                              |
 | `npm run create-index`                                                                                                    | Create Elasticsearch indexes. Use `-- --force` flag to skip confirmation                                                                           |
@@ -230,6 +231,9 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
 | `npm run demo-email-notifications`                                                                                          | Listen to the Kafka events of email notification and render all the emails into `./out` folder. See [its readme](scripts/demo-email-notifications/README.md) for details. |
 | `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                                                               |
+| `npm run mock-api`                                                                                                        | Starts the mock api                                                                                                                                |
+| `npm test:newman`                                                                                                         | Starts E2E tests with newman                                                                                                                       |
+| `npm test:newman:clear`                                                                                                   | Clears the data produced during E2E tests                                                                                                          |
 
 ## Import and Export data
 
@@ -334,8 +338,72 @@ The following parameters can be set in the config file or via env variables:
 
 ## Testing
 
+### Unit Tests
+
 - Run `npm run test` to execute unit tests
 - Run `npm run cov` to execute unit tests and generate coverage report.
+
+### E2E Postman Tests
+
+1. In the `taas-apis` root directory create `.env` file with the next environment variables.
+
+      ```bash
+      # Auth0 config
+      AUTH_SECRET=
+      AUTH0_URL=
+      AUTH0_AUDIENCE=
+      AUTH0_AUDIENCE_UBAHN=
+      AUTH0_CLIENT_ID=
+      AUTH0_CLIENT_SECRET=
+      AUTH_V2_URL=
+      AUTH_V2_CLIENT_ID=
+      AUTH_V3_URL=
+      # Following configs are used to generate tokens.
+      ADMIN_CREDENTIALS_USERNAME=
+      ADMIN_CREDENTIALS_PASSWORD=
+      MANAGER_CREDENTIALS_USERNAME=
+      MANAGER_CREDENTIALS_PASSWORD=
+      COPILOT_CREDENTIALS_USERNAME=
+      COPILOT_CREDENTIALS_PASSWORD=
+      USER_CREDENTIALS_USERNAME=
+      USER_CREDENTIALS_PASSWORD=
+      # Locally deployed services
+      ES_HOST=http://localhost:9200
+      DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+      BUSAPI_URL=http://localhost:8002/v5
+      MOCK_API_PORT=4000
+      API_BASE_URL=http://localhost:3000
+      TC_API=http://localhost:4000/v5
+      TOPCODER_USERS_API=http://localhost:4000/v3/users
+      TOPCODER_MEMBERS_API=http://localhost:4000/v3/members
+      ```
+1. Install npm dependencies
+   ```bash
+   npm install
+   ```
+1. Start services and mock api and make sure taas-es-processor started properly by viewing logs.
+
+   ```bash
+   npm run services:up
+   npm run mock-api
+   ```
+1. Start taas-api in test mode
+   ```bash
+   npm run start:test
+   ```
+1. Create Database tables and Elasticsearch indexes
+   ```bash
+   npm run init-db
+   npm run create-index
+   ```
+1. Run tests
+   ```bash
+   npm run test:newman
+   ```
+1. Clear test data produced during tests
+   ```bash
+   npm run test:newman:clear
+   ```
 
 ## 📋 Code Guidelines
 

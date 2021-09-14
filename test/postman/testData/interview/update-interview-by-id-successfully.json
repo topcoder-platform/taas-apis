@@ -1,0 +1,178 @@
+[
+    {
+        "token": "admin_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details",
+            "duration": 30,
+            "round": 1,
+            "startTimestamp": null,
+            "endTimestamp": null,
+            "hostName": "firstName lastName",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "status": "Scheduling",
+            "rescheduleUrl": null,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000",
+            "deletedAt": null
+        }
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-2",
+        "requestBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details",
+            "duration": 30,
+            "round": 1,
+            "startTimestamp": null,
+            "endTimestamp": null,
+            "hostName": "firstName lastName",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "status": "Scheduling",
+            "rescheduleUrl": null,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000",
+            "deletedAt": null
+        }
+    },
+    {
+        "token": "copilot_token",
+        "interviewId": "InterviewId-3",
+        "requestBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "xaiId": "someid",
+            "calendarEventId": "someid",
+            "templateUrl": "interview-30",
+            "templateId": "someid",
+            "templateType": "sometype",
+            "title": "test",
+            "locationDetails": "details",
+            "duration": 60,
+            "round": 2,
+            "startTimestamp": null,
+            "endTimestamp": null,
+            "hostName": "firstName lastName",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "status": "Scheduling",
+            "rescheduleUrl": null,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000",
+            "deletedAt": null
+        }
+    },
+    {
+        "token": "user_token",
+        "interviewId": "InterviewId-3",
+        "requestBody": {
+            "xaiId": "someid2",
+            "calendarEventId": "someid2",
+            "templateUrl": "interview-30",
+            "templateId": "someid2",
+            "templateType": "sometype2",
+            "title": "test",
+            "locationDetails": "details"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "xaiId": "someid2",
+            "calendarEventId": "someid2",
+            "templateUrl": "interview-30",
+            "templateId": "someid2",
+            "templateType": "sometype2",
+            "title": "test",
+            "locationDetails": "details",
+            "duration": 60,
+            "round": 2,
+            "startTimestamp": null,
+            "endTimestamp": null,
+            "hostName": "firstName lastName",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "status": "Scheduling",
+            "rescheduleUrl": null,
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000",
+            "deletedAt": null
+        }
+    }
+]

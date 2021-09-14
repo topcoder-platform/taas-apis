@@ -1,0 +1,23 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "jobId": "{{missing_id}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "projectId": 222,
+            "rateType": "hourly"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "userId": "{{missing_id}}",
+            "projectId": 222,
+            "rateType": "hourly"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"user\" not found"
+    }
+]

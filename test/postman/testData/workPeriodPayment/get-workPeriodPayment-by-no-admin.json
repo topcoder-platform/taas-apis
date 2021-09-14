@@ -1,0 +1,14 @@
+[
+    {
+        "token": "user_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

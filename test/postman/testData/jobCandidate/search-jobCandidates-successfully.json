@@ -1,0 +1,186 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "id"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "jobId": "{{JobId-1}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "status": "open"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "externalId": "300234321"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "id"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "jobId": "{{JobId-1}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "status": "open"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "externalId": "300234321"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "id",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "status": "open",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "externalId": "300234321",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "id",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "status": "open",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "externalId": "300234321",
+            "jobId": "{{JobId-2}}"
+        },
+        "httpStatus": 200
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "token": "invalid_token_1",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

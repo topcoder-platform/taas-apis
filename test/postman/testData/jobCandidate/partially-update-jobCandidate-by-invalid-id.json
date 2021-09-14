@@ -1,0 +1,22 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "requestBody": {
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"JobCandidate\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "invalid_id",
+        "requestBody": {
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "token": "copilot_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "user_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    }
+]

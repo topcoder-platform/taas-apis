@@ -1,0 +1,24 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "template": "team",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 400,
+        "message": "\"data.template\" must be one of \\[team-issue-report, member-issue-report, extension-request, interview-invitation\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": "{}"
+        },
+        "httpStatus": 400,
+        "message": "\"data.data\" must be of type object"
+    }
+]

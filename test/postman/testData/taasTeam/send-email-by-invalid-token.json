@@ -1,0 +1,54 @@
+[
+    {
+        "token": "invalid_token_1",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "requestBody": {
+            "template": "team-issue-report",
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

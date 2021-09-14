@@ -1,0 +1,14 @@
+[
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "missing_id",
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriodPayment\" not found"
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "invalid_id",
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

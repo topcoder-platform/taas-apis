@@ -1,0 +1,86 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "amount": 200
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 200,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "admin_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-2",
+        "requestBody": {
+            "amount": 300,
+            "status": "cancelled"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 300,
+            "status": "cancelled",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-3",
+        "requestBody": {
+            "amount": 350,
+            "status": "cancelled"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 350,
+            "status": "cancelled",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-4",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": 450,
+            "status": "cancelled"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 450,
+            "status": "cancelled",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "manager_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-5",
+        "requestBody": {
+            "amount": 200
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "amount": 200,
+            "status": "completed",
+            "billingAccountId": 80000071,
+            "challengeId": "00000000-0000-0000-0000-000000000000",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+]

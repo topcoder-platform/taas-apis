@@ -1,0 +1,8 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "id",
+        "httpStatus": 400,
+        "message": "\"id\" must be a number"
+    }
+]

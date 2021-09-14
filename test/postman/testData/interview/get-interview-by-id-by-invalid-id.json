@@ -1,0 +1,14 @@
+[
+    {
+        "token": "m2m_token",
+        "interviewId": "missing_id",
+        "httpStatus": 404,
+        "message": "Interview doesn't exist with id/xaiId: [\\w\\W]+"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "invalid_id",
+        "httpStatus": 404,
+        "message": "Interview doesn't exist with id/xaiId: [\\w\\W]+"
+    }
+]
