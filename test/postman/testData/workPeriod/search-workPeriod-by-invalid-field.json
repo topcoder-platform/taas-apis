@@ -1,0 +1,58 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "resourceBookingId": "{{invalid_id}}"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.resourceBookingId\" must be a valid GUID"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "startDate": "05-16-2021"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.startDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "daysWorked": 3
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.daysWorked\" is not allowed"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "memberRate": 5
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.memberRate\" is not allowed"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "customerRate": 5
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.customerRate\" is not allowed"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "paymentStatus": "wrong"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.paymentStatus\" must be one of \\[pending, partially-completed, completed, cancelled\\]"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "projectId": "five"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.projectId\" must be a number"
+    }
+]

@@ -1,0 +1,70 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.templateUrl\" must be one of \\[interview-30, interview-60\\]"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "com"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.hostEmail\" must be a valid email"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestEmails": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.guestEmails\" must be an array"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestEmails": [
+                ""
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"interview.guestEmails\\[0\\]\" is not allowed to be empty"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "guestEmails": [
+                "com"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"interview.guestEmails\\[0\\]\" must be a valid email"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "status": "ended"
+        },
+        "httpStatus": 400,
+        "message": "\"interview.status\" must be one of \\[Scheduling, Scheduled, Requested for reschedule, Rescheduled, Completed, Cancelled\\]"
+    }
+]

@@ -1,0 +1,113 @@
+[
+    {
+        "token": "admin_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "memberRate": 15,
+            "customerRate": 13,
+            "rateType": "weekly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "admin_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "billingAccountId": null
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "memberRate": 20,
+            "customerRate": 10,
+            "rateType": "weekly",
+            "billingAccountId": null,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-3",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "memberRate": 8,
+            "customerRate": 5,
+            "rateType": "monthly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-4",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "manager_token",
+        "resourceBookingId": "ResourceBookingId-5",
+        "requestBody": {
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "startDate": "2021-05-24",
+            "endDate": "2021-05-28",
+            "memberRate": 15,
+            "customerRate": 13,
+            "rateType": "weekly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+]

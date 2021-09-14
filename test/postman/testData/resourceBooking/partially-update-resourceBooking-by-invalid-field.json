@@ -1,0 +1,77 @@
+[
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "status": "new"
+        },
+        "httpStatus": 400,
+        "message": "\"data.status\" must be one of \\[placed, closed, cancelled\\]"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "startDate": "today",
+            "endDate": "2021-05-29"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "startDate": "2021-05-23",
+            "endDate": "maybe tomorrow"
+        },
+        "httpStatus": 400,
+        "message": "\"data.endDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "startDate": "2021-05-23",
+            "endDate": "2021-04-29"
+        },
+        "httpStatus": 400,
+        "message": "endDate cannot be earlier than startDate"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "memberRate": "one"
+        },
+        "httpStatus": 400,
+        "message": "\"data.memberRate\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "customerRate": "two"
+        },
+        "httpStatus": 400,
+        "message": "\"data.customerRate\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "rateType": "every second"
+        },
+        "httpStatus": 400,
+        "message": "\"data.rateType\" must be one of \\[hourly, daily, weekly, monthly\\]"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "billingAccountId": "some id"
+        },
+        "httpStatus": 400,
+        "message": "\"data.billingAccountId\" must be a number"
+    }
+]

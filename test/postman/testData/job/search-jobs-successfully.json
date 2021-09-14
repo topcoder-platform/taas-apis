@@ -1,0 +1,91 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "id"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "createdAt",
+            "projectId": 111
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "createdAt",
+            "title": "POSTMANE2E"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "startDate": "2020-09-27"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "resourceType": "Resource"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "skill": "cbac57a3-7180-4316-8769-73af64893158"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "rateType": "hourly"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "workload": "full-time"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "status": "sourcing"
+        },
+        "httpStatus": 200
+    }
+]

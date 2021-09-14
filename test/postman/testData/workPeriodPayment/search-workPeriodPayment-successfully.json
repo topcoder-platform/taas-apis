@@ -1,0 +1,32 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "amount",
+            "workPeriodId": "{{WorkPeriodId-1}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "status",
+            "workPeriodIds": "{{WorkPeriodId-1}},{{WorkPeriodId-2}}"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "createdAt",
+            "status": "completed"
+        },
+        "httpStatus": 200
+    }
+]

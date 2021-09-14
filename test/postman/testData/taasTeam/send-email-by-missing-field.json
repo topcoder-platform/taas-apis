@@ -1,0 +1,22 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "data": {
+                "data": "data",
+                "subject": "subject",
+                "body": "body"
+            }
+        },
+        "httpStatus": 400,
+        "message": "\"data.template\" is required"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "template": "team-issue-report"
+        },
+        "httpStatus": 400,
+        "message": "\"data.data\" is required"
+    }
+]

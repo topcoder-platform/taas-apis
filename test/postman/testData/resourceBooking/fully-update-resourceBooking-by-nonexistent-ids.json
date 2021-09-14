@@ -1,0 +1,39 @@
+[
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "jobId": "{{missing_id}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "projectId": 222,
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestBody": {
+            "userId": "{{missing_id}}",
+            "projectId": 222,
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"user\" not found"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "missing_id",
+        "requestBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "projectId": 222,
+            "rateType": "hourly",
+            "status": "placed"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"ResourceBooking\" doesn't exists."
+    }
+]

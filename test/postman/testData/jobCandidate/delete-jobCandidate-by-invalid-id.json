@@ -1,0 +1,14 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"JobCandidate\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "invalid_id",
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

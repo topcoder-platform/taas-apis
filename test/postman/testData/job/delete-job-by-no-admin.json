@@ -1,0 +1,14 @@
+[
+    {
+        "token": "copilot_token",
+        "jobId": "JobId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "jobId": "JobId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

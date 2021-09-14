@@ -1,0 +1,10 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "amount": 100
+        },
+        "httpStatus": 400,
+        "message": "\"workPeriodPayment.workPeriodId\" is required"
+    }
+]

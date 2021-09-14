@@ -1,0 +1,112 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "orderBy": "id"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "name": "EJB",
+                "id": "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            },
+            {
+                "name": "Dropwizard",
+                "id": "7d076384-ccf6-4e43-a45d-1b24b1e624aa"
+            },
+            {
+                "name": "NGINX",
+                "id": "cbac57a3-7180-4316-8769-73af64893158"
+            },
+            {
+                "name": "Machine Learning",
+                "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+            },
+            {
+                "name": "Force.com",
+                "id": "94eae221-1158-4aa9-a6a4-50ecb0bbb8b6"
+            },
+            {
+                "name": "Database",
+                "id": "2742759c-d0f9-4456-9482-e558aa960969"
+            },
+            {
+                "name": "Winforms",
+                "id": "b81859b6-4c50-45d8-afcb-71b35d16ea1e"
+            },
+            {
+                "name": "User Interface (Ui)",
+                "id": "17b61c7a-98dc-498d-ba8d-c52b6677d73c"
+            },
+            {
+                "name": "Photoshop",
+                "id": "30d01540-ebed-46b6-88e7-4c210de63862"
+            },
+            {
+                "name": "Docker",
+                "id": "bd417c10-d81a-45b6-85a9-d79efe86b9bb"
+            },
+            {
+                "name": ".NET",
+                "id": "4fce6ced-3610-443c-92eb-3f6d76b34f5c"
+            }
+        ]
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "orderBy": "id"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "name": "EJB",
+                "id": "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            },
+            {
+                "name": "Dropwizard",
+                "id": "7d076384-ccf6-4e43-a45d-1b24b1e624aa"
+            },
+            {
+                "name": "NGINX",
+                "id": "cbac57a3-7180-4316-8769-73af64893158"
+            },
+            {
+                "name": "Machine Learning",
+                "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+            },
+            {
+                "name": "Force.com",
+                "id": "94eae221-1158-4aa9-a6a4-50ecb0bbb8b6"
+            },
+            {
+                "name": "Database",
+                "id": "2742759c-d0f9-4456-9482-e558aa960969"
+            },
+            {
+                "name": "Winforms",
+                "id": "b81859b6-4c50-45d8-afcb-71b35d16ea1e"
+            },
+            {
+                "name": "User Interface (Ui)",
+                "id": "17b61c7a-98dc-498d-ba8d-c52b6677d73c"
+            },
+            {
+                "name": "Photoshop",
+                "id": "30d01540-ebed-46b6-88e7-4c210de63862"
+            },
+            {
+                "name": "Docker",
+                "id": "bd417c10-d81a-45b6-85a9-d79efe86b9bb"
+            },
+            {
+                "name": ".NET",
+                "id": "4fce6ced-3610-443c-92eb-3f6d76b34f5c"
+            }
+        ]
+    }
+]

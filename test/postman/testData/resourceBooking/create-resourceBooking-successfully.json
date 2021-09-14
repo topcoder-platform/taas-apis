@@ -1,0 +1,137 @@
+[
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "jobId": "{{JobId-1}}",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "startDate": null,
+            "endDate": null,
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "ResourceBookingId-1"
+    },
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "jobId": "{{JobId-2}}",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "startDate": null,
+            "endDate": null,
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "ResourceBookingId-2"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "jobId": "{{JobId-1}}",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "startDate": null,
+            "endDate": null,
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "ResourceBookingId-3"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "jobId": "{{JobId-1}}",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "startDate": null,
+            "endDate": null,
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "ResourceBookingId-4"
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "jobId": "{{JobId-1}}",
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "startDate": null,
+            "endDate": null,
+            "memberRate": 13.23,
+            "customerRate": 13,
+            "rateType": "hourly",
+            "billingAccountId": 80000071,
+            "status": "placed",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "ResourceBookingId-5"
+    }
+]

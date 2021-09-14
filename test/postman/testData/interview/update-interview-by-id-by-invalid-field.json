@@ -1,0 +1,66 @@
+[
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "templateUrl": "interview"
+        },
+        "httpStatus": 400,
+        "message": "\"data.templateUrl\" must be one of \\[interview-30, interview-60\\]"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "startTimestamp": "1900-01-01"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startTimestamp\" must be greater than \"now\""
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "guestEmails": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 400,
+        "message": "\"data.guestEmails\" must be an array"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "guestEmails": [
+                ""
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"data.guestEmails\\[0\\]\" is not allowed to be empty"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "guestEmails": [
+                "com"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"data.guestEmails\\[0\\]\" must be a valid email"
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-1",
+        "requestBody": {
+            "xaiId": "someid",
+            "status": "ended"
+        },
+        "httpStatus": 400,
+        "message": "\"data.status\" must be one of \\[Scheduling, Scheduled, Requested for reschedule, Rescheduled, Completed, Cancelled\\]"
+    }
+]

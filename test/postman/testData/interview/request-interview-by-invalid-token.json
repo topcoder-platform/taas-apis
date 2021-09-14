@@ -1,0 +1,42 @@
+[
+    {
+        "token": "invalid_token_1",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

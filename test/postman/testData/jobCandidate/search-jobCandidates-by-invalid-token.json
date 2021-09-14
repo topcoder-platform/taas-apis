@@ -1,0 +1,22 @@
+[
+    {
+        "token": "invalid_token_1",
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

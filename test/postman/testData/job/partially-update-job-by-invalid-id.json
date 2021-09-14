@@ -1,0 +1,20 @@
+[
+    {
+        "token": "m2m_token",
+        "jobId": "missing_id",
+        "requestBody": {
+            "status": "in-review"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "invalid_id",
+        "requestBody": {
+            "status": "in-review"
+        },
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

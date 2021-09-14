@@ -1,0 +1,23 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "jobId": "JobId-1",
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" with Team id 111 doesn't exist"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "222",
+        "jobId": "invalid_id",
+        "httpStatus": 400,
+        "message": "\"jobId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "id",
+        "jobId": "JobId-1",
+        "httpStatus": 400,
+        "message": "\"id\" must be a number"
+    }
+]

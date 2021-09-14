@@ -1,0 +1,11 @@
+[
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "missing_id",
+        "requestBody": {
+            "status": "placed"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"ResourceBooking\" doesn't exists."
+    }
+]

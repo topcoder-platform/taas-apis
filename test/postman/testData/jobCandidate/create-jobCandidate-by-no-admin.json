@@ -1,0 +1,24 @@
+[
+    {
+        "token": "copilot_token",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

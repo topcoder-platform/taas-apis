@@ -1,0 +1,58 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 0
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.page\" must be greater than or equal to 1"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "perPage": 0
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.perPage\" must be greater than or equal to 1"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "sortBy": "id"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.sortBy\" must be one of \\[status, amount, createdAt, updatedAt\\]"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "sortOrder": "normal"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.sortOrder\" must be one of \\[desc, asc\\]"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "status": "started"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.status\" must be one of \\[completed, cancelled\\]"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "workPeriodId": "wrong"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.workPeriodId\" must be a valid GUID"
+    },
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "workPeriodIds": "id"
+        },
+        "httpStatus": 400,
+        "message": "workPeriodId id is not a valid uuid"
+    }
+]

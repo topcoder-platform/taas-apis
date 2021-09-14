@@ -1,0 +1,107 @@
+[
+    {
+        "token": "admin_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestParameters": {
+            "fields": "projectId,userId,startDate,endDate,memberRate,workPeriods.daysWorked,workPeriods.paymentStatus"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "workPeriods": [
+                {
+                    "daysWorked": null,
+                    "paymentStatus": "pending"
+                }
+            ]
+        }
+    },
+    {
+        "token": "copilot_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestParameters": {
+            "fields": "projectId,userId,startDate,endDate,workPeriods.startDate,workPeriods.paymentStatus"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "workPeriods": [
+                {
+                    "startDate": "2021-05-23",
+                    "paymentStatus": "pending"
+                }
+            ]
+        }
+    },
+    {
+        "token": "user_token",
+        "resourceBookingId": "ResourceBookingId-3",
+        "requestParameters": {
+            "fields": "projectId,status,startDate,billingAccountId,customerRate,workPeriods.userHandle,workPeriods.customerRate"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 111,
+            "status": "placed",
+            "startDate": "2021-05-23",
+            "billingAccountId": 80000071,
+            "customerRate": 13,
+            "workPeriods": [
+                {
+                    "userHandle": "userHandle",
+                    "customerRate": null
+                }
+            ]
+        }
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-4",
+        "requestParameters": {
+            "fields": "memberRate,status,startDate,billingAccountId,memberRate,workPeriods.userHandle,workPeriods.customerRate,workPeriods.startDate,workPeriods.endDate"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "memberRate": 13.23,
+            "status": "placed",
+            "startDate": "2021-05-23",
+            "billingAccountId": 80000071,
+            "workPeriods": [
+                {
+                    "userHandle": "userHandle",
+                    "customerRate": null,
+                    "startDate": "2021-05-23",
+                    "endDate": "2021-05-29"
+                }
+            ]
+        }
+    },
+    {
+        "token": "manager_token",
+        "resourceBookingId": "ResourceBookingId-5",
+        "requestParameters": {
+            "fields": "projectId,userId,startDate,endDate,memberRate,workPeriods.daysWorked,workPeriods.paymentStatus"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "projectId": 222,
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "startDate": "2021-05-23",
+            "endDate": "2021-05-29",
+            "memberRate": 13.23,
+            "workPeriods": [
+                {
+                    "daysWorked": null,
+                    "paymentStatus": "pending"
+                }
+            ]
+        }
+    }
+]

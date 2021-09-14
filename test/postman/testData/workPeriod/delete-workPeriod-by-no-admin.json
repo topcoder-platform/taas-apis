@@ -1,0 +1,14 @@
+[
+    {
+        "token": "copilot_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

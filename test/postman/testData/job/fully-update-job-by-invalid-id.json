@@ -1,0 +1,48 @@
+[
+    {
+        "token": "m2m_token",
+        "jobId": "missing_id",
+        "requestBody": {
+            "projectId": 111,
+            "status": "in-review",
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title edit",
+            "description": "Dummy Description Edit",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "cbac57a3-7180-4316-8769-73af64893158",
+                "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+            ]
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"Job\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "jobId": "invalid_id",
+        "requestBody": {
+            "projectId": 111,
+            "status": "in-review",
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title edit",
+            "description": "Dummy Description Edit",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "cbac57a3-7180-4316-8769-73af64893158",
+                "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

@@ -1,0 +1,57 @@
+[
+    {
+        "token": "admin_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "round",
+            "createdAt": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "round",
+            "updatedAt": "2021-05-23"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "copilot_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "createdAt",
+            "status": "Scheduling"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "user_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "updatedAt",
+            "status": "Completed"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "manager_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "round",
+            "createdAt": "2021-05-23"
+        },
+        "httpStatus": 200
+    }
+]

@@ -1,0 +1,47 @@
+[
+    {
+        "token": "user_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestParameters": {
+            "fields": "workPeriods"
+        },
+        "httpStatus": 403,
+        "message": "Not allowed without including \"projectId\""
+    },
+    {
+        "token": "user_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestParameters": {
+            "fields": "projectId,memberRate"
+        },
+        "httpStatus": 403,
+        "message": "You don't have access to view memberRate"
+    },
+    {
+        "token": "copilot_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestParameters": {
+            "fields": "workPeriods"
+        },
+        "httpStatus": 403,
+        "message": "Not allowed without including \"projectId\""
+    },
+    {
+        "token": "copilot_token",
+        "resourceBookingId": "ResourceBookingId-2",
+        "requestParameters": {
+            "fields": "projectId,memberRate"
+        },
+        "httpStatus": 403,
+        "message": "You don't have access to view memberRate"
+    },
+    {
+        "token": "m2m_token",
+        "resourceBookingId": "ResourceBookingId-1",
+        "requestParameters": {
+            "fields": "some"
+        },
+        "httpStatus": 400,
+        "message": "some are not allowed"
+    }
+]

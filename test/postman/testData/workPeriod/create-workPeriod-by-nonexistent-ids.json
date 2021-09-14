@@ -1,0 +1,12 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "resourceBookingId": "{{missing_id}}",
+            "startDate": "2021-05-02",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"ResourceBooking\" doesn't exists."
+    }
+]

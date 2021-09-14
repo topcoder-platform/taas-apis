@@ -1,0 +1,12 @@
+[
+    {
+        "token": "admin_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "requestBody": {
+            "templateUrl": "interview-30",
+            "hostEmail": "POSTMANE2E-@yopmail.com"
+        },
+        "httpStatus": 409,
+        "message": "You've reached the maximum allowed number \\(3\\) of interviews for this candidate."
+    }
+]

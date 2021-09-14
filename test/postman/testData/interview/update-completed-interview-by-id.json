@@ -1,0 +1,11 @@
+[
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-4",
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 400,
+        "message": "Only the \"status\" can be updated for Completed interviews."
+    }
+]

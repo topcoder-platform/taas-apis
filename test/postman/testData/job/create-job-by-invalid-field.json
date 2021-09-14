@@ -1,0 +1,287 @@
+[
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "isApplicationPageActive": true,
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941",
+                "7d076384-ccf6-4e43-a45d-1b24b1e624aa",
+                "cbac57a3-7180-4316-8769-73af64893158",
+                "a2b4bc11-c641-4a19-9eb7-33980378f82e"
+            ]
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to set/update the value of field \"isApplicationPageActive\"."
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "00000000-0000-0000-0000-000000000000"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "Invalid skills: \\[00000000-0000-0000-0000-000000000000\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": true,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.projectId\" must be a number"
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": 1212,
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.externalId\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": 111,
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.title\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": 111,
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.description\" must be a string"
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "today",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.startDate\" must be a valid date"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": -1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.duration\" must be greater than or equal to 1"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": -13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.numPositions\" must be greater than or equal to 1"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": 111,
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.resourceType\" must be a string"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "year",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.rateType\" must be one of \\[hourly, daily, weekly, monthly, null\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "never",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.workload\" must be one of \\[full-time, fractional, null\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92"
+            ]
+        },
+        "httpStatus": 400,
+        "message": "\"job.skills\\[0\\]\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "projectId": 111,
+            "externalId": "1212",
+            "title": "POSTMANE2E-Dummy title",
+            "description": "Dummy Description",
+            "startDate": "2020-09-27T04:17:23.131Z",
+            "duration": 1,
+            "numPositions": 13,
+            "resourceType": "Dummy Resource Type",
+            "rateType": "hourly",
+            "workload": "full-time",
+            "skills": [
+                "23e00d92-207a-4b5b-b3c9-4c5662644941"
+            ],
+            "other": "other"
+        },
+        "httpStatus": 400,
+        "message": "\"job.other\" is not allowed"
+    }
+]

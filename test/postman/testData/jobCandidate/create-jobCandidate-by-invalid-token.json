@@ -1,0 +1,46 @@
+[
+    {
+        "token": "invalid_token_1",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "requestBody": {
+            "jobId": "{{JobId-1}}",
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c377a",
+            "externalId": "300234321",
+            "resume": "http://example.com"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

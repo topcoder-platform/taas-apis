@@ -1,0 +1,56 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "createAt"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.sortBy\" must be one of \\[id, status\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "jobId": "asd"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.jobId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "userId": "asd"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.userId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "status": "no-status"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.status\" must be one of \\[open, placed, selected, client rejected - screening, client rejected - interview, rejected - other, cancelled, interview, topcoder-rejected\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "other": "3002,34321"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.other\" is not allowed"
+    }
+]

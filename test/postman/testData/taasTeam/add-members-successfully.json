@@ -1,0 +1,138 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": "111",
+        "httpStatus": 200,
+        "requestBody": {
+            "handles": [
+                "userhandle"
+            ],
+            "emails": [
+                "test@test.com"
+            ]
+        },
+        "responseBody": {
+            "success": [
+                {
+                    "userId": 1,
+                    "role": "customer",
+                    "handle": "userhandle"
+                }
+            ],
+            "failed": [
+                {
+                    "error": "User doesn't exist",
+                    "email": "test@test.com"
+                }
+            ]
+        }
+    },
+    {
+        "token": "manager_token",
+        "teamId": "111",
+        "httpStatus": 200,
+        "requestBody": {
+            "handles": [
+                "userhandle"
+            ],
+            "emails": [
+                "test@test.com"
+            ]
+        },
+        "responseBody": {
+            "success": [
+                {
+                    "userId": 1,
+                    "role": "customer",
+                    "handle": "userhandle"
+                }
+            ],
+            "failed": [
+                {
+                    "error": "User doesn't exist",
+                    "email": "test@test.com"
+                }
+            ]
+        }
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "112",
+        "httpStatus": 200,
+        "requestBody": {
+            "handles": [
+                "user"
+            ],
+            "emails": [
+                "test@gmail.com"
+            ]
+        },
+        "responseBody": {
+            "success": [
+                {
+                    "userId": 1,
+                    "role": "customer",
+                    "email": "test@gmail.com"
+                }
+            ],
+            "failed": [
+                {
+                    "error": "User doesn't exist",
+                    "handle": "user"
+                }
+            ]
+        }
+    },
+    {
+        "token": "copilot_token",
+        "teamId": "113",
+        "httpStatus": 200,
+        "requestBody": {
+            "handles": [
+                "userhandle",
+                "user"
+            ]
+        },
+        "responseBody": {
+            "success": [
+                {
+                    "userId": 1,
+                    "role": "customer",
+                    "handle": "userhandle"
+                }
+            ],
+            "failed": [
+                {
+                    "error": "User doesn't exist",
+                    "handle": "user"
+                }
+            ]
+        }
+    },
+    {
+        "token": "user_token",
+        "teamId": "222",
+        "httpStatus": 200,
+        "requestBody": {
+            "emails": [
+                "test@test.com",
+                "test@gmail.com"
+            ]
+        },
+        "responseBody": {
+            "success": [
+                {
+                    "userId": 1,
+                    "role": "customer",
+                    "email": "test@gmail.com"
+                }
+            ],
+            "failed": [
+                {
+                    "error": "User doesn't exist",
+                    "email": "test@test.com"
+                }
+            ]
+        }
+    }
+]

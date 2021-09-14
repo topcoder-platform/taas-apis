@@ -1,0 +1,21 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}"
+        },
+        "httpStatus": 400,
+        "message": "Key \\(resource_booking_id, start_date, end_date\\)=\\([\\w\\W]+\\) already exists."
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15"
+        },
+        "httpStatus": 400,
+        "message": "Key \\(resource_booking_id, start_date, end_date\\)=\\([\\w\\W]+\\) already exists."
+    }
+]

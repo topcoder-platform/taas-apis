@@ -1,0 +1,132 @@
+[
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodId-1"
+    },
+    {
+        "token": "admin_token",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodId-2"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodId-3"
+    },
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodId-4"
+    },
+    {
+        "token": "manager_token",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-04-25",
+            "endDate": "2021-05-01",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-04-25",
+            "endDate": "2021-05-01",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        },
+        "saveId": "WorkPeriodId-5"
+    }
+]

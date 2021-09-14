@@ -1,0 +1,31 @@
+[
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "workPeriodId": "{{invalid_id}}"
+        },
+        "httpStatus": 400,
+        "message": "\"data.workPeriodId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "amount": -100
+        },
+        "httpStatus": 400,
+        "message": "\"data.amount\" must be greater than 0"
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodPaymentId": "WorkPeriodPaymentId-1",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}",
+            "status": "ready"
+        },
+        "httpStatus": 400,
+        "message": "\"data.status\" must be one of \\[completed, cancelled\\]"
+    }
+]

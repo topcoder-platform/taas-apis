@@ -1,0 +1,14 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "a",
+        "httpStatus": 400,
+        "message": "\"id\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "0",
+        "httpStatus": 404,
+        "message": "id: 0 project not found"
+    }
+]

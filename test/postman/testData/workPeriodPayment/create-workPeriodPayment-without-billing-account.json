@@ -1,0 +1,10 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-2}}"
+        },
+        "httpStatus": 409,
+        "message": "id: [\\w\\W]+ \"ResourceBooking\" Billing account is not assigned to the resource booking"
+    }
+]

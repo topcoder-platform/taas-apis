@@ -1,0 +1,143 @@
+[
+    {
+        "token": "admin_token",
+        "teamId": "111",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": 111,
+            "name": "Project-111",
+            "invites": 1,
+            "members": [
+                {
+                    "userId": 40158994
+                },
+                {
+                    "userId": 88774634
+                }
+            ],
+            "weeklyCost": 10,
+            "resources": [
+                {
+                    "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+                    "handle": "userHandle",
+                    "firstName": "firstName",
+                    "lastName": "lastName",
+                    "skills": [],
+                    "customerRate": 10,
+                    "startDate": "2021-05-24",
+                    "endDate": "2021-05-28"
+                }
+            ],
+            "startDate": "2021-05-24T00:00:00.000Z",
+            "endDate": "2021-05-28T00:00:00.000Z",
+            "jobs": [
+                {
+                    "description": "Dummy Description Edit",
+                    "startDate": "2020-09-27T04:17:23.131Z",
+                    "duration": 1,
+                    "numPositions": 13,
+                    "rateType": "weekly",
+                    "skills": [
+                        {
+                            "id": "cbac57a3-7180-4316-8769-73af64893158",
+                            "name": "NGINX"
+                        },
+                        {
+                            "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e",
+                            "name": "Machine Learning"
+                        }
+                    ],
+                    "status": "in-review",
+                    "title": "POSTMANE2E-Dummy title edit"
+                }
+            ]
+        }
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "112",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": 112,
+            "name": "Project-112",
+            "invites": 1,
+            "members": [
+                {
+                    "userId": 40158994
+                },
+                {
+                    "userId": 88774634
+                }
+            ],
+            "weeklyCost": 0,
+            "resources": []
+        }
+    },
+    {
+        "token": "copilot_token",
+        "teamId": "113",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": 113,
+            "name": "Project-113",
+            "invites": 1,
+            "members": [
+                {
+                    "userId": 40158994
+                },
+                {
+                    "userId": 88774634
+                }
+            ],
+            "weeklyCost": 0,
+            "resources": []
+        }
+    },
+    {
+        "token": "user_token",
+        "teamId": "222",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": 222,
+            "name": "Project-222",
+            "invites": 1,
+            "members": [],
+            "weeklyCost": 13,
+            "resources": [
+                {
+                    "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+                    "handle": "userHandle",
+                    "firstName": "firstName",
+                    "lastName": "lastName",
+                    "skills": [],
+                    "customerRate": 13,
+                    "startDate": "2021-05-24",
+                    "endDate": "2021-05-28"
+                }
+            ],
+            "startDate": "2021-05-24T00:00:00.000Z",
+            "endDate": "2021-05-28T00:00:00.000Z",
+            "jobs": [
+                {
+                    "description": "Dummy Description Edit",
+                    "startDate": "2020-09-27T04:17:23.131Z",
+                    "duration": 1,
+                    "numPositions": 12,
+                    "rateType": "hourly",
+                    "skills": [
+                        {
+                            "id": "cbac57a3-7180-4316-8769-73af64893158",
+                            "name": "NGINX"
+                        },
+                        {
+                            "id": "a2b4bc11-c641-4a19-9eb7-33980378f82e",
+                            "name": "Machine Learning"
+                        }
+                    ],
+                    "status": "in-review",
+                    "title": "POSTMANE2E-Dummy title edit"
+                }
+            ]
+        }
+    }
+]

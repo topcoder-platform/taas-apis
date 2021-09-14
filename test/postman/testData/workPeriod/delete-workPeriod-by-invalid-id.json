@@ -1,0 +1,14 @@
+[
+    {
+        "token": "m2m_token",
+        "workPeriodId": "missing_id",
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriod\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "invalid_id",
+        "httpStatus": 400,
+        "message": "\"id\" must be a valid GUID"
+    }
+]

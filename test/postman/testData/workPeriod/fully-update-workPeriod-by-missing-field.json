@@ -1,0 +1,34 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.resourceBookingId\" is required"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.endDate\" is required"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22"
+        },
+        "httpStatus": 400,
+        "message": "\"data.paymentStatus\" is required"
+    }
+]

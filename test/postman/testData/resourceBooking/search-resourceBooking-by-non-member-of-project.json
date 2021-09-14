@@ -1,0 +1,26 @@
+[
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "status": "placed",
+            "projectId": "222"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "startDate",
+            "status": "placed",
+            "projectId": "222"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    }
+]

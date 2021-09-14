@@ -1,0 +1,37 @@
+[
+    {
+        "token": "admin_token",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "manager_token",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "copilot_token",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": "00000000-0000-0000-0000-000000000000"
+        }
+    },
+    {
+        "token": "user_token",
+        "httpStatus": 200,
+        "responseBody": {
+            "id": "00000000-0000-0000-0000-000000000000"
+        }
+    }
+]

@@ -1,0 +1,67 @@
+[
+    {
+        "token": "admin_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example.com",
+            "status": "open",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "copilot_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "externalId": "300234322",
+            "resume": "http://example.com",
+            "status": "open",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "user_token",
+        "jobCandidateId": "JobCandidateId-2",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "externalId": "300234322",
+            "resume": "http://example.com",
+            "status": "open",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "externalId": "300234321",
+            "resume": "http://example.com",
+            "status": "open",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "manager_token",
+        "jobCandidateId": "JobCandidateId-5",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "externalId": "300234321",
+            "resume": "http://example.com",
+            "status": "open",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    }
+]

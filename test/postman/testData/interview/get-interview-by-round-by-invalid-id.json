@@ -1,0 +1,30 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "interviewRound": 1,
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"JobCandidate\" not found"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "invalid_id",
+        "interviewRound": 1,
+        "httpStatus": 400,
+        "message": "\"jobCandidateId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 2,
+        "httpStatus": 404,
+        "message": "Interview doesn't exist with round: 2"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 0,
+        "httpStatus": 400,
+        "message": "\"round\" must be a positive number"
+    }
+]

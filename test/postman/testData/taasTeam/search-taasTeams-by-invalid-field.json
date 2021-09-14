@@ -1,0 +1,33 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "best match",
+            "sortOrder": "asc"
+        },
+        "httpStatus": 400,
+        "message": "\"sortOrder\\(with sortBy being `best match`\\)\" is not allowed"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "sortBy": "best"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.sortBy\" must be one of \\[createdAt, updatedAt, lastActivityAt, id, status, name, type, best match\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 5,
+            "members": "10"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.members\" is not allowed"
+    }
+]

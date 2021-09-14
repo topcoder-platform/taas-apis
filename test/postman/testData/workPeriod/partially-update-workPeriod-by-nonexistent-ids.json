@@ -1,0 +1,26 @@
+[
+    {
+        "token": "m2m_token",
+        "workPeriodId": "missing_id",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-2}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriod\" doesn't exists."
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{missing_id}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"ResourceBooking\" doesn't exists."
+    }
+]

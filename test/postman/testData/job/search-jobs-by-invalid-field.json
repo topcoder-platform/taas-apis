@@ -1,0 +1,100 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 2,
+            "perPage": 1,
+            "sortBy": "title"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.sortBy\" must be one of \\[id, createdAt, startDate, rateType, status\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "createdAt",
+            "projectId": true
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.projectId\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "startDate": "tomorrow"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.startDate\" must be a valid date"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "skill": "cbac57a"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.skill\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "rateType": "whatever"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.rateType\" must be one of \\[hourly, daily, weekly, monthly\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "workload": "forever"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.workload\" must be one of \\[full-time, fractional\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "status": "good"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.status\" must be one of \\[sourcing, in-review, assigned, closed, cancelled\\]"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "projectIds": "123,123"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.projectIds\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "startDate",
+            "other": "other"
+        },
+        "httpStatus": 400,
+        "message": "\"criteria.other\" is not allowed"
+    }
+]

@@ -1,0 +1,88 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null,
+            "payments": []
+        }
+    },
+    {
+        "token": "copilot_token",
+        "workPeriodId": "WorkPeriodId-2",
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "m2m_token",
+        "workPeriodId": "WorkPeriodId-3",
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null,
+            "payments": []
+        }
+    },
+    {
+        "token": "user_token",
+        "workPeriodId": "WorkPeriodId-4",
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-05-09",
+            "endDate": "2021-05-15",
+            "daysWorked": 2,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 111,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null
+        }
+    },
+    {
+        "token": "manager_token",
+        "workPeriodId": "WorkPeriodId-5",
+        "httpStatus": 200,
+        "responseBody": {
+            "startDate": "2021-04-25",
+            "endDate": "2021-05-01",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "projectId": 222,
+            "userHandle": "userHandle",
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "updatedBy": null,
+            "payments": []
+        }
+    }
+]

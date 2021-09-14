@@ -1,0 +1,22 @@
+[
+    {
+        "token": "copilot_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    },
+    {
+        "token": "user_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "requestBody": {
+            "externalId": "300234321",
+            "resume": "http://example2.com"
+        },
+        "httpStatus": 401,
+        "message": "userId: \\d+ the user is not a member of project \\d+"
+    }
+]

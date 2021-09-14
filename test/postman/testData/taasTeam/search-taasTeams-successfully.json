@@ -1,0 +1,207 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "id": 111,
+                "name": "Project-111",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 10,
+                "resources": [
+                    {
+                        "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+                        "handle": "userHandle",
+                        "firstName": "firstName",
+                        "lastName": "lastName",
+                        "skills": []
+                    }
+                ],
+                "startDate": "2021-05-24T00:00:00.000Z",
+                "endDate": "2021-05-28T00:00:00.000Z",
+                "totalPositions": 13
+            },
+            {
+                "id": 112,
+                "name": "Project-112",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 0,
+                "resources": []
+            },
+            {
+                "id": 113,
+                "name": "Project-113",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 0,
+                "resources": []
+            },
+            {
+                "id": 222,
+                "name": "Project-222",
+                "invites": 1,
+                "members": [],
+                "weeklyCost": 13,
+                "resources": [
+                    {
+                        "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+                        "handle": "userHandle",
+                        "firstName": "firstName",
+                        "lastName": "lastName",
+                        "skills": []
+                    }
+                ],
+                "startDate": "2021-05-24T00:00:00.000Z",
+                "endDate": "2021-05-28T00:00:00.000Z",
+                "totalPositions": 12
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "id",
+            "name": "Project-111"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "id": 111,
+                "name": "Project-111",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 10,
+                "resources": [
+                    {
+                        "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+                        "handle": "userHandle",
+                        "firstName": "firstName",
+                        "lastName": "lastName",
+                        "skills": []
+                    }
+                ],
+                "startDate": "2021-05-24T00:00:00.000Z",
+                "endDate": "2021-05-28T00:00:00.000Z",
+                "totalPositions": 13
+            }
+        ]
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "lastActivityAt",
+            "name": "Project-112"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "id": 112,
+                "name": "Project-112",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 0,
+                "resources": []
+            }
+        ]
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "name": "Project-113"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "id": 113,
+                "name": "Project-113",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 0,
+                "resources": []
+            }
+        ]
+    },
+    {
+        "token": "manager_token",
+        "requestParameters": {
+            "page": 1,
+            "perPage": 10,
+            "sortBy": "status",
+            "name": "Project-113"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "id": 113,
+                "name": "Project-113",
+                "invites": 1,
+                "members": [
+                    {
+                        "userId": 40158994
+                    },
+                    {
+                        "userId": 88774634
+                    }
+                ],
+                "weeklyCost": 0,
+                "resources": []
+            }
+        ]
+    }
+]

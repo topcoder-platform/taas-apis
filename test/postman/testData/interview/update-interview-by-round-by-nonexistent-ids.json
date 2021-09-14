@@ -1,0 +1,32 @@
+[
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "invalid_id",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 400,
+        "message": "\"jobCandidateId\" must be a valid GUID"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "missing_id",
+        "interviewRound": 1,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 404,
+        "message": "Interview doesn't exist with jobCandidateId: [\\w\\W]+ and round: 1"
+    },
+    {
+        "token": "m2m_token",
+        "jobCandidateId": "JobCandidateId-1",
+        "interviewRound": 2,
+        "requestBody": {
+            "xaiId": "someid"
+        },
+        "httpStatus": 404,
+        "message": "Interview doesn't exist with jobCandidateId: [\\w\\W]+ and round: 2"
+    }
+]

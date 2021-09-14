@@ -1,0 +1,10 @@
+[
+    {
+        "token": "m2m_token",
+        "requestBody": {
+            "workPeriodId": "{{missing_id}}"
+        },
+        "httpStatus": 404,
+        "message": "id: [\\w\\W]+ \"WorkPeriod\" doesn't exists."
+    }
+]

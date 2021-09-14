@@ -1,0 +1,168 @@
+[
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{invalid_id}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.resourceBookingId\" must be a valid GUID"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "05-16-2021",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.startDate\" must be in YYYY-MM-DD format"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-22-05",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "endDate should be always the next Saturday"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-15",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "startDate should be always Sunday"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-22",
+            "endDate": "2021-05-16",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "startDate should be always Sunday"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-21",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "endDate should be always the next Saturday"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": "none",
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.daysWorked\" must be a number"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": "number",
+            "customerRate": 10,
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.memberRate\" must be a number"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": "number",
+            "paymentStatus": "pending"
+        },
+        "httpStatus": 400,
+        "message": "\"data.customerRate\" must be a number"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "wrong"
+        },
+        "httpStatus": 400,
+        "message": "\"data.paymentStatus\" must be one of \\[pending, partially-completed, completed, cancelled\\]"
+    },
+    {
+        "token": "admin_token",
+        "workPeriodId": "WorkPeriodId-1",
+        "requestBody": {
+            "resourceBookingId": "{{ResourceBookingId-1}}",
+            "startDate": "2021-05-16",
+            "endDate": "2021-05-22",
+            "daysWorked": 2,
+            "memberRate": 5,
+            "customerRate": 10,
+            "paymentStatus": "pending",
+            "period": "period"
+        },
+        "httpStatus": 400,
+        "message": "\"data.period\" is not allowed"
+    }
+]

@@ -1,0 +1,23 @@
+[
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "memberId": 100,
+        "httpStatus": 404,
+        "message": "projectMemberId: 100 \"member\" doesn't exist in project 111"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "id",
+        "memberId": 100,
+        "httpStatus": 400,
+        "message": "\"id\" must be a number"
+    },
+    {
+        "token": "m2m_token",
+        "teamId": "111",
+        "memberId": "id",
+        "httpStatus": 400,
+        "message": "\"projectMemberId\" must be a number"
+    }
+]

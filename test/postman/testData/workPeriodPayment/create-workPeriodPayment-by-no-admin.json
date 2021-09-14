@@ -1,0 +1,18 @@
+[
+    {
+        "token": "copilot_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "user_token",
+        "requestBody": {
+            "workPeriodId": "{{WorkPeriodId-1}}"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    }
+]

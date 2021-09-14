@@ -1,0 +1,142 @@
+[
+    {
+        "token": "admin_token",
+        "interviewId": "InterviewId-1",
+        "httpStatus": 200,
+        "responseBody": {
+            "templateType": null,
+            "calendarEventId": "someid",
+            "hostName": "firstName lastName",
+            "updatedBy": null,
+            "rescheduleUrl": null,
+            "templateId": null,
+            "title": null,
+            "templateUrl": "interview-30",
+            "duration": 30,
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "deletedAt": null,
+            "xaiId": null,
+            "round": 1,
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "locationDetails": null,
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "endTimestamp": null,
+            "startTimestamp": null,
+            "status": "Scheduling"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "interviewId": "InterviewId-2",
+        "httpStatus": 200,
+        "responseBody": {
+            "templateType": null,
+            "calendarEventId": "someid",
+            "hostName": "firstName lastName",
+            "updatedBy": null,
+            "rescheduleUrl": null,
+            "templateId": null,
+            "title": null,
+            "templateUrl": "interview-30",
+            "duration": 30,
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "deletedAt": null,
+            "xaiId": null,
+            "round": 1,
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "locationDetails": null,
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "endTimestamp": null,
+            "startTimestamp": null,
+            "status": "Scheduling"
+        }
+    },
+    {
+        "token": "copilot_token",
+        "interviewId": "InterviewId-3",
+        "httpStatus": 200,
+        "responseBody": {
+            "templateType": null,
+            "calendarEventId": "someid",
+            "hostName": "firstName lastName",
+            "updatedBy": null,
+            "rescheduleUrl": null,
+            "templateId": null,
+            "title": null,
+            "templateUrl": "interview-60",
+            "duration": 60,
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "deletedAt": null,
+            "xaiId": null,
+            "round": 2,
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "locationDetails": null,
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "endTimestamp": null,
+            "startTimestamp": null,
+            "status": "Scheduling"
+        }
+    },
+    {
+        "token": "user_token",
+        "interviewId": "InterviewId-4",
+        "httpStatus": 200,
+        "responseBody": {
+            "templateType": null,
+            "calendarEventId": "someid",
+            "hostName": "firstName lastName",
+            "updatedBy": null,
+            "rescheduleUrl": null,
+            "templateId": null,
+            "title": null,
+            "templateUrl": "interview-30",
+            "duration": 30,
+            "guestNames": [
+                "firstName lastName",
+                "attendee1",
+                "attendee2"
+            ],
+            "deletedAt": null,
+            "xaiId": null,
+            "round": 3,
+            "guestEmails": [
+                "test@gmail.com",
+                "attendee1@yopmail.com",
+                "attendee2@yopmail.com"
+            ],
+            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "locationDetails": null,
+            "hostEmail": "POSTMANE2E-@yopmail.com",
+            "endTimestamp": null,
+            "startTimestamp": null,
+            "status": "Completed"
+        }
+    }
+]
