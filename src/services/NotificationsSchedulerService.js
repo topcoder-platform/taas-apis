@@ -192,7 +192,7 @@ async function sendCandidatesAvailableNotifications () {
  */
 async function sendInterviewComingUpNotifications () {
   localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
-  const currentTime = moment.utc()
+  const currentTime = moment.utc().startOf('minute')
   const timestampFilter = {
     [Op.or]: []
   }
@@ -204,10 +204,10 @@ async function sendInterviewComingUpNotifications () {
     timestampFilter[Op.or].push({
       [Op.and]: [
         {
-          [Op.gt]: rangeStart
+          [Op.gte]: rangeStart
         },
         {
-          [Op.lte]: rangeEnd
+          [Op.lt]: rangeEnd
         }
       ]
     })
@@ -216,7 +216,12 @@ async function sendInterviewComingUpNotifications () {
   const filter = {
     [Op.and]: [
       {
-        status: { [Op.eq]: constants.Interviews.Status.Scheduled }
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled
+          ]
+        }
       },
       {
         startTimestamp: timestampFilter
@@ -285,15 +290,21 @@ async function sendInterviewComingUpNotifications () {
 async function sendInterviewCompletedNotifications () {
   localLogger.debug('[sendInterviewCompletedNotifications]: Looking for due records...')
   const window = moment.duration(config.INTERVIEW_COMPLETED_MATCH_WINDOW)
-  const rangeStart = moment.utc().subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
+  const rangeStart = moment.utc().startOf('minute').subtract(moment.duration(config.INTERVIEW_COMPLETED_PAST_TIME))
   const rangeEnd = rangeStart.clone().add(window)
   const filter = {
     [Op.and]: [
       {
-        status: { [Op.eq]: constants.Interviews.Status.Scheduled }
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled,
+            constants.Interviews.Status.Completed
+          ]
+        }
       },
       {
-        endTimestamp: {
+        startTimestamp: {
           [Op.and]: [
             {
               [Op.gte]: rangeStart
@@ -307,10 +318,14 @@ async function sendInterviewCompletedNotifications () {
     ]
   }
 
-  const interviews = await Interview.findAll({
+  let interviews = await Interview.findAll({
     where: filter,
     raw: true
   })
+  interviews = _.map(_.values(_.groupBy(interviews, 'jobCandidateId')), (interviews) => _.maxBy(interviews, 'round'))
+
+  const jobCandidates = await JobCandidate.findAll({ where: { id: _.map(interviews, 'jobCandidateId') } })
+  const jcMap = _.keyBy(jobCandidates, 'id')
 
   localLogger.debug(`[sendInterviewCompletedNotifications]: Found ${interviews.length} interviews which must be ended by now.`)
 
@@ -320,8 +335,12 @@ async function sendInterviewCompletedNotifications () {
       localLogger.error(`Interview id: ${interview.id} host email not present`)
       continue
     }
+    if (!jcMap[interview.jobCandidateId] || jcMap[interview.jobCandidateId].status !== constants.JobCandidateStatus.INTERVIEW) {
+      localLogger.error(`Interview id: ${interview.id} job candidate status is not ${constants.JobCandidateStatus.INTERVIEW}`)
+      continue
+    }
 
-    const data = await getDataForInterview(interview)
+    const data = await getDataForInterview(interview, jcMap[interview.jobCandidateId])
     if (!data) { continue }
 
     sendNotification({}, {
@@ -357,7 +376,13 @@ async function sendPostInterviewActionNotifications () {
       as: 'interviews',
       required: true,
       where: {
-        status: constants.Interviews.Status.Completed,
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduled,
+            constants.Interviews.Status.Rescheduled,
+            constants.Interviews.Status.Completed
+          ]
+        },
         startTimestamp: {
           [Op.lte]: moment.utc().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW))
         }
@@ -394,28 +419,27 @@ async function sendPostInterviewActionNotifications () {
       const projectJcs = _.filter(completedJobCandidates, jc => jc.jobId === projectJob.id)
       numCandidates += projectJcs.length
       for (const projectJc of projectJcs) {
-        for (const interview of projectJc.interviews) {
-          const d = await getDataForInterview(interview, projectJc, projectJob)
-          if (!d) { continue }
-          d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
-          webNotifications.push({
-            serviceId: 'web',
-            type: template,
-            details: {
-              recipients: projectTeamRecipients,
-              contents: {
-                jobTitle: d.jobTitle,
-                teamName: project.name,
-                projectId,
-                jobId: projectJob.id,
-                userHandle: d.handle
-              },
-              version: 1
-            }
-          })
+        const interview = _.maxBy(projectJc.interviews, 'round')
+        const d = await getDataForInterview(interview, projectJc, projectJob)
+        if (!d) { continue }
+        d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
+        webNotifications.push({
+          serviceId: 'web',
+          type: template,
+          details: {
+            recipients: projectTeamRecipients,
+            contents: {
+              jobTitle: d.jobTitle,
+              teamName: project.name,
+              projectId,
+              jobId: projectJob.id,
+              userHandle: d.handle
+            },
+            version: 1
+          }
+        })
 
-          teamInterviews.push(d)
-        }
+        teamInterviews.push(d)
       }
     }
 

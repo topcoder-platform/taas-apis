@@ -12,7 +12,13 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const {
+  processCreate,
+  processUpdate,
+  processDelete
+} = require('../esProcessors/JobProcessor')
 
+const sequelize = models.sequelize
 const Job = models.Job
 const esClient = helper.getESClient()
 
@@ -32,7 +38,8 @@ async function _getJobCandidates (jobId) {
             value: jobId
           }
         }
-      }
+      },
+      size: 10000
     }
   })
 
@@ -182,9 +189,22 @@ async function createJob (currentUser, job, onTeamCreating) {
   job.id = uuid()
   job.createdBy = await helper.getUserId(currentUser.userId)
 
-  const created = await Job.create(job)
-  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, created.toJSON(), { onTeamCreating })
-  return created.toJSON()
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const created = await Job.create(job, { transaction: t })
+      entity = created.toJSON()
+      await processCreate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'job.create')
+    }
+    throw e
+  }
+
+  await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity, { onTeamCreating })
+  return entity
 }
 
 createJob.schema = Joi.object()
@@ -253,8 +273,20 @@ async function updateJob (currentUser, id, data) {
 
   data.updatedBy = ubahnUserId
 
-  const updated = await job.update(data)
-  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, updated.toJSON(), { oldValue: oldValue })
+  let entity
+  try {
+    await sequelize.transaction(async (t) => {
+      const updated = await job.update(data, { transaction: t })
+      entity = updated.toJSON()
+      await processUpdate(entity)
+    })
+  } catch (e) {
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'job.update')
+    }
+    throw e
+  }
+  await helper.postEvent(config.TAAS_JOB_UPDATE_TOPIC, entity, { oldValue: oldValue })
   job = await Job.findById(id, true)
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => c.dataValues)
   return job.dataValues
@@ -351,7 +383,15 @@ async function deleteJob (currentUser, id) {
   }
 
   const job = await Job.findById(id)
-  await job.destroy()
+  try {
+    await sequelize.transaction(async (t) => {
+      await job.destroy({ transaction: t })
+      await processDelete({ id })
+    })
+  } catch (e) {
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'job.delete')
+    throw e
+  }
   await helper.postEvent(config.TAAS_JOB_DELETE_TOPIC, { id })
 }
 
@@ -414,6 +454,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     }
 
     _.each(_.pick(criteria, [
+      'isApplicationPageActive',
       'projectId',
       'externalId',
       'description',
@@ -493,6 +534,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, [
+    'isApplicationPageActive',
     'projectId',
     'externalId',
     'startDate',
@@ -556,6 +598,7 @@ searchJobs.schema = Joi.object().keys({
     sortOrder: Joi.string().valid('desc', 'asc'),
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
+    isApplicationPageActive: Joi.boolean(),
     description: Joi.string(),
     title: Joi.title(),
     startDate: Joi.date(),
