@@ -154,7 +154,7 @@ paths:
           required: false
           schema:
             type: string
-            format: date-time
+            format: date
           description: The job start date.
         - in: query
           name: resourceType
@@ -4025,8 +4025,8 @@ components:
           maxLength: 64
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         duration:
           type: integer
@@ -4160,8 +4160,8 @@ components:
           default: sourcing
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         duration:
           type: integer
@@ -4702,8 +4702,8 @@ components:
           description: "The description."
         startDate:
           type: string
-          format: date-time
-          example: "2020-09-27T04:17:23.131Z"
+          format: date
+          example: "2020-09-27"
           description: "The job start date."
         duration:
           type: integer

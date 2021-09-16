@@ -3,7 +3,7 @@
  */
 
 const _ = require('lodash')
-const Joi = require('joi')
+const Joi = require('joi').extend(require('@joi/date'))
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
@@ -217,7 +217,7 @@ createJob.schema = Joi.object()
         externalId: Joi.string().allow(null),
         description: Joi.stringAllowEmpty().allow(null),
         title: Joi.title().required(),
-        startDate: Joi.date().allow(null),
+        startDate: Joi.date().format('YYYY-MM-DD').allow(null),
         duration: Joi.number().integer().min(1).allow(null),
         numPositions: Joi.number().integer().min(1).required(),
         resourceType: Joi.stringAllowEmpty().allow(null),
@@ -313,7 +313,7 @@ partiallyUpdateJob.schema = Joi.object()
         externalId: Joi.string().allow(null),
         description: Joi.stringAllowEmpty().allow(null),
         title: Joi.title(),
-        startDate: Joi.date().allow(null),
+        startDate: Joi.date().format('YYYY-MM-DD').allow(null),
         duration: Joi.number().integer().min(1).allow(null),
         numPositions: Joi.number().integer().min(1),
         resourceType: Joi.stringAllowEmpty().allow(null),
@@ -352,7 +352,7 @@ fullyUpdateJob.schema = Joi.object().keys({
     externalId: Joi.string().allow(null).default(null),
     description: Joi.stringAllowEmpty().allow(null).default(null),
     title: Joi.title().required(),
-    startDate: Joi.date().allow(null).default(null),
+    startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
     duration: Joi.number().integer().min(1).allow(null).default(null),
     numPositions: Joi.number().integer().min(1).required(),
     resourceType: Joi.stringAllowEmpty().allow(null).default(null),
@@ -601,7 +601,7 @@ searchJobs.schema = Joi.object().keys({
     isApplicationPageActive: Joi.boolean(),
     description: Joi.string(),
     title: Joi.title(),
-    startDate: Joi.date(),
+    startDate: Joi.date().format('YYYY-MM-DD'),
     resourceType: Joi.string(),
     skill: Joi.string().uuid(),
     role: Joi.string().uuid(),
