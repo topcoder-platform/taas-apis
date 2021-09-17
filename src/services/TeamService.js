@@ -3,7 +3,7 @@
  */
 
 const _ = require('lodash')
-const Joi = require('joi')
+const Joi = require('joi').extend(require('@joi/date'))
 const dateFNS = require('date-fns')
 const config = require('config')
 const helper = require('../common/helper')
@@ -1099,7 +1099,7 @@ createTeam.schema = Joi.object()
           roleSearchRequestId: Joi.string().uuid().required(),
           numberOfResources: Joi.number().integer().min(1).required(),
           durationWeeks: Joi.number().integer().min(1),
-          startMonth: Joi.date(),
+          startMonth: Joi.date().format('YYYY-MM-DD'),
           rateType: Joi.rateType().default('weekly'),
           workload: Joi.workload().default('full-time'),
           hoursPerWeek: Joi.number().integer().positive(),
