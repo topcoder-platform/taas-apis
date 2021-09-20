@@ -520,6 +520,15 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
         }
       })
     }
+    console.log(criteria.bodySkills)
+    // if critera contains bodySkills, filter skills with this value
+    if (criteria.bodySkills && criteria.bodySkills.length > 0) {
+      esQuery.body.query.bool.filter.push({
+        terms: {
+          skills: criteria.bodySkills
+        }
+      })
+    }
     logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
 
     const { body } = await esClient.search(esQuery)
@@ -566,9 +575,32 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.title}%`
     }
   }
-  if (criteria.skill) {
-    filter.skills = {
-      [Op.contains]: [criteria.skill]
+  if (criteria.skill || (criteria.bodySkills && criteria.bodySkills.length > 0)) {
+    const skill = criteria.skill
+    const bodySkills = criteria.bodySkills
+    if (skill && bodySkills && bodySkills.length > 0) {
+      filter.skills = {
+        [Op.and]: [
+          {
+            [Op.contains]: [criteria.skill]
+          },
+          {
+            [Op.or]: _.map(bodySkills, (item) => {
+              return { [Op.contains]: [item] }
+            })
+          }
+        ]
+      }
+    } else if (skill) {
+      filter.skills = {
+        [Op.contains]: [criteria.skill]
+      }
+    } else if (bodySkills && bodySkills > 0) {
+      filter.skills = {
+        [Op.or]: _.map(bodySkills, (item) => {
+          return { [Op.contains]: [item] }
+        })
+      }
     }
   }
   if (criteria.role) {
@@ -631,6 +663,7 @@ searchJobs.schema = Joi.object().keys({
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single(),
     jobIds: Joi.array().items(Joi.string().uuid()),
+    bodySkills: Joi.array().items(Joi.string().uuid()),
     minSalary: Joi.number().integer(),
     maxSalary: Joi.number().integer()
   }).required(),
