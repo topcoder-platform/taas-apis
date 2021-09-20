@@ -102,7 +102,7 @@ paths:
           schema:
             type: string
             default: id
-            enum: ["id", "createdAt", "startDate", "rateType", "status"]
+            enum: ["id", "createdAt", "updatedAt", "startDate", "rateType", "status"]
           description: The sort by column.
         - in: query
           name: sortOrder
@@ -118,6 +118,24 @@ paths:
           schema:
             type: integer
           description: The project id.
+        - in: query
+          name: jobLocation
+          required: false
+          schema:
+            type: string
+          description: The location of the jobs.
+        - in: query
+          name: minSalary
+          required: false
+          schema:
+            type: integer
+          description: The minimum Salary.
+        - in: query
+          name: maxSalary
+          required: false
+          schema:
+            type: integer
+          description: The maximum Salary.
         - in: query
           name: isApplicationPageActive 
           required: false
@@ -4116,6 +4134,12 @@ components:
           description: "The user who updated the job last time.(Will get the user info from the token)"
     JobSearchBody:
       properties:
+        bodySkills:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of skill ids"
         jobIds:
           type: array
           items:
