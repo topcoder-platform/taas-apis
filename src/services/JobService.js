@@ -594,7 +594,7 @@ searchJobs.schema = Joi.object().keys({
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
-    sortBy: Joi.string().valid('id', 'createdAt', 'startDate', 'rateType', 'status'),
+    sortBy: Joi.string().valid('id', 'createdAt', 'updatedAt', 'startDate', 'rateType', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
