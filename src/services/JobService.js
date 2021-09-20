@@ -444,7 +444,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
         query: {
           bool: {
             must: [],
-            filter: []
+            filter: [],
+            should: []
           }
         },
         from: (page - 1) * perPage,
@@ -467,11 +468,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'title',
       'status',
       'minSalary',
-      'maxSalary',
-      'jobLocation'
+      'maxSalary'
     ]), (value, key) => {
       let must
-      if (key === 'description' || key === 'title' || key === 'jobLocation') {
+      if (key === 'description' || key === 'title') {
         must = {
           match: {
             [key]: {
@@ -505,6 +505,27 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       }
       esQuery.body.query.bool.must.push(must)
     })
+    // If criteria contains jobLocation, filter jobLocation with this value
+    if (criteria.jobLocation) {
+      // filter out null value
+      esQuery.body.query.bool.should.push({
+        bool: {
+          must: [
+            {
+              exists: {
+                field: 'jobLocation'
+              }
+            }
+          ]
+        }
+      })
+      // filter the jobLocation
+      esQuery.body.query.bool.should.push({
+        term: {
+          jobLocation: criteria.jobLocation
+        }
+      })
+    }
     // If criteria contains projectIds, filter projectId with this value
     if (criteria.projectIds) {
       esQuery.body.query.bool.filter.push({
