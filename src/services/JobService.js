@@ -467,10 +467,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'title',
       'status',
       'minSalary',
-      'maxSalary'
+      'maxSalary',
+      'jobLocation'
     ]), (value, key) => {
       let must
-      if (key === 'description' || key === 'title') {
+      if (key === 'description' || key === 'title' || key === 'jobLocation') {
         must = {
           match: {
             [key]: {
@@ -520,7 +521,6 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
         }
       })
     }
-    console.log(criteria.bodySkills)
     // if critera contains bodySkills, filter skills with this value
     if (criteria.bodySkills && criteria.bodySkills.length > 0) {
       esQuery.body.query.bool.filter.push({
@@ -573,6 +573,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   if (criteria.title) {
     filter.title = {
       [Op.like]: `%${criteria.title}%`
+    }
+  }
+  if (criteria.jobLocation) {
+    filter.jobLocation = {
+      [Op.like]: `%${criteria.jobLocation}%`
     }
   }
   if (criteria.skill || (criteria.bodySkills && criteria.bodySkills.length > 0)) {
@@ -665,7 +670,8 @@ searchJobs.schema = Joi.object().keys({
     jobIds: Joi.array().items(Joi.string().uuid()),
     bodySkills: Joi.array().items(Joi.string().uuid()),
     minSalary: Joi.number().integer(),
-    maxSalary: Joi.number().integer()
+    maxSalary: Joi.number().integer(),
+    jobLocation: Joi.string()
   }).required(),
   options: Joi.object()
 }).required()
