@@ -465,7 +465,9 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'rateType',
       'workload',
       'title',
-      'status'
+      'status',
+      'minSalary',
+      'maxSalary'
     ]), (value, key) => {
       let must
       if (key === 'description' || key === 'title') {
@@ -480,6 +482,15 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
         must = {
           terms: {
             [`${key}s`]: [value]
+          }
+        }
+      } else if (key === 'minSalary' || key === 'maxSalary') {
+        const salaryOp = key === 'minSalary' ? 'gte' : 'lte'
+        must = {
+          range: {
+            [key]: {
+              [salaryOp]: value
+            }
           }
         }
       } else {
@@ -568,6 +579,16 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   if (criteria.jobIds && criteria.jobIds.length > 0) {
     filter[Op.and].push({ id: criteria.jobIds })
   }
+  if (criteria.minSalary !== undefined) {
+    filter.minSalary = {
+      [Op.gte]: criteria.minSalary
+    }
+  }
+  if (criteria.maxSalary !== undefined) {
+    filter.maxSalary = {
+      [Op.lte]: criteria.maxSalary
+    }
+  }
   const jobs = await Job.findAll({
     where: filter,
     offset: ((page - 1) * perPage),
@@ -609,7 +630,9 @@ searchJobs.schema = Joi.object().keys({
     workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single(),
-    jobIds: Joi.array().items(Joi.string().uuid())
+    jobIds: Joi.array().items(Joi.string().uuid()),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer()
   }).required(),
   options: Joi.object()
 }).required()
