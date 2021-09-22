@@ -68,7 +68,7 @@ workflows:
             branches:
               only:
                 - dev
-                - feature/shapeup4-cqrs-update
+                - gigs-change-aggs
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
