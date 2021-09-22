@@ -231,7 +231,11 @@ createJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required())
+        roleIds: Joi.array().items(Joi.string().uuid().required()),
+        showInHotList: Joi.boolean().default(false),
+        featured: Joi.boolean().default(false),
+        hotListExcerpt: Joi.stringAllowEmpty().default(''),
+        jobTag: Joi.jobTag().default('')
       })
       .required(),
     onTeamCreating: Joi.boolean().default(false)
@@ -327,7 +331,11 @@ partiallyUpdateJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
+        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null),
+        showInHotList: Joi.boolean().default(false),
+        featured: Joi.boolean().default(false),
+        hotListExcerpt: Joi.stringAllowEmpty().default(''),
+        jobTag: Joi.jobTag().default('')
       })
       .required()
   })
@@ -367,7 +375,11 @@ fullyUpdateJob.schema = Joi.object().keys({
     jobLocation: Joi.stringAllowEmpty().allow(null),
     jobTimezone: Joi.stringAllowEmpty().allow(null),
     currency: Joi.stringAllowEmpty().allow(null),
-    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
+    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null),
+    showInHotList: Joi.boolean().default(false),
+    featured: Joi.boolean().default(false),
+    hotListExcerpt: Joi.stringAllowEmpty().default(''),
+    jobTag: Joi.jobTag().default('')
   }).required()
 }).required()
 

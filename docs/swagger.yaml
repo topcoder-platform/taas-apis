@@ -4221,6 +4221,20 @@ components:
             type: string
             format: uuid
             description: "The role id."
+        showInHotList:
+          type: boolean
+          default: false
+        featured:
+          type: boolean
+          default: false
+        hotListExcerpt:
+          type: string
+          example: "This is very hot job"
+          description: "The further instruction to show for the hot job"
+        jobTag:
+          type: string
+          enum: ["", "new", "dollor", "hot"]
+          description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
           default: false
@@ -4763,6 +4777,20 @@ components:
             type: string
             format: uuid
             description: "The role id."
+        showInHotList:
+          type: boolean
+          default: false
+        featured:
+          type: boolean
+          default: false
+        hotListExcerpt:
+          type: string
+          example: "This is very hot job"
+          description: "The further instruction to show for the hot job"
+        jobTag:
+          type: string
+          enum: ["", "new", "dollor", "hot"]
+          description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
           default: false
