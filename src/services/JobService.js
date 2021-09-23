@@ -231,7 +231,11 @@ createJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required())
+        roleIds: Joi.array().items(Joi.string().uuid().required()),
+        showInHotList: Joi.boolean().default(false),
+        featured: Joi.boolean().default(false),
+        hotListExcerpt: Joi.stringAllowEmpty().default(''),
+        jobTag: Joi.jobTag().default('')
       })
       .required(),
     onTeamCreating: Joi.boolean().default(false)
@@ -327,7 +331,11 @@ partiallyUpdateJob.schema = Joi.object()
         jobLocation: Joi.stringAllowEmpty().allow(null),
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
-        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null)
+        roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null),
+        showInHotList: Joi.boolean().default(false),
+        featured: Joi.boolean().default(false),
+        hotListExcerpt: Joi.stringAllowEmpty().default('').allow(null),
+        jobTag: Joi.jobTag().default('').allow(null)
       })
       .required()
   })
@@ -367,7 +375,11 @@ fullyUpdateJob.schema = Joi.object().keys({
     jobLocation: Joi.stringAllowEmpty().allow(null),
     jobTimezone: Joi.stringAllowEmpty().allow(null),
     currency: Joi.stringAllowEmpty().allow(null),
-    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null)
+    roleIds: Joi.array().items(Joi.string().uuid().required()).default(null),
+    showInHotList: Joi.boolean().default(false),
+    featured: Joi.boolean().default(false),
+    hotListExcerpt: Joi.stringAllowEmpty().default('').allow(null),
+    jobTag: Joi.jobTag().default('').allow(null)
   }).required()
 }).required()
 
@@ -444,7 +456,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
         query: {
           bool: {
             must: [],
-            filter: []
+            filter: [],
+            should: []
           }
         },
         from: (page - 1) * perPage,
@@ -465,7 +478,9 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'rateType',
       'workload',
       'title',
-      'status'
+      'status',
+      'minSalary',
+      'maxSalary'
     ]), (value, key) => {
       let must
       if (key === 'description' || key === 'title') {
@@ -482,6 +497,15 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             [`${key}s`]: [value]
           }
         }
+      } else if (key === 'minSalary' || key === 'maxSalary') {
+        const salaryOp = key === 'minSalary' ? 'gte' : 'lte'
+        must = {
+          range: {
+            [key]: {
+              [salaryOp]: value
+            }
+          }
+        }
       } else {
         must = {
           term: {
@@ -493,6 +517,27 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       }
       esQuery.body.query.bool.must.push(must)
     })
+    // If criteria contains jobLocation, filter jobLocation with this value
+    if (criteria.jobLocation) {
+      // filter out null value
+      esQuery.body.query.bool.should.push({
+        bool: {
+          must: [
+            {
+              exists: {
+                field: 'jobLocation'
+              }
+            }
+          ]
+        }
+      })
+      // filter the jobLocation
+      esQuery.body.query.bool.should.push({
+        term: {
+          jobLocation: criteria.jobLocation
+        }
+      })
+    }
     // If criteria contains projectIds, filter projectId with this value
     if (criteria.projectIds) {
       esQuery.body.query.bool.filter.push({
@@ -506,6 +551,14 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       esQuery.body.query.bool.filter.push({
         terms: {
           _id: criteria.jobIds
+        }
+      })
+    }
+    // if critera contains bodySkills, filter skills with this value
+    if (criteria.bodySkills && criteria.bodySkills.length > 0) {
+      esQuery.body.query.bool.filter.push({
+        terms: {
+          skills: criteria.bodySkills
         }
       })
     }
@@ -555,9 +608,37 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.like]: `%${criteria.title}%`
     }
   }
-  if (criteria.skill) {
-    filter.skills = {
-      [Op.contains]: [criteria.skill]
+  if (criteria.jobLocation) {
+    filter.jobLocation = {
+      [Op.like]: `%${criteria.jobLocation}%`
+    }
+  }
+  if (criteria.skill || (criteria.bodySkills && criteria.bodySkills.length > 0)) {
+    const skill = criteria.skill
+    const bodySkills = criteria.bodySkills
+    if (skill && bodySkills && bodySkills.length > 0) {
+      filter.skills = {
+        [Op.and]: [
+          {
+            [Op.contains]: [criteria.skill]
+          },
+          {
+            [Op.or]: _.map(bodySkills, (item) => {
+              return { [Op.contains]: [item] }
+            })
+          }
+        ]
+      }
+    } else if (skill) {
+      filter.skills = {
+        [Op.contains]: [criteria.skill]
+      }
+    } else if (bodySkills && bodySkills > 0) {
+      filter.skills = {
+        [Op.or]: _.map(bodySkills, (item) => {
+          return { [Op.contains]: [item] }
+        })
+      }
     }
   }
   if (criteria.role) {
@@ -567,6 +648,16 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   }
   if (criteria.jobIds && criteria.jobIds.length > 0) {
     filter[Op.and].push({ id: criteria.jobIds })
+  }
+  if (criteria.minSalary !== undefined) {
+    filter.minSalary = {
+      [Op.gte]: criteria.minSalary
+    }
+  }
+  if (criteria.maxSalary !== undefined) {
+    filter.maxSalary = {
+      [Op.lte]: criteria.maxSalary
+    }
   }
   const jobs = await Job.findAll({
     where: filter,
@@ -594,7 +685,7 @@ searchJobs.schema = Joi.object().keys({
   criteria: Joi.object().keys({
     page: Joi.number().integer(),
     perPage: Joi.number().integer(),
-    sortBy: Joi.string().valid('id', 'createdAt', 'startDate', 'rateType', 'status'),
+    sortBy: Joi.string().valid('id', 'createdAt', 'updatedAt', 'startDate', 'rateType', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     projectId: Joi.number().integer(),
     externalId: Joi.string(),
@@ -609,7 +700,11 @@ searchJobs.schema = Joi.object().keys({
     workload: Joi.workload(),
     status: Joi.jobStatus(),
     projectIds: Joi.array().items(Joi.number().integer()).single(),
-    jobIds: Joi.array().items(Joi.string().uuid())
+    jobIds: Joi.array().items(Joi.string().uuid()),
+    bodySkills: Joi.array().items(Joi.string().uuid()),
+    minSalary: Joi.number().integer(),
+    maxSalary: Joi.number().integer(),
+    jobLocation: Joi.string()
   }).required(),
   options: Joi.object()
 }).required()
