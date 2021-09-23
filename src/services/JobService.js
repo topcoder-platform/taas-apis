@@ -332,10 +332,10 @@ partiallyUpdateJob.schema = Joi.object()
         jobTimezone: Joi.stringAllowEmpty().allow(null),
         currency: Joi.stringAllowEmpty().allow(null),
         roleIds: Joi.array().items(Joi.string().uuid().required()).allow(null),
-        showInHotList: Joi.boolean().default(false),
-        featured: Joi.boolean().default(false),
-        hotListExcerpt: Joi.stringAllowEmpty().default(''),
-        jobTag: Joi.jobTag().default('')
+        showInHotList: Joi.boolean().default(false).allow(null),
+        featured: Joi.boolean().default(false).allow(null),
+        hotListExcerpt: Joi.stringAllowEmpty().default('').allow(null),
+        jobTag: Joi.jobTag().default('').allow(null)
       })
       .required()
   })
@@ -376,10 +376,10 @@ fullyUpdateJob.schema = Joi.object().keys({
     jobTimezone: Joi.stringAllowEmpty().allow(null),
     currency: Joi.stringAllowEmpty().allow(null),
     roleIds: Joi.array().items(Joi.string().uuid().required()).default(null),
-    showInHotList: Joi.boolean().default(false),
-    featured: Joi.boolean().default(false),
-    hotListExcerpt: Joi.stringAllowEmpty().default(''),
-    jobTag: Joi.jobTag().default('')
+    showInHotList: Joi.boolean().default(false).allow(null),
+    featured: Joi.boolean().default(false).allow(null),
+    hotListExcerpt: Joi.stringAllowEmpty().default('').allow(null),
+    jobTag: Joi.jobTag().default('').allow(null)
   }).required()
 }).required()
 
