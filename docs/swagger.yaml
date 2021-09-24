@@ -4233,7 +4233,7 @@ components:
           description: "The further instruction to show for the hot job"
         jobTag:
           type: string
-          enum: ["", "new", "dollor", "hot"]
+          enum: ["", "New", "$$$", "Hot"]
           description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
@@ -4789,7 +4789,7 @@ components:
           description: "The further instruction to show for the hot job"
         jobTag:
           type: string
-          enum: ["", "new", "dollor", "hot"]
+          enum: ["", "New", "$$$", "Hot"]
           description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
