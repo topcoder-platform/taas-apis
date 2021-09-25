@@ -618,7 +618,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       filter.skills = {
         [Op.contains]: [criteria.skill]
       }
-    } else if (bodySkills && bodySkills > 0) {
+    } else if (bodySkills && bodySkills.length > 0) {
       filter.skills = {
         [Op.or]: _.map(bodySkills, (item) => {
           return { [Op.contains]: [item] }
