@@ -378,8 +378,8 @@ fullyUpdateJob.schema = Joi.object().keys({
     roleIds: Joi.array().items(Joi.string().uuid().required()).default(null),
     showInHotList: Joi.boolean(),
     featured: Joi.boolean(),
-    hotListExcerpt: Joi.stringAllowEmpty().allow(null),
-    jobTag: Joi.jobTag().allow(null)
+    hotListExcerpt: Joi.stringAllowEmpty(),
+    jobTag: Joi.jobTag()
   }).required()
 }).required()
 
