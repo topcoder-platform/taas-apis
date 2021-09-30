@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-GR='\033[92m'
-NC='\033[0m'
+GR=\033[92m>>>  
+NC=  <<<\033[0m
 .PHONY: dump_tables
 dump_tables:
 	@echo "${GR}make sure you checked in all your changes${NC}"
