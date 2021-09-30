@@ -25,6 +25,7 @@
             "hoursPerWeek": 20,
             "jobLocation": "Any location",
             "jobTimezone": "GMT",
+            "featured": true,
             "currency": "USD",
             "roleIds": null,
             "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
@@ -44,6 +45,7 @@
             "resourceType": "Dummy Resource Type",
             "rateType": "hourly",
             "workload": "full-time",
+            "showInHotList": true,
             "skills": [
                 "23e00d92-207a-4b5b-b3c9-4c5662644941",
                 "7d076384-ccf6-4e43-a45d-1b24b1e624aa",
