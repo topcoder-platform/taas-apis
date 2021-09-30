@@ -1,31 +1,34 @@
 #!/bin/bash
 
+
+GR='\0ee[92m'
+NC='\033[0m'
 .PHONY: dump_tables
 dump_tables:
-	@echo "make sure you checked in all your changes"
-	@echo "going to dev"
+	@echo "${GR}make sure you checked in all your changes${NC}"
+	@echo "${GR}going to dev${NC}"
 	git checkout dev
 	npm run services:down
 	npm run services:up
 	npm run init-db
 	npm run migrate
-	@echo "cool, we are now migrated to dev status... moving on to our branch"
+	@echo "${GR}cool, we are now migrated to dev status... moving on to our branch${NC}"
 	git checkout feature/interview-nylas
 	npm run migrate
-	@echo "now we are post-feature migration state, let's dump the tables"
+	@echo "${GR}now we are post-feature migration state, let's dump the tables${NC}"
 	@mkdir -p ./.comparisons/migrate
-	@mkdir -p ./.comparisons/initdb
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/migrate/interviews.sql
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/migrate/job_candidates.sql
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/migrate/user_meeting_settings.sql
-	@echo "now we revert and simply init db from the feature branch"
+	@mkdir -p ./.comparisons/init-db
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/migrate/interviews.sql
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/migrate/job_candidates.sql
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/migrate/user_meeting_settings.sql
+	@echo "${GR}now we revert and simply init db from the feature branch${NC}"
 	npm run services:down
 	npm run services:up
 	npm run init-db
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/init-db/interviews.sql
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/init-db/job_candidates.sql
-	docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/init-db/user_meeting_settings.sql
-	@echo "All done, you can now compare the files"
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/init-db/interviews.sql
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/init-db/job_candidates.sql
+	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/init-db/user_meeting_settings.sql
+	@echo "${GR}All done, you can now compare the files${NC}"
 	git diff --no-index ./.comparisons/migrate/interviews.sql ./.comparisons/init-db/interviews.sql
 	git diff --no-index ./.comparisons/migrate/job_candidates.sql ./.comparisons/init-db/job_candidates.sql
 	git diff --no-index ./.comparisons/migrate/user_meeting_settings.sql ./.comparisons/init-db/user_meeting_settings.sql
