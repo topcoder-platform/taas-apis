@@ -1,8 +1,8 @@
 #!/bin/bash
 
+.PHONY: dump_tables
 dump_tables:
-	@echo "make sure you checked in all your changes and press a key"
-	@read
+	@echo "make sure you checked in all your changes"
 	@echo "going to dev"
 	git checkout dev
 	npm run services:down
