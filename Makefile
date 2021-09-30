@@ -21,7 +21,7 @@ dump_tables:
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/migrate/interviews.sql
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/migrate/job_candidates.sql
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/migrate/user_meeting_settings.sql
-	@echo "${GR}now we revert and simply init db from the feature branch${NC}"
+	@echo "${GR}now we revert and simply `init-db force` from the feature branch${NC}"
 	npm run services:down
 	npm run services:up
 	npm run init-db force

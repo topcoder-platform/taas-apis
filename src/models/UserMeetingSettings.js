@@ -16,8 +16,8 @@ module.exports = (sequelize) => {
     }
 
     /**
-     * Get interview by id
-     * @param {String} id the interview id
+     * Get UserMeetingSettings by userId
+     * @param {String} userId
      * @returns {UserMeetingSettings} the UserMeetingSettings instance
      */
     static async findById (id) {
@@ -73,7 +73,7 @@ module.exports = (sequelize) => {
     {
       schema: config.DB_SCHEMA_NAME,
       sequelize,
-      tableName: 'interviews',
+      tableName: 'user_meeting_settings',
       paranoid: false,
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
