@@ -3,6 +3,7 @@ const config = require('config')
 const _ = require('lodash')
 const { Interviews } = require('../../app-constants')
 const errors = require('../common/errors')
+const { nylasAvailableTimeSchema } = require('../common/nylas')
 
 // allowed status values
 const statuses = _.values(Interviews.Status)
@@ -42,40 +43,71 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
       },
-      xaiId: {
-        field: 'xai_id',
-        type: Sequelize.STRING(255)
+      nylasPageId: {
+        field: 'nylas_page_id',
+        type: Sequelize.STRING(255),
+        allowNull: false
       },
+      nylasPageSlug: {
+        field: 'nylas_page_slug',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      nylasCalendarId: {
+        field: 'nylas_calendar_id',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      timezone: {
+        field: 'timezone',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      availableTime: nylasAvailableTimeSchema('availableTime'),
+      hostUserId: {
+        field: 'hostUserId',
+        type: Sequelize.UUID,
+        allowNull: false
+      },
+      expireTimestamp: {
+        field: 'expireTimestamp',
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      // xaiId: {
+      //   field: 'xai_id',
+      //   type: Sequelize.STRING(255)
+      // },
       jobCandidateId: {
         field: 'job_candidate_id',
         type: Sequelize.UUID,
         allowNull: false
       },
-      calendarEventId: {
-        field: 'calendar_event_id',
-        type: Sequelize.STRING(255)
-      },
-      templateUrl: {
-        field: 'template_url',
-        type: Sequelize.STRING(255),
-        allowNull: false
-      },
-      templateId: {
-        field: 'template_id',
-        type: Sequelize.STRING(255)
-      },
-      templateType: {
-        field: 'template_type',
-        type: Sequelize.STRING(255)
-      },
-      title: {
-        field: 'title',
-        type: Sequelize.STRING(255)
-      },
-      locationDetails: {
-        field: 'location_details',
-        type: Sequelize.STRING(255)
-      },
+      // calendarEventId: {
+      //   field: 'calendar_event_id',
+      //   type: Sequelize.STRING(255)
+      // },
+      // templateUrl: {
+      //   field: 'template_url',
+      //   type: Sequelize.STRING(255),
+      //   allowNull: false
+      // },
+      // templateId: {
+      //   field: 'template_id',
+      //   type: Sequelize.STRING(255)
+      // },
+      // templateType: {
+      //   field: 'template_type',
+      //   type: Sequelize.STRING(255)
+      // },
+      // title: {
+      //   field: 'title',
+      //   type: Sequelize.STRING(255)
+      // },
+      // locationDetails: {
+      //   field: 'location_details',
+      //   type: Sequelize.STRING(255)
+      // },
       duration: {
         field: 'duration',
         type: Sequelize.INTEGER
@@ -92,30 +124,30 @@ module.exports = (sequelize) => {
         field: 'end_timestamp',
         type: Sequelize.DATE
       },
-      hostName: {
-        field: 'host_name',
-        type: Sequelize.STRING(255)
-      },
-      hostEmail: {
-        field: 'host_email',
-        type: Sequelize.STRING(255)
-      },
-      guestNames: {
-        field: 'guest_names',
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      guestEmails: {
-        field: 'guest_emails',
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
+      // hostName: {
+      //   field: 'host_name',
+      //   type: Sequelize.STRING(255)
+      // },
+      // hostEmail: {
+      //   field: 'host_email',
+      //   type: Sequelize.STRING(255)
+      // },
+      // guestNames: {
+      //   field: 'guest_names',
+      //   type: Sequelize.ARRAY(Sequelize.STRING)
+      // },
+      // guestEmails: {
+      //   field: 'guest_emails',
+      //   type: Sequelize.ARRAY(Sequelize.STRING)
+      // },
       status: {
         type: Sequelize.ENUM(statuses),
         allowNull: false
       },
-      rescheduleUrl: {
-        field: 'reschedule_url',
-        type: Sequelize.STRING(255)
-      },
+      // rescheduleUrl: {
+      //   field: 'reschedule_url',
+      //   type: Sequelize.STRING(255)
+      // },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,
