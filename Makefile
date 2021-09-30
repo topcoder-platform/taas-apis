@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-GR=\033[92m>>>  
-NC=  <<<\033[0m
+GR="\033[92m>>>  "
+NC="  <<<\033[0m"
 .PHONY: dump_tables
 dump_tables:
 	@echo "${GR}make sure you checked in all your changes${NC}"
@@ -24,7 +24,7 @@ dump_tables:
 	@echo "${GR}now we revert and simply init db from the feature branch${NC}"
 	npm run services:down
 	npm run services:up
-	npm run init-db
+	npm run init-db force
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.interviews' --schema-only postgres > ./.comparisons/init-db/interviews.sql
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.job_candidates' --schema-only postgres > ./.comparisons/init-db/job_candidates.sql
 	@docker exec -t tc-taas-postgres pg_dump -h localhost --username=postgres -t 'bookings.user_meeting_settings' --schema-only postgres > ./.comparisons/init-db/user_meeting_settings.sql
