@@ -31,13 +31,23 @@ const NylasService = require('./NylasService')
   *
   * @param {Object} currentUser the user who perform this operation.
   * @param {String} jobCandidateId the job candidate id
+  * @param {Boolean} allowCandidate will allow also the currentUser to access if is a candidate
   * @throws {errors.ForbiddenError}
   */
-async function ensureUserIsPermitted (currentUser, jobCandidateId) {
+async function ensureUserIsPermitted (currentUser, jobCandidateId, allowCandidate) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
     const job = await jobCandidate.getJob()
-    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+    try {
+      await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+    } catch (error) {
+      if (e instanceof errors.UnauthorizedError && allowCandidate === true) {
+        const userId = await helper.getUserId(currentUser.userId)
+        if (userId !== jobCandidate.userId) {
+          throw error
+        }
+      }
+    }
   }
 }
 
@@ -70,7 +80,7 @@ function handleSequelizeError (err, jobCandidateId) {
  */
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
   // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateId)
+  await ensureUserIsPermitted(currentUser, jobCandidateIdm, true)
   if (!fromDb) {
     try {
       // get job candidate from ES
@@ -167,7 +177,7 @@ async function getInterviewById (currentUser, id, fromDb = false) {
       const interview = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits[0]._source')
       if (interview) {
         // check permission before returning
-        await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+        await ensureUserIsPermitted(currentUser, interview.jobCandidateId, true)
         return interview
       }
       // if reaches here, the interview with this IDs is not found
@@ -382,7 +392,6 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      // TODO: access control
       // check if  "duration", "availableTime" or "timezone" changed. In that case we need to keep nylas consistent
       if (interview.duration !== data.duration || interview.availableTime !== data.availableTime || interview.timezone !== data.timezone) {
         const settingsForCalendar = UserMeetingSettings.findOne({
@@ -558,7 +567,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
  */
 async function searchInterviews (currentUser, jobCandidateId, criteria) {
   // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateId)
+  await ensureUserIsPermitted(currentUser, jobCandidateId, true)
 
   const { page, perPage } = criteria
 
