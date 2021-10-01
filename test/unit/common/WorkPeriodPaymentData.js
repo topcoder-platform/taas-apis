@@ -118,6 +118,18 @@ const workPeriodPayment01 = {
     paymentStatus: 'in-progress',
     updatedAt: '2021-06-13T18:25:08.492Z'
   },
+  workPeriodUpdateESSearchResponse: {
+    body: {
+      hits: {
+        hits: [
+          { _id: 'something' }
+        ],
+        total: {
+          value: 'something'
+        }
+      }
+    }
+  },
   workPeriodUpdateRequest: {
     daysPaid: 5,
     paymentTotal: 12.6,

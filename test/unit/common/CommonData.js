@@ -13,7 +13,13 @@ const userWithManagePermission = {
 const regularUser = {
   userId: '222'
 }
-const ESClient = {}
+const ESClient = {
+  create: () => {},
+  update: () => {},
+  delete: () => {},
+  search: () => {}
+}
+
 module.exports = {
   currentUser,
   UserTCConnCopilot,
