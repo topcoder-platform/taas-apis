@@ -18,6 +18,7 @@ const {
   processUpdateInterview,
   processBulkUpdateInterviews
 } = require('../esProcessors/InterviewProcessor')
+
 const {
   processUpdate: jobCandidateProcessUpdate
 } = require('../esProcessors/JobCandidateProcessor')
@@ -26,6 +27,7 @@ const Interview = models.Interview
 const UserMeetingSettings = models.UserMeetingSettings
 const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
+const UserMeetingSettingsService = require('./UserMeetingSettingsService')
 /**
   * Ensures user is permitted for the operation.
   *
@@ -41,7 +43,7 @@ async function ensureUserIsPermitted (currentUser, jobCandidateId, allowCandidat
     try {
       await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
     } catch (error) {
-      if (e instanceof errors.UnauthorizedError && allowCandidate === true) {
+      if (error instanceof errors.UnauthorizedError && allowCandidate === true) {
         const userId = await helper.getUserId(currentUser.userId)
         if (userId !== jobCandidate.userId) {
           throw error
@@ -80,7 +82,7 @@ function handleSequelizeError (err, jobCandidateId) {
  */
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
   // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateIdm, true)
+  await ensureUserIsPermitted(currentUser, jobCandidateId, true)
   if (!fromDb) {
     try {
       // get job candidate from ES
@@ -306,23 +308,10 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       interview.nylasPageSlug = schedulingPage.slug
       interview.nylasCalendarId = calendar.id
 
+      await UserMeetingSettingsService.createUserMeetingSettings(interview.hostUserId, calendar, schedulingPage, t)
+
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
-
-      // create the userMeetingSettings
-      await UserMeetingSettings.create({
-        userId: interview.hostUserId,
-        defaultAvailableTime: NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
-        defaultTimezone: NylasService.getTimezoneFromSchedulingPage(schedulingPage),
-        nylasCalendars: [].concat({
-          accessToken: calendar.accessToken,
-          accountId: calendar.accountId,
-          accountProvider: 'nylas', // TODO 🤔
-          id: calendar.id,
-          isPrimary: calendar.is_primary
-        })
-      }, { transaction: t })
-
       entity = created.toJSON()
       await processRequestInterview(entity)
       // update jobCandidate.status to Interview
@@ -358,7 +347,14 @@ requestInterview.schema = Joi.object().keys({
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().items(
       Joi.object({
-        days: Joi.array().items(Joi.string().valid(InterviewConstants.Nylas.Days.Monday, InterviewConstants.Nylas.Days.Tuesday, InterviewConstants.Nylas.Days.Wednesday, InterviewConstants.Nylas.Days.Thursday, InterviewConstants.Nylas.Days.Friday, InterviewConstants.Nylas.Days.Saturday, InterviewConstants.Nylas.Days.Sunday)).required(),
+        days: Joi.array().items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })

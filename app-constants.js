@@ -58,7 +58,13 @@ const Scopes = {
   CREATE_ROLE: 'create:taas-roles',
   UPDATE_ROLE: 'update:taas-roles',
   DELETE_ROLE: 'delete:taas-roles',
-  ALL_ROLE: 'all:taas-roles'
+  ALL_ROLE: 'all:taas-roles',
+  // userMeetingSettings
+  READ_USER_MEETING_SETTINGS: 'read:taas-userMeetingsSettings',
+  CREATE_USER_MEETING_SETTINGS: 'create:taas-userMeetingsSettings',
+  UPDATE_USER_MEETING_SETTINGS: 'update:taas-userMeetingsSettings',
+  ALL_USER_MEETING_SETTINGS: 'all:taas-userMeetingsSettings'
+
 }
 
 // Interview related constants

@@ -9,7 +9,8 @@ const indices = [
   config.get('esConfig.ES_INDEX_JOB'),
   config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
   config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-  config.get('esConfig.ES_INDEX_ROLE')
+  config.get('esConfig.ES_INDEX_ROLE'),
+  config.get('esConfig.ES_INDEX_USER_MEETING_SETTINGS')
 ]
 const userPrompt = `WARNING: this would remove existent data! Are you sure want to delete the following eleasticsearch indices: ${indices}?`
 

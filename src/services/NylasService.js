@@ -65,28 +65,6 @@ async function _getAccessToken (code) {
   return { accountId, accessToken }
 }
 
-// Step 3
-async function getExistingCalendars (accessToken) {
-  const res = await axios.get('https://api.nylas.com/calendars', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-
-  return res.data
-}
-
-// Step 5
-async function getSchedulingPages (accessToken) {
-  const res = await axios.get('https://api.schedule.nylas.com/manage/pages', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-
-  return res.data
-}
-
 function getAvailableTimeFromSchedulingPage (page) {
   return page.config.booking.opening_hours
 }

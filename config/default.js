@@ -82,6 +82,8 @@ module.exports = {
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
     // the role index
     ES_INDEX_ROLE: process.env.ES_INDEX_ROLE || 'role',
+    // the userMeetingSettings index
+    ES_INDEX_USER_MEETING_SETTINGS: process.env.ES_INDEX_USER_MEETING_SETTINGS || 'user_meeting_settings',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,

@@ -1151,7 +1151,7 @@ async function getUserEmailByUserUUID (userUUID) {
 
   const handleQuery = `handleLower:${user.handle.toLowerCase()}`
   const userIdQuery = `userId:${user.userId}`
-
+  // eslint-disable-next-line
   const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
   try {
     const searchResult = await searchUsersByQuery(query)
