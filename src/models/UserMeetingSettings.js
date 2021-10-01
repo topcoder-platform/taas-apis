@@ -31,6 +31,29 @@ module.exports = (sequelize) => {
       }
       return interview
     }
+
+    /**
+     * Get UserMeetingSettings by userId
+     * @param {String} userId
+     * @returns {UserMeetingSettings} the NylasCalendar for the user
+     */
+     static async getPrimaryNylasCalendarForUser (id) {
+      const calendar = await UserMeetingSettings.findOne({
+        where: {
+          userId: id
+        }
+      }).then(ums => {
+        const calendars = ums.nylasCalendars
+        if (calendars.length == 0) {
+          return null
+        }
+        return calendars.filter(c=>x.isPrimary)[0]
+      })
+
+      return calendar
+    }
+
+
   }
   UserMeetingSettings.init(
     {

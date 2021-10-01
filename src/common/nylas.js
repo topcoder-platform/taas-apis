@@ -6,6 +6,8 @@
 
 
 const { Sequelize } = require('sequelize')
+const { Interviews: InterviewConstants } = require('../../app-constants')
+
 
 function nylasAvailableTimeSchema(fieldName) {
   return {
@@ -14,15 +16,17 @@ function nylasAvailableTimeSchema(fieldName) {
       type: Sequelize.ARRAY({
         type: Sequelize.JSONB({
           days: {
-            type: Sequelize.ENUM(
-              'M',
-              'T',
-              'W',
-              'R',
-              'F',
-              'S',
-              'U'
-            ),
+            type: Sequelize.ARRAY({
+              type: Sequelize.ENUM(
+                InterviewConstants.Nylas.Days.Monday, 
+                InterviewConstants.Nylas.Days.Tuesday, 
+                InterviewConstants.Nylas.Days.Wednesday, 
+                InterviewConstants.Nylas.Days.Thursday, 
+                InterviewConstants.Nylas.Days.Friday, 
+                InterviewConstants.Nylas.Days.Saturday, 
+                InterviewConstants.Nylas.Days.Sunday
+              )
+            }),
           },
           end: {
             type: Sequelize.STRING(5),

@@ -180,7 +180,9 @@ module.exports = {
   INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // The sender (aka `from`) email for invitation.
   INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'talent@topcoder.com',
-  // the URL where TaaS App is hosted
+  // Duration that gets added to current time when an interview is created in order to calculate expireTimestamp
+  INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME  || 'P5D',
+    // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // environment variables for Payment Service
   ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
@@ -284,5 +286,10 @@ module.exports = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   CURRENCY: process.env.CURRENCY || 'usd',
   // RCRM base URL
-  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io'
+  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io',
+
+  // Nylas Client id
+  NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
+  NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
+
 }
