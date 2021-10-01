@@ -76,7 +76,19 @@ const Interviews = {
     'interview-30': 30,
     'interview-60': 60
   },
-  MaxAllowedCount: 3
+  MaxAllowedCount: 3,
+  Nylas: {
+    Days: {
+      Monday: 'M',
+      Tuesday: 'T',
+      Wednesday: 'W',
+      Thursday: 'R',
+      Friday: 'F',
+      Saturday: 'S',
+      Sunday: 'U',
+    },
+    StartEndRegex: /^[0-9]{1,2}:[0-9]{2}$/
+  }
 }
 
 const ChallengeStatus = {
@@ -166,6 +178,10 @@ const JobCandidateStatus = {
   INTERVIEW: 'interview'
 }
 
+const SearchUsers = {
+  SEARCH_USERS_PAGE_SIZE: 5,
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -181,5 +197,6 @@ module.exports = {
   WeeklySurveySwitch,
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
-  JobCandidateStatus
+  JobCandidateStatus,
+  SearchUsers
 }

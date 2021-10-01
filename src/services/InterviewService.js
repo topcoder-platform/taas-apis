@@ -23,8 +23,9 @@ const {
 } = require('../esProcessors/JobCandidateProcessor')
 const sequelize = models.sequelize
 const Interview = models.Interview
+const UserMeetingSettings = models.UserMeetingSettings
 const esClient = helper.getESClient()
-
+const NylaxService = require('./NylasService')
 /**
   * Ensures user is permitted for the operation.
   *
@@ -223,11 +224,20 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   // check permission
   await ensureUserIsPermitted(currentUser, jobCandidateId)
 
+  //if M2M require hostUserId
+  if (currentUser.isMachine) {
+    const hostUserIdValidator = Joi.string().uuid().required()
+    const { error } = hostUserIdValidator.validate(interview.hostUserId)
+    if (error) {
+      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid uuid`)
+    }
+  }
+
   // find the round count
   const round = await Interview.count({
     where: { jobCandidateId }
   })
-
+ 
   // throw error if candidate has already had MaxAllowedCount interviews
   if (round >= InterviewConstants.MaxAllowedCount) {
     throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
@@ -237,12 +247,20 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
   const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
   const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
+  
   // pre-populate fields
   interview.id = uuid()
+  interview.expireTimestamp =  moment().add(config.INTERVIEW_SCHEDULING_EXPIRE_TIME)
+    
   interview.jobCandidateId = jobCandidateId
   interview.round = round + 1
   interview.duration = InterviewConstants.XaiTemplate[interview.templateUrl]
   interview.createdBy = await helper.getUserId(currentUser.userId)
+
+  if (_.isNil(interview.hostUserId) || interview.hostUserId==="") {
+    interview.hostUserId = interview.createdBy
+  }
+
   interview.guestEmails = [jobCandidateMember.email, ...interview.guestEmails]
   // pre-populate hostName & guestNames
   const hostMembers = await helper.getMemberDetailsByEmails([interview.hostEmail])
@@ -255,10 +273,47 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
 
   let entity
   let jobCandidateEntity
+  let calendar
   try {
     await sequelize.transaction(async (t) => {
+
+      //get calendar if exists, otherwise create a virtual one for the user
+      calendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
+      if (_.isNil(calendar)) {
+        const userEmail = await helper.getUserEmailByUserUUID(interview.hostUserId)
+        const currentUserFullname = `${currentUser.firstName} ${currentUser.lastName}`
+        calendar = await NylaxService.createVirtualCalendarForUser(interview.hostUserId, userEmail, currentUserFullname, interview.timezone )
+      }
+      //configure scheduling page
+      const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
+      const job = await jobCandidate.getJob()
+      const eventLocation = "Zoom link: https://zoom.link/example/123123"
+      const eventTitle = `Interview for job: ${job.title}`
+      //create scheduling page on nylax
+      const schedulingPage = await NylaxService.createSchedulingPage(interview, calendar, eventLocation, eventTitle)
+    
+      //Link nylasPage to interview
+      interview.nylasPageId = schedulingPage.id
+      interview.nylasPageSlug = schedulingPage.slug
+      interview.nylasCalendarId = calendar.id
+       
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
+
+      //create the userMeetingSettings
+      await UserMeetingSettings.create({
+        userId: interview.hostUserId,
+        defaultAvailableTime: NylaxService.getAvailableTimeFromSchedulingPage(schedulingPage),
+        defaultTimezone: NylaxService.getTimezoneFromSchedulingPage(schedulingPage),
+        nylasCalendars: [].concat({
+          accessToken: calendar.accessToken,
+          accountId: calendar.accountId,
+          accountProvider: "nylas", //TODO 🤔
+          id: calendar.id,
+          isPrimary: calendar.is_primary
+        }),
+      }, { transaction: t })
+
       entity = created.toJSON()
       await processRequestInterview(entity)
       // update jobCandidate.status to Interview
@@ -288,11 +343,17 @@ requestInterview.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidateId: Joi.string().uuid().required(),
   interview: Joi.object().keys({
-    calendarEventId: Joi.string().allow(null),
-    templateUrl: Joi.xaiTemplate().required(),
-    hostEmail: Joi.string().email().required(),
-    guestEmails: Joi.array().items(Joi.string().email()).default([]),
-    status: Joi.interviewStatus().default(InterviewConstants.Status.Scheduling)
+    duration: Joi.number().integer().positive().required(),
+    timezone: Joi.string().required(),
+    hostUserId: Joi.string().uuid(),
+    expireTimestamp: Joi.date(),
+    availableTime: Joi.array().items(
+      Joi.object({
+        days: Joi.array().items(Joi.string().valid(InterviewConstants.Nylas.Days.Monday, InterviewConstants.Nylas.Days.Tuesday, InterviewConstants.Nylas.Days.Wednesday, InterviewConstants.Nylas.Days.Thursday, InterviewConstants.Nylas.Days.Friday, InterviewConstants.Nylas.Days.Saturday, InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      })
+    ).required(),
   }).required()
 }).required()
 
