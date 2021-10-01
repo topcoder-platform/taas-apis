@@ -25,7 +25,7 @@ const sequelize = models.sequelize
 const Interview = models.Interview
 const UserMeetingSettings = models.UserMeetingSettings
 const esClient = helper.getESClient()
-const NylaxService = require('./NylasService')
+const NylasService = require('./NylasService')
 /**
   * Ensures user is permitted for the operation.
   *
@@ -224,7 +224,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   // check permission
   await ensureUserIsPermitted(currentUser, jobCandidateId)
 
-  //if M2M require hostUserId
+  // if M2M require hostUserId
   if (currentUser.isMachine) {
     const hostUserIdValidator = Joi.string().uuid().required()
     const { error } = hostUserIdValidator.validate(interview.hostUserId)
@@ -237,7 +237,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const round = await Interview.count({
     where: { jobCandidateId }
   })
- 
+
   // throw error if candidate has already had MaxAllowedCount interviews
   if (round >= InterviewConstants.MaxAllowedCount) {
     throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
@@ -247,17 +247,17 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
   const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
   const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
-  
+
   // pre-populate fields
   interview.id = uuid()
-  interview.expireTimestamp =  moment().add(config.INTERVIEW_SCHEDULING_EXPIRE_TIME)
-    
+  interview.expireTimestamp = moment().add(config.INTERVIEW_SCHEDULING_EXPIRE_TIME)
+
   interview.jobCandidateId = jobCandidateId
   interview.round = round + 1
   interview.duration = InterviewConstants.XaiTemplate[interview.templateUrl]
   interview.createdBy = await helper.getUserId(currentUser.userId)
 
-  if (_.isNil(interview.hostUserId) || interview.hostUserId==="") {
+  if (_.isNil(interview.hostUserId) || interview.hostUserId === '') {
     interview.hostUserId = interview.createdBy
   }
 
@@ -276,42 +276,41 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   let calendar
   try {
     await sequelize.transaction(async (t) => {
-
-      //get calendar if exists, otherwise create a virtual one for the user
+      // get calendar if exists, otherwise create a virtual one for the user
       calendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
       if (_.isNil(calendar)) {
         const userEmail = await helper.getUserEmailByUserUUID(interview.hostUserId)
         const currentUserFullname = `${currentUser.firstName} ${currentUser.lastName}`
-        calendar = await NylaxService.createVirtualCalendarForUser(interview.hostUserId, userEmail, currentUserFullname, interview.timezone )
+        calendar = await NylasService.createVirtualCalendarForUser(interview.hostUserId, userEmail, currentUserFullname, interview.timezone)
       }
-      //configure scheduling page
+      // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
-      const eventLocation = "Zoom link: https://zoom.link/example/123123"
+      const eventLocation = 'Zoom link: https://zoom.link/example/123123'
       const eventTitle = `Interview for job: ${job.title}`
-      //create scheduling page on nylax
-      const schedulingPage = await NylaxService.createSchedulingPage(interview, calendar, eventLocation, eventTitle)
-    
-      //Link nylasPage to interview
+      // create scheduling page on nylas
+      const schedulingPage = await NylasService.createSchedulingPage(interview, calendar, eventLocation, eventTitle)
+
+      // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
       interview.nylasPageSlug = schedulingPage.slug
       interview.nylasCalendarId = calendar.id
-       
+
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
 
-      //create the userMeetingSettings
+      // create the userMeetingSettings
       await UserMeetingSettings.create({
         userId: interview.hostUserId,
-        defaultAvailableTime: NylaxService.getAvailableTimeFromSchedulingPage(schedulingPage),
-        defaultTimezone: NylaxService.getTimezoneFromSchedulingPage(schedulingPage),
+        defaultAvailableTime: NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
+        defaultTimezone: NylasService.getTimezoneFromSchedulingPage(schedulingPage),
         nylasCalendars: [].concat({
           accessToken: calendar.accessToken,
           accountId: calendar.accountId,
-          accountProvider: "nylas", //TODO 🤔
+          accountProvider: 'nylas', // TODO 🤔
           id: calendar.id,
           isPrimary: calendar.is_primary
-        }),
+        })
       }, { transaction: t })
 
       entity = created.toJSON()
@@ -353,7 +352,7 @@ requestInterview.schema = Joi.object().keys({
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })
-    ).required(),
+    ).required()
   }).required()
 }).required()
 
@@ -383,6 +382,25 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
+      // TODO: access control
+      // check if  "duration", "availableTime" or "timezone" changed. In that case we need to keep nylas consistent
+      if (interview.duration !== data.duration || interview.availableTime !== data.availableTime || interview.timezone !== data.timezone) {
+        const settingsForCalendar = UserMeetingSettings.findOne({
+          where: {
+            nylasCalendars: {
+              [Op.contains]: [{ id: interview.nylasCalendarId }]
+            }
+          }
+        })
+        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, ['id', interview.nylasCalendarId])[0].accessToken
+
+        await NylasService.patchSchedulingPage(interview.nylasPageId, nylasAccessToken, {
+          duration: interview.duration !== data.duration ? data.duration : null,
+          availableTime: interview.availableTime !== data.availableTime ? data.availableTime : null,
+          timezone: interview.timezone !== data.timezone ? data.timezone : null
+        })
+      }
+
       const updated = await interview.update(data, { transaction: t })
       entity = updated.toJSON()
       await processUpdateInterview(entity)

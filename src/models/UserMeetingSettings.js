@@ -1,9 +1,7 @@
 const { Sequelize, Model } = require('sequelize')
 const config = require('config')
-const _ = require('lodash')
 const errors = require('../common/errors')
 const { nylasAvailableTimeSchema, nylasCalendarsSchema } = require('../common/nylas')
-
 
 module.exports = (sequelize) => {
   class UserMeetingSettings extends Model {
@@ -12,7 +10,7 @@ module.exports = (sequelize) => {
      * @param {Object} models the database models
      */
     static associate (models) {
-      //UserMeetingSettings.belongsTo(models.JobCandidate, { foreignKey: 'jobCandidateId' })
+      // UserMeetingSettings.belongsTo(models.JobCandidate, { foreignKey: 'jobCandidateId' })
     }
 
     /**
@@ -37,23 +35,21 @@ module.exports = (sequelize) => {
      * @param {String} userId
      * @returns {UserMeetingSettings} the NylasCalendar for the user
      */
-     static async getPrimaryNylasCalendarForUser (id) {
+    static async getPrimaryNylasCalendarForUser (id) {
       const calendar = await UserMeetingSettings.findOne({
         where: {
           userId: id
         }
       }).then(ums => {
         const calendars = ums.nylasCalendars
-        if (calendars.length == 0) {
+        if (calendars.length === 0) {
           return null
         }
-        return calendars.filter(c=>x.isPrimary)[0]
+        return calendars.filter(c => c.isPrimary)[0]
       })
 
       return calendar
     }
-
-
   }
   UserMeetingSettings.init(
     {

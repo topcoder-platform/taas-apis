@@ -85,7 +85,7 @@ const Interviews = {
       Thursday: 'R',
       Friday: 'F',
       Saturday: 'S',
-      Sunday: 'U',
+      Sunday: 'U'
     },
     StartEndRegex: /^[0-9]{1,2}:[0-9]{2}$/
   }
@@ -179,7 +179,7 @@ const JobCandidateStatus = {
 }
 
 const SearchUsers = {
-  SEARCH_USERS_PAGE_SIZE: 5,
+  SEARCH_USERS_PAGE_SIZE: 5
 }
 
 module.exports = {

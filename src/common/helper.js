@@ -1128,7 +1128,7 @@ async function getUserById (userId, enrich) {
  * @param {String} userId the user UUID
  * @returns the user email
  */
- async function getUserEmailByUserUUID (userUUID) {
+async function getUserEmailByUserUUID (userUUID) {
   const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/users/${userUUID}?enrich=true`)
@@ -1140,48 +1140,46 @@ async function getUserById (userId, enrich) {
     message: `response body: ${JSON.stringify(res.body)}`
   })
   const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
-  const found = _.find(user, ['id', userUUID]) || {};
+  const found = _.find(user, ['id', userUUID]) || {}
 
   if (!_.isUndefined(found.externalProfiles) && !_.isEmpty(found.externalProfiles)) {
-    _.assign(user, { userId: _.toInteger(_.get(found.externalProfiles[0], 'externalId')) });
+    _.assign(user, { userId: _.toInteger(_.get(found.externalProfiles[0], 'externalId')) })
   }
   if (!_.isUndefined(found.handle) && _.isUndefined(user.handle)) {
-    _.assign(user, { handle: found.handle });
+    _.assign(user, { handle: found.handle })
   }
 
-  const handleQuery = `handleLower:${user.handle.toLowerCase()}`;
-  const userIdQuery = `userId:${user.userId}`;
+  const handleQuery = `handleLower:${user.handle.toLowerCase()}`
+  const userIdQuery = `userId:${user.userId}`
 
-  const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'));
+  const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
   try {
-    const searchResult = await searchUsersByQuery(query);
+    const searchResult = await searchUsersByQuery(query)
     const found = _.find(searchResult, !_.isUndefined(user.handle)
-            ? ['handle', user.handle] : ['userId', user.userId]) || {};
+      ? ['handle', user.handle] : ['userId', user.userId]) || {}
 
-    return found.email;
-
+    return found.email
   } catch (err) {
-    const error = new Error(err.response.text);
-    error.status = err.status;
-    throw error;
+    const error = new Error(err.response.text)
+    error.status = err.status
+    throw error
   }
 }
-
 
 /**
  * Search users by query string.
  * @param {String} query the query string
  * @returns {Array} the matched users
  */
- async function searchUsersByQuery(query) {
-  const token = await getM2MToken();
-  let users = [];
+async function searchUsersByQuery (query) {
+  const token = await getM2MToken()
+  let users = []
   // there may be multiple pages, search all pages
-  let offset = 0;
-  const limit = SearchUsers.SEARCH_USERS_PAGE_SIZE;
+  let offset = 0
+  const limit = SearchUsers.SEARCH_USERS_PAGE_SIZE
   // set initial total to 1 so that at least one search is done,
   // it will be updated from search result
-  let total = 1;
+  let total = 1
   while (offset < total) {
     const res = await request
       .get(`${
@@ -1193,24 +1191,21 @@ async function getUserById (userId, enrich) {
         }&limit=${
         limit
         }&fields=userId,email,handle,firstName,lastName,photoURL,status`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
     if (!_.get(res, 'body.result.success')) {
-      throw new Error(`Failed to search users by query: ${query}`);
+      throw new Error(`Failed to search users by query: ${query}`)
     }
-    const records = _.get(res, 'body.result.content') || [];
+    const records = _.get(res, 'body.result.content') || []
     // add users
-    users = users.concat(records);
+    users = users.concat(records)
 
-    total = _.get(res, 'body.result.metadata.totalCount') || 0;
-    offset += limit;
+    total = _.get(res, 'body.result.metadata.totalCount') || 0
+    offset += limit
   }
 
-  logger.verbose(`Searched users: ${JSON.stringify(users, null, 4)}`);
-  return users;
+  logger.verbose(`Searched users: ${JSON.stringify(users, null, 4)}`)
+  return users
 }
-
-
-
 
 /**
  * Function to create user in ubahn
