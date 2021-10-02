@@ -430,7 +430,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
 
   const page = criteria.page > 0 ? criteria.page : 1
   let perPage
-  if (options.returnAll) {
+  if (options.returnAll || criteria.specialJob) {
     // To simplify the logic we are use a very large number for perPage
     // because in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
     // the number is limited by `index.max_result_window`, its default value is 10000, see
@@ -480,7 +480,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'status',
       'minSalary',
       'maxSalary',
-      'jobLocation'
+      'jobLocation',
+      'specialJob'
     ]), (value, key) => {
       let must
       if (key === 'description' || key === 'title') {
@@ -511,6 +512,27 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
               [salaryOp]: value
             }
           }
+        }
+      } else if (key === 'specialJob') {
+        if (value === true) {
+          must = {
+            bool: {
+              should: [
+                {
+                  term: {
+                    featured: value
+                  }
+                },
+                {
+                  term: {
+                    showInHotList: value
+                  }
+                }
+              ]
+            }
+          }
+        } else {
+          return true
         }
       } else {
         must = {
@@ -689,7 +711,8 @@ searchJobs.schema = Joi.object().keys({
     bodySkills: Joi.array().items(Joi.string().uuid()),
     minSalary: Joi.number().integer(),
     maxSalary: Joi.number().integer(),
-    jobLocation: Joi.string()
+    jobLocation: Joi.string(),
+    specialJob: Joi.boolean()
   }).required(),
   options: Joi.object()
 }).required()

@@ -208,6 +208,12 @@ paths:
             type: string
             enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
           description: The rate type.
+        - in: query
+          name: specialJob
+          required: false
+          schema:
+            type: boolean
+          description: When passing true, the API will load all featured and showInHotList jobs at once
       requestBody:
         content:
           application/json:
