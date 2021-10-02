@@ -29,7 +29,7 @@ async function ensureUserIsPermitted (currentUser, userMeetingSettingsUserId) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     const userId = await helper.getUserId(currentUser.userId)
     if (userId !== userMeetingSettingsUserId) {
-      throw new errors.UnauthorizedError(
+      throw new errors.ForbiddenError(
         `userId: ${userId} cannot access userMeetingSettings ${userMeetingSettingsUserId}`
       )
     }
@@ -38,15 +38,16 @@ async function ensureUserIsPermitted (currentUser, userMeetingSettingsUserId) {
 
 function stripUnwantedData (userMeetingSettings) {
   if (userMeetingSettings.nylasCalendars) {
-    userMeetingSettings.nylasCalendars.forEach(function (c) {
+    userMeetingSettings.nylasCalendars.forEach(function (c, i, a) {
       c = _.omit(c, ['accessToken', 'accountId'])
+      a[i] = c
     })
   }
   return userMeetingSettings
 }
 
 /**
- * Get interview by round
+ * Get UserMeetingsettings by userid
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} userId the user id
  * @param {Boolean} fromDb flag if query db for data or not
@@ -57,13 +58,13 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb) {
   await ensureUserIsPermitted(currentUser, userId)
   if (!fromDb) {
     try {
-      // get job candidate from ES
+      // get user meeting settings from ES
       const userMeetingSettingsES = await esClient.get({
         index: config.esConfig.ES_INDEX_USER_MEETING_SETTINGS,
-        userId: userId
+        id: userId
       })
       // extract interviews from ES object
-      const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source.user_meeting_settings', [])
+      const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source', [])
       if (userMeetingSettings) {
         return stripUnwantedData(userMeetingSettings)
       }
@@ -72,7 +73,7 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb) {
       if (helper.isDocumentMissingException(err)) {
         throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
       }
-      logger.logFullError(err, { component: 'TaasService', context: 'getInterviewByRound' })
+      logger.logFullError(err, { component: 'UserMeetingSettingsService', context: 'getInterviewByRound' })
       throw err
     }
   }
@@ -94,31 +95,43 @@ getUserMeetingSettingsByUserId.schema = Joi.object().keys({
 }).required()
 
 // TODO document
-async function createUserMeetingSettings (userId, calendar, schedulingPage, transaction) {
-  const createdUserMeetingSettings = await UserMeetingSettings.create({
-    userId: userId,
-    defaultAvailableTime: NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
-    defaultTimezone: NylasService.getTimezoneFromSchedulingPage(schedulingPage),
+async function createUserMeetingSettingsIfNotExisting (currentUser, userId, calendar, schedulingPage, transaction) {
+  // check permission
+  await ensureUserIsPermitted(currentUser, userId)
+
+  let userMeetingSettings = await UserMeetingSettings.findById(userId, false)
+  const payload = {
+    id: userId,
+    defaultAvailableTime: await NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
+    defaultTimezone: await NylasService.getTimezoneFromSchedulingPage(schedulingPage),
+    createdBy: await helper.getUserId(currentUser.userId),
     nylasCalendars: [].concat({
       accessToken: calendar.accessToken,
       accountId: calendar.accountId,
-      accountProvider: 'nylas', // TODO 🤔
+      accountProvider: 'nylas', // TODO 🤔 I don't know what to put here, hardcoding for now
       id: calendar.id,
       isPrimary: calendar.is_primary
     })
-  }, { transaction: transaction })
-  const userMeetingSettingsEntity = createdUserMeetingSettings.toJSON()
-  await processCreate(userMeetingSettingsEntity)
-  return createdUserMeetingSettings
+  }
+  if (_.isNil(userMeetingSettings)) {
+    userMeetingSettings = await UserMeetingSettings.create(payload, { transaction: transaction })
+    await processCreate(userMeetingSettings.toJSON())
+  }
+  // else {
+  //   userMeetingSettings = await userMeetingSettings.update(payload, { transaction: transaction })
+  //   await processUpdate(userMeetingSettings.toJSON())
+  // }
+  return userMeetingSettings
 }
-createUserMeetingSettings.schema = Joi.object().keys({
+createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
+  currentUser: Joi.object().required(),
   userId: Joi.string().uuid().required(),
   calendar: Joi.object().required(),
   schedulingPage:
     Joi.object().keys({
       config: Joi.object().keys({
+        timezone: Joi.string().required(),
         booking: Joi.object().keys({
-          timezone: Joi.string().required(),
           opening_hours: Joi.array().items(
             Joi.object({
               days: Joi.array().items(Joi.string().valid(
@@ -133,13 +146,13 @@ createUserMeetingSettings.schema = Joi.object().keys({
               start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
             }).required()
           ).required()
-        }).required()
-      }).required()
-    }).required(),
+        }).required().unknown(true)
+      }).required().unknown(true)
+    }).required().unknown(true),
   transaction: Joi.object()
 })
 
 module.exports = {
   getUserMeetingSettingsByUserId,
-  createUserMeetingSettings
+  createUserMeetingSettingsIfNotExisting
 }

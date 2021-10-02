@@ -1,4 +1,5 @@
 const { Sequelize, Model } = require('sequelize')
+const _ = require('lodash')
 const config = require('config')
 const errors = require('../common/errors')
 const { nylasAvailableTimeSchema, nylasCalendarsSchema } = require('../common/nylas')
@@ -6,28 +7,21 @@ const { nylasAvailableTimeSchema, nylasCalendarsSchema } = require('../common/ny
 module.exports = (sequelize) => {
   class UserMeetingSettings extends Model {
     /**
-     * Create association between models
-     * @param {Object} models the database models
-     */
-    static associate (models) {
-      // UserMeetingSettings.belongsTo(models.JobCandidate, { foreignKey: 'jobCandidateId' })
-    }
-
-    /**
      * Get UserMeetingSettings by userId
      * @param {String} userId
+     * @param {Boolean} throwOnError indicates whether it should throw on error or gracefully return null when not found
      * @returns {UserMeetingSettings} the UserMeetingSettings instance
      */
-    static async findById (id) {
-      const interview = await UserMeetingSettings.findOne({
+    static async findById (id, throwOnError = true) {
+      const userMeetingSettings = await UserMeetingSettings.findOne({
         where: {
-          userId: id
+          id: id
         }
       })
-      if (!interview) {
+      if (!userMeetingSettings && throwOnError === true) {
         throw new errors.NotFoundError(`id: ${id} "UserMeetingSettings" doesn't exist.`)
       }
-      return interview
+      return userMeetingSettings
     }
 
     /**
@@ -36,25 +30,21 @@ module.exports = (sequelize) => {
      * @returns {UserMeetingSettings} the NylasCalendar for the user
      */
     static async getPrimaryNylasCalendarForUser (id) {
-      const calendar = await UserMeetingSettings.findOne({
-        where: {
-          userId: id
-        }
-      }).then(ums => {
-        const calendars = ums.nylasCalendars
-        if (calendars.length === 0) {
-          return null
-        }
-        return calendars.filter(c => c.isPrimary)[0]
-      })
+      const calendar = await UserMeetingSettings.findById(id, false)
+        .then(ums => {
+          const calendars = _.get(ums, 'nylasCalendars')
+          if (_.isEmpty(calendars)) {
+            return null
+          }
+          return calendars.filter(c => c.isPrimary)[0]
+        })
 
       return calendar
     }
   }
   UserMeetingSettings.init(
     {
-      userId: {
-        field: 'user_id',
+      id: {
         type: Sequelize.UUID,
         primaryKey: true,
         allowNull: false,
@@ -97,7 +87,17 @@ module.exports = (sequelize) => {
       deletedAt: 'deletedAt',
       createdAt: 'createdAt',
       updatedAt: 'updatedAt',
-      timestamps: true
+      timestamps: true,
+      defaultScope: {
+        attributes: {
+          exclude: ['deletedAt']
+        }
+      },
+      hooks: {
+        afterCreate: (workPeriodPayment) => {
+          delete workPeriodPayment.dataValues.deletedAt
+        }
+      }
     }
   )
 

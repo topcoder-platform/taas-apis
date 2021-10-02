@@ -11,8 +11,8 @@ function nylasAvailableTimeSchema (fieldName) {
   return {
     field: fieldName,
     allowNull: false,
-    type: Sequelize.ARRAY({
-      type: Sequelize.JSONB({
+    type: Sequelize.JSONB({
+      type: Sequelize.ARRAY({
         days: {
           type: Sequelize.ARRAY({
             type: Sequelize.ENUM(
@@ -43,8 +43,8 @@ function nylasAvailableTimeSchema (fieldName) {
 function nylasCalendarsSchema () {
   return {
     field: 'nylasCalendars',
-    type: Sequelize.ARRAY({
-      type: Sequelize.JSONB({
+    type: Sequelize.JSONB({
+      type: Sequelize.ARRAY({
         accessToken: {
           field: 'accessToken',
           type: Sequelize.STRING(5),
@@ -68,6 +68,7 @@ function nylasCalendarsSchema () {
         isPrimary: {
           field: 'isPrimary',
           type: Sequelize.BOOLEAN,
+          defaultValue: false,
           allowNull: false
         }
       }),

@@ -14,7 +14,7 @@ const esClient = helper.getESClient()
 async function processCreate (entity) {
   await esClient.create({
     index: config.get('esConfig.ES_INDEX_USER_MEETING_SETTINGS'),
-    id: entity.userId,
+    id: entity.id,
     body: entity,
     refresh: 'wait_for'
   })
@@ -27,7 +27,7 @@ async function processCreate (entity) {
 async function processUpdate (entity) {
   await esClient.update({
     index: config.get('esConfig.ES_INDEX_USER_MEETING_SETTINGS'),
-    id: entity.userId,
+    id: entity.id,
     body: {
       doc: entity
     },
@@ -42,7 +42,7 @@ async function processUpdate (entity) {
 async function processDelete (entity) {
   await esClient.delete({
     index: config.get('esConfig.ES_INDEX_USER_MEETING_SETTINGS'),
-    id: entity.userId,
+    id: entity.id,
     refresh: 'wait_for'
   })
 }

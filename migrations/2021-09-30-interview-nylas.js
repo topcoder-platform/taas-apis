@@ -41,8 +41,7 @@ module.exports = {
       //new UserMeetingSettings
       await queryInterface.createTable('user_meeting_settings', 
       {
-        userId: {
-          field: 'user_id',
+        id: {
           type: Sequelize.UUID,
           primaryKey: true,
           allowNull: false,

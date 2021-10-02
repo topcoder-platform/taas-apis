@@ -6,6 +6,7 @@ const fs = require('fs')
 const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
 const Bottleneck = require('bottleneck')
+const URI = require('urijs')
 const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
@@ -139,24 +140,26 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
     type: 'nested',
     properties: {
       id: { type: 'keyword' },
-      xaiId: { type: 'keyword' },
+      nylasPageId: { type: 'keyword' },
+      nylasPageSlug: { type: 'keyword' },
+      nylasCalendarId: { type: 'keyword' },
+      timezone: { type: 'keyword' },
+      availableTime: {
+        type: 'nested',
+        properties: {
+          days: { type: 'keyword' },
+          end: { type: 'date', format: 'HH:mm' },
+          start: { type: 'date', format: 'HH:mm' }
+        }
+      },
+      hostUserId: { type: 'keyword' },
+      expireTimestamp: { type: 'date' },
       jobCandidateId: { type: 'keyword' },
-      calendarEventId: { type: 'keyword' },
-      templateUrl: { type: 'keyword' },
-      templateId: { type: 'keyword' },
-      templateType: { type: 'keyword' },
-      title: { type: 'keyword' },
-      locationDetails: { type: 'keyword' },
       duration: { type: 'integer' },
       startTimestamp: { type: 'date' },
       endTimestamp: { type: 'date' },
-      hostName: { type: 'keyword' },
-      hostEmail: { type: 'keyword' },
-      guestNames: { type: 'keyword' },
-      guestEmails: { type: 'keyword' },
       round: { type: 'integer' },
       status: { type: 'keyword' },
-      rescheduleUrl: { type: 'keyword' },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
@@ -1126,9 +1129,9 @@ async function getUserById (userId, enrich) {
 /**
  * Function to get users
  * @param {String} userId the user UUID
- * @returns the user email
+ * @returns the found user details
  */
-async function getUserEmailByUserUUID (userUUID) {
+async function getUserDetailsByUserUUID (userUUID) {
   const token = await getM2MToken()
   const res = await request
     .get(`${config.TC_API}/users/${userUUID}?enrich=true`)
@@ -1139,26 +1142,22 @@ async function getUserEmailByUserUUID (userUUID) {
     context: 'getUserById',
     message: `response body: ${JSON.stringify(res.body)}`
   })
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
-  const found = _.find(user, ['id', userUUID]) || {}
+  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName', 'externalProfiles'])
 
-  if (!_.isUndefined(found.externalProfiles) && !_.isEmpty(found.externalProfiles)) {
-    _.assign(user, { userId: _.toInteger(_.get(found.externalProfiles[0], 'externalId')) })
-  }
-  if (!_.isUndefined(found.handle) && _.isUndefined(user.handle)) {
-    _.assign(user, { handle: found.handle })
+  if (!_.isUndefined(user.externalProfiles) && !_.isEmpty(user.externalProfiles)) {
+    _.assign(user, { userId: _.toInteger(_.get(user.externalProfiles[0], 'externalId')) })
   }
 
   const handleQuery = `handleLower:${user.handle.toLowerCase()}`
   const userIdQuery = `userId:${user.userId}`
-  // eslint-disable-next-line
+
   const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
   try {
     const searchResult = await searchUsersByQuery(query)
     const found = _.find(searchResult, !_.isUndefined(user.handle)
       ? ['handle', user.handle] : ['userId', user.userId]) || {}
 
-    return found.email
+    return found
   } catch (err) {
     const error = new Error(err.response.text)
     error.status = err.status
@@ -1183,8 +1182,8 @@ async function searchUsersByQuery (query) {
   while (offset < total) {
     const res = await request
       .get(`${
-        config.TC_API
-        }/members/_search?query=${
+        config.TOPCODER_MEMBERS_API_V3
+        }/_search?query=${
         query
         }&offset=${
         offset
@@ -2238,5 +2237,5 @@ module.exports = {
   getEmailTemplatesForKey,
   formatDate,
   formatDateTimeEDT,
-  getUserEmailByUserUUID
+  getUserDetailsByUserUUID
 }

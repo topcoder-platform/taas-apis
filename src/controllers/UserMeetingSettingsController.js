@@ -12,7 +12,7 @@ const helper = require('../common/helper')
 async function getUserMeetingSettingsByUserId (req, res) {
   const result = await service.getUserMeetingSettingsByUserId(req.authUser, req.params.userId, req.query.fromDb)
   helper.setResHeaders(req, res, result)
-  res.send(result.result)
+  res.send(result)
 }
 
 module.exports = { getUserMeetingSettingsByUserId }
