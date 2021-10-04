@@ -39,7 +39,7 @@ module.exports = {
       await queryInterface.addColumn(interviewsTable, 'hostUserId', { type: Sequelize.UUID, allowNull: false}, { transaction })
       await queryInterface.addColumn(interviewsTable, 'expireTimestamp', { type: Sequelize.DATE, allowNull: true}, { transaction })
       //new UserMeetingSettings
-      await queryInterface.createTable('user_meeting_settings', 
+      await queryInterface.createTable('user_meeting_settings',
       {
         id: {
           type: Sequelize.UUID,
@@ -98,7 +98,7 @@ module.exports = {
       await queryInterface.removeColumn(interviewsTable, 'availableTime', { transaction })
       await queryInterface.removeColumn(interviewsTable, 'hostUserId', { transaction })
       await queryInterface.removeColumn(interviewsTable, 'expireTimestamp', { transaction })
-      
+
       await queryInterface.addColumn(interviewsTable, 'xai_id', { type: Sequelize.STRING(255) }, { transaction })
       await queryInterface.addColumn(interviewsTable, 'calendar_event_id', { type: Sequelize.STRING(255) }, { transaction })
       await queryInterface.addColumn(interviewsTable, 'template_url', { type: Sequelize.STRING(255) }, { transaction })
