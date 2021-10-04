@@ -1,7 +1,5 @@
 #!/bin/bash
-
-
-GR=\033[92m>>>  
+GR=\033[92m>>>
 NC=  <<<\033[0m
 .PHONY: dump_tables
 dump_tables:
