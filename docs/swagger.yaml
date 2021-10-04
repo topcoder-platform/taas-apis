@@ -138,10 +138,10 @@ paths:
             type: integer
           description: The maximum Salary.
         - in: query
-          name: isApplicationPageActive 
+          name: isApplicationPageActive
           required: false
           schema:
-            type: boolean 
+            type: boolean
           description: Is application page active.
         - in: query
           name: projectIds
@@ -1427,7 +1427,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-                
+
   /taas/user-meeting-settings/{userId}:
     get:
       tags:
@@ -1483,9 +1483,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-                
-                               
-                
+
+
+
   /resourceBookings:
     post:
       tags:
@@ -3631,7 +3631,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"  
+                $ref: "#/components/schemas/Error"
   /taas-teams/createPayment:
     post:
       tags:
@@ -4647,16 +4647,16 @@ components:
         - timezone
         - availableTime
       properties:
-        duration: 
+        duration:
           type: integer
           example: 30
           description: "duration of the interview"
-        timezone: 
+        timezone:
           type: string
           example: "Europe/London"
-        availableTime: 
+        availableTime:
           type: array
-          items: 
+          items:
             type: object
             required:
               - days
@@ -4674,7 +4674,7 @@ components:
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
               end:
                 type: string
-                example: "10:00"   
+                example: "10:00"
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
         hostUserId:
           type: string
@@ -4686,16 +4686,16 @@ components:
         - timezone
         - availableTime
       properties:
-        duration: 
+        duration:
           type: integer
           example: 30
           description: "duration of the interview"
-        timezone: 
+        timezone:
           type: string
           example: "Europe/London"
-        availableTime: 
+        availableTime:
           type: array
-          items: 
+          items:
             type: object
             required:
               - days
@@ -4713,7 +4713,7 @@ components:
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
               end:
                 type: string
-                example: "10:00"   
+                example: "10:00"
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
 
     JobPatchRequestBody:
@@ -6407,7 +6407,7 @@ components:
           format: uuid
         defaultAvailableTime:
           type: array
-          items: 
+          items:
             type: object
             required:
               - days
@@ -6425,7 +6425,7 @@ components:
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
               end:
                 type: string
-                example: "10:00"   
+                example: "10:00"
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
         defaultTimezone:
           type: string
@@ -6458,7 +6458,7 @@ components:
           type: string
           format: uuid
           description: "The user Id who updated the setting last time.(Will get the user info from the token)"
-            
+
 
     Error:
       required:
