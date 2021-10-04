@@ -125,7 +125,3 @@ api.env
 
 # macOS files
 .DS_Store
-
-#TODO REMOVE
-.comparisons
-.vscode
