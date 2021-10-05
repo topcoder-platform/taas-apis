@@ -140,6 +140,30 @@ module.exports = (sequelize) => {
           type: Sequelize.UUID
         })
       },
+      showInHotList: {
+        field: 'show_in_hot_list',
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+      },
+      featured: {
+        field: 'featured',
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+      },
+      hotListExcerpt: {
+        field: 'hot_list_excerpt',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: ''
+      },
+      jobTag: {
+        field: 'job_tag',
+        type: Sequelize.STRING(30),
+        allowNull: true,
+        defaultValue: ''
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

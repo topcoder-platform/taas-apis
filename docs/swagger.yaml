@@ -102,7 +102,7 @@ paths:
           schema:
             type: string
             default: id
-            enum: ["id", "createdAt", "startDate", "rateType", "status"]
+            enum: ["id", "createdAt", "updatedAt", "startDate", "rateType", "status"]
           description: The sort by column.
         - in: query
           name: sortOrder
@@ -118,6 +118,24 @@ paths:
           schema:
             type: integer
           description: The project id.
+        - in: query
+          name: jobLocation
+          required: false
+          schema:
+            type: string
+          description: The location of the jobs.
+        - in: query
+          name: minSalary
+          required: false
+          schema:
+            type: integer
+          description: The minimum Salary.
+        - in: query
+          name: maxSalary
+          required: false
+          schema:
+            type: integer
+          description: The maximum Salary.
         - in: query
           name: isApplicationPageActive 
           required: false
@@ -189,6 +207,12 @@ paths:
             type: string
             enum: ["sourcing", "in-review", "assigned", "closed", "cancelled"]
           description: The rate type.
+        - in: query
+          name: specialJob
+          required: false
+          schema:
+            type: boolean
+          description: When passing true, the API will load all featured and showInHotList jobs at once
       requestBody:
         content:
           application/json:
@@ -4116,6 +4140,12 @@ components:
           description: "The user who updated the job last time.(Will get the user info from the token)"
     JobSearchBody:
       properties:
+        bodySkills:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "The array of skill ids"
         jobIds:
           type: array
           items:
@@ -4197,6 +4227,20 @@ components:
             type: string
             format: uuid
             description: "The role id."
+        showInHotList:
+          type: boolean
+          default: false
+        featured:
+          type: boolean
+          default: false
+        hotListExcerpt:
+          type: string
+          example: "This is very hot job"
+          description: "The further instruction to show for the hot job"
+        jobTag:
+          type: string
+          enum: ["", "New", "$$$", "Hot"]
+          description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
           default: false
@@ -4739,6 +4783,20 @@ components:
             type: string
             format: uuid
             description: "The role id."
+        showInHotList:
+          type: boolean
+          default: false
+        featured:
+          type: boolean
+          default: false
+        hotListExcerpt:
+          type: string
+          example: "This is very hot job"
+          description: "The further instruction to show for the hot job"
+        jobTag:
+          type: string
+          enum: ["", "New", "$$$", "Hot"]
+          description: "The tag of a job"
         isApplicationPageActive:
           type: boolean
           default: false
