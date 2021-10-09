@@ -532,7 +532,22 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         } else {
-          return true
+          must = {
+            bool: {
+              must: [
+                {
+                  term: {
+                    featured: value
+                  }
+                },
+                {
+                  term: {
+                    showInHotList: value
+                  }
+                }
+              ]
+            }
+          }
         }
       } else {
         must = {
