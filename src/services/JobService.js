@@ -666,6 +666,14 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       [Op.lte]: criteria.maxSalary
     }
   }
+  if (criteria.specialJob === true) {
+    filter[Op.and].push({
+      [Op.or]: [
+        { featured: true },
+        { showInHotList: true }
+      ]
+    })
+  }
   const jobs = await Job.findAll({
     where: filter,
     offset: ((page - 1) * perPage),
