@@ -18,25 +18,45 @@ const {
   processUpdateInterview,
   processBulkUpdateInterviews
 } = require('../esProcessors/InterviewProcessor')
+
 const {
   processUpdate: jobCandidateProcessUpdate
 } = require('../esProcessors/JobCandidateProcessor')
 const sequelize = models.sequelize
 const Interview = models.Interview
+const UserMeetingSettings = models.UserMeetingSettings
 const esClient = helper.getESClient()
-
+const {
+  createSchedulingPage,
+  createVirtualCalendarForUser,
+  patchSchedulingPage
+} = require('./NylasService')
+const { createUserMeetingSettingsIfNotExisting } = require('./UserMeetingSettingsService')
 /**
   * Ensures user is permitted for the operation.
   *
   * @param {Object} currentUser the user who perform this operation.
   * @param {String} jobCandidateId the job candidate id
+  * @param {Boolean} allowCandidate will allow also the currentUser to access if is a candidate
   * @throws {errors.ForbiddenError}
   */
-async function ensureUserIsPermitted (currentUser, jobCandidateId) {
+async function ensureUserIsPermitted (currentUser, jobCandidateId, allowCandidate = false) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
     const job = await jobCandidate.getJob()
-    await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+    try {
+      await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
+    } catch (error) {
+      if (error instanceof errors.UnauthorizedError) {
+        if (allowCandidate === true) {
+          const userId = await helper.getUserId(currentUser.userId)
+          if (userId === jobCandidate.userId) {
+            return
+          }
+        }
+      }
+      throw new errors.ForbiddenError('You are not allowed to perform this action!')
+    }
   }
 }
 
@@ -47,7 +67,7 @@ async function ensureUserIsPermitted (currentUser, jobCandidateId) {
  */
 function handleSequelizeError (err, jobCandidateId) {
   // jobCandidateId doesn't exist - gracefully handle
-  if (err instanceof ForeignKeyConstraintError) {
+  if (err instanceof ForeignKeyConstraintError || err instanceof errors.NotFoundError) {
     throw new errors.NotFoundError(
           `The job candidate with id=${jobCandidateId} doesn't exist.`
     )
@@ -69,7 +89,7 @@ function handleSequelizeError (err, jobCandidateId) {
  */
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
   // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateId)
+  await ensureUserIsPermitted(currentUser, jobCandidateId, true)
   if (!fromDb) {
     try {
       // get job candidate from ES
@@ -166,7 +186,7 @@ async function getInterviewById (currentUser, id, fromDb = false) {
       const interview = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits[0]._source')
       if (interview) {
         // check permission before returning
-        await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+        await ensureUserIsPermitted(currentUser, interview.jobCandidateId, true)
         return interview
       }
       // if reaches here, the interview with this IDs is not found
@@ -223,6 +243,15 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   // check permission
   await ensureUserIsPermitted(currentUser, jobCandidateId)
 
+  // if M2M require hostUserId
+  if (currentUser.isMachine) {
+    const hostUserIdValidator = Joi.string().uuid().required()
+    const { error } = hostUserIdValidator.validate(interview.hostUserId)
+    if (error) {
+      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid uuid`)
+    }
+  }
+
   // find the round count
   const round = await Interview.count({
     where: { jobCandidateId }
@@ -233,30 +262,48 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
     throw new errors.ConflictError(`You've reached the maximum allowed number (${InterviewConstants.MaxAllowedCount}) of interviews for this candidate.`)
   }
 
-  // get job candidate user details
-  const jobCandidate = await models.JobCandidate.findById(jobCandidateId)
-  const jobCandidateUser = await helper.getUserById(jobCandidate.userId)
-  const jobCandidateMember = await helper.getUserByHandle(jobCandidateUser.handle)
   // pre-populate fields
   interview.id = uuid()
+  interview.expireTimestamp = moment().add(config.INTERVIEW_SCHEDULING_EXPIRE_TIME)
+
   interview.jobCandidateId = jobCandidateId
   interview.round = round + 1
-  interview.duration = InterviewConstants.XaiTemplate[interview.templateUrl]
   interview.createdBy = await helper.getUserId(currentUser.userId)
-  interview.guestEmails = [jobCandidateMember.email, ...interview.guestEmails]
-  // pre-populate hostName & guestNames
-  const hostMembers = await helper.getMemberDetailsByEmails([interview.hostEmail])
-  const guestMembers = await helper.getMemberDetailsByEmails(interview.guestEmails)
-  interview.hostName = `${hostMembers[0].firstName} ${hostMembers[0].lastName}`
-  interview.guestNames = _.map(interview.guestEmails, (guestEmail) => {
-    var foundGuestMember = _.find(guestMembers, function (guestMember) { return guestEmail === guestMember.email })
-    return (foundGuestMember !== undefined) ? `${foundGuestMember.firstName} ${foundGuestMember.lastName}` : guestEmail.split('@')[0]
-  })
+
+  if (_.isNil(interview.hostUserId) || interview.hostUserId === '') {
+    interview.hostUserId = interview.createdBy
+  }
 
   let entity
   let jobCandidateEntity
+  let calendar
   try {
     await sequelize.transaction(async (t) => {
+      // get calendar if exists, otherwise create a virtual one for the user
+      calendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
+      if (_.isNil(calendar)) {
+        const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+        const currentUserFullname = `${firstName} ${lastName}`
+        calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.timezone)
+      }
+      // configure scheduling page
+      const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
+      const job = await jobCandidate.getJob()
+      const eventLocation = 'Zoom link: https://zoom.link/example/123123'
+      const eventTitle = `Interview for job: ${job.title}`
+      // create scheduling page on nylas
+      const schedulingPage = await createSchedulingPage(interview, calendar, eventLocation, eventTitle)
+
+      // Link nylasPage to interview
+      interview.nylasPageId = schedulingPage.id
+      interview.nylasPageSlug = schedulingPage.slug
+      interview.nylasCalendarId = calendar.id
+
+      // status handling will be implemented in another challenge it seems, setting the default value
+      interview.status = InterviewConstants.Status.Scheduling
+
+      await createUserMeetingSettingsIfNotExisting(currentUser, interview.hostUserId, calendar, schedulingPage, t)
+
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()
@@ -288,11 +335,24 @@ requestInterview.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   jobCandidateId: Joi.string().uuid().required(),
   interview: Joi.object().keys({
-    calendarEventId: Joi.string().allow(null),
-    templateUrl: Joi.xaiTemplate().required(),
-    hostEmail: Joi.string().email().required(),
-    guestEmails: Joi.array().items(Joi.string().email()).default([]),
-    status: Joi.interviewStatus().default(InterviewConstants.Status.Scheduling)
+    duration: Joi.number().integer().positive().required(),
+    timezone: Joi.string().required(),
+    hostUserId: Joi.string().uuid(),
+    expireTimestamp: Joi.date(),
+    availableTime: Joi.array().min(1).items(
+      Joi.object({
+        days: Joi.array().max(7).items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      })
+    ).required()
   }).required()
 }).required()
 
@@ -322,6 +382,24 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
+      // check if  "duration", "availableTime" or "timezone" changed. In that case we need to keep nylas consistent
+      if (interview.duration !== data.duration || interview.availableTime !== data.availableTime || interview.timezone !== data.timezone) {
+        const settingsForCalendar = await UserMeetingSettings.findOne({
+          where: {
+            nylasCalendars: {
+              [Op.contains]: [{ id: interview.nylasCalendarId }]
+            }
+          }
+        })
+        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, ['id', interview.nylasCalendarId]).accessToken
+
+        await patchSchedulingPage(interview.nylasPageId, nylasAccessToken, {
+          duration: interview.duration !== data.duration ? data.duration : null,
+          availableTime: interview.availableTime !== data.availableTime ? data.availableTime : null,
+          timezone: interview.timezone !== data.timezone ? data.timezone : null
+        })
+      }
+
       const updated = await interview.update(data, { transaction: t })
       entity = updated.toJSON()
       await processUpdateInterview(entity)
@@ -368,17 +446,24 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   jobCandidateId: Joi.string().uuid().required(),
   round: Joi.number().integer().positive().required(),
   data: Joi.object().keys({
-    xaiId: Joi.string().allow(null),
-    calendarEventId: Joi.string().when('status', {
-      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
-      otherwise: Joi.allow(null)
-    }),
-    templateUrl: Joi.xaiTemplate(),
-    templateId: Joi.string().allow(null),
-    templateType: Joi.string().allow(null),
-    title: Joi.string().allow(null),
-    locationDetails: Joi.string().allow(null),
+    duration: Joi.number().integer().positive().required(),
+    timezone: Joi.string().required(),
+    hostUserId: Joi.string().uuid(),
+    expireTimestamp: Joi.date(),
+    availableTime: Joi.array().min(1).items(
+      Joi.object({
+        days: Joi.array().max(7).items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      })
+    ).required(),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
@@ -389,12 +474,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    hostName: Joi.string(),
-    hostEmail: Joi.string().email(),
-    guestNames: Joi.array().items(Joi.string()).allow(null),
-    guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null),
     deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
@@ -439,17 +519,24 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().required(),
   data: Joi.object().keys({
-    xaiId: Joi.string().required(),
-    calendarEventId: Joi.string().when('status', {
-      is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
-      otherwise: Joi.allow(null)
-    }),
-    templateUrl: Joi.xaiTemplate(),
-    templateId: Joi.string().allow(null),
-    templateType: Joi.string().allow(null),
-    title: Joi.string().allow(null),
-    locationDetails: Joi.string().allow(null),
+    duration: Joi.number().integer().positive().required(),
+    timezone: Joi.string().required(),
+    hostUserId: Joi.string().uuid(),
+    expireTimestamp: Joi.date(),
+    availableTime: Joi.array().min(1).items(
+      Joi.object({
+        days: Joi.array().max(7).items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      })
+    ).required(),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
@@ -460,12 +547,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
       then: Joi.required(),
       otherwise: Joi.allow(null)
     }),
-    hostName: Joi.string(),
-    hostEmail: Joi.string().email(),
-    guestNames: Joi.array().items(Joi.string()).allow(null),
-    guestEmails: Joi.array().items(Joi.string().email()).allow(null),
     status: Joi.interviewStatus(),
-    rescheduleUrl: Joi.string().allow(null),
     deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
@@ -479,7 +561,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
  */
 async function searchInterviews (currentUser, jobCandidateId, criteria) {
   // check permission
-  await ensureUserIsPermitted(currentUser, jobCandidateId)
+  await ensureUserIsPermitted(currentUser, jobCandidateId, true)
 
   const { page, perPage } = criteria
 

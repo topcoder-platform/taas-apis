@@ -17,6 +17,7 @@ const Constants = require('../../app-constants')
  * @param {Object} payload the event payload
  * @returns {undefined}
  */
+// eslint-disable-next-line
 async function sendInvitationEmail (payload) {
   const interview = payload.value
   // get customer details via job candidate user
@@ -169,7 +170,7 @@ async function checkOverlapping (payload) {
  * @returns {undefined}
  */
 async function processRequest (payload) {
-  await sendInvitationEmail(payload)
+  // await sendInvitationEmail(payload) //TODO this will be implemented in another challenge
   await checkOverlapping(payload)
 }
 

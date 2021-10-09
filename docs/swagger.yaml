@@ -15,6 +15,7 @@ tags:
   - name: Jobs
   - name: JobCandidates
   - name: Interviews
+  - name: UserMeetingSettings
   - name: ResourceBookings
   - name: Teams
   - name: WorkPeriods
@@ -137,10 +138,10 @@ paths:
             type: integer
           description: The maximum Salary.
         - in: query
-          name: isApplicationPageActive 
+          name: isApplicationPageActive
           required: false
           schema:
-            type: boolean 
+            type: boolean
           description: Is application page active.
         - in: query
           name: projectIds
@@ -1426,6 +1427,65 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /taas/user-meeting-settings/{userId}:
+    get:
+      tags:
+        - UserMeetingSettings
+      description: |
+        Get the User's Meeting Settings.
+
+        **Authorization** This endpoint could be called by: "hasManagePermission" users, M2M tokens with scopes "read:taas-userMeetingsSettings" or "all:taas-userMeetingsSettings". Also any user can call this endpoint to get setting for themselves
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          description: The userId
+          required: true
+          schema:
+            type: uuid
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserMeetingSettings"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+
   /resourceBookings:
     post:
       tags:
@@ -3571,7 +3631,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"  
+                $ref: "#/components/schemas/Error"
   /taas-teams/createPayment:
     post:
       tags:
@@ -4524,7 +4584,6 @@ components:
       required:
         - id
         - jobCandidateId
-        - templateUrl
         - round
         - status
         - createdAt
@@ -4534,36 +4593,10 @@ components:
           type: string
           format: uuid
           description: "The interview id."
-        xaiId:
-          type: string
-          description: "The x.ai id."
         jobCandidateId:
           type: string
           format: uuid
           description: "The job candidate id."
-        calendarEventId:
-          type: string
-          example: "dummyId"
-          description: "The calendar event id."
-        templateUrl:
-          type: string
-          example: "interview-30"
-          enum: ["interview-30", "interview-60"]
-          description: "The x.ai template name"
-        templateId:
-          type: string
-          format: uuid
-          description: "The x.ai template id"
-        templateType:
-          type: string
-          description: "The x.ai template type"
-        title:
-          type: string
-          description: "The x.ai template title"
-        locationDetails:
-          type: string
-          example: "Location TBD."
-          description: "The x.ai meeting location."
         round:
           type: integer
           example: 1
@@ -4572,24 +4605,6 @@ components:
           type: integer
           example: 30
           description: "The interview duration (in minutes)."
-        hostEmail:
-          type: string
-          format: email
-          description: "The interview host email."
-        hostName:
-          type: string
-          description: "The interview host name."
-        guestEmails:
-          type: array
-          description: "Attendee list for this interview."
-          items:
-            type: string
-            format: email
-        guestNames:
-          type: array
-          description: "Names of guests."
-          items:
-            type: string
         startTimestamp:
           type: string
           format: date-time
@@ -4610,10 +4625,6 @@ components:
               "Cancelled",
             ]
           description: "The interview status."
-        rescheduleUrl:
-          type: string
-          format: url
-          description: "x.ai reschedule url."
         createdAt:
           type: string
           format: date-time
@@ -4632,109 +4643,79 @@ components:
           description: "The user who updated the interview last time.(Will get the user info from the token)"
     RequestInterviewBody:
       required:
-        - templateUrl
-        - hostEmail
+        - duration
+        - timezone
+        - availableTime
       properties:
-        calendarEventId:
+        duration:
+          type: integer
+          example: 30
+          description: "duration of the interview"
+        timezone:
           type: string
-          example: "dummyId"
-          description: "The calendar event id."
-        templateUrl:
-          type: string
-          enum: ["interview-30", "interview-60"]
-          example: "interview-30"
-          description: "The x.ai template name"
-        hostEmail:
-          type: string
-          format: email
-        guestEmails:
+          example: "Europe/London"
+        availableTime:
           type: array
           items:
-            type: string
-            format: email
-        status:
-          type: string
-          enum:
-            [
-              "Scheduling",
-              "Scheduled",
-              "Requested for reschedule",
-              "Rescheduled",
-              "Completed",
-              "Cancelled",
-            ]
-          default: "Scheduling"
-          description: "The interview status."
-    UpdateInterviewRequestBody:
-      properties:
-        xaiId:
-          type: string
-          description: "The x.ai meeting id"
-        calendarEventId:
-          type: string
-          example: "dummyId"
-          description: "The google calendar id."
-        templateUrl:
-          type: string
-          enum: ["interview-30", "interview-60"]
-          example: "interview-30"
-          description: "The x.ai template name"
-        templateId:
+            type: object
+            required:
+              - days
+              - start
+              - end
+            properties:
+              days:
+                type: array
+                items:
+                  type: string
+                  enum: ["M", "T", "W", "R", "F", "S", "U"]
+              start:
+                type: string
+                example: "09:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+              end:
+                type: string
+                example: "10:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+        hostUserId:
           type: string
           format: uuid
-          description: "The x.ai template id"
-        templateType:
+
+    UpdateInterviewRequestBody:
+      required:
+        - duration
+        - timezone
+        - availableTime
+      properties:
+        duration:
+          type: integer
+          example: 30
+          description: "duration of the interview"
+        timezone:
           type: string
-          description: "The x.ai template type"
-        title:
-          type: string
-          description: "The x.ai meeting title"
-        locationDetails:
-          type: string
-          example: "Location TBD."
-          description: "The x.ai location details"
-        hostName:
-          type: string
-          description: "The host name"
-        hostEmail:
-          type: string
-          format: email
-          description: "The host email"
-        guestNames:
+          example: "Europe/London"
+        availableTime:
           type: array
           items:
-            type: string
-          description: "The guest names"
-        guestEmails:
-          type: array
-          items:
-            type: string
-            format: email
-          description: "The guest emails"
-        startTimestamp:
-          type: string
-          format: date-time
-          description: "Interview start time."
-        endTimestamp:
-          type: string
-          format: date-time
-          description: "Interview end time."
-        status:
-          type: string
-          enum:
-            [
-              "Scheduling",
-              "Scheduled",
-              "Requested for reschedule",
-              "Rescheduled",
-              "Completed",
-              "Cancelled",
-            ]
-          description: "The interview status."
-        rescheduleUrl:
-          type: string
-          format: url
-          description: "The x.ai reschedule url"
+            type: object
+            required:
+              - days
+              - start
+              - end
+            properties:
+              days:
+                type: array
+                items:
+                  type: string
+                  enum: ["M", "T", "W", "R", "F", "S", "U"]
+              start:
+                type: string
+                example: "09:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+              end:
+                type: string
+                example: "10:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+
     JobPatchRequestBody:
       properties:
         status:
@@ -6418,6 +6399,67 @@ components:
           "id": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
           "updated": "2021-01-05T10:58:32.113Z",
         }
+    UserMeetingSettings:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        defaultAvailableTime:
+          type: array
+          items:
+            type: object
+            required:
+              - days
+              - start
+              - end
+            properties:
+              days:
+                type: array
+                items:
+                  type: string
+                  enum: ["M", "T", "W", "R", "F", "S", "U"]
+              start:
+                type: string
+                example: "09:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+              end:
+                type: string
+                example: "10:00"
+                pattern: "^[0-9]{1,2}:[0-9]{2}$"
+        defaultTimezone:
+          type: string
+          example: "Europe/Rome"
+        nylasCalendars:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              isPrimary:
+                type: boolean
+              accountProvider:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: "The setting created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user Id who created the setting.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The setting last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user Id who updated the setting last time.(Will get the user info from the token)"
+
+
     Error:
       required:
         - message

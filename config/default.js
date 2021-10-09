@@ -82,6 +82,8 @@ module.exports = {
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
     // the role index
     ES_INDEX_ROLE: process.env.ES_INDEX_ROLE || 'role',
+    // the userMeetingSettings index
+    ES_INDEX_USER_MEETING_SETTINGS: process.env.ES_INDEX_USER_MEETING_SETTINGS || 'user_meeting_settings',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
@@ -180,6 +182,8 @@ module.exports = {
   INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // The sender (aka `from`) email for invitation.
   INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'talent@topcoder.com',
+  // Duration that gets added to current time when an interview is created in order to calculate expireTimestamp
+  INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   // environment variables for Payment Service
@@ -284,5 +288,10 @@ module.exports = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   CURRENCY: process.env.CURRENCY || 'usd',
   // RCRM base URL
-  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io'
+  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io',
+
+  // Nylas Client id
+  NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
+  NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET
+
 }
