@@ -10,7 +10,7 @@ This script does 2 things:
 1. Config scheduler to run more often so we don't have to wait to long for triggering notification, like every minute:
 
     ```sh
-2CRON_CANDIDATE_REVIEW=0 */1 * * * *
+    CRON_CANDIDATE_REVIEW=0 */1 * * * *
     CRON_INTERVIEW_COMING_UP=0 */1 * * * *
     CRON_INTERVIEW_COMPLETED=0 */1 * * * *
     CRON_POST_INTERVIEW=0 */1 * * * *
