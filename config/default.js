@@ -186,6 +186,8 @@ module.exports = {
   INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // the URL where TaaS App Earn is hosted
+  TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
   // environment variables for Payment Service
   ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
   TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
@@ -258,8 +260,30 @@ module.exports = {
   },
   // the sender email
   NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
-  // the email notification sendgrid template id
-  NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidate was viewed by client
+  NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidates are available for review
+  NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for customer
+  NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for member
+  NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview completed
+  NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of post interview action reminder
+  NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of upcoming resource booking expiration
+  NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new team created
+  NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new job added to existing project
+  NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of resource placed
+  NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interviews overlapping
+  NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of job candidate selected
+  NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews

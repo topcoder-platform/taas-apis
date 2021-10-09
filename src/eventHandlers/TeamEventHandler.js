@@ -24,11 +24,7 @@ async function sendNotificationEmail (payload) {
       duration: j.duration,
       startDate: helper.formatDate(j.startDate),
       jobUrl: `${config.TAAS_APP_URL}/${payload.project.id}/positions/${j.id}`
-    })),
-    notificationType: {
-      newTeamCreated: true
-    },
-    description: 'New Team Created'
+    }))
   }
   data.subject = helper.substituteStringByObject(data.subject, data)
 

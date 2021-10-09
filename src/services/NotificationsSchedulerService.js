@@ -90,6 +90,7 @@ async function getDataForInterview (interview, jobCandidate, job) {
   const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
   const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
   const jobUrl = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}`
+  const applicationUrl = `${config.TAAS_APP_EARN_URL}?status=Active%20Gigs`
 
   return {
     jobTitle: job.title,
@@ -101,6 +102,7 @@ async function getDataForInterview (interview, jobCandidate, job) {
     startTime: startTime,
     duration: interview.duration,
     interviewLink,
+    applicationUrl,
     jobUrl
   }
 }
@@ -174,11 +176,7 @@ async function sendCandidatesAvailableNotifications () {
       recipients: projectTeamRecipients,
       data: {
         teamName: project.name,
-        teamJobs,
-        notificationType: {
-          candidatesAvailableForReview: true
-        },
-        description: 'Candidates are available for review'
+        teamJobs
       }
     })
 
@@ -247,13 +245,7 @@ async function sendInterviewComingUpNotifications () {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
         recipients: [{ email: interview.hostEmail }],
-        data: {
-          ...data,
-          notificationType: {
-            interviewComingUpForHost: true
-          },
-          description: 'Interview Coming Up'
-        }
+        data
       })
 
       sentHostCount++
@@ -266,13 +258,7 @@ async function sendInterviewComingUpNotifications () {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
         recipients: interview.guestEmails.map((email) => ({ email })),
-        data: {
-          ...data,
-          notificationType: {
-            interviewComingUpForGuest: true
-          },
-          description: 'Interview Coming Up'
-        }
+        data
       })
 
       sentGuestCount++
@@ -346,13 +332,7 @@ async function sendInterviewCompletedNotifications () {
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
       recipients: [{ email: interview.hostEmail }],
-      data: {
-        ...data,
-        notificationType: {
-          interviewCompleted: true
-        },
-        description: 'Interview Completed'
-      }
+      data
     })
 
     sentCount++
@@ -449,11 +429,7 @@ async function sendPostInterviewActionNotifications () {
       data: {
         teamName: project.name,
         numCandidates,
-        teamInterviews,
-        notificationType: {
-          postInterviewCandidateAction: true
-        },
-        description: 'Post Interview Candidate Action Reminder'
+        teamInterviews
       }
     }, webNotifications)
 
@@ -552,11 +528,7 @@ async function sendResourceBookingExpirationNotifications () {
         teamName: project.name,
         numResourceBookings,
         teamResourceBookings,
-        notificationType: {
-          upcomingResourceBookingExpiration: true
-        },
-        teamUrl,
-        description: 'Upcoming Resource Booking Expiration'
+        teamUrl
       }
     }, [webData])
 
