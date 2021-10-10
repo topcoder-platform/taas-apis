@@ -68,6 +68,7 @@ workflows:
             branches:
               only:
                 - dev
+                - gigs-listing-special-false
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
