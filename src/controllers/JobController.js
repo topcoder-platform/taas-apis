@@ -58,7 +58,7 @@ async function deleteJob (req, res) {
  * @param res the response
  */
 async function searchJobs (req, res) {
-  const query = { ...req.query, jobIds: _.get(req, 'body.jobIds', []) }
+  const query = { ...req.query, jobIds: _.get(req, 'body.jobIds', []), bodySkills: _.get(req, 'body.bodySkills', []) }
   const result = await service.searchJobs(req.authUser, query)
   helper.setResHeaders(req, res, result)
   res.send(result.result)
