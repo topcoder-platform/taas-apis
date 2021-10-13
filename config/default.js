@@ -178,10 +178,7 @@ module.exports = {
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
-  // SendGrid email template ID for interview invitation
-  INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
-  // The sender (aka `from`) email for invitation.
-  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'talent@topcoder.com',
+
   // Duration that gets added to current time when an interview is created in order to calculate expireTimestamp
   INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
@@ -284,6 +281,14 @@ module.exports = {
   NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of job candidate selected
   NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview schedule reminder for job candidate
+  NOTIFICATION_MEMBER_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_MEMBER_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview expired for customer
+  NOTIFICATION_MEMBER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_MEMBER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview expired for member
+  NOTIFICATION_CUSTOMER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_CUSTOMER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of job candidate invited
+  NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews
@@ -292,6 +297,10 @@ module.exports = {
   // frequency of cron checking for interview completed
   // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewCompletedEmails correspondingly
   CRON_INTERVIEW_COMPLETED: process.env.CRON_INTERVIEW_COMPLETED || '*/5 * * * *',
+  // frequency of checking expired interview
+  CRON_INTERVIEW_EXPIRED: process.env.CRON_INTERVIEW_EXPIRED || '*/5 * * * *',
+  // frequency of checking interview schedule status which need remind job candidate to select time
+  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '00 00 13 * * 0-6',
   // frequency of cron checking for post interview actions
   CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for upcoming resource bookings
@@ -304,6 +313,10 @@ module.exports = {
   INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
   // The interview completed past time for fetching interviews
   INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
+  // Reminder after days if Job Candidate hasn't selected time
+  INTERVIEW_REMINDER_DAY_AFTER: process.env.INTERVIEW_REMINDER_DAY_AFTER || 'P1D',
+  // Reminder frequency if Job Candidate hasn't selected time, unit: day
+  INTERVIEW_REMINDER_FREQUENCY: parseInt(process.env.INTERVIEW_REMINDER_FREQUENCY) || 1,
   // The time before resource booking expiry when we should start sending notifications
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The match window for fetching post interview actions

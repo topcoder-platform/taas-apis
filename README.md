@@ -40,9 +40,6 @@
       AUTH0_AUDIENCE_UBAHN=
       AUTH0_CLIENT_ID=
       AUTH0_CLIENT_SECRET=
-      # necessary if you'll utilize email functionality of interviews
-      INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID=
-      INTERVIEW_INVITATION_SENDER_EMAIL=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
@@ -262,6 +259,34 @@ npm run data:import -- --file path/to-file.json
 ```
 
 - List of models that will be imported are defined in `scripts/data/importData.js`.
+
+## Nylas Webhook verification
+
+### schedule
+ngrok http 3000
+
+in https://dashboard.nylas.com/applications/{id} create nylas webhook url with created/updated/deleted event trigger 
+```
+https://{generatedId}.ngrok.io/api/v5/nylas-webhook
+```
+
+
+create job, job candidate, and request interview 
+
+You will get a invitation demo email in out/Please select your available time-xxxx.html, open it in broswer
+
+go to `https://schedule.nylas.com/{nylasSlug}` to schedule a time.
+
+In Postman, invoke `Get interview by id` to see the interview status
+
+### cancel
+In your email, click `cancel` to cancel interview
+
+Verify inteview status by postman
+
+### reschedule
+The webhook didn't support it(schedule and reschedule have same event), ignore it currently.
+
 
 ## Kafka commands
 

@@ -113,6 +113,14 @@ const server = app.listen(app.get('port'), () => {
   schedule.scheduleJob(config.CRON_INTERVIEW_COMPLETED, notificationSchedulerService.sendInterviewCompletedNotifications)
   schedule.scheduleJob(config.CRON_POST_INTERVIEW, notificationSchedulerService.sendPostInterviewActionNotifications)
   schedule.scheduleJob(config.CRON_UPCOMING_RESOURCE_BOOKING, notificationSchedulerService.sendResourceBookingExpirationNotifications)
+
+  setTimeout(() => {
+    // notificationSchedulerService.sendInterviewExpiredNotifications()
+    notificationSchedulerService.sendInterviewScheduleReminderNotifications()
+  }, 3000)
+
+  schedule.scheduleJob(config.CRON_INTERVIEW_EXPIRED, notificationSchedulerService.sendInterviewExpiredNotifications)
+  schedule.scheduleJob(config.CRON_INTERVIEW_SCHEDULE_REMINDER, notificationSchedulerService.sendInterviewScheduleReminderNotifications)
 })
 
 if (process.env.NODE_ENV === 'test') {

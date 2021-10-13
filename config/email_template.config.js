@@ -63,48 +63,8 @@ module.exports = {
         '{{text}}',
       recipients: config.REPORT_ISSUE_EMAILS,
       sendgridTemplateId: config.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID
-    },
-
-    /* Request interview for a job candidate
-     *
-     * - interviewType: the x.ai interview type. Example: "interview-30"
-     * - interviewRound: the round of the interview. Example: 2
-     * - interviewDuration: duration of the interview, in minutes. Example: 30
-     * - interviewerList: The list of interviewer email addresses. Example:  "first@attendee.com, second@attendee.com"
-     * - candidateId: the id of the jobCandidate. Example: "cc562545-7b75-48bf-87e7-50b3c57e41b1"
-     * - candidateName: Full name of candidate. Example: "John Doe"
-     * - jobName: The title of the job. Example: "TaaS API Misc Updates"
-     *
-     * Template (defined in SendGrid):
-     * Subject: '{{interviewType}} tech interview with {{candidateName}} for {{jobName}} is requested by the Customer'
-     * Body:
-     * 'Hello!
-     *  <br /><br />
-     *  Congratulations, you have been selected to participate in a Topcoder Gig Work Interview!
-     *  <br /><br />
-     *  Please monitor your email for a response to this where you can coordinate your availability.
-     *  <br /><br />
-     *  Interviewee: {{candidateName}}<br />
-     *  Interviewer(s): {{interviewerList}}<br />
-     *  Interview Length: {{interviewDuration}} minutes
-     *  <br /><br />
-     *  /{{interviewType}}
-     *  <br /><br />
-     *  Topcoder Info:<br />
-     *  Note: "id: {{candidateId}}, round: {{interviewRound}}"'
-     *
-     * Note, that the template should be defined in SendGrid.
-     * The subject & body above (identical to actual SendGrid template) is for reference purposes.
-     * We won't pass subject & body but only substitutions (replacements in template subject/body).
-     */
-    'interview-invitation': {
-      subject: '',
-      body: '',
-      from: config.INTERVIEW_INVITATION_SENDER_EMAIL,
-      cc: config.INTERVIEW_INVITATION_CC_LIST,
-      recipients: config.INTERVIEW_INVITATION_RECIPIENTS_LIST,
-      sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     }
+
   },
 
   /**
@@ -138,6 +98,34 @@ module.exports = {
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-invitation': {
+      subject: 'Please select your available time',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-expired-host': {
+      subject: 'Your interview is expired',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_CUSTOMER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-expired-guest': {
+      subject: 'Interview expired - your candidate didn\'t select time',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-schedule-reminder': {
+      subject: 'Reminder: Please select your available time for interview',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-awaits-resolution': {
       subject: 'Interview complete - here’s what to do next',

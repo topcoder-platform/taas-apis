@@ -83,6 +83,9 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   job = job || await Job.findById(jobCandidate.jobId)
 
+  const hostUserDetails = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+  const userDetails = await helper.getUserDetailsByUserUUID(jobCandidate.userId)
+  console.log('userDetails', userDetails, hostUserDetails)
   const user = await getUserWithId(jobCandidate.userId)
   if (!user) { return null }
 
@@ -95,15 +98,20 @@ async function getDataForInterview (interview, jobCandidate, job) {
   return {
     jobTitle: job.title,
     guestFullName: guestName,
+    guestEmail: userDetails.email,
+    hostEmail: hostUserDetails.email,
     hostFullName: interview.hostName,
     candidateName: `${user.firstName} ${user.lastName}`,
     handle: user.handle,
     attendees: interview.guestNames,
     startTime: startTime,
     duration: interview.duration,
+    interviewId: interview.id,
+    interviewRound: interview.round,
     interviewLink,
     applicationUrl,
     jobUrl
+
   }
 }
 
@@ -581,11 +589,194 @@ async function sendNotification (currentUser, data, webNotifications = []) {
   })
 }
 
+// Send notifications to job candicate for time selection reminder
+async function sendInterviewScheduleReminderNotifications () {
+  const INTERVIEW_REMINDER_DAY_AFTER = config.get('INTERVIEW_REMINDER_DAY_AFTER')
+  const INTERVIEW_REMINDER_FREQUENCY = config.get('INTERVIEW_REMINDER_FREQUENCY')
+
+  localLogger.debug('[sendInterviewScheduleReminderNotifications]: Looking for due records...')
+  const currentTime = moment.utc()
+  const compareTime = currentTime.add(-INTERVIEW_REMINDER_DAY_AFTER).add(1, 'days').startOf('day')
+
+  const timestampFilter = {
+    [Op.and]: [
+      {
+        [Op.lte]: compareTime
+      }
+    ]
+  }
+
+  const filter = {
+    [Op.and]: [
+      {
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduling
+          ]
+        }
+      },
+      {
+        startTimestamp: timestampFilter
+      }
+    ]
+  }
+
+  const interviews = await Interview.findAll({
+    where: filter,
+    raw: true
+  })
+
+  console.log('found all ', interviews)
+  const template = 'taas.notification.interview-schedule-reminder'
+
+  let interviewCount = 0
+  for (const interview of interviews) {
+    const start = moment(interview.startTimestamp)
+    if (currentTime.subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
+      // sendEmail
+      const data = await getDataForInterview(interview)
+      if (!data) { continue }
+
+      if (!_.isEmpty(data.guestEmail)) {
+        // send guest emails
+        sendNotification({}, {
+          template,
+          recipients: [{ email: data.guestEmail }],
+          data: {
+            ...data,
+            subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+          }
+        })
+      } else {
+        localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+      }
+      interviewCount++
+    }
+  }
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
+}
+
+// Send notifications to customer and candidate this interview has expired
+async function sendInterviewExpiredNotifications () {
+  localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
+  const currentTime = moment.utc().startOf('minute')
+
+  const timestampFilter = {
+    [Op.and]: [
+      {
+        [Op.lte]: currentTime
+      }
+    ]
+  }
+
+  const filter = {
+    [Op.and]: [
+      {
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduling
+            // constants.Interviews.Status.Rescheduled
+          ]
+        }
+      },
+      {
+        expireTimestamp: timestampFilter
+      }
+    ]
+  }
+
+  const interviews = await Interview.findAll({
+    where: filter,
+    raw: true
+  })
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Found ${interviews.length} interviews which are expired.`)
+
+  const templateHost = 'taas.notification.interview-expired-host'
+  const templateGuest = 'taas.notification.interview-expired-guest'
+
+  for (const interview of interviews) {
+    await Interview.update({ status: constants.Interviews.Status.Expired }, { where: { id: interview.id } })
+    await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, { status: constants.Interviews.Status.Expired, id: interview.id })
+    // send host email
+    const data = await getDataForInterview(interview)
+    if (!data) { continue }
+
+    if (!_.isEmpty(data.hostEmail)) {
+      sendNotification({}, {
+        template: templateHost,
+        recipients: [{ email: data.hostEmail }],
+        data: {
+          ...data,
+          subject: `Candidate Didn't Schedule Interview: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+        }
+      })
+    } else {
+      localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewExpiredNotifications')
+    }
+
+    if (!_.isEmpty(data.guestEmail)) {
+      // send guest emails
+      sendNotification({}, {
+        template: templateGuest,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          ...data,
+          subject: `Interview Invitation Expired: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+        }
+      })
+    } else {
+      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewExpiredNotifications')
+    }
+  }
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for ${interviews.length} interviews which are expired.`)
+}
+
+// Think it as only once scheduler when create an interview record
+async function sendInterviewInvitationNotifications (interview) {
+  localLogger.debug(`[sendInterviewInvitationNotifications]: send to interview ${interview.id}`)
+
+  try {
+    const template = 'taas.notification.interview-invitation'
+
+    // const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
+    // const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+
+    // send host email
+    const data = await getDataForInterview(interview)
+    if (!data) { return }
+
+    if (!_.isEmpty(data.guestEmail)) {
+      // send guest emails
+      await sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          ...data,
+          subject: `${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`,
+          nylasPageSlug: interview.nylasPageSlug
+        }
+      })
+    } else {
+      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewExpiredNotifications')
+    }
+  } catch (e) {
+    localLogger.error(`Send email to interview ${interview.id}: ${e}`)
+  }
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for interview ${interview.id}`)
+}
+
 module.exports = {
   sendNotification,
   sendCandidatesAvailableNotifications,
   sendInterviewComingUpNotifications,
   sendInterviewCompletedNotifications,
+  sendInterviewExpiredNotifications,
+  sendInterviewScheduleReminderNotifications,
+  sendInterviewInvitationNotifications,
   sendPostInterviewActionNotifications,
   sendResourceBookingExpirationNotifications
 }

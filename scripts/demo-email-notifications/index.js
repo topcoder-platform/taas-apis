@@ -28,7 +28,11 @@ const templateFileMap = {
   [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-job-added-to-existing-project-email-template.html', 'utf8')),
   [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interviews-overlapping-email-template.html', 'utf8')),
   [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/job-candidate-selected-email-template.html', 'utf8')),
-  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/resource-placed-email-template.html', 'utf8'))
+  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/resource-placed-email-template.html', 'utf8')),
+  [config.NOTIFICATION_MEMBER_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-schedule-reminder-email-template.html', 'utf8')),
+  [config.NOTIFICATION_MEMBER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/members-interview-expired-email-template.html', 'utf8')),
+  [config.NOTIFICATION_CUSTOMER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/customer-interview-expired-email-template.html', 'utf8')),
+  [config.NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-invitation-email-template.html', 'utf8'))
 }
 
 /**
@@ -60,6 +64,13 @@ async function resetNotificationRecords () {
   await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const c2InterviewR2 = await Interview.findById('b1f7ba76-640f-47e2-9463-59e51b51ec60')
   await c2InterviewR2.update({ status: 'Scheduled', startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+
+  const interviewForReminder = await Interview.findById('a23e1bf2-1084-4cfe-a0d8-d83bc6fec655')
+  // update hostUserId to test user phash_manager
+  await interviewForReminder.update({ startTimestamp: moment().subtract(moment.duration(config.INTERVIEW_REMINDER_DAY_AFTER)).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
+
+  const interviewExpired = await Interview.findById('505db942-79fe-4b6f-974c-b359e1b61967')
+  await interviewExpired.update({ expireTimestamp: moment().subtract(moment.duration(1, 'days')).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
 
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
