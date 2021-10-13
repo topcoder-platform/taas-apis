@@ -94,16 +94,7 @@ async function getEventDetails (accountId, eventId) {
       ..._.omit(res.data, ['account_id', 'calendar_id'])
     }
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.log(
-        'Account associated with the event cannot access details of the event. Ignoring event...'
-      )
-    } else {
-      console.log('Unknown error occurred')
-      console.log(error.response.data)
-      console.log(error.response.status)
-      console.log(error.response.headers)
-    }
+    localLogger.error(`Get event details error, ${error.response.status}`)
   }
 }
 
@@ -193,7 +184,6 @@ async function processFormattedEvent (webhookData, event) {
 // contains the HMAC-SHA256 signature of the request body, using your client
 // secret as the signing key. This allows your app to verify that the
 // notification really came from Nylas.
-// eslint-disable-next-line
 function verifyNylasRequest (req) {
   const digest = crypto
     .createHmac('sha256', config.get('NYLAS_CLIENT_SECRET'))
@@ -211,12 +201,11 @@ async function nylasWebhookCheck (req, res) {
 }
 
 async function nylasWebhook (req, res) {
-  // todo: this function will failed
   // Verify the request to make sure it's actually from Nylas.
-  //   if (!verifyNylasRequest(req)) {
-  //     console.log("Failed to verify nylas");
-  //     return res.status(401).send("X-Nylas-Signature failed verification 🚷 ");
-  //   }
+  if (!verifyNylasRequest(req)) {
+    localLogger.error('Failed to verify nylas')
+    return res.status(401).send('X-Nylas-Signature failed verification 🚷 ')
+  }
 
   try {
     // Nylas sent us a webhook notification for some kind of event, so we should
@@ -227,7 +216,6 @@ async function nylasWebhook (req, res) {
         data[i].object_data.account_id,
         data[i].object_data.id
       )
-      console.log('get event', event)
       if (event) {
         await processFormattedEvent(data[i], event)
       }

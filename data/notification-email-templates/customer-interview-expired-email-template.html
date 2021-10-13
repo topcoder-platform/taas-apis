@@ -72,7 +72,7 @@
                           class="CToWUd"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0;width:10px"></td>
                   <td style="color:#151516;font-size:15px;margin:0;padding:0">
-                    Your candidate didn't select time before the interview expired.
+                    Candidate Didn't Schedule Interview: {{this.duration}} minutes tech interview with {{this.guestFullName}} for {{this.jobTitle}} is requested by the Customer
                   </td>
                 </tr>
                 </tbody>
@@ -96,30 +96,15 @@
                         <td
                                 style="color:#151516;font-size:13px;line-height:20px;margin:0;padding:0;vertical-align:middle">
                             <br/>
-                            The interview has been canceled because the candidate didn't select time before expired
+                            The interview has become unavailable because the candidate didn't select time before expired
                             <br/>
                             <br/>
-                                <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:100%;">
-                                  <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Candidate Handle</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviewer</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Duration</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
-                                    </td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      {{this.hostFullName}}
-                                    </td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      {{this.duration}}
-                                    </td>
-                                  </tr>
-                                </table>
+
+                            <div><strong>Job Title:</strong><span>{{this.jobTitle}}</span></div>
+                            <div><strong>Interview Length:</strong><span>{{this.duration}}</span></div>
+                            <div><strong>Interview Round:</strong><span>{{this.interviewRound}}</span></div>
+                            <div><strong>Interviewee:</strong><span>{{this.guestFullName}}</span></div>
+                            <div><strong>Interviewer:</strong><span>{{this.hostFullName}}</span></div>
 
                           <br/>
                           Any issues with this interview? Please contact us <a href="mailto:talent@topcoder.com">here</a>.

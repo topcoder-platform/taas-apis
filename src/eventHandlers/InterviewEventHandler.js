@@ -137,7 +137,6 @@ async function checkOverlapping (payload) {
  * @returns {undefined}
  */
 async function processRequest (payload) {
-  // await sendInvitationEmail(payload) //TODO this will be implemented in another challenge
   await checkOverlapping(payload)
 }
 

@@ -85,22 +85,21 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   const hostUserDetails = await helper.getUserDetailsByUserUUID(interview.hostUserId)
   const userDetails = await helper.getUserDetailsByUserUUID(jobCandidate.userId)
-  console.log('userDetails', userDetails, hostUserDetails)
   const user = await getUserWithId(jobCandidate.userId)
   if (!user) { return null }
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
-  const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
+  // const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
   const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
   const jobUrl = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}`
   const applicationUrl = `${config.TAAS_APP_EARN_URL}?status=Active%20Gigs`
 
   return {
     jobTitle: job.title,
-    guestFullName: guestName,
+    guestFullName: userDetails.firstName + ' ' + userDetails.lastName,
     guestEmail: userDetails.email,
     hostEmail: hostUserDetails.email,
-    hostFullName: interview.hostName,
+    hostFullName: hostUserDetails.firstName + ' ' + hostUserDetails.lastName,
     candidateName: `${user.firstName} ${user.lastName}`,
     handle: user.handle,
     attendees: interview.guestNames,
@@ -626,7 +625,6 @@ async function sendInterviewScheduleReminderNotifications () {
     raw: true
   })
 
-  console.log('found all ', interviews)
   const template = 'taas.notification.interview-schedule-reminder'
 
   let interviewCount = 0
