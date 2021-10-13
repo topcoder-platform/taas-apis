@@ -1325,6 +1325,7 @@
             "externalId": "300234321",
             "resume": "http://example.com",
             "remark": "excellent",
+            "featured": null,
             "createdBy": "00000000-0000-0000-0000-000000000000",
             "updatedBy": "00000000-0000-0000-0000-000000000000",
             "createdAt": "2021-05-09T21:15:02.183Z",

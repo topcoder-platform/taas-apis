@@ -481,7 +481,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'minSalary',
       'maxSalary',
       'jobLocation',
-      'specialJob'
+      'specialJob',
+      'featured'
     ]), (value, key) => {
       let must
       if (key === 'description' || key === 'title') {
@@ -532,7 +533,22 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         } else {
-          return true
+          must = {
+            bool: {
+              must: [
+                {
+                  term: {
+                    featured: value
+                  }
+                },
+                {
+                  term: {
+                    showInHotList: value
+                  }
+                }
+              ]
+            }
+          }
         }
       } else {
         must = {
@@ -601,7 +617,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     'resourceType',
     'rateType',
     'workload',
-    'status'
+    'status',
+    'featured'
   ]), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -674,6 +691,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       ]
     })
   }
+  if (criteria.specialJob === false) {
+    filter[Op.and].push({ featured: false })
+    filter[Op.and].push({ showInHotList: false })
+  }
   const jobs = await Job.findAll({
     where: filter,
     offset: ((page - 1) * perPage),
@@ -720,7 +741,8 @@ searchJobs.schema = Joi.object().keys({
     minSalary: Joi.number().integer(),
     maxSalary: Joi.number().integer(),
     jobLocation: Joi.string(),
-    specialJob: Joi.boolean()
+    specialJob: Joi.boolean(),
+    featured: Joi.boolean()
   }).required(),
   options: Joi.object()
 }).required()

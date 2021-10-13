@@ -213,6 +213,12 @@ paths:
           schema:
             type: boolean
           description: When passing true, the API will load all featured and showInHotList jobs at once
+        - in: query
+          name: featured
+          required: false
+          schema:
+            type: boolean
+          description: The featured jobs
       requestBody:
         content:
           application/json:
