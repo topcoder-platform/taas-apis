@@ -77,9 +77,9 @@ async function getAccessToken (code) {
     code
   })
 
-  const { account_id: accountId, access_token: accessToken } = res.data
+  const { account_id: accountId, access_token: accessToken, provider } = res.data
 
-  return { accountId, accessToken }
+  return { accountId, accessToken, provider }
 }
 
 function getAvailableTimeFromSchedulingPage (page) {
@@ -162,5 +162,7 @@ module.exports = {
   createSchedulingPage,
   patchSchedulingPage,
   getAvailableTimeFromSchedulingPage,
-  getTimezoneFromSchedulingPage
+  getTimezoneFromSchedulingPage,
+  getExistingCalendars,
+  getAccessToken
 }

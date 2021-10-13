@@ -3,6 +3,7 @@
  */
 const service = require('../services/UserMeetingSettingsService')
 const helper = require('../common/helper')
+const { StatusCodes } = require('http-status-codes')
 
 /**
  * Get UserMeetingSettings for the provided userId
@@ -15,4 +16,34 @@ async function getUserMeetingSettingsByUserId (req, res) {
   res.send(result)
 }
 
-module.exports = { getUserMeetingSettingsByUserId }
+/**
+ * Handle calendar connection callback for user
+ * @param req the request
+ * @param res the response
+ */
+async function handleConnectCalendarCallback (req, res) {
+  const result = await service.handleConnectCalendarCallback(req.query)
+
+  res.redirect(result.redirectTo)
+}
+
+/**
+ * Delete an existing calendar for user
+ * @param req the request
+ * @param res the response
+ */
+async function deleteUserCalendar (req, res) {
+  const result = await service.deleteUserCalendar(req.authUser, req.params)
+
+  if (result && result.errorMessage) {
+    res.status(StatusCodes.BAD_REQUEST).send(result.errorMessage)
+  } else {
+    res.status(StatusCodes.NO_CONTENT).end()
+  }
+}
+
+module.exports = {
+  getUserMeetingSettingsByUserId,
+  handleConnectCalendarCallback,
+  deleteUserCalendar
+}

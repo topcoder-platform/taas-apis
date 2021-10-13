@@ -316,6 +316,11 @@ module.exports = {
 
   // Nylas Client id
   NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
-  NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET
+  NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
 
+  // Zoom JWT credentials
+  ZOOM_JWT_API_KEY_ACC_1: process.env.ZOOM_JWT_API_KEY_ACC_1,
+  ZOOM_JWT_API_SECRET_ACC_1: process.env.ZOOM_JWT_API_SECRET_ACC_1,
+  ZOOM_JWT_API_KEY_ACC_2: process.env.ZOOM_JWT_API_KEY_ACC_2,
+  ZOOM_JWT_API_SECRET_ACC_2: process.env.ZOOM_JWT_API_SECRET_ACC_2
 }
