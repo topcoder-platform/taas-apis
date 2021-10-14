@@ -219,6 +219,12 @@ paths:
           schema:
             type: boolean
           description: The featured jobs
+        - in: query
+          name: rcrmStatus
+          required: false
+          schema:
+            type: string
+            enum: ["Open", "On Hold", "Canceled", "Draft", "Closed"]
       requestBody:
         content:
           application/json:
@@ -4128,6 +4134,32 @@ components:
           type: string
           example: "USD"
           description: "the currency of job"
+        showInHotList:
+          type: boolean
+          default: false
+          description: "Whether to show job in hot list"
+        featured:
+          type: boolean
+          default: false
+          description: "Whether a job is a featured job"
+        hotListExcerpt:
+          type: string
+          default: ''
+          description: "A text to show for the hotlist excerpt"
+        jobTag:
+          type: string
+          default: ''
+          enum: ["New", "$$$", "Hot", ""]
+          description: "the job tag"
+        rcrmStatus:
+          type: string
+          default: null
+          enum: [null, "Open", "On Hold", "Canceled", "Draft", "Closed"]
+          description: "the job rcrm status"
+        rcrmReason:
+          type: string
+          default: null
+          description: "the possible rcrm reason for current status"
         createdAt:
           type: string
           format: date-time
@@ -4247,6 +4279,15 @@ components:
           type: string
           enum: ["", "New", "$$$", "Hot"]
           description: "The tag of a job"
+        rcrmStatus:
+          type: string
+          default: null
+          enum: [null, "Open", "On Hold", "Canceled", "Draft", "Closed"]
+          description: "the job rcrm status"
+        rcrmReason:
+          type: string
+          default: null
+          description: "the possible rcrm reason for current status"
         isApplicationPageActive:
           type: boolean
           default: false
@@ -4803,6 +4844,15 @@ components:
           type: string
           enum: ["", "New", "$$$", "Hot"]
           description: "The tag of a job"
+        rcrmStatus:
+          type: string
+          default: null
+          enum: [null, "Open", "On Hold", "Canceled", "Draft", "Closed"]
+          description: "the job rcrm status"
+        rcrmReason:
+          type: string
+          default: null
+          description: "the possible rcrm reason for current status"
         isApplicationPageActive:
           type: boolean
           default: false
