@@ -68,6 +68,7 @@ workflows:
             branches:
               only:
                 - dev
+                - gigs-listing-rcrmstatus
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
