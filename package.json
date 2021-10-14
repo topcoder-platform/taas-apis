@@ -33,7 +33,10 @@
     "demo-payment": "node scripts/demo-payment",
     "migrate:backup-withdrawn": "node scripts/withdrawn-migration/backup.js",
     "migrate:migration-withdrawn": "node scripts/withdrawn-migration/migration.js",
-    "migrate:restore-withdrawn": "node scripts/withdrawn-migration/restore.js"
+    "migrate:restore-withdrawn": "node scripts/withdrawn-migration/restore.js",
+    "migrate:backup-rcrm-status": "node scripts/job-rcrm-status-migration/backup.js",
+    "migrate:migration-rcrm-status": "node scripts/job-rcrm-status-migration/migration.js",
+    "migrate:restore-rcrm-status": "node scripts/job-rcrm-status-migration/restore.js"
   },
   "keywords": [],
   "author": "",
