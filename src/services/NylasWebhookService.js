@@ -1,15 +1,16 @@
-const interviewService = require('./InterviewService')
 const config = require('config')
 const models = require('../models')
 const { Op } = require('sequelize')
 const Interview = models.Interview
 const _ = require('lodash')
+const constants = require('../../app-constants')
 
 const crypto = require('crypto')
 const axios = require('axios')
 const moment = require('moment')
 
 const logger = require('../common/logger')
+const { updateInterviewStatus } = require('./NotificationsSchedulerService')
 
 const localLogger = {
   debug: (message, context) =>
@@ -114,11 +115,6 @@ const parseInterviewId = (emailText) => {
 async function processFormattedEvent (webhookData, event) {
   localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}`)
 
-  const currentUser = {
-    isMachine: true,
-    userId: config.m2m.M2M_AUDIT_USER_ID
-  }
-
   const interviewId = parseInterviewId(event.description) // remove prefix
 
   const interview = await Interview.findOne({
@@ -128,12 +124,10 @@ async function processFormattedEvent (webhookData, event) {
   })
 
   if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
-    // CREATED + confirmed ==> update inteview to scheduled
-    // UPDATED + cancelled ==> inteview expired handle
+    // CREATED + confirmed ==> inteview updated to scheduled
+    // UPDATED + cancelled ==> inteview expired
 
-    await interviewService.partiallyUpdateInterview(currentUser, interview, {
-      status: 'Scheduled'
-    })
+    await updateInterviewStatus({ status: constants.Interviews.Status.Scheduled, id: interview.id, jobCandidateId: interview.jobCandidateId })
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
@@ -150,9 +144,7 @@ async function processFormattedEvent (webhookData, event) {
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
   ) {
-    await interviewService.partiallyUpdateInterview(currentUser, interview, {
-      status: 'Cancelled'
-    })
+    await updateInterviewStatus({ status: constants.Interviews.Status.Cancelled, id: interview.id, jobCandidateId: interview.jobCandidateId })
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
@@ -221,7 +213,7 @@ async function nylasWebhook (req, res) {
       }
     }
   } catch (e) {
-    localLogger.error('process nylas webhook failed\n', e)
+    localLogger.error('process nylas webhook failed\n')
   }
 
   // 200 response tells Nylas your endpoint is online and healthy.

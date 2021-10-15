@@ -67,7 +67,7 @@ async function resetNotificationRecords () {
 
   const interviewForReminder = await Interview.findById('a23e1bf2-1084-4cfe-a0d8-d83bc6fec655')
   // update hostUserId to test user phash_manager
-  await interviewForReminder.update({ startTimestamp: moment().subtract(moment.duration(config.INTERVIEW_REMINDER_DAY_AFTER)).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
+  await interviewForReminder.update({ createdAt: moment().subtract(moment.duration(config.INTERVIEW_REMINDER_DAY_AFTER)).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
 
   const interviewExpired = await Interview.findById('505db942-79fe-4b6f-974c-b359e1b61967')
   await interviewExpired.update({ expireTimestamp: moment().subtract(moment.duration(1, 'days')).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })

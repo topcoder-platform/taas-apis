@@ -13,6 +13,7 @@ const ResourceBooking = models.ResourceBooking
 const helper = require('../common/helper')
 const constants = require('../../app-constants')
 const logger = require('../common/logger')
+const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
 
 const localLogger = {
   debug: (message, context) => logger.debug({ component: 'NotificationSchedulerService', context, message }),
@@ -615,7 +616,7 @@ async function sendInterviewScheduleReminderNotifications () {
         }
       },
       {
-        startTimestamp: timestampFilter
+        createdAt: timestampFilter
       }
     ]
   }
@@ -629,7 +630,7 @@ async function sendInterviewScheduleReminderNotifications () {
 
   let interviewCount = 0
   for (const interview of interviews) {
-    const start = moment(interview.startTimestamp)
+    const start = moment(interview.createdAt)
     if (currentTime.subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
       // sendEmail
       const data = await getDataForInterview(interview)
@@ -652,12 +653,22 @@ async function sendInterviewScheduleReminderNotifications () {
     }
   }
 
-  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
+  localLogger.debug(`[sendInterviewScheduleReminderNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
+}
+
+/**
+ * Update interview status by id and jobCandidateId
+ * @param {*} entity interview entity
+ */
+async function updateInterviewStatus (entity) {
+  await Interview.update({ status: entity.status }, { where: { id: entity.id } })
+  await processUpdateInterview(entity)
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity)
 }
 
 // Send notifications to customer and candidate this interview has expired
 async function sendInterviewExpiredNotifications () {
-  localLogger.debug('[sendInterviewComingUpNotifications]: Looking for due records...')
+  localLogger.debug('[sendInterviewExpiredNotifications]: Looking for due records...')
   const currentTime = moment.utc().startOf('minute')
 
   const timestampFilter = {
@@ -674,7 +685,6 @@ async function sendInterviewExpiredNotifications () {
         status: {
           [Op.in]: [
             constants.Interviews.Status.Scheduling
-            // constants.Interviews.Status.Rescheduled
           ]
         }
       },
@@ -695,8 +705,7 @@ async function sendInterviewExpiredNotifications () {
   const templateGuest = 'taas.notification.interview-expired-guest'
 
   for (const interview of interviews) {
-    await Interview.update({ status: constants.Interviews.Status.Expired }, { where: { id: interview.id } })
-    await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, { status: constants.Interviews.Status.Expired, id: interview.id })
+    await updateInterviewStatus({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
     // send host email
     const data = await getDataForInterview(interview)
     if (!data) { continue }
@@ -764,7 +773,7 @@ async function sendInterviewInvitationNotifications (interview) {
     localLogger.error(`Send email to interview ${interview.id}: ${e}`)
   }
 
-  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for interview ${interview.id}`)
+  localLogger.debug(`[sendInterviewInvitationNotifications]: Sent notifications for interview ${interview.id}`)
 }
 
 module.exports = {
@@ -774,6 +783,7 @@ module.exports = {
   sendInterviewCompletedNotifications,
   sendInterviewExpiredNotifications,
   sendInterviewScheduleReminderNotifications,
+  updateInterviewStatus,
   sendInterviewInvitationNotifications,
   sendPostInterviewActionNotifications,
   sendResourceBookingExpirationNotifications

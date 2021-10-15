@@ -31,11 +31,11 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
 
     const table = {
-      tableName: "work_period_payments",
+      tableName: "interviews",
       schema: config.DB_SCHEMA_NAME,
     };
     try {
-      await queryInterface.changeColumn(table, "challenge_id", {
+      await queryInterface.changeColumn(table, "status", {
         type: Sequelize.ENUM(oldStatuses),
         allowNull: false,
       }, {transaction}),

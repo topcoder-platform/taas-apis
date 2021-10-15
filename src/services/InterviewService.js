@@ -741,7 +741,6 @@ module.exports = {
   requestInterview,
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
-  partiallyUpdateInterview,
   searchInterviews,
   updateCompletedInterviews
 }
