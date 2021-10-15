@@ -15,7 +15,7 @@ async function backup () {
     fs.rmdirSync(filePath, { recursive: true })
   }
   fs.mkdirSync(filePath)
-  let { body: jobs } = await request.get('https://www.topcoder.com/api/recruit/jobs?job_status=1&enable_job_application_form=1')
+  let { body: jobs } = await request.get('https://www.topcoder.com/api/recruit/jobs?job_status=1')
   jobs = jobs.map((item) => item.slug)
   if (jobs && jobs.length > 0) {
     try {
