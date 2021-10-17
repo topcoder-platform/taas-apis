@@ -776,13 +776,28 @@ async function sendInterviewInvitationNotifications (interview) {
   localLogger.debug(`[sendInterviewInvitationNotifications]: Sent notifications for interview ${interview.id}`)
 }
 
+/**
+ * For preventing app crashing by scheduler function, use this function to wrapper target handler.
+ * @param {*} callback : function handler
+ */
+ function errorCatchWrapper(callback, name) {
+  return async () => {
+    try {
+      await callback();
+    } catch(e) {
+      console.log(e)
+      localLogger.error(`${[name]} Service function error: ${e}`)
+    }
+  }
+}
+
 module.exports = {
   sendNotification,
   sendCandidatesAvailableNotifications,
   sendInterviewComingUpNotifications,
   sendInterviewCompletedNotifications,
-  sendInterviewExpiredNotifications,
-  sendInterviewScheduleReminderNotifications,
+  sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
+  sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
   updateInterviewStatus,
   sendInterviewInvitationNotifications,
   sendPostInterviewActionNotifications,
