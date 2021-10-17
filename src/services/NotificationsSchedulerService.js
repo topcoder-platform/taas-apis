@@ -780,11 +780,11 @@ async function sendInterviewInvitationNotifications (interview) {
  * For preventing app crashing by scheduler function, use this function to wrapper target handler.
  * @param {*} callback : function handler
  */
- function errorCatchWrapper(callback, name) {
+function errorCatchWrapper (callback, name) {
   return async () => {
     try {
-      await callback();
-    } catch(e) {
+      await callback()
+    } catch (e) {
       console.log(e)
       localLogger.error(`${[name]} Service function error: ${e}`)
     }

@@ -127,7 +127,13 @@ async function processFormattedEvent (webhookData, event) {
     // CREATED + confirmed ==> inteview updated to scheduled
     // UPDATED + cancelled ==> inteview expired
 
-    await updateInterviewStatus({ status: constants.Interviews.Status.Scheduled, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    await updateInterviewStatus({
+      status: constants.Interviews.Status.Scheduled,
+      startTimestamp: moment.unix(event.startTime).toDate(),
+      endTimestamp: moment.unix(event.endTime).toDate(),
+      id: interview.id,
+      jobCandidateId: interview.jobCandidateId
+    })
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
