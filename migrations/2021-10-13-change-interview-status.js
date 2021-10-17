@@ -1,12 +1,5 @@
 "use strict";
 const config = require("config");
-const { Interviews } = require("../app-constants");
-const _ = require("lodash");
-
-// allowed status values
-const statuses = _.values(Interviews.Status);
-
-const oldStatuses = _.values(_.omit(Interviews.Status, "Expired"));
 
 /**
  * Add Expired for status enum field
@@ -14,12 +7,11 @@ const oldStatuses = _.values(_.omit(Interviews.Status, "Expired"));
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction();
-    const table = { tableName: "interviews", schema: config.DB_SCHEMA_NAME };
+    // const table = { tableName: "interviews", schema: config.DB_SCHEMA_NAME };
     try {
-      await queryInterface.changeColumn(table, "status", {
-        type: Sequelize.ENUM(statuses),
-        allowNull: false,
-      }, {transaction});
+      await queryInterface.sequelize.query(
+        `ALTER TYPE ${config.DB_SCHEMA_NAME}.enum_interviews_status ADD VALUE 'Expired'`
+      );
       await transaction.commit();
     } catch (err) {
       await transaction.rollback();
@@ -30,16 +22,25 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction();
 
-    const table = {
-      tableName: "interviews",
-      schema: config.DB_SCHEMA_NAME,
-    };
     try {
-      await queryInterface.changeColumn(table, "status", {
-        type: Sequelize.ENUM(oldStatuses),
-        allowNull: false,
-      }, {transaction}),
-        await transaction.commit();
+      queryInterface.sequelize.query(
+        `
+      DELETE 
+      FROM
+          pg_enum
+      WHERE
+          enumlabel = 'Expired' AND
+          enumtypid = (
+              SELECT
+                  oid
+              FROM
+                  pg_type
+              WHERE
+                  typname = 'enum_interviews_status'
+          )
+    `
+      );
+      await transaction.commit();
     } catch (err) {
       await transaction.rollback();
       throw err;
