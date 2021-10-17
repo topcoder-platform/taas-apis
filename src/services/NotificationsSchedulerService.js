@@ -785,7 +785,6 @@ function errorCatchWrapper (callback, name) {
     try {
       await callback()
     } catch (e) {
-      console.log(e)
       localLogger.error(`${[name]} Service function error: ${e}`)
     }
   }
