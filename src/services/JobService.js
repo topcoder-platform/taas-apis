@@ -235,7 +235,9 @@ createJob.schema = Joi.object()
         showInHotList: Joi.boolean().default(false),
         featured: Joi.boolean().default(false),
         hotListExcerpt: Joi.stringAllowEmpty().default(''),
-        jobTag: Joi.jobTag().default('')
+        jobTag: Joi.jobTag().default(''),
+        rcrmStatus: Joi.jobRcrmStatus().default('Open'),
+        rcrmReason: Joi.string().allow(null).default(null)
       })
       .required(),
     onTeamCreating: Joi.boolean().default(false)
@@ -335,7 +337,9 @@ partiallyUpdateJob.schema = Joi.object()
         showInHotList: Joi.boolean(),
         featured: Joi.boolean(),
         hotListExcerpt: Joi.stringAllowEmpty(),
-        jobTag: Joi.jobTag()
+        jobTag: Joi.jobTag(),
+        rcrmStatus: Joi.jobRcrmStatus(),
+        rcrmReason: Joi.string().allow(null)
       })
       .required()
   })
@@ -379,7 +383,9 @@ fullyUpdateJob.schema = Joi.object().keys({
     showInHotList: Joi.boolean().default(false),
     featured: Joi.boolean().default(false),
     hotListExcerpt: Joi.stringAllowEmpty().default(''),
-    jobTag: Joi.jobTag().default('')
+    jobTag: Joi.jobTag().default(''),
+    rcrmStatus: Joi.jobRcrmStatus().default(null),
+    rcrmReason: Joi.string().allow(null).default(null)
   }).required()
 }).required()
 
@@ -482,10 +488,11 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'maxSalary',
       'jobLocation',
       'specialJob',
-      'featured'
+      'featured',
+      'rcrmStatus'
     ]), (value, key) => {
       let must
-      if (key === 'description' || key === 'title') {
+      if (key === 'description' || key === 'title' || key === 'rcrmStatus') {
         must = {
           match: {
             [key]: {
@@ -618,7 +625,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     'rateType',
     'workload',
     'status',
-    'featured'
+    'featured',
+    'rcrmStatus'
   ]), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -742,7 +750,8 @@ searchJobs.schema = Joi.object().keys({
     maxSalary: Joi.number().integer(),
     jobLocation: Joi.string(),
     specialJob: Joi.boolean(),
-    featured: Joi.boolean()
+    featured: Joi.boolean(),
+    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed')
   }).required(),
   options: Joi.object()
 }).required()
