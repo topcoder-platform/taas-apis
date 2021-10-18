@@ -30,7 +30,7 @@ async function migration () {
           const updated = await jbs[j].update({ rcrmStatus: 'Open' })
           summary++
           totalSum++
-          logger.info({ component: currentStep, message: `job with rcrmId ${rcrmIds[i]} status changed from ${oldStatus} to ${updated.status}` })
+          logger.info({ component: currentStep, message: `job with rcrmId ${rcrmIds[i]} status changed from ${oldStatus} to ${updated.rcrmStatus}` })
         }
       }
     };
