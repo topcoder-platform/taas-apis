@@ -30,7 +30,7 @@ async function restore () {
           const updated = await jbs[j].update({ rcrmStatus: null })
           summary++
           totalSum++
-          logger.info({ component: currentStep, message: `job with rcrmId ${rcrmIds[i]} status changed from ${oldStatus} to ${updated.status}` })
+          logger.info({ component: currentStep, message: `job with rcrmId ${rcrmIds[i]} status changed from ${oldStatus} to ${updated.rcrmStatus}` })
         }
       }
     };
