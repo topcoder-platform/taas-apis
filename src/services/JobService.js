@@ -237,7 +237,7 @@ createJob.schema = Joi.object()
         hotListExcerpt: Joi.stringAllowEmpty().default(''),
         jobTag: Joi.jobTag().default(''),
         rcrmStatus: Joi.jobRcrmStatus().default('Open'),
-        rcrmReason: Joi.string().allow(null).default(null)
+        rcrmReason: Joi.stringAllowEmpty().allow(null).default(null)
       })
       .required(),
     onTeamCreating: Joi.boolean().default(false)
@@ -339,7 +339,7 @@ partiallyUpdateJob.schema = Joi.object()
         hotListExcerpt: Joi.stringAllowEmpty(),
         jobTag: Joi.jobTag(),
         rcrmStatus: Joi.jobRcrmStatus(),
-        rcrmReason: Joi.string().allow(null)
+        rcrmReason: Joi.stringAllowEmpty().allow(null)
       })
       .required()
   })
@@ -385,7 +385,7 @@ fullyUpdateJob.schema = Joi.object().keys({
     hotListExcerpt: Joi.stringAllowEmpty().default(''),
     jobTag: Joi.jobTag().default(''),
     rcrmStatus: Joi.jobRcrmStatus().default(null),
-    rcrmReason: Joi.string().allow(null).default(null)
+    rcrmReason: Joi.stringAllowEmpty().allow(null).default(null)
   }).required()
 }).required()
 
