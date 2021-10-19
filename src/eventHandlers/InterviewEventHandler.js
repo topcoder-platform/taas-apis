@@ -9,6 +9,62 @@ const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
 const Constants = require('../../app-constants')
+const notificationsSchedulerService = require('../services/NotificationsSchedulerService')
+
+/**
+ * Send interview invitaion notifications
+ * @param {*} interview the requested interview
+ * @returns
+ */
+async function sendInterviewInvitationNotifications (interview) {
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewInvitationNotifications',
+    message: `send to interview ${interview.id}`
+  })
+
+  try {
+    const template = 'taas.notification.interview-invitation'
+
+    // const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
+    // const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+
+    // send host email
+    const data = await notificationsSchedulerService.getDataForInterview(interview)
+    if (!data) { return }
+
+    if (!_.isEmpty(data.guestEmail)) {
+      // send guest emails
+      await notificationsSchedulerService.sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          ...data,
+          subject: `${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`,
+          nylasPageSlug: interview.nylasPageSlug
+        }
+      })
+    } else {
+      logger.error({
+        component: 'InterviewEventHandler',
+        context: 'sendInterviewInvitationNotifications',
+        message: `Interview id: ${interview.id} guest emails not present`
+      })
+    }
+  } catch (e) {
+    logger.error({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewInvitationNotifications',
+      message: `Send email to interview ${interview.id}: ${e}`
+    })
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewInvitationNotifications',
+    message: `Sent notifications for interview ${interview.id}`
+  })
+}
 
 /**
  * Check if there is overlapping interview, if there is overlapping, then send notifications.
@@ -152,5 +208,6 @@ async function processUpdate (payload) {
 
 module.exports = {
   processRequest,
-  processUpdate
+  processUpdate,
+  sendInterviewInvitationNotifications
 }

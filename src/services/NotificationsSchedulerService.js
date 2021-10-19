@@ -740,41 +740,6 @@ async function sendInterviewExpiredNotifications () {
   localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for ${interviews.length} interviews which are expired.`)
 }
 
-// Think it as only once scheduler when create an interview record
-async function sendInterviewInvitationNotifications (interview) {
-  localLogger.debug(`[sendInterviewInvitationNotifications]: send to interview ${interview.id}`)
-
-  try {
-    const template = 'taas.notification.interview-invitation'
-
-    // const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
-    // const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
-
-    // send host email
-    const data = await getDataForInterview(interview)
-    if (!data) { return }
-
-    if (!_.isEmpty(data.guestEmail)) {
-      // send guest emails
-      await sendNotification({}, {
-        template,
-        recipients: [{ email: data.guestEmail }],
-        data: {
-          ...data,
-          subject: `${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`,
-          nylasPageSlug: interview.nylasPageSlug
-        }
-      })
-    } else {
-      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewExpiredNotifications')
-    }
-  } catch (e) {
-    localLogger.error(`Send email to interview ${interview.id}: ${e}`)
-  }
-
-  localLogger.debug(`[sendInterviewInvitationNotifications]: Sent notifications for interview ${interview.id}`)
-}
-
 /**
  * For preventing app crashing by scheduler function, use this function to wrapper target handler.
  * @param {*} callback : function handler
@@ -797,7 +762,7 @@ module.exports = {
   sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
   sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
   updateInterviewStatus,
-  sendInterviewInvitationNotifications,
+  getDataForInterview,
   sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
   sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')
 }
