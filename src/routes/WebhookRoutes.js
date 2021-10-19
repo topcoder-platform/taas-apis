@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-  '/nylas-webhook': {
+  '/taas/nylas-webhooks': {
     post: {
       controller: 'WebhookController',
       method: 'nylasWebhook'

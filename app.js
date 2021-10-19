@@ -25,27 +25,31 @@ app.use(cors({
   // Allow browsers access pagination data in headers
   exposedHeaders: ['X-Page', 'X-Per-Page', 'X-Total', 'X-Total-Pages', 'X-Prev-Page', 'X-Next-Page']
 }))
-// app.use(express.json())
-// For test nylas webhook, we need raw buffer
-// Here i sCustom Middleware to compute rawBody. Unfortunately using
-// JSON.stringify(req.body) will remove spaces and newlines, so verification
-// will fail. We must add this middleware to ensure we're computing the correct
-// signature
-app.use(function (req, res, next) {
-  req.rawBody = ''
-  req.on('data', (chunk) => (req.rawBody += chunk))
-  req.on('error', () => res.status(500).send('Error parsing body'))
-
-  req.on('end', () => {
-    // because the stream has been consumed, other parsers like bodyParser.json
-    // cannot stream the request data and will time out so we must explicitly parse the body
-    try {
-      req.body = req.rawBody.length ? JSON.parse(req.rawBody) : {}
-      next()
-    } catch (err) {
-      res.status(500).send('Error parsing body')
-    }
-  })
+app.use((...args) => {
+  const [req, res, next] = args;
+  // For test nylas webhook, we need raw buffer
+  // Here i sCustom Middleware to compute rawBody. Unfortunately using
+  // JSON.stringify(req.body) will remove spaces and newlines, so verification
+  // will fail. We must add this middleware to ensure we're computing the correct
+  // signature
+  if(req.path === `${config.BASE_PATH}/taas/nylas-webhooks`) {
+    req.rawBody = ''
+    req.on('data', (chunk) => (req.rawBody += chunk))
+    req.on('error', () => res.status(500).send('Error parsing body'))
+  
+    req.on('end', () => {
+      // because the stream has been consumed, other parsers like bodyParser.json
+      // cannot stream the request data and will time out so we must explicitly parse the body
+      try {
+        req.body = req.rawBody.length ? JSON.parse(req.rawBody) : {}
+        next()
+      } catch (err) {
+        res.status(500).send('Error parsing body')
+      }
+    })
+    return
+  }
+  return express.json()(...args)
 })
 app.use(express.urlencoded({ extended: true }))
 app.set('port', config.PORT)
