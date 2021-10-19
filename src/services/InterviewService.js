@@ -303,7 +303,6 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       interview.status = InterviewConstants.Status.Scheduling
 
       await createUserMeetingSettingsIfNotExisting(currentUser, interview.hostUserId, calendar, schedulingPage, t)
-
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()
