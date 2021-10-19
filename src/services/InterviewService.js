@@ -32,7 +32,6 @@ const {
   patchSchedulingPage
 } = require('./NylasService')
 const { createUserMeetingSettingsIfNotExisting } = require('./UserMeetingSettingsService')
-const interviewEventHandler = require('../eventHandlers/InterviewEventHandler')
 /**
   * Ensures user is permitted for the operation.
   *
@@ -325,7 +324,6 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
     // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
     throw err
   }
-  await interviewEventHandler.sendInterviewInvitationNotifications(interview)
   await helper.postEvent(config.TAAS_INTERVIEW_REQUEST_TOPIC, entity)
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, jobCandidateEntity)
   // return created interview

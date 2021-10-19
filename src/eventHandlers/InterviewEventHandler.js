@@ -193,6 +193,7 @@ async function checkOverlapping (payload) {
  * @returns {undefined}
  */
 async function processRequest (payload) {
+  await sendInterviewInvitationNotifications(payload.value)
   await checkOverlapping(payload)
 }
 
@@ -208,6 +209,5 @@ async function processUpdate (payload) {
 
 module.exports = {
   processRequest,
-  processUpdate,
-  sendInterviewInvitationNotifications
+  processUpdate
 }
