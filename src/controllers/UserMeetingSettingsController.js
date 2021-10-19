@@ -23,7 +23,6 @@ async function getUserMeetingSettingsByUserId (req, res) {
  */
 async function handleConnectCalendarCallback (req, res) {
   const result = await service.handleConnectCalendarCallback(req.query)
-
   res.redirect(result.redirectTo)
 }
 
@@ -33,13 +32,8 @@ async function handleConnectCalendarCallback (req, res) {
  * @param res the response
  */
 async function deleteUserCalendar (req, res) {
-  const result = await service.deleteUserCalendar(req.authUser, req.params)
-
-  if (result && result.errorMessage) {
-    res.status(StatusCodes.BAD_REQUEST).send(result.errorMessage)
-  } else {
-    res.status(StatusCodes.NO_CONTENT).end()
-  }
+  await service.deleteUserCalendar(req.authUser, req.params)
+  res.status(StatusCodes.NO_CONTENT).end()
 }
 
 module.exports = {

@@ -223,9 +223,22 @@ async function handleConnectCalendarCallback (reqQuery) {
         })
       await processCreate(userMeetingSettings)
     } else { // or just update calendar details in the exisiting object
+      const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
+      
+      // clone Nylas calendar array and
+      // if array item's index doesn't match with calendar index saved in Nylas backend, make it non-primary
+      // but if it matches, update the calendar with newer details (which makes it primary too)
+      let updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
+        if (index !== calendarIndexInUserMeetingSettings)
+          return { ...item, isPrimary: false }
+        
+        return { ...item, ...calendarDetails }
+      })
+
+      // if calendar doesn't exist in Nylas calendars array then add it in the array
       const updatePayload = {
         ...userMeetingSettings,
-        nylasCalendars: userMeetingSettings.nylasCalendars.concat(calendarDetails)
+        nylasCalendars: calendarIndexInUserMeetingSettings === -1 ? updatedNylasCalendarsArray.concat(calendarDetails) : updatedNylasCalendarsArray
       }
 
       const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
@@ -260,9 +273,6 @@ async function deleteUserCalendar (currentUser, reqParams) {
   // check permission
   await ensureUserIsPermitted(currentUser, reqParams.userId)
 
-  let errorMessage
-  let result
-
   try {
     const userMeetingSettings = await getUserMeetingSettingsByUserId(currentUser, reqParams.userId)
 
@@ -273,11 +283,22 @@ async function deleteUserCalendar (currentUser, reqParams) {
         (calendarItem) => calendarItem.id === reqParams.calendarId
       ) === -1
     ) {
-      throw new Error('Calendar not found.')
+      throw new Error('Calendar not found in UserMeetingSettings record.')
     } else {
-      const remainingCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => item.id !== reqParams.calendarId)
+      let deletingPrimaryCalendar
+      
+      // filter all calenders except the one to be deleted and
+      // check if deleting calendar is primary
+      const remainingCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
+        if (item.id === reqParams.calendarId && item.isPrimary) {
+          deletingPrimaryCalendar = true
+        }
 
-      if (remainingCalendars.length > 0) {
+        return item.id !== reqParams.calendarId
+      })
+
+      // if deleting primary calendar, make the first remaining calendar as primary
+      if (remainingCalendars.length > 0 && deletingPrimaryCalendar) {
         _.set(remainingCalendars[0], 'isPrimary', true)
       }
 
@@ -291,14 +312,8 @@ async function deleteUserCalendar (currentUser, reqParams) {
       await processUpdate(updatedUserMeetingSettings)
     }
   } catch (err) {
-    errorMessage = err.message
-  } finally {
-    if (errorMessage) {
-      result = { errorMessage }
-    }
+    throw new errors.BadRequestError(err.message)
   }
-
-  return result
 }
 
 deleteUserCalendar.schema = Joi.object().keys({
