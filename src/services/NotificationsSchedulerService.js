@@ -90,7 +90,6 @@ async function getDataForInterview (interview, jobCandidate, job) {
   if (!user) { return null }
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
-  // const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
   const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
   const jobUrl = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}`
   const applicationUrl = `${config.TAAS_APP_EARN_URL}?status=Active%20Gigs`
@@ -792,13 +791,13 @@ function errorCatchWrapper (callback, name) {
 
 module.exports = {
   sendNotification,
-  sendCandidatesAvailableNotifications,
-  sendInterviewComingUpNotifications,
-  sendInterviewCompletedNotifications,
+  sendCandidatesAvailableNotifications: errorCatchWrapper(sendCandidatesAvailableNotifications, 'sendCandidatesAvailableNotifications'),
+  sendInterviewComingUpNotifications: errorCatchWrapper(sendInterviewComingUpNotifications, 'sendInterviewComingUpNotifications'),
+  sendInterviewCompletedNotifications: errorCatchWrapper(sendInterviewCompletedNotifications, 'sendInterviewCompletedNotifications'),
   sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
   sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
   updateInterviewStatus,
   sendInterviewInvitationNotifications,
-  sendPostInterviewActionNotifications,
-  sendResourceBookingExpirationNotifications
+  sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
+  sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')
 }
