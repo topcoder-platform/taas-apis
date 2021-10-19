@@ -3,29 +3,47 @@ const axios = require('axios')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
-// update following line by adding more integers if more Zoom accounts are needed
-const AVAILABLE_ZOOM_ACCOUNT_NUMBERS = [1, 2]
+// get & parse all Zoom account credentials in an in-memory array
+const ALL_ZOOM_ACCOUNTS = _.split(config['ZOOM_ACCOUNTS'], ',')
+// this is the number of Zoom accounts left to use. This number gets reduced after each usage
+let AVAILABLE_ZOOM_ACCOUNTS = ALL_ZOOM_ACCOUNTS.length
 
+
+/**
+ * Generate a Zoom JWT bearer access token
+ *
+ * @returns JWT bearer access token for Zoom API access
+ */
 async function generateZoomJWTBearerAccessToken () {
-  const apiKeyEnvVar = `ZOOM_JWT_API_KEY_ACC_${AVAILABLE_ZOOM_ACCOUNT_NUMBERS[0]}`
-  const apiSecretEnvVar = `ZOOM_JWT_API_SECRET_ACC_${AVAILABLE_ZOOM_ACCOUNT_NUMBERS[0]}`
+  // parse the Zoom account API key & secret from the credentials string
+  const zoomAccountCredentials = _.split(ALL_ZOOM_ACCOUNTS[AVAILABLE_ZOOM_ACCOUNTS - 1], ':')
+  const zoomAccountApiKey = zoomAccountCredentials[0]
+  const zoomAccountApiSecret = zoomAccountCredentials[1]
 
   const token = jwt.sign(
     {},
-    config[apiSecretEnvVar],
+    zoomAccountApiSecret,
     {
       algorithm: 'HS256',
       expiresIn: 1500,
-      issuer: config[apiKeyEnvVar]
+      issuer: zoomAccountApiKey
     }
   )
 
-  _.pullAt(AVAILABLE_ZOOM_ACCOUNT_NUMBERS, 0)
+  // reduce number of available Zoom accounts after each usage
+  AVAILABLE_ZOOM_ACCOUNTS--
   return token
 }
 
+
+/**
+ * Create Zoom meeting via Zoom API
+ *
+ * @returns Zoom API response
+ */
 async function createZoomMeeting () {
-  if (AVAILABLE_ZOOM_ACCOUNT_NUMBERS.length > 0) {
+  // only proceed if there are Zoom accounts available for use
+  if (AVAILABLE_ZOOM_ACCOUNTS > 0) {
     const accessToken = await generateZoomJWTBearerAccessToken()
 
     // POST request details in Zoom API docs:
@@ -44,6 +62,15 @@ async function createZoomMeeting () {
   }
 }
 
+
+/**
+ * Generate Zoom meeting link
+ * 
+ * This method generates Zoom API JWT access token and uses it to
+ * create a Zoom meeting and gets the meeting link. 
+ * 
+ * @returns The 'joining' url for the Zoom meeting
+ */
 async function generateZoomMeetingLink () {
   try {
     const meetingObject = await createZoomMeeting()
