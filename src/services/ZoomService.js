@@ -4,10 +4,9 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 // get & parse all Zoom account credentials in an in-memory array
-const ALL_ZOOM_ACCOUNTS = _.split(config['ZOOM_ACCOUNTS'], ',')
+const ALL_ZOOM_ACCOUNTS = _.split(config.ZOOM_ACCOUNTS, ',')
 // this is the number of Zoom accounts left to use. This number gets reduced after each usage
 let AVAILABLE_ZOOM_ACCOUNTS = ALL_ZOOM_ACCOUNTS.length
-
 
 /**
  * Generate a Zoom JWT bearer access token
@@ -35,7 +34,6 @@ async function generateZoomJWTBearerAccessToken () {
   return token
 }
 
-
 /**
  * Create Zoom meeting via Zoom API
  *
@@ -62,13 +60,12 @@ async function createZoomMeeting () {
   }
 }
 
-
 /**
  * Generate Zoom meeting link
- * 
+ *
  * This method generates Zoom API JWT access token and uses it to
- * create a Zoom meeting and gets the meeting link. 
- * 
+ * create a Zoom meeting and gets the meeting link.
+ *
  * @returns The 'joining' url for the Zoom meeting
  */
 async function generateZoomMeetingLink () {
