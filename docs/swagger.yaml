@@ -1427,65 +1427,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
-  /taas/user-meeting-settings/{userId}:
-    get:
-      tags:
-        - UserMeetingSettings
-      description: |
-        Get the User's Meeting Settings.
-
-        **Authorization** This endpoint could be called by: "hasManagePermission" users, M2M tokens with scopes "read:taas-userMeetingsSettings" or "all:taas-userMeetingsSettings". Also any user can call this endpoint to get setting for themselves
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: userId
-          description: The userId
-          required: true
-          schema:
-            type: uuid
-
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserMeetingSettings"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-
-
+ 
   /resourceBookings:
     post:
       tags:
@@ -3156,6 +3098,119 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /taas/user-meeting-settings/{userId}:
+    get:
+      tags:
+        - UserMeetingSettings
+      description: |
+        Get the User's Meeting Settings.
+
+        **Authorization** This endpoint could be called by: "hasManagePermission" users, M2M tokens with scopes "read:taas-userMeetingsSettings" or "all:taas-userMeetingsSettings". Also any user can call this endpoint to get setting for themselves
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          description: The userId
+          required: true
+          schema:
+            type: uuid
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserMeetingSettings"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /taas/user-meeting-settings/{userId}/calendars/{calendarId}:
+    delete:
+      tags:
+        - UserMeetingSettings
+      description: |
+        Delete a calendar from the User's Meeting Settings' nylasCalendars array.
+
+        This endpoint deletes a connected calendar in Nylas by deleting it from the nylasCalendars array inside UserMeetingSettings object.
+        Note, this does not delete the calendar in Nylas backend server - intentionally, it only deletes from UserMeetingSettings array.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          description: The UUID of the User whose calendar should be deleted
+          required: true
+          schema:
+            type: uuid
+        - in: path
+          name: calendarId
+          description: The id of the calendar to delete. This id comes from Nylas backend server
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+ 
   /taas-teams/{id}/invites:
     get:
       tags:
