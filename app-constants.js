@@ -75,7 +75,8 @@ const Interviews = {
     RequestedForReschedule: 'Requested for reschedule',
     Rescheduled: 'Rescheduled',
     Completed: 'Completed',
-    Cancelled: 'Cancelled'
+    Cancelled: 'Cancelled',
+    Expired: 'Expired'
   },
   // key: template name in x.ai, value: duration
   XaiTemplate: {

@@ -99,7 +99,11 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
       },
       booking: {
         additional_guests_hidden: true,
-        opening_hours: [].concat(interview.availableTime)
+        opening_hours: [].concat(interview.availableTime),
+        // uncomment when custom notifications are implemented
+        // confirmation_emails_to_guests: false,
+        // confirmation_emails_to_host: false,
+        name_field_hidden: true
       },
       calendar_ids: {
         [calendar.account_id]: {
@@ -113,7 +117,8 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
         title: eventTitle // becomes the title of the Edit availability modal, unless overridden through UI
       },
       expire_after: {
-        date: interview.expireTimestamp.unix()
+        date: interview.expireTimestamp.unix(),
+        uses: 1 // only allow one booking
       },
       timezone: interview.timezone
     },

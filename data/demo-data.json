@@ -1007,6 +1007,32 @@
                     "deletedAt": null
                 },
                 {
+                    "id": "505db942-79fe-4b6f-974c-b359e1b61967",
+                    "jobCandidateId": "a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
+                    "nylasPageId": "4aae1d32-1d35-4320-be74-82a73bf032fa",
+                    "availableTime": [
+                        {
+                            "start": "09:00",
+                            "end": "17:00",
+                            "days": ["M", "W"]
+                        }
+                    ],
+                    "nylasCalendarId": "785735",
+                    "timezone": "Europe/London",
+                    "hostUserId": "f3e3a400-44e9-445a-96b4-adff39b0344d",
+                    "nylasPageSlug": "tc-taas-interview-505db942-79fe-4b6f-974c-b359e1b61967",
+                    "duration": null,
+                    "round": 2,
+                    "startTimestamp": null,
+                    "endTimestamp": null,
+                    "status": "Scheduling",
+                    "createdBy": "57646ff9-1cd3-4d3c-88ba-eb09a395366c",
+                    "updatedBy": null,
+                    "createdAt": "2021-05-09T21:21:22.428Z",
+                    "updatedAt": "2021-05-09T21:21:22.428Z",
+                    "deletedAt": null
+                },
+                {
                     "id": "9efd72c3-1dc7-4ce2-9869-8cca81d0adeb",
                     "jobCandidateId": "a4ea7bcf-5b99-4381-b99c-a9bd05d83a36",
                     "nylasPageId": "001d31e8-6e6b-458b-be1c-85349187c7d3",

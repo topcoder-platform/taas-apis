@@ -224,14 +224,13 @@ async function handleConnectCalendarCallback (reqQuery) {
       await processCreate(userMeetingSettings)
     } else { // or just update calendar details in the exisiting object
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
-      
+
       // clone Nylas calendar array and
       // if array item's index doesn't match with calendar index saved in Nylas backend, make it non-primary
       // but if it matches, update the calendar with newer details (which makes it primary too)
-      let updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
-        if (index !== calendarIndexInUserMeetingSettings)
-          return { ...item, isPrimary: false }
-        
+      const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
+        if (index !== calendarIndexInUserMeetingSettings) { return { ...item, isPrimary: false } }
+
         return { ...item, ...calendarDetails }
       })
 
@@ -286,7 +285,7 @@ async function deleteUserCalendar (currentUser, reqParams) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     } else {
       let deletingPrimaryCalendar
-      
+
       // filter all calenders except the one to be deleted and
       // check if deleting calendar is primary
       const remainingCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
