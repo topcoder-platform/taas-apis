@@ -282,7 +282,7 @@ async function deleteUserCalendar (currentUser, reqParams) {
         (calendarItem) => calendarItem.id === reqParams.calendarId
       ) === -1
     ) {
-      throw new Error('Calendar not found in UserMeetingSettings record.')
+      throw new errors.NotFoundError('Calendar not found in UserMeetingSettings record.')
     } else {
       let deletingPrimaryCalendar
 
