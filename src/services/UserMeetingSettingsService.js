@@ -251,10 +251,10 @@ async function handleConnectCalendarCallback (reqQuery) {
       result = {
         redirectTo: `${redirectTo}&calendarConnected=false&error=${errorReason}`
       }
-    }
-
-    result = {
-      redirectTo: `${redirectTo}&calendarConnected=true`
+    } else {
+      result = {
+        redirectTo: `${redirectTo}&calendarConnected=true`
+      }
     }
   }
 
