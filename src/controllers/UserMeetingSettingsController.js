@@ -22,8 +22,8 @@ async function getUserMeetingSettingsByUserId (req, res) {
  * @param res the response
  */
 async function handleConnectCalendarCallback (req, res) {
-  const result = await service.handleConnectCalendarCallback(req.query)
-  res.redirect(result.redirectTo)
+  const redirectUrl = await service.handleConnectCalendarCallback(req.query)
+  res.redirect(redirectUrl)
 }
 
 /**

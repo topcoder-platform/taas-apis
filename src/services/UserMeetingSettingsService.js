@@ -157,6 +157,8 @@ createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
 /**
  * Handle connect calendar callback
  *
+ * @param {*} reqQuery containing state, code &/or error
+ * @returns The url that the user should be redirected to
  */
 async function handleConnectCalendarCallback (reqQuery) {
   // verifying jwt token for request query param - 'state'
@@ -166,13 +168,12 @@ async function handleConnectCalendarCallback (reqQuery) {
   const { userId, redirectTo } = verifyQueryStateJwt
 
   let errorReason = reqQuery.error
-  let result
+  let urlToRedirect
 
   // if Nylas sent error when connecting calendar
   if (errorReason) {
-    return {
-      redirectTo: `${redirectTo}&calendarConnected=false&error=${errorReason}`
-    }
+    urlToRedirect = `${redirectTo}&calendarConnected=false&error=${errorReason}`
+    return urlToRedirect
   }
 
   try {
@@ -181,17 +182,20 @@ async function handleConnectCalendarCallback (reqQuery) {
 
     // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
     if (!accessToken || !accountId) {
-      throw new Error('Error during getting access token for the calendar.')
+      throw new errors.BadRequestError('Error during getting access token for the calendar.')
     }
 
     // getting user's all existing calendars
     const calendars = await NylasService.getExistingCalendars(accessToken)
 
     if (!Array.isArray(calendars) || calendars.length < 1) {
-      throw new Error('Error getting calendar data for the user.')
+      throw new errors.BadRequestError('Error getting calendar data for the user.')
     }
 
     const primaryCalendar = calendars.find(c => c.is_primary)
+    if (!primaryCalendar) {
+      throw new errors.NotFoundError('Could not find any primary calendar in Nylas backend server.')
+    }
 
     const calendarDetails = {
       accessToken,
@@ -247,18 +251,14 @@ async function handleConnectCalendarCallback (reqQuery) {
   } catch (err) {
     errorReason = encodeURIComponent(err.message)
   } finally {
+    urlToRedirect = `${redirectTo}&calendarConnected=true`
+
     if (errorReason) {
-      result = {
-        redirectTo: `${redirectTo}&calendarConnected=false&error=${errorReason}`
-      }
-    } else {
-      result = {
-        redirectTo: `${redirectTo}&calendarConnected=true`
-      }
+      urlToRedirect = `${redirectTo}&calendarConnected=false&error=${errorReason}`
     }
   }
 
-  return result
+  return urlToRedirect
 }
 
 handleConnectCalendarCallback.schema = Joi.object().keys({
