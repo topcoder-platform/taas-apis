@@ -283,7 +283,7 @@ async function deleteUserCalendar (currentUser, reqParams) {
         (calendarItem) => calendarItem.id === reqParams.calendarId
       ) === -1
     ) {
-      throw new Error('Calendar not found in UserMeetingSettings record.')
+      throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     } else {
       let deletingPrimaryCalendar
       
@@ -318,7 +318,10 @@ async function deleteUserCalendar (currentUser, reqParams) {
 
 deleteUserCalendar.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  reqParams: Joi.object()
+  reqParams: Joi.object().keys({
+    userId: Joi.string().uuid().required(),
+    calendarId: Joi.string().required()
+  }).required()
 }).required()
 
 module.exports = {
