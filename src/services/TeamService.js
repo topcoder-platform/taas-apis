@@ -1139,7 +1139,7 @@ async function _validateRoleSearchRequests (roleSearchRequestIds) {
       // search from skill list
       if (!roleSearchRequests[roleSearchRequestId].jobDescription) {
         const skills = await getSkillNamesByIds(roleSearchRequest.skills)
-        roleSearchRequests[roleSearchRequestId].jobDescription = skills.join(',')
+        roleSearchRequests[roleSearchRequestId].jobDescription = skills.join(', ')
       }
     }
 
