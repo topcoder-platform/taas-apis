@@ -42,7 +42,7 @@ async function createVirtualCalendarForUser (userId, userEmail, userFullName, ti
   if (_.isEmpty(calendars)) {
     calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
   } else {
-    calendar = calendars.find(c => c.is_primary) || calendars[0]
+    calendar = getPrimaryCalendar(calendars)
   }
   return _.extend(calendar, { accessToken: accessToken })
 }
@@ -162,6 +162,28 @@ async function patchSchedulingPage (pageId, accessToken, changes) {
   return page
 }
 
+/**
+ * Detect calendar which would be used as a primary one
+ *
+ * @param {Array<Object>} calendars list of Nylas calendars
+ * @returns
+ */
+function getPrimaryCalendar (calendars) {
+  const primaryCalendar = _.find(calendars, { is_primary: true, read_only: false })
+
+  if (primaryCalendar) {
+    return primaryCalendar
+  }
+
+  const writableCalendars = _.filter(calendars, { read_only: false })
+
+  if (writableCalendars.length > 0) {
+    return writableCalendars[0]
+  }
+
+  return null
+}
+
 module.exports = {
   createVirtualCalendarForUser,
   createSchedulingPage,
@@ -169,5 +191,6 @@ module.exports = {
   getAvailableTimeFromSchedulingPage,
   getTimezoneFromSchedulingPage,
   getExistingCalendars,
-  getAccessToken
+  getAccessToken,
+  getPrimaryCalendar
 }

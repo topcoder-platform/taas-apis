@@ -192,9 +192,9 @@ async function handleConnectCalendarCallback (reqQuery) {
       throw new errors.BadRequestError('Error getting calendar data for the user.')
     }
 
-    const primaryCalendar = calendars.find(c => c.is_primary)
+    const primaryCalendar = NylasService.getPrimaryCalendar(calendars)
     if (!primaryCalendar) {
-      throw new errors.NotFoundError('Could not find any primary calendar in Nylas backend server.')
+      throw new errors.NotFoundError('Could not find any writable calendar.')
     }
 
     const calendarDetails = {
@@ -225,7 +225,6 @@ async function handleConnectCalendarCallback (reqQuery) {
             booking: { opening_hours: [] }
           }
         })
-      await processCreate(userMeetingSettings)
     } else { // or just update calendar details in the exisiting object
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
 

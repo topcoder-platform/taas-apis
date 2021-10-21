@@ -50,8 +50,7 @@ module.exports = {
         defaultAvailableTime: nylasAvailableTimeSchema('defaultAvailableTime'),
         defaultTimezone: {
           field: 'defaultTimezone',
-          type: Sequelize.STRING(255),
-          allowNull: false
+          type: Sequelize.STRING(255)
         },
         nylasCalendars: nylasCalendarsSchema(),
         createdBy: {
