@@ -5,8 +5,28 @@ const config = require('config')
 
 // get & parse all Zoom account credentials in an in-memory array
 const ALL_ZOOM_ACCOUNTS = _.split(config.ZOOM_ACCOUNTS, ',')
-// this is the number of Zoom accounts left to use. This number gets reduced after each usage
-let AVAILABLE_ZOOM_ACCOUNTS = ALL_ZOOM_ACCOUNTS.length
+let currentZoomAccountIndex = -1
+
+/**
+ * Get Zoom account credentials from the list credentials by round robin
+ *
+ * @returns { zoomAccountApiKey: string, zoomAccountApiSecret: string } zoom account credentials
+ */
+function getZoomAccountByRoundRobin () {
+  if (ALL_ZOOM_ACCOUNTS.length === 0) {
+    throw new Error('No Zoom accounts is configured by "ALL_ZOOM_ACCOUNTS" environment variable.')
+  }
+
+  const nextIndex = currentZoomAccountIndex + 1
+  currentZoomAccountIndex = nextIndex >= ALL_ZOOM_ACCOUNTS.length ? 0 : nextIndex
+
+  const [zoomAccountApiKey, zoomAccountApiSecret] = ALL_ZOOM_ACCOUNTS[currentZoomAccountIndex].split(':')
+
+  return {
+    zoomAccountApiKey,
+    zoomAccountApiSecret
+  }
+}
 
 /**
  * Generate a Zoom JWT bearer access token
@@ -14,10 +34,7 @@ let AVAILABLE_ZOOM_ACCOUNTS = ALL_ZOOM_ACCOUNTS.length
  * @returns JWT bearer access token for Zoom API access
  */
 async function generateZoomJWTBearerAccessToken () {
-  // parse the Zoom account API key & secret from the credentials string
-  const zoomAccountCredentials = _.split(ALL_ZOOM_ACCOUNTS[AVAILABLE_ZOOM_ACCOUNTS - 1], ':')
-  const zoomAccountApiKey = zoomAccountCredentials[0]
-  const zoomAccountApiSecret = zoomAccountCredentials[1]
+  const { zoomAccountApiKey, zoomAccountApiSecret } = getZoomAccountByRoundRobin()
 
   const token = jwt.sign(
     {},
@@ -29,8 +46,6 @@ async function generateZoomJWTBearerAccessToken () {
     }
   )
 
-  // reduce number of available Zoom accounts after each usage
-  AVAILABLE_ZOOM_ACCOUNTS--
   return token
 }
 
@@ -40,24 +55,19 @@ async function generateZoomJWTBearerAccessToken () {
  * @returns Zoom API response
  */
 async function createZoomMeeting () {
-  // only proceed if there are Zoom accounts available for use
-  if (AVAILABLE_ZOOM_ACCOUNTS > 0) {
-    const accessToken = await generateZoomJWTBearerAccessToken()
+  const accessToken = await generateZoomJWTBearerAccessToken()
 
-    // POST request details in Zoom API docs:
-    // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate
-    const res = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
-      type: 3
-    }, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
+  // POST request details in Zoom API docs:
+  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate
+  const res = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
+    type: 3
+  }, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
 
-    return res.data
-  } else {
-    throw new Error('No Zoom accounts available to use.')
-  }
+  return res.data
 }
 
 /**
