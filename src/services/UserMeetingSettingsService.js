@@ -17,7 +17,13 @@ const {
 const UserMeetingSettings = models.UserMeetingSettings
 const { Interviews: InterviewConstants } = require('../../app-constants')
 const esClient = helper.getESClient()
-const NylasService = require('./NylasService')
+const {
+  getAvailableTimeFromSchedulingPage,
+  getTimezoneFromSchedulingPage,
+  getAccessToken,
+  getExistingCalendars,
+  getPrimaryCalendar
+} = require('./NylasService')
 const jwt = require('jsonwebtoken')
 
 /**
@@ -48,6 +54,10 @@ function stripUnwantedData (userMeetingSettings) {
   return userMeetingSettings
 }
 
+function handleUserMeetingSettingsData (data, shouldNotStripUnwantedData) {
+  return shouldNotStripUnwantedData ? data : stripUnwantedData(data)
+}
+
 /**
  * Get UserMeetingsettings by userid
  * @param {Object} currentUser the user who perform this operation.
@@ -55,7 +65,7 @@ function stripUnwantedData (userMeetingSettings) {
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the userMeetingSetting object
  */
-async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb) {
+async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb, shouldNotStripUnwantedData) {
   // check permission
   await ensureUserIsPermitted(currentUser, userId)
   if (!fromDb) {
@@ -68,7 +78,7 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb) {
       // extract interviews from ES object
       const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source', [])
       if (userMeetingSettings) {
-        return stripUnwantedData(userMeetingSettings)
+        return handleUserMeetingSettingsData(userMeetingSettings, shouldNotStripUnwantedData)
       }
       throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
     } catch (err) {
@@ -88,12 +98,13 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb) {
     throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
   }
 
-  return stripUnwantedData(userMeetingSettings.dataValues)
+  return handleUserMeetingSettingsData(userMeetingSettings, shouldNotStripUnwantedData)
 }
 getUserMeetingSettingsByUserId.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   userId: Joi.string().uuid().required(),
-  fromDb: Joi.boolean()
+  fromDb: Joi.boolean(),
+  shouldNotStripUnwantedData: Joi.boolean()
 }).required()
 
 // TODO document
@@ -102,10 +113,11 @@ async function createUserMeetingSettingsIfNotExisting (currentUser, userId, cale
   await ensureUserIsPermitted(currentUser, userId)
 
   let userMeetingSettings = await UserMeetingSettings.findById(userId, false)
+
   const payload = {
     id: userId,
-    defaultAvailableTime: await NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
-    defaultTimezone: await NylasService.getTimezoneFromSchedulingPage(schedulingPage),
+    defaultAvailableTime: await getAvailableTimeFromSchedulingPage(schedulingPage),
+    defaultTimezone: await getTimezoneFromSchedulingPage(schedulingPage),
     createdBy: await helper.getUserId(currentUser.userId),
     nylasCalendars: [].concat({
       accessToken: calendar.accessToken,
@@ -115,6 +127,7 @@ async function createUserMeetingSettingsIfNotExisting (currentUser, userId, cale
       isPrimary: calendar.is_primary
     })
   }
+
   if (_.isNil(userMeetingSettings)) {
     userMeetingSettings = await UserMeetingSettings.create(payload, { transaction: transaction })
     await processCreate(userMeetingSettings.toJSON())
@@ -178,21 +191,19 @@ async function handleConnectCalendarCallback (reqQuery) {
 
   try {
     // getting user's accessToken from Nylas using 'code' found in request query
-    const { accessToken, accountId, provider } = await NylasService.getAccessToken(reqQuery.code)
-
+    const { accessToken, accountId, provider } = await getAccessToken(reqQuery.code)
     // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
     if (!accessToken || !accountId) {
       throw new errors.BadRequestError('Error during getting access token for the calendar.')
     }
 
     // getting user's all existing calendars
-    const calendars = await NylasService.getExistingCalendars(accessToken)
-
+    const calendars = await getExistingCalendars(accessToken)
     if (!Array.isArray(calendars) || calendars.length < 1) {
       throw new errors.BadRequestError('Error getting calendar data for the user.')
     }
 
-    const primaryCalendar = NylasService.getPrimaryCalendar(calendars)
+    const primaryCalendar = getPrimaryCalendar(calendars)
     if (!primaryCalendar) {
       throw new errors.NotFoundError('Could not find any writable calendar.')
     }
@@ -215,6 +226,9 @@ async function handleConnectCalendarCallback (reqQuery) {
 
     // reuse this method to create UserMeetingSettings object
     if (_.isNil(userMeetingSettings)) {
+      // method 'createUserMeetingSettingsIfNotExisting' expects keys in Nylas backend
+      // API format, so extend calendarDetails object with 'is_primary' key
+      _.extend(calendarDetails, { is_primary: calendarDetails.isPrimary })
       userMeetingSettings = await createUserMeetingSettingsIfNotExisting(
         currentUser,
         userId,
@@ -272,7 +286,7 @@ async function deleteUserCalendar (currentUser, reqParams) {
   await ensureUserIsPermitted(currentUser, reqParams.userId)
 
   try {
-    const userMeetingSettings = await getUserMeetingSettingsByUserId(currentUser, reqParams.userId)
+    const userMeetingSettings = await getUserMeetingSettingsByUserId(currentUser, reqParams.userId, false, true)
 
     // error if no calendar found with the given id in request param
     if (
