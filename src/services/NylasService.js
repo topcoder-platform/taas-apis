@@ -103,7 +103,6 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
         // uncomment when custom notifications are implemented
         // confirmation_emails_to_guests: false,
         // confirmation_emails_to_host: false,
-        name_field_hidden: true
       },
       calendar_ids: {
         [calendar.account_id]: {
