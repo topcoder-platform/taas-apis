@@ -168,7 +168,7 @@ async function patchSchedulingPage (pageId, accessToken, changes) {
  * @param {Array<Object>} calendars list of Nylas calendars
  * @returns
  */
-function getPrimaryCalendar (calendars) {
+async function getPrimaryCalendar (calendars) {
   const primaryCalendar = _.find(calendars, { is_primary: true, read_only: false })
 
   if (primaryCalendar) {
