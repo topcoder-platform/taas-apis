@@ -38,13 +38,26 @@ async function ensureUserIsPermitted (currentUser, userMeetingSettingsUserId) {
   }
 }
 
+/**
+ * Strips unwanted data from the userMeetingSettings object
+ *
+ * Specifically, it removes any calendars with property 'isDeleted' set to true &
+ * it removes the properties 'accessToken' & 'accountId' from the calendars
+ *
+ * @param {object} userMeetingSettings
+ * @returns userMeetingSettings with modified data
+ */
 function stripUnwantedData (userMeetingSettings) {
   if (userMeetingSettings.nylasCalendars) {
-    userMeetingSettings.nylasCalendars.forEach(function (c, i, a) {
-      c = _.omit(c, ['accessToken', 'accountId'])
-      a[i] = c
+    const availableCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
+      if (!item.isDeleted) {
+        return _.omit(item, ['accessToken', 'accountId'])
+      }
     })
+
+    userMeetingSettings.nylasCalendars = availableCalendars
   }
+
   return userMeetingSettings
 }
 
@@ -123,7 +136,8 @@ async function createUserMeetingSettingsIfNotExisting (currentUser, userId, cale
       accountId: calendar.accountId,
       accountProvider: calendar.accountProvider || 'nylas', // TODO 🤔 I don't know what to put here, hardcoding for now
       id: calendar.id,
-      isPrimary: calendar.is_primary
+      isPrimary: calendar.is_primary,
+      isDeleted: false
     })
   }
 
@@ -212,7 +226,8 @@ async function handleConnectCalendarCallback (reqQuery) {
       accountId,
       accountProvider: provider,
       id: primaryCalendar.id,
-      isPrimary: true
+      isPrimary: true,
+      isDeleted: false
     }
 
     const currentUserDetails = await helper.getUserDetailsByUserUUID(userId)
@@ -241,9 +256,9 @@ async function handleConnectCalendarCallback (reqQuery) {
     } else { // or just update calendar details in the exisiting object
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
 
-      // clone Nylas calendar array and
-      // if array item's index doesn't match with calendar index saved in Nylas backend, make it non-primary
-      // but if it matches, update the calendar with newer details (which makes it primary too)
+      // map Nylas calendar array and
+      // if current item's index doesn't match with calendar index saved in UserMeetingSettings, make it non-primary
+      // but if it matches, update the calendar with newer details (which also makes it primary & marks isDeleted = false)
       const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
         if (index !== calendarIndexInUserMeetingSettings) { return { ...item, isPrimary: false } }
 
@@ -287,35 +302,32 @@ async function deleteUserCalendar (currentUser, reqParams) {
   try {
     const userMeetingSettings = await getUserMeetingSettingsByUserId(currentUser, reqParams.userId, false, { shouldNotStripUnwantedData: true })
 
+    const calendarToDelete = _.find(userMeetingSettings.nylasCalendars, (item) => item.id === reqParams.calendarId)
     // error if no calendar found with the given id in request param
-    if (
-      _.findIndex(
-        userMeetingSettings.nylasCalendars,
-        (calendarItem) => calendarItem.id === reqParams.calendarId
-      ) === -1
-    ) {
+    if (!calendarToDelete) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     } else {
-      let deletingPrimaryCalendar
+      let newPrimaryCalendarSet = false
+      // map all calenders and check if deleting calendar is primary
+      const updatedCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
+        if (item.id === reqParams.calendarId) {
+          return { ...item, isPrimary: false, isDeleted: true }
+        } else {
+          // check if deleting primary calendar in this endpoint call & if another calendar is not already set as primary,
+          // if not, check the current iterating calendar is not already deleted
+          // then make the current iterating calendar as primary & set newPrimaryCalendarSet = true
+          if (calendarToDelete.isPrimary && !newPrimaryCalendarSet && !item.isDeleted) {
+            newPrimaryCalendarSet = true
+            return { ...item, isPrimary: true }
+          }
 
-      // filter all calenders except the one to be deleted and
-      // check if deleting calendar is primary
-      const remainingCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
-        if (item.id === reqParams.calendarId && item.isPrimary) {
-          deletingPrimaryCalendar = true
+          return item
         }
-
-        return item.id !== reqParams.calendarId
       })
-
-      // if deleting primary calendar, make the first remaining calendar as primary
-      if (remainingCalendars.length > 0 && deletingPrimaryCalendar) {
-        _.set(remainingCalendars[0], 'isPrimary', true)
-      }
 
       const updatePayload = {
         ...userMeetingSettings,
-        nylasCalendars: remainingCalendars
+        nylasCalendars: updatedCalendars
       }
 
       const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
