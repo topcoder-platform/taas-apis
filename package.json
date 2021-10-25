@@ -66,7 +66,7 @@
     "prompt-confirm": "^2.0.4",
     "rewire": "^5.0.0",
     "sequelize": "^6.3.5",
-    "stripe": "^8.168.0",
+    "stripe": "^8.178.0",
     "superagent": "^6.1.0",
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js#v2.6",
     "util": "^0.12.3",
