@@ -287,6 +287,8 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
         const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
         const currentUserFullname = `${firstName} ${lastName}`
         calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.timezone)
+        // make the new calendar primary
+        calendar.isPrimary = true
       }
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
@@ -305,7 +307,16 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // status handling will be implemented in another challenge it seems, setting the default value
       interview.status = InterviewConstants.Status.Scheduling
 
-      await createUserMeetingSettingsIfNotExisting(currentUser, interview.hostUserId, calendar, schedulingPage, t)
+      await createUserMeetingSettingsIfNotExisting(
+        currentUser,
+        {
+          id: interview.hostUserId,
+          nylasCalendars: [calendar],
+          defaultAvailableTime: interview.availableTime,
+          defaultTimezone: interview.timezone
+        },
+        t
+      )
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()

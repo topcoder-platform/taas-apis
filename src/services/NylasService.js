@@ -21,8 +21,6 @@ async function createVirtualCalendar (calendarName, hostTimezone, accessToken) {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
-  }).catch(err => {
-    console.log(err)
   })
   return res.data
 }
@@ -36,15 +34,27 @@ async function createVirtualCalendar (calendarName, hostTimezone, accessToken) {
  */
 async function createVirtualCalendarForUser (userId, userEmail, userFullName, timezone) {
   const code = await authenticateAccount(userId, userEmail)
-  const { accessToken } = await getAccessToken(code)
+  const { accessToken, provider } = await getAccessToken(code)
   const calendars = await getExistingCalendars(accessToken)
   let calendar
   if (_.isEmpty(calendars)) {
     calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
   } else {
-    calendar = getPrimaryCalendar(calendars)
+    calendar = await getPrimaryCalendar(calendars)
   }
-  return _.extend(calendar, { accessToken: accessToken })
+
+  if (!calendar) {
+    throw new Error('Could not obtain a virtual calendar.')
+  }
+
+  return {
+    id: calendar.id,
+    accountId: calendar.account_id,
+    accessToken,
+    accountProvider: provider,
+    isDeleted: false,
+    isPrimary: calendar.is_primary
+  }
 }
 
 async function getExistingCalendars (accessToken) {
@@ -105,7 +115,7 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
         // confirmation_emails_to_host: false,
       },
       calendar_ids: {
-        [calendar.account_id]: {
+        [calendar.accountId]: {
           availability: [calendar.id],
           booking: calendar.id
         }

@@ -119,64 +119,59 @@ getUserMeetingSettingsByUserId.schema = Joi.object().keys({
   })
 }).required()
 
-// TODO document
-async function createUserMeetingSettingsIfNotExisting (currentUser, userId, calendar, schedulingPage, transaction) {
+/**
+ * Create UserMeetingSettings if it doesn't exist
+ *
+ * @param {Object} currentUser current user object
+ * @param {Object} data UserMeetingSettings record data
+ * @param {Object} transaction transaction
+ * @returns {Object} existent or created UserMeetingSettings record
+ */
+async function createUserMeetingSettingsIfNotExisting (currentUser, data, transaction) {
   // check permission
-  await ensureUserIsPermitted(currentUser, userId)
+  await ensureUserIsPermitted(currentUser, data.id)
 
-  let userMeetingSettings = await UserMeetingSettings.findById(userId, false)
-
-  const payload = {
-    id: userId,
-    defaultAvailableTime: await NylasService.getAvailableTimeFromSchedulingPage(schedulingPage),
-    defaultTimezone: await NylasService.getTimezoneFromSchedulingPage(schedulingPage),
-    createdBy: await helper.getUserId(currentUser.userId),
-    nylasCalendars: [].concat({
-      accessToken: calendar.accessToken,
-      accountId: calendar.accountId,
-      accountProvider: calendar.accountProvider || 'nylas', // TODO 🤔 I don't know what to put here, hardcoding for now
-      id: calendar.id,
-      isPrimary: calendar.is_primary,
-      isDeleted: false
-    })
-  }
+  let userMeetingSettings = await UserMeetingSettings.findById(data.id, false)
 
   if (_.isNil(userMeetingSettings)) {
-    userMeetingSettings = await UserMeetingSettings.create(payload, { transaction: transaction })
+    data.createdBy = await helper.getUserId(currentUser.userId)
+
+    userMeetingSettings = await UserMeetingSettings.create(data, { transaction: transaction })
     await processCreate(userMeetingSettings.toJSON())
   }
-  // else {
-  //   userMeetingSettings = await userMeetingSettings.update(payload, { transaction: transaction })
-  //   await processUpdate(userMeetingSettings.toJSON())
-  // }
+
   return userMeetingSettings
 }
 createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  userId: Joi.string().uuid().required(),
-  calendar: Joi.object().required(),
-  schedulingPage:
-    Joi.object().keys({
-      config: Joi.object().keys({
-        timezone: Joi.string().required(),
-        booking: Joi.object().keys({
-          opening_hours: Joi.array().items(
-            Joi.object({
-              days: Joi.array().items(Joi.string().valid(
-                InterviewConstants.Nylas.Days.Monday,
-                InterviewConstants.Nylas.Days.Tuesday,
-                InterviewConstants.Nylas.Days.Wednesday,
-                InterviewConstants.Nylas.Days.Thursday,
-                InterviewConstants.Nylas.Days.Friday,
-                InterviewConstants.Nylas.Days.Saturday,
-                InterviewConstants.Nylas.Days.Sunday)).required(),
-              end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
-              start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
-            }).required()
-          ).required()
-        }).required().unknown(true)
-      }).required().unknown(true)
-    }).required().unknown(true),
+  data: {
+    id: Joi.string().uuid().required(),
+    nylasCalendars: Joi.array().items(
+      Joi.object().keys({
+        id: Joi.string().required(),
+        accountId: Joi.string().required(),
+        accessToken: Joi.string().required(),
+        accountProvider: Joi.string().required(),
+        isDeleted: Joi.bool().required(),
+        isPrimary: Joi.bool().required()
+      }).required()
+    ).required(),
+    defaultAvailableTime: Joi.array().items(
+      Joi.object({
+        days: Joi.array().items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      }).required()
+    ).required(),
+    defaultTimezone: Joi.string()
+  },
   transaction: Joi.object()
 })
 
@@ -230,29 +225,24 @@ async function handleConnectCalendarCallback (reqQuery) {
       isDeleted: false
     }
 
-    const currentUserDetails = await helper.getUserDetailsByUserUUID(userId)
-
-    // note currentUserDetails.userId in the following line is the integer userId
-    // not to confuse with user's UUID
-    const currentUser = { userId: currentUserDetails.userId }
+    // as a current user use the user who is connecting the calendar
+    // NOTE, that we cannot use `userId` because it's UUID, while in
+    // `currentUser` we need to have integer user id
+    const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
 
     let userMeetingSettings = await UserMeetingSettings.findById(userId, false)
 
     // reuse this method to create UserMeetingSettings object
     if (_.isNil(userMeetingSettings)) {
-      // method 'createUserMeetingSettingsIfNotExisting' expects keys in Nylas backend
-      // API format, so extend calendarDetails object with 'is_primary' key
-      _.extend(calendarDetails, { is_primary: calendarDetails.isPrimary })
       userMeetingSettings = await createUserMeetingSettingsIfNotExisting(
         currentUser,
-        userId,
-        calendarDetails,
         {
-          config: {
-            timezone: primaryCalendar.timezone,
-            booking: { opening_hours: [] }
-          }
-        })
+          id: userId,
+          nylasCalendars: [calendarDetails],
+          defaultAvailableTime: [],
+          defaultTimezone: primaryCalendar.timezone
+        }
+      )
     } else { // or just update calendar details in the exisiting object
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
 
