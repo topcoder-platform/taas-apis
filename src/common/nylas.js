@@ -70,6 +70,12 @@ function nylasCalendarsSchema () {
           type: Sequelize.BOOLEAN,
           defaultValue: false,
           allowNull: false
+        },
+        isDeleted: {
+          field: 'isDeleted',
+          type: Sequelize.BOOLEAN,
+          defaultValue: false,
+          allowNull: false
         }
       }),
       allowNull: false

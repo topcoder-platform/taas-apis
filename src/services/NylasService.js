@@ -99,7 +99,7 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
       },
       booking: {
         additional_guests_hidden: true,
-        opening_hours: [].concat(interview.availableTime),
+        opening_hours: [].concat(interview.availableTime)
         // uncomment when custom notifications are implemented
         // confirmation_emails_to_guests: false,
         // confirmation_emails_to_host: false,
