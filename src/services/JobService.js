@@ -235,7 +235,9 @@ createJob.schema = Joi.object()
         showInHotList: Joi.boolean().default(false),
         featured: Joi.boolean().default(false),
         hotListExcerpt: Joi.stringAllowEmpty().default(''),
-        jobTag: Joi.jobTag().default('')
+        jobTag: Joi.jobTag().default(''),
+        rcrmStatus: Joi.jobRcrmStatus().default('Open'),
+        rcrmReason: Joi.stringAllowEmpty().allow(null).default(null)
       })
       .required(),
     onTeamCreating: Joi.boolean().default(false)
@@ -335,7 +337,9 @@ partiallyUpdateJob.schema = Joi.object()
         showInHotList: Joi.boolean(),
         featured: Joi.boolean(),
         hotListExcerpt: Joi.stringAllowEmpty(),
-        jobTag: Joi.jobTag()
+        jobTag: Joi.jobTag(),
+        rcrmStatus: Joi.jobRcrmStatus(),
+        rcrmReason: Joi.stringAllowEmpty().allow(null)
       })
       .required()
   })
@@ -379,7 +383,9 @@ fullyUpdateJob.schema = Joi.object().keys({
     showInHotList: Joi.boolean().default(false),
     featured: Joi.boolean().default(false),
     hotListExcerpt: Joi.stringAllowEmpty().default(''),
-    jobTag: Joi.jobTag().default('')
+    jobTag: Joi.jobTag().default(''),
+    rcrmStatus: Joi.jobRcrmStatus().default(null),
+    rcrmReason: Joi.stringAllowEmpty().allow(null).default(null)
   }).required()
 }).required()
 
@@ -481,10 +487,12 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       'minSalary',
       'maxSalary',
       'jobLocation',
-      'specialJob'
+      'specialJob',
+      'featured',
+      'rcrmStatus'
     ]), (value, key) => {
       let must
-      if (key === 'description' || key === 'title') {
+      if (key === 'description' || key === 'title' || key === 'rcrmStatus') {
         must = {
           match: {
             [key]: {
@@ -532,7 +540,22 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
             }
           }
         } else {
-          return true
+          must = {
+            bool: {
+              must: [
+                {
+                  term: {
+                    featured: value
+                  }
+                },
+                {
+                  term: {
+                    showInHotList: value
+                  }
+                }
+              ]
+            }
+          }
         }
       } else {
         must = {
@@ -601,7 +624,9 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     'resourceType',
     'rateType',
     'workload',
-    'status'
+    'status',
+    'featured',
+    'rcrmStatus'
   ]), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
@@ -674,6 +699,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       ]
     })
   }
+  if (criteria.specialJob === false) {
+    filter[Op.and].push({ featured: false })
+    filter[Op.and].push({ showInHotList: false })
+  }
   const jobs = await Job.findAll({
     where: filter,
     offset: ((page - 1) * perPage),
@@ -720,7 +749,9 @@ searchJobs.schema = Joi.object().keys({
     minSalary: Joi.number().integer(),
     maxSalary: Joi.number().integer(),
     jobLocation: Joi.string(),
-    specialJob: Joi.boolean()
+    specialJob: Joi.boolean(),
+    featured: Joi.boolean(),
+    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed')
   }).required(),
   options: Joi.object()
 }).required()

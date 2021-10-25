@@ -164,6 +164,18 @@ module.exports = (sequelize) => {
         allowNull: true,
         defaultValue: ''
       },
+      rcrmStatus: {
+        field: 'rcrm_status',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      rcrmReason: {
+        field: 'rcrm_reason',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
       createdBy: {
         field: 'created_by',
         type: Sequelize.UUID,

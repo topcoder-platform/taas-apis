@@ -1136,7 +1136,13 @@ async function _validateRoleSearchRequests (roleSearchRequestIds) {
     }
     if (!roleSearchRequest.jobDescription) {
       roleSearchRequests[roleSearchRequestId].jobDescription = role.description
+      // search from skill list
+      if (!roleSearchRequests[roleSearchRequestId].jobDescription) {
+        const skills = await getSkillNamesByIds(roleSearchRequest.skills)
+        roleSearchRequests[roleSearchRequestId].jobDescription = skills.join(', ')
+      }
     }
+
     roleSearchRequests[roleSearchRequestId].resourceType = role.name
   }))
   return roleSearchRequests
