@@ -73,11 +73,32 @@ async function sendInterviewInvitationNotifications (interview) {
  * @param {*} interview the interview
  * @returns
  */
-async function sendInterviewScheduledNotifications (interview) {
+async function sendInterviewScheduledNotifications (payload) {
+  const interview = payload.value
+  const interviewOldValue = payload.options.oldValue
+
+  if (interview.status === interviewOldValue.status) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: 'interview status is not changed'
+    })
+    return
+  }
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
+
   logger.debug({
     component: 'InterviewEventHandler',
     context: 'sendInterviewScheduledNotifications',
-    message: `send to interview ${interview.id}`
+    message: `sending for interview ${interview.id}`
   })
 
   try {
@@ -287,10 +308,7 @@ async function processRequest (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  const interview = payload.value
-  if (interview.status === Constants.Interviews.Status.Scheduled || interview.status === Constants.Interviews.Status.Rescheduled) {
-    await sendInterviewScheduledNotifications(payload.value)
-  }
+  await sendInterviewScheduledNotifications(payload)
   await checkOverlapping(payload)
 }
 

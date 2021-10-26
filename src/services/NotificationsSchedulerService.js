@@ -660,9 +660,10 @@ async function sendInterviewScheduleReminderNotifications () {
  * @param {*} entity interview entity
  */
 async function updateInterviewStatus (entity) {
+  const interviewOldValue = await Interview.findById(entity.id)
   await Interview.update({ status: entity.status }, { where: { id: entity.id } })
   await processUpdateInterview(entity)
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity)
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interviewOldValue.toJSON() })
 }
 
 // Send notifications to customer and candidate this interview has expired
