@@ -183,7 +183,13 @@ createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
  */
 async function handleConnectCalendarCallback (reqQuery) {
   // verifying jwt token for request query param - 'state'
-  const verifyQueryStateJwt = await jwt.verify(reqQuery.state, 'secret')
+  const verifyQueryStateJwt = await jwt.verify(reqQuery.state, config.NYLAS_CONNECT_CALENDAR_JWT_SECRET, (err, decoded) => {
+    if (err) {
+      throw new errors.UnauthorizedError('Could not verify JWT token.')
+    }
+
+    return decoded
+  })
 
   // note userId is actually the UUID in the following line. not to confuse with other 'userId'
   const { userId, redirectTo } = verifyQueryStateJwt
@@ -202,7 +208,7 @@ async function handleConnectCalendarCallback (reqQuery) {
     const { accessToken, accountId, provider } = await NylasService.getAccessToken(reqQuery.code)
     // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
     if (!accessToken || !accountId) {
-      throw new errors.BadRequestError('Error during getting access token for the calendar.')
+      throw new errors.BadRequestError('Error getting access token for the calendar.')
     }
 
     // getting user's all existing calendars
