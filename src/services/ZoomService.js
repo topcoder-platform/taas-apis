@@ -76,7 +76,7 @@ async function createZoomMeeting () {
  * This method generates Zoom API JWT access token and uses it to
  * create a Zoom meeting and gets the meeting link.
  *
- * @returns The 'joining' url for the Zoom meeting
+ * @returns The meeting urls for the Zoom meeting
  */
 async function generateZoomMeetingLink () {
   try {
@@ -86,7 +86,7 @@ async function generateZoomMeetingLink () {
     console.log(meetingObject.start_url, 'Zoom meeting link for host')
     console.log(meetingObject.join_url, 'Zoom meeting link for participants')
 
-    return meetingObject.join_url
+    return meetingObject
   } catch (err) {
     console.log(err.message)
     throw err

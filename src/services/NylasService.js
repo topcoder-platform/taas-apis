@@ -101,8 +101,8 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
         additional_guests_hidden: true,
         opening_hours: [].concat(interview.availableTime),
         // uncomment when custom notifications are implemented
-        // confirmation_emails_to_guests: false,
-        // confirmation_emails_to_host: false,
+        confirmation_emails_to_guests: false,
+        confirmation_emails_to_host: false
       },
       calendar_ids: {
         [calendar.account_id]: {
