@@ -43,6 +43,8 @@
       # Get nylas client id and secret from nylas developer page
       NYLAS_CLIENT_ID=
       NYLAS_CLIENT_SECRET=
+      # Configure a secret value to be used in UserMeetingSettingsService in the method 'handleConnectCalendarCallback'
+      NYLAS_CONNECT_CALENDAR_JWT_SECRET=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
