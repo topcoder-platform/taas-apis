@@ -109,8 +109,8 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
       },
       booking: {
         additional_guests_hidden: true,
-        opening_hours: [].concat(interview.availableTime)
-        // uncomment when custom notifications are implemented
+        opening_hours: [].concat(interview.availableTime),
+        // don't send confirmation emails using Nylas, as we are sending custom emails from TaaS
         confirmation_emails_to_guests: false,
         confirmation_emails_to_host: false
       },
