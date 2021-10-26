@@ -294,7 +294,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
       const zoomMeetingLink = await generateZoomMeetingLink()
-      const eventLocation = `Zoom link: ${zoomMeetingLink}`
+      const eventLocation = `Zoom link: ${zoomMeetingLink.join_url}`
       const eventTitle = `Interview for job: ${job.title}`
       // create scheduling page on nylas
       const schedulingPage = await createSchedulingPage(interview, calendar, eventLocation, eventTitle)

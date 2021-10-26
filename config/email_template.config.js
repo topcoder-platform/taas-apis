@@ -106,6 +106,20 @@ module.exports = {
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     },
+    'taas.notification.interview-link-for-host': {
+      subject: 'You\'re meeting on {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-link-for-guest': {
+      subject: 'Candidate confirmed meeting on {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.NOTIFICATION_MEMBER_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID
+    },
     'taas.notification.interview-expired-host': {
       subject: 'Your interview is expired',
       body: '',
