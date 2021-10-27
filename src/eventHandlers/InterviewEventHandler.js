@@ -104,7 +104,7 @@ async function sendInterviewScheduledNotifications (payload) {
   try {
     const template = 'taas.notification.interview-link-for-host'
 
-    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a'
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a Z'
 
     const interviewEntity = await Interview.findOne({
       where: {
