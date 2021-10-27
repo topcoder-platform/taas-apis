@@ -17,24 +17,24 @@ const localLogger = {
 }
 
 const templateFileMap = {
-  [config.NOTIFICATION_CLIENT_VIEWED_PROFILE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidate-was-viewed-by-client-email-template.html', 'utf8')),
-  [config.NOTIFICATION_REVIEW_CANDIDATES_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/candidates-are-available-for-review-email-template.html', 'utf8')),
-  [config.NOTIFICATION_CUSTOMER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/customer-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_COMING_UP_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/members-interview-coming-up-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEW_COMPLETE_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-completed-email-template.html', 'utf8')),
-  [config.NOTIFICATION_POST_INTERVIEW_ACTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/post-interview-action-reminder-email-template.html', 'utf8')),
-  [config.NOTIFICATION_UPCOMING_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/upcoming-resource-booking-expiration-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-team-created-email-template.html', 'utf8')),
-  [config.NOTIFICATION_NEW_JOB_ADDED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/new-job-added-to-existing-project-email-template.html', 'utf8')),
-  [config.NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interviews-overlapping-email-template.html', 'utf8')),
-  [config.NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/job-candidate-selected-email-template.html', 'utf8')),
-  [config.NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/resource-placed-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-schedule-reminder-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/members-interview-expired-email-template.html', 'utf8')),
-  [config.NOTIFICATION_CUSTOMER_INTERVIEW_EXPIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/customer-interview-expired-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-invitation-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-for-host-email-template.html', 'utf8')),
-  [config.NOTIFICATION_MEMBER_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/interview-for-guest-email-template.html', 'utf8'))
+  [config.TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-candidate-resume-viewed.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_CANDIDATES_AVAILABLE_FOR_REVIEW_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.candidates-available-for-review.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-coming-up-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-coming-up-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_AWAITS_RESOLUTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-awaits-resolution.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_POST_INTERVIEW_ACTION_REQUIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.post-interview-action-required.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.resource-booking-expiration.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.team-created.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_JOB_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-created.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interviews-overlapping.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-candidate-selected.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.resource-booking-placed.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-schedule-reminder.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-expired-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-expired-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-invitation.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-guest.html', 'utf8'))
 }
 
 /**
