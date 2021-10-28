@@ -14,6 +14,7 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const {
+  processRequestInterview,
   processUpdateInterview,
   processBulkUpdateInterviews
 } = require('../esProcessors/InterviewProcessor')
@@ -323,23 +324,14 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()
-
+      await processRequestInterview(entity)
       // update jobCandidate.status to Interview
-      await models.JobCandidate.update(
+      const [, affectedRows] = await models.JobCandidate.update(
         { status: 'interview' },
         { where: { id: created.jobCandidateId }, returning: true, transaction: t }
       )
-      const updatedJobCandidateWithInterviews = await models.JobCandidate.findById(
-        created.jobCandidateId,
-        { model: models.Interview, as: 'interviews' }
-      )
-      const updatedJobCandidateWithInterviewsEntity = updatedJobCandidateWithInterviews.toJSON()
-      jobCandidateEntity = _.omit(updatedJobCandidateWithInterviewsEntity, ['interviews'])
-      // Adding newly created interview to the ES index here
-      // Don't index interview separately using `await processRequestInterview(entity)`
-      // to avoid "version_conflict_engine_exception" error
-      updatedJobCandidateWithInterviewsEntity.interviews.push(entity)
-      await jobCandidateProcessUpdate(updatedJobCandidateWithInterviewsEntity)
+      jobCandidateEntity = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
+      await jobCandidateProcessUpdate(jobCandidateEntity)
     })
   } catch (err) {
     if (entity) {
