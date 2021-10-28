@@ -270,7 +270,7 @@ ngrok http 3000
 
 in https://dashboard.nylas.com/applications/{id} create nylas webhook url with created/updated/deleted event trigger
 ```
-https://{generatedId}.ngrok.io/api/v5/taas/nylas-webhooks
+https://{generatedId}.ngrok.io/api/v5/taas-teams/nylas-webhooks
 ```
 
 

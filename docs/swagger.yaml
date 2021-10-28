@@ -1439,7 +1439,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
- 
+
   /resourceBookings:
     post:
       tags:
@@ -3110,7 +3110,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /taas/user-meeting-settings/{userId}:
+  /taas-teams/user-meeting-settings/{userId}:
     get:
       tags:
         - UserMeetingSettings
@@ -3165,7 +3165,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /taas/user-meeting-settings/{userId}/calendars/{calendarId}:
+  /taas-teams/user-meeting-settings/{userId}/calendars/{calendarId}:
     delete:
       tags:
         - UserMeetingSettings
@@ -3222,7 +3222,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
- 
+
   /taas-teams/{id}/invites:
     get:
       tags:

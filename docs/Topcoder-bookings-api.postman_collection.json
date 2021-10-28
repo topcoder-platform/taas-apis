@@ -19797,7 +19797,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -19844,7 +19844,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}?fromDb=true",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}?fromDb=true",
 									"host": [
 										"{{URL}}"
 									],
@@ -19889,7 +19889,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{$guid}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{$guid}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -19928,7 +19928,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -19967,7 +19967,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -20009,7 +20009,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -20051,7 +20051,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -20093,7 +20093,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -20135,7 +20135,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/invalid_userid/calendars/{{idOfCalendarSavedInNylas}}",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/invalid_userid/calendars/{{idOfCalendarSavedInNylas}}",
 									"host": [
 										"{{URL}}"
 									],
@@ -20177,7 +20177,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/invalid_calendar_id",
+									"raw": "{{URL}}/taas-teams/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/invalid_calendar_id",
 									"host": [
 										"{{URL}}"
 									],
