@@ -58,7 +58,13 @@ const Scopes = {
   CREATE_ROLE: 'create:taas-roles',
   UPDATE_ROLE: 'update:taas-roles',
   DELETE_ROLE: 'delete:taas-roles',
-  ALL_ROLE: 'all:taas-roles'
+  ALL_ROLE: 'all:taas-roles',
+  // userMeetingSettings
+  READ_USER_MEETING_SETTINGS: 'read:taas-userMeetingsSettings',
+  CREATE_USER_MEETING_SETTINGS: 'create:taas-userMeetingsSettings',
+  UPDATE_USER_MEETING_SETTINGS: 'update:taas-userMeetingsSettings',
+  ALL_USER_MEETING_SETTINGS: 'all:taas-userMeetingsSettings'
+
 }
 
 // Interview related constants
@@ -69,14 +75,27 @@ const Interviews = {
     RequestedForReschedule: 'Requested for reschedule',
     Rescheduled: 'Rescheduled',
     Completed: 'Completed',
-    Cancelled: 'Cancelled'
+    Cancelled: 'Cancelled',
+    Expired: 'Expired'
   },
   // key: template name in x.ai, value: duration
   XaiTemplate: {
     'interview-30': 30,
     'interview-60': 60
   },
-  MaxAllowedCount: 3
+  MaxAllowedCount: 3,
+  Nylas: {
+    Days: {
+      Monday: 'M',
+      Tuesday: 'T',
+      Wednesday: 'W',
+      Thursday: 'R',
+      Friday: 'F',
+      Saturday: 'S',
+      Sunday: 'U'
+    },
+    StartEndRegex: /^[0-9]{2}:[0-9]{2}$/
+  }
 }
 
 const ChallengeStatus = {
@@ -166,6 +185,10 @@ const JobCandidateStatus = {
   INTERVIEW: 'interview'
 }
 
+const SearchUsers = {
+  SEARCH_USERS_PAGE_SIZE: 5
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -181,5 +204,6 @@ module.exports = {
   WeeklySurveySwitch,
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
-  JobCandidateStatus
+  JobCandidateStatus,
+  SearchUsers
 }

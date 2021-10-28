@@ -82,6 +82,8 @@ module.exports = {
     ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
     // the role index
     ES_INDEX_ROLE: process.env.ES_INDEX_ROLE || 'role',
+    // the userMeetingSettings index
+    ES_INDEX_USER_MEETING_SETTINGS: process.env.ES_INDEX_USER_MEETING_SETTINGS || 'user_meeting_settings',
 
     // the max bulk size in MB for ES indexing
     MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
@@ -176,12 +178,13 @@ module.exports = {
   REPORT_ISSUE_SENDGRID_TEMPLATE_ID: process.env.REPORT_ISSUE_SENDGRID_TEMPLATE_ID,
   // SendGrid email template ID for requesting extension
   REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID: process.env.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID,
-  // SendGrid email template ID for interview invitation
-  INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
-  // The sender (aka `from`) email for invitation.
-  INTERVIEW_INVITATION_SENDER_EMAIL: process.env.INTERVIEW_INVITATION_SENDER_EMAIL || 'talent@topcoder.com',
+
+  // Duration that gets added to current time when an interview is created in order to calculate expireTimestamp
+  INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  // the URL where TaaS App Earn is hosted
+  TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
   // environment variables for Payment Service
   ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
   TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
@@ -254,8 +257,42 @@ module.exports = {
   },
   // the sender email
   NOTIFICATION_SENDER_EMAIL: process.env.NOTIFICATION_SENDER_EMAIL || 'noreply@topcoder.com',
-  // the email notification sendgrid template id
-  NOTIFICATION_SENDGRID_TEMPLATE_ID: process.env.NOTIFICATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidate was viewed by client
+  TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of candidates are available for review
+  TAAS_NOTIFICATION_CANDIDATES_AVAILABLE_FOR_REVIEW_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_CANDIDATES_AVAILABLE_FOR_REVIEW_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for customer
+  TAAS_NOTIFICATION_INTERVIEW_COMING_UP_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview coming up for member
+  TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview completed
+  TAAS_NOTIFICATION_INTERVIEW_AWAITS_RESOLUTION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_AWAITS_RESOLUTION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of post interview action reminder
+  TAAS_NOTIFICATION_POST_INTERVIEW_ACTION_REQUIRED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_POST_INTERVIEW_ACTION_REQUIRED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of upcoming resource booking expiration
+  TAAS_NOTIFICATION_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new team created
+  TAAS_NOTIFICATION_TEAM_CREATED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_TEAM_CREATED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of new job added to existing project
+  TAAS_NOTIFICATION_JOB_CREATED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_JOB_CREATED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of resource placed
+  TAAS_NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interviews overlapping
+  TAAS_NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of job candidate selected
+  TAAS_NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview schedule reminder for job candidate
+  TAAS_NOTIFICATION_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview expired for customer
+  TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview expired for member
+  TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of host
+  TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of guest
+  TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of job candidate invited
+  TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews
@@ -264,6 +301,10 @@ module.exports = {
   // frequency of cron checking for interview completed
   // when changing this to frequency other than 5 mins, please change the minutesRange in sendInterviewCompletedEmails correspondingly
   CRON_INTERVIEW_COMPLETED: process.env.CRON_INTERVIEW_COMPLETED || '*/5 * * * *',
+  // frequency of checking expired interview
+  CRON_INTERVIEW_EXPIRED: process.env.CRON_INTERVIEW_EXPIRED || '*/5 * * * *',
+  // frequency of checking interview schedule status which need remind job candidate to select time
+  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '00 00 13 * * 0-6',
   // frequency of cron checking for post interview actions
   CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for upcoming resource bookings
@@ -276,6 +317,10 @@ module.exports = {
   INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
   // The interview completed past time for fetching interviews
   INTERVIEW_COMPLETED_PAST_TIME: process.env.INTERVIEW_COMPLETED_PAST_TIME || 'PT4H',
+  // Reminder after days if Job Candidate hasn't selected time
+  INTERVIEW_REMINDER_DAY_AFTER: process.env.INTERVIEW_REMINDER_DAY_AFTER || 'P1D',
+  // Reminder frequency if Job Candidate hasn't selected time, unit: day
+  INTERVIEW_REMINDER_FREQUENCY: parseInt(process.env.INTERVIEW_REMINDER_FREQUENCY) || 1,
   // The time before resource booking expiry when we should start sending notifications
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The match window for fetching post interview actions
@@ -284,5 +329,14 @@ module.exports = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   CURRENCY: process.env.CURRENCY || 'usd',
   // RCRM base URL
-  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io'
+  RCRM_APP_URL: process.env.RCRM_APP_URL || 'https://app.recruitcrm.io',
+
+  // Nylas Client id
+  NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
+  NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
+  // We don't have to keep it secret, we use this JWT token just to compress data, not to secure it
+  NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
+
+  // Zoom JWT credentials
+  ZOOM_ACCOUNTS: process.env.ZOOM_ACCOUNTS
 }

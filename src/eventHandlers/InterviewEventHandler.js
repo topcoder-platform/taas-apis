@@ -4,37 +4,169 @@
 
 const { Op } = require('sequelize')
 const _ = require('lodash')
+const moment = require('moment')
 const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
 const helper = require('../common/helper')
-const teamService = require('../services/TeamService')
 const Constants = require('../../app-constants')
+const notificationsSchedulerService = require('../services/NotificationsSchedulerService')
+const Interview = models.Interview
+const { generateZoomMeetingLink } = require('../services/ZoomService')
+/**
+ * Send interview invitaion notifications
+ * @param {*} interview the requested interview
+ * @returns
+ */
+async function sendInterviewInvitationNotifications (interview) {
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewInvitationNotifications',
+    message: `send to interview ${interview.id}`
+  })
+
+  try {
+    const template = 'taas.notification.interview-invitation'
+
+    // const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
+    // const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+
+    // send host email
+    const data = await notificationsSchedulerService.getDataForInterview(interview)
+    if (!data) { return }
+
+    if (!_.isEmpty(data.guestEmail)) {
+      // send guest emails
+      await notificationsSchedulerService.sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          ...data,
+          subject: `${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`,
+          nylasPageSlug: interview.nylasPageSlug
+        }
+      })
+    } else {
+      logger.error({
+        component: 'InterviewEventHandler',
+        context: 'sendInterviewInvitationNotifications',
+        message: `Interview id: ${interview.id} guest emails not present`
+      })
+    }
+  } catch (e) {
+    logger.error({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewInvitationNotifications',
+      message: `Send email to interview ${interview.id}: ${e}`
+    })
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewInvitationNotifications',
+    message: `Sent notifications for interview ${interview.id}`
+  })
+}
 
 /**
- * Once we request Interview for a JobCandidate, the invitation emails to be sent out.
- *
- * @param {Object} payload the event payload
- * @returns {undefined}
+ * Send interview scheduled notifications
+ * @param {*} interview the interview
+ * @returns
  */
-async function sendInvitationEmail (payload) {
+async function sendInterviewScheduledNotifications (payload) {
   const interview = payload.value
-  // get customer details via job candidate user
-  const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
-  const job = await jobCandidate.getJob()
-  teamService.sendEmail({}, {
-    template: 'interview-invitation',
-    cc: [interview.hostEmail, ...interview.guestEmails],
-    data: {
-      interview_id: interview.id,
-      interview_round: interview.round,
-      interviewee_name: interview.guestNames[0],
-      interviewer_name: interview.hostName,
-      xai_template: '/' + interview.templateUrl,
-      additional_interviewers_name: (interview.guestNames.slice(1)).join(','),
-      interview_length: interview.duration,
-      job_name: job.title
+  const interviewOldValue = payload.options.oldValue
+
+  if (interview.status === interviewOldValue.status) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: 'interview status is not changed'
+    })
+    return
+  }
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewScheduledNotifications',
+    message: `sending for interview ${interview.id}`
+  })
+
+  try {
+    const template = 'taas.notification.interview-link-for-host'
+
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a Z'
+
+    const interviewEntity = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { id: interview.id }
+        ]
+      }
+    })
+    // send host email
+    const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
+    if (!data) { return }
+
+    const links = await generateZoomMeetingLink()
+    await notificationsSchedulerService.sendNotification({}, {
+      template,
+      recipients: [{ email: data.hostEmail }],
+      data: {
+        host: data.hostFullName,
+        guest: data.guestFullName,
+        jobTitle: data.jobTitle,
+        zoomLink: links.start_url,
+        start: moment(interview.startTimestamp).format(TIME_FORMAT),
+        end: moment(interview.endTimestamp).format(TIME_FORMAT),
+        timezone: interviewEntity.timezone
+      }
+    })
+
+    if (!_.isEmpty(data.guestEmail)) {
+      const template = 'taas.notification.interview-link-for-guest'
+      // send guest emails
+      await notificationsSchedulerService.sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          host: data.hostFullName,
+          guest: data.guestFullName,
+          jobTitle: data.jobTitle,
+          zoomLink: links.join_url,
+          start: moment(interview.startTimestamp).format(TIME_FORMAT),
+          end: moment(interview.endTimestamp).format(TIME_FORMAT),
+          timezone: interviewEntity.timezone
+        }
+      })
+    } else {
+      logger.error({
+        component: 'InterviewEventHandler',
+        context: 'sendInterviewScheduledNotifications',
+        message: `Interview id: ${interview.id} guest emails not present`
+      })
     }
+  } catch (e) {
+    logger.error({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: `Send email to interview ${interview.id}: ${e}`
+    })
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewScheduledNotifications',
+    message: `Sent notifications for interview ${interview.id}`
   })
 }
 
@@ -108,11 +240,7 @@ async function checkOverlapping (payload) {
         recipients: (template.recipients || []).map(email => ({ email })),
         data: {
           subject: template.subject,
-          interviews,
-          notificationType: {
-            overlappingInterview: true
-          },
-          description: 'Overlapping Job Candidate Interviews'
+          interviews
         },
         sendgridTemplateId: template.sendgridTemplateId,
         version: 'v3'
@@ -169,7 +297,7 @@ async function checkOverlapping (payload) {
  * @returns {undefined}
  */
 async function processRequest (payload) {
-  await sendInvitationEmail(payload)
+  await sendInterviewInvitationNotifications(payload.value)
   await checkOverlapping(payload)
 }
 
@@ -180,6 +308,7 @@ async function processRequest (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
+  await sendInterviewScheduledNotifications(payload)
   await checkOverlapping(payload)
 }
 

@@ -97,11 +97,7 @@ async function sendPlacedNotifications (payload) {
     jobUrl,
     userHandle: user.handle,
     startDate: resourceBooking.startDate,
-    endDate: resourceBooking.endDate,
-    notificationType: {
-      resourceBookingPlaced: true
-    },
-    description: 'Resource Booking is Placed'
+    endDate: resourceBooking.endDate
   }
   data.subject = helper.substituteStringByObject(data.subject, data)
   const emailData = {

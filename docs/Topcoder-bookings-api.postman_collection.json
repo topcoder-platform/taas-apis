@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d53e9443-d401-4795-98c6-2d349f7f0313",
+		"_postman_id": "b412d070-e12c-49d6-809a-e71076d0ec95",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3755,58 +3755,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "Create completed interview",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test('Status code is 200', function () {\r",
-											"    pm.response.to.have.status(200)\r",
-											"    if(pm.response.status === \"OK\"){\r",
-											"        const response = pm.response.json()\r",
-											"        pm.environment.set(\"completedInterviewJobCandidateId\", response.jobCandidateId);\r",
-											"        pm.environment.set(\"completedInterviewRound\", response.round);\r",
-											"    }\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token_bookingManager}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Completed\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
-									"host": [
-										"{{URL}}"
-									],
-									"path": [
-										"jobCandidates",
-										"{{jobCandidateId}}",
-										"requestInterview"
-									]
-								}
-							},
-							"response": []
 						}
 					]
 				},
@@ -3823,6 +3771,7 @@
 									"        const response = pm.response.json()\r",
 									"        pm.environment.set(\"interviewId\", response.id);\r",
 									"        pm.environment.set(\"interviewRound\", response.round);\r",
+									"        pm.environment.set(\"userIdWithUserMeetingSettings\", response.hostUserId);\r",
 									"    }\r",
 									"});"
 								],
@@ -3841,7 +3790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"],\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3893,7 +3842,59 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"calendarEventId\": \"dummyId\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"status\": \"Scheduling\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request 3rd interview - should allow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const response = pm.response.json();\r",
+									"    const lastRound = pm.environment.get(\"interviewRound\");\r",
+									"    pm.expect(response.round).to.eq(lastRound + 1);\r",
+									"    pm.environment.set(\"interviewRound\", response.round);\r",
+									"    pm.environment.set(\"interviewId\", response.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3942,7 +3943,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3964,19 +3965,16 @@
 					"response": []
 				},
 				{
-					"name": "Request interview without status - should take default status",
+					"name": "Request interview without duration - should fail",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200)\r",
-									"    if(pm.response.status === \"OK\"){\r",
-									"        const response = pm.response.json()\r",
-									"        pm.environment.set(\"interviewRound\", response.round);\r",
-									"        pm.expect(response.status).to.eq(\"Scheduling\")\r",
-									"    }\r",
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.duration\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3994,7 +3992,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4016,7 +4014,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with invalid status",
+					"name": "Request interview without timezone - should fail Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -4025,7 +4023,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.status\\\" must be one of [Scheduling, Scheduled, Requested for reschedule, Rescheduled, Completed, Cancelled]\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.timezone\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -4043,57 +4041,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"status\": \"xxxx\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"requestInterview"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request interview with guestEmails",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.guestEmails[0]).to.eq(\"attendee1@yopmail.com\")\r",
-									"    pm.expect(response.guestEmails[1]).to.eq(\"attendee2@yopmail.com\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"attendee1@yopmail.com\", \"attendee2@yopmail.com\"]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4115,7 +4063,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with invalid guestEmails",
+					"name": "Request interview without availableTime - should fail",
 					"event": [
 						{
 							"listen": "test",
@@ -4124,7 +4072,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.guestEmails\\\" must be an array\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.availableTime\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -4142,7 +4090,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": \"asddd\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4150,13 +4098,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_2}}",
 								"requestInterview"
 							]
 						}
@@ -4164,7 +4112,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview with invalid guest email",
+					"name": "Request interview with empty availableTime - should fail",
 					"event": [
 						{
 							"listen": "test",
@@ -4173,7 +4121,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.guestEmails[0]\\\" must be a valid email\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.availableTime\\\" must contain at least 1 items\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -4191,7 +4139,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"guestEmails\": [\"asdas\"]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": []\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4199,13 +4147,209 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId}}",
+								"{{jobCandidateId_2}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview without availableTime.start - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.contain(\".start\\\" is required\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_2}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview without availableTime.end - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.contain(\".end\\\" is required\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_2}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with invalid availableTime.days - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.availableTime[0].days[0]\\\" must be one of [M, T, W, R, F, S, U]\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"L\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_2}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with too many availableTime.days - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.contain(\".days\\\" must contain less than or equal to 7 items\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_bookingManager}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\", \"R\", \"F\", \"S\", \"U\", \"F\", \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_2}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_2}}",
 								"requestInterview"
 							]
 						}
@@ -4240,7 +4384,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"round\": 1\r\n}",
+							"raw": "{\r\n    \"round\": 1,\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4289,105 +4433,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\",\r\n    \"startTimestamp\": \"2021-04-17\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"requestInterview"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request interview without templateUrl - should fail",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.templateUrl\\\" is required\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"Scheduling\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/requestInterview",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"requestInterview"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Request interview with invalid templateUrl",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.templateUrl\\\" must be one of [interview-30, interview-60]\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"asdas\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"2021-04-17\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4436,7 +4482,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4485,7 +4531,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4532,7 +4578,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4579,7 +4625,56 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_3}}/requestInterview",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId_3}}",
+								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request interview with m2m (all interview scope) and no hostUserId - should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"interview.hostUserId undefined is required and must be a valid uuid\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_m2m_all_interviews}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4626,7 +4721,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4673,7 +4768,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4722,7 +4817,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4771,7 +4866,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4820,7 +4915,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4869,7 +4964,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4918,7 +5013,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4961,7 +5056,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5010,7 +5105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"interview-30\",\r\n    \"hostEmail\": \"testcustomer@yopmail.com\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5781,7 +5876,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"dummyIdXX\",\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5789,13 +5884,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_4}}/updateInterview/{{interviewRound}}",
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId_3}}/updateInterview/{{interviewRound}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"jobCandidates",
-								"{{jobCandidateId_4}}",
+								"{{jobCandidateId_3}}",
 								"updateInterview",
 								"{{interviewRound}}"
 							]
@@ -5813,7 +5908,8 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data\\\" must have at least 1 key\")\r",
+									"    //since now we have required fields inside the object, their validations take precedence\r",
+									"    pm.expect(response.message).to.be.oneOf([\"\\\"data\\\" must have at least 1 key\", \"\\\"data.duration\\\" is required\"])\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -5881,7 +5977,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"xxx\"\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"xxx\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5931,7 +6027,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"2021-04-01\"\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"2021-04-01\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5948,456 +6044,6 @@
 								"{{jobCandidateId}}",
 								"updateInterview",
 								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview with invalid status",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.status\\\" must be one of [Scheduling, Scheduled, Requested for reschedule, Rescheduled, Completed, Cancelled]\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"xxx\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview with invalid templateUrl",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.templateUrl\\\" must be one of [interview-30, interview-60]\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"templateUrl\": \"xxx\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview status to Scheduled without calendarEventId",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.calendarEventId\\\" is required\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"2030-12-12\",\r\n    \"status\": \"Scheduled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview status to Scheduled without startTimestamp",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.startTimestamp\\\" is required\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Scheduled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview status to Rescheduled without calendarEventId",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.calendarEventId\\\" is required\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"2030-12-12\",\r\n    \"status\": \"Rescheduled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview status to Rescheduled without startTimestamp",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"data.startTimestamp\\\" is required\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Rescheduled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{jobCandidateId}}",
-								"updateInterview",
-								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Completed interview without status",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Only the \\\"status\\\" can be updated for Completed interviews.\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{completedInterviewJobCandidateId}}/updateInterview/{{completedInterviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{completedInterviewJobCandidateId}}",
-								"updateInterview",
-								"{{completedInterviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Completed interview with additional fields",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"Only the \\\"status\\\" can be updated for Completed interviews.\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\",\r\n    \"status\": \"Scheduling\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{completedInterviewJobCandidateId}}/updateInterview/{{completedInterviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{completedInterviewJobCandidateId}}",
-								"updateInterview",
-								"{{completedInterviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Completed interview with only status",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    const response = pm.response.json()\r",
-									"    pm.expect(response.status).to.eq(\"Scheduling\")\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"Scheduling\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/jobCandidates/{{completedInterviewJobCandidateId}}/updateInterview/{{completedInterviewRound}}",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"jobCandidates",
-								"{{completedInterviewJobCandidateId}}",
-								"updateInterview",
-								"{{completedInterviewRound}}"
 							]
 						}
 					},
@@ -6429,7 +6075,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6477,7 +6123,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6525,7 +6171,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6573,7 +6219,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6623,7 +6269,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6673,7 +6319,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6723,7 +6369,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6773,7 +6419,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6823,7 +6469,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"calendarEventId\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6867,7 +6513,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6917,7 +6563,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customMessage\": \"sdsds\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6934,86 +6580,6 @@
 								"{{jobCandidateId}}",
 								"updateInterview",
 								"{{interviewRound}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get interview by xaiId",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200)\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/getInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"getInterview",
-								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get interview by xaiId fromDb",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200)\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/getInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab?fromDb=true",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"getInterview",
-								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
-							],
-							"query": [
-								{
-									"key": "fromDb",
-									"value": "true"
-								}
 							]
 						}
 					},
@@ -7045,7 +6611,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\"\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7060,52 +6626,6 @@
 							"path": [
 								"updateInterview",
 								"{{interviewId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update interview by xaiId",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {\r",
-									"    pm.response.to.have.status(200)\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token_bookingManager}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"xaiId\": \"0edc1751-f4ca-4e8e-908a-95f6560311ab\",\r\n    \"calendarEventId\": \"test\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/updateInterview/0edc1751-f4ca-4e8e-908a-95f6560311ab",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"updateInterview",
-								"0edc1751-f4ca-4e8e-908a-95f6560311ab"
 							]
 						}
 					},
@@ -8137,6 +7657,46 @@
 				},
 				{
 					"name": "Search interviews with invalid token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    const response = pm.response.json()\r",
+									"    pm.expect(response.message).to.eq(\"Invalid Token.\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/interviews",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"interviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search interviews with invalid token Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -20195,6 +19755,441 @@
 										"isbilir"
 									]
 								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User Meeting Settings",
+					"item": [
+						{
+							"name": "Get UserMeetingSettings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"});\r",
+											"\r",
+											"pm.test('nylasCalendars doesn\\'t contain accessToken or accountId', function () {\r",
+											"    const response = pm.response.json()\r",
+											"    _.each(response.nylasCalendars, (calendar) => {\r",
+											"        pm.expect(calendar.accessToken).to.be.undefined\r",
+											"        pm.expect(calendar.accountId).to.be.undefined\r",
+											"    })\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get UserMeetingSettings fromDb",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 200', function () {\r",
+											"    pm.response.to.have.status(200)\r",
+											"});\r",
+											"\r",
+											"pm.test('nylasCalendars doesn\\'t contain accessToken or accountId', function () {\r",
+											"    const response = pm.response.json()\r",
+											"    _.each(response.nylasCalendars, (calendar) => {\r",
+											"        pm.expect(calendar.accessToken).to.be.undefined\r",
+											"        pm.expect(calendar.accountId).to.be.undefined\r",
+											"    })\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}?fromDb=true",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}"
+									],
+									"query": [
+										{
+											"key": "fromDb",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get UserMeetingSettings not found",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 404', function () {\r",
+											"    pm.response.to.have.status(404)\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_bookingManager}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{$guid}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{$guid}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get UserMeetingSettings unauthorized",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 403', function () {\r",
+											"    pm.response.to.have.status(403)\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_connectUser}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {",
+											"    pm.response.to.have.status(204)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_of_usermeeting_settings_user}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}",
+										"calendars",
+										"{{idOfCalendarSavedInNylas}}"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record with m2m delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {",
+											"    pm.response.to.have.status(204)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_m2m_user_meeting_settings_calendar}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}",
+										"calendars",
+										"{{idOfCalendarSavedInNylas}}"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record with \"hasManagePermissionUser\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 204', function () {",
+											"    pm.response.to.have.status(204)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_has_manage_permission_user_meeting_settings_calendar}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}",
+										"calendars",
+										"{{idOfCalendarSavedInNylas}}"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record with invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 401', function () {",
+											"    pm.response.to.have.status(401)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer invalid_token",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/{{idOfCalendarSavedInNylas}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}",
+										"calendars",
+										"{{idOfCalendarSavedInNylas}}"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record with invalid user id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {",
+											"    pm.response.to.have.status(400)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_of_usermeeting_settings_user}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/invalid_userid/calendars/{{idOfCalendarSavedInNylas}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"invalid_userid",
+										"calendars",
+										"{{idOfCalendarSavedInNylas}}"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Calendar from UserMeetingSettings record with invalid calendar id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Status code is 400', function () {",
+											"    pm.response.to.have.status(400)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token_of_usermeeting_settings_user}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/taas/user-meeting-settings/{{userIdWithUserMeetingSettings}}/calendars/invalid_calendar_id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"taas",
+										"user-meeting-settings",
+										"{{userIdWithUserMeetingSettings}}",
+										"calendars",
+										"invalid_calendar_id"
+									]
+								},
+								"description": "Endpoint for deleting a connected calendar from UserMeetingSettings record"
 							},
 							"response": []
 						}

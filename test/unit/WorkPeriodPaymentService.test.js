@@ -32,6 +32,7 @@ describe('workPeriodPayment service test', () => {
     it('create work period success', async () => {
       const stubWorkPeriodFindById = sinon.stub(models.WorkPeriod, 'findOne').callsFake(async () => testData.workPeriodPayment01.workPeriodWithPayments)
       const stubUpdateWorkPeriod = sinon.stub(testData.workPeriodPayment01.workPeriodWithPayments, 'update').callsFake(async () => testData.workPeriodPayment01.workPeriodUpdateResponse)
+      sinon.stub(commonData.ESClient, 'search').callsFake(async () => testData.workPeriodPayment01.workPeriodUpdateESSearchResponse)
       const response = await service.createWorkPeriodPayment(commonData.currentUser, testData.workPeriodPayment01.request)
       expect(stubGetUserId.calledOnce).to.be.true
       expect(stubEnsureWorkPeriodById.calledOnce).to.be.true

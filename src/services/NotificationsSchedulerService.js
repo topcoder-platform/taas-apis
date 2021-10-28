@@ -13,6 +13,7 @@ const ResourceBooking = models.ResourceBooking
 const helper = require('../common/helper')
 const constants = require('../../app-constants')
 const logger = require('../common/logger')
+const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
 
 const localLogger = {
   debug: (message, context) => logger.debug({ component: 'NotificationSchedulerService', context, message }),
@@ -83,25 +84,33 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   job = job || await Job.findById(jobCandidate.jobId)
 
+  const hostUserDetails = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+  const userDetails = await helper.getUserDetailsByUserUUID(jobCandidate.userId)
   const user = await getUserWithId(jobCandidate.userId)
   if (!user) { return null }
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
-  const guestName = _.isEmpty(interview.guestNames) ? '' : interview.guestNames[0]
   const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
   const jobUrl = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}`
+  const applicationUrl = `${config.TAAS_APP_EARN_URL}?status=Active%20Gigs`
 
   return {
     jobTitle: job.title,
-    guestFullName: guestName,
-    hostFullName: interview.hostName,
+    guestFullName: userDetails.firstName + ' ' + userDetails.lastName,
+    guestEmail: userDetails.email,
+    hostEmail: hostUserDetails.email,
+    hostFullName: hostUserDetails.firstName + ' ' + hostUserDetails.lastName,
     candidateName: `${user.firstName} ${user.lastName}`,
     handle: user.handle,
     attendees: interview.guestNames,
     startTime: startTime,
     duration: interview.duration,
+    interviewId: interview.id,
+    interviewRound: interview.round,
     interviewLink,
+    applicationUrl,
     jobUrl
+
   }
 }
 
@@ -174,11 +183,7 @@ async function sendCandidatesAvailableNotifications () {
       recipients: projectTeamRecipients,
       data: {
         teamName: project.name,
-        teamJobs,
-        notificationType: {
-          candidatesAvailableForReview: true
-        },
-        description: 'Candidates are available for review'
+        teamJobs
       }
     })
 
@@ -247,13 +252,7 @@ async function sendInterviewComingUpNotifications () {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
         recipients: [{ email: interview.hostEmail }],
-        data: {
-          ...data,
-          notificationType: {
-            interviewComingUpForHost: true
-          },
-          description: 'Interview Coming Up'
-        }
+        data
       })
 
       sentHostCount++
@@ -266,13 +265,7 @@ async function sendInterviewComingUpNotifications () {
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
         recipients: interview.guestEmails.map((email) => ({ email })),
-        data: {
-          ...data,
-          notificationType: {
-            interviewComingUpForGuest: true
-          },
-          description: 'Interview Coming Up'
-        }
+        data
       })
 
       sentGuestCount++
@@ -346,13 +339,7 @@ async function sendInterviewCompletedNotifications () {
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
       recipients: [{ email: interview.hostEmail }],
-      data: {
-        ...data,
-        notificationType: {
-          interviewCompleted: true
-        },
-        description: 'Interview Completed'
-      }
+      data
     })
 
     sentCount++
@@ -449,11 +436,7 @@ async function sendPostInterviewActionNotifications () {
       data: {
         teamName: project.name,
         numCandidates,
-        teamInterviews,
-        notificationType: {
-          postInterviewCandidateAction: true
-        },
-        description: 'Post Interview Candidate Action Reminder'
+        teamInterviews
       }
     }, webNotifications)
 
@@ -552,11 +535,7 @@ async function sendResourceBookingExpirationNotifications () {
         teamName: project.name,
         numResourceBookings,
         teamResourceBookings,
-        notificationType: {
-          upcomingResourceBookingExpiration: true
-        },
-        teamUrl,
-        description: 'Upcoming Resource Booking Expiration'
+        teamUrl
       }
     }, [webData])
 
@@ -609,11 +588,182 @@ async function sendNotification (currentUser, data, webNotifications = []) {
   })
 }
 
+// Send notifications to job candicate for time selection reminder
+async function sendInterviewScheduleReminderNotifications () {
+  const INTERVIEW_REMINDER_DAY_AFTER = config.get('INTERVIEW_REMINDER_DAY_AFTER')
+  const INTERVIEW_REMINDER_FREQUENCY = config.get('INTERVIEW_REMINDER_FREQUENCY')
+
+  localLogger.debug('[sendInterviewScheduleReminderNotifications]: Looking for due records...')
+  const currentTime = moment.utc()
+  const compareTime = currentTime.add(-INTERVIEW_REMINDER_DAY_AFTER).add(1, 'days').startOf('day')
+
+  const timestampFilter = {
+    [Op.and]: [
+      {
+        [Op.lte]: compareTime
+      }
+    ]
+  }
+
+  const filter = {
+    [Op.and]: [
+      {
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduling
+          ]
+        }
+      },
+      {
+        createdAt: timestampFilter
+      }
+    ]
+  }
+
+  const interviews = await Interview.findAll({
+    where: filter,
+    raw: true
+  })
+
+  const template = 'taas.notification.interview-schedule-reminder'
+
+  let interviewCount = 0
+  for (const interview of interviews) {
+    const start = moment(interview.createdAt)
+    if (currentTime.subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
+      // sendEmail
+      const data = await getDataForInterview(interview)
+      if (!data) { continue }
+
+      if (!_.isEmpty(data.guestEmail)) {
+        // send guest emails
+        sendNotification({}, {
+          template,
+          recipients: [{ email: data.guestEmail }],
+          data: {
+            ...data,
+            subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+          }
+        })
+      } else {
+        localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+      }
+      interviewCount++
+    }
+  }
+
+  localLogger.debug(`[sendInterviewScheduleReminderNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
+}
+
+/**
+ * Update interview status by id and jobCandidateId
+ * @param {*} entity interview entity
+ */
+async function updateInterviewStatus (entity) {
+  const interviewOldValue = await Interview.findById(entity.id)
+  await Interview.update({ status: entity.status }, { where: { id: entity.id } })
+  await processUpdateInterview(entity)
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interviewOldValue.toJSON() })
+}
+
+// Send notifications to customer and candidate this interview has expired
+async function sendInterviewExpiredNotifications () {
+  localLogger.debug('[sendInterviewExpiredNotifications]: Looking for due records...')
+  const currentTime = moment.utc().startOf('minute')
+
+  const timestampFilter = {
+    [Op.and]: [
+      {
+        [Op.lte]: currentTime
+      }
+    ]
+  }
+
+  const filter = {
+    [Op.and]: [
+      {
+        status: {
+          [Op.in]: [
+            constants.Interviews.Status.Scheduling
+          ]
+        }
+      },
+      {
+        expireTimestamp: timestampFilter
+      }
+    ]
+  }
+
+  const interviews = await Interview.findAll({
+    where: filter,
+    raw: true
+  })
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Found ${interviews.length} interviews which are expired.`)
+
+  const templateHost = 'taas.notification.interview-expired-host'
+  const templateGuest = 'taas.notification.interview-expired-guest'
+
+  for (const interview of interviews) {
+    await updateInterviewStatus({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    // send host email
+    const data = await getDataForInterview(interview)
+    if (!data) { continue }
+
+    if (!_.isEmpty(data.hostEmail)) {
+      sendNotification({}, {
+        template: templateHost,
+        recipients: [{ email: data.hostEmail }],
+        data: {
+          ...data,
+          subject: `Candidate Didn't Schedule Interview: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+        }
+      })
+    } else {
+      localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewExpiredNotifications')
+    }
+
+    if (!_.isEmpty(data.guestEmail)) {
+      // send guest emails
+      sendNotification({}, {
+        template: templateGuest,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          ...data,
+          subject: `Interview Invitation Expired: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+        }
+      })
+    } else {
+      localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewExpiredNotifications')
+    }
+  }
+
+  localLogger.debug(`[sendInterviewExpiredNotifications]: Sent notifications for ${interviews.length} interviews which are expired.`)
+}
+
+/**
+ * For preventing app crashing by scheduler function, use this function to wrapper target handler.
+ * @param {*} callback : function handler
+ */
+function errorCatchWrapper (callback, name) {
+  return async () => {
+    try {
+      await callback()
+    } catch (e) {
+      localLogger.error(`${[name]} Service function error: ${e}`)
+    }
+  }
+}
+
 module.exports = {
   sendNotification,
-  sendCandidatesAvailableNotifications,
-  sendInterviewComingUpNotifications,
-  sendInterviewCompletedNotifications,
-  sendPostInterviewActionNotifications,
-  sendResourceBookingExpirationNotifications
+  sendCandidatesAvailableNotifications: errorCatchWrapper(sendCandidatesAvailableNotifications, 'sendCandidatesAvailableNotifications'),
+  sendInterviewComingUpNotifications: errorCatchWrapper(sendInterviewComingUpNotifications, 'sendInterviewComingUpNotifications'),
+  sendInterviewCompletedNotifications: errorCatchWrapper(sendInterviewCompletedNotifications, 'sendInterviewCompletedNotifications'),
+  sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
+  sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
+  updateInterviewStatus,
+  getDataForInterview,
+  sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
+  sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')
 }

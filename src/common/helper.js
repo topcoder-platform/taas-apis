@@ -6,6 +6,7 @@ const fs = require('fs')
 const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
 const Bottleneck = require('bottleneck')
+const URI = require('urijs')
 const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
@@ -21,7 +22,7 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment-timezone')
-const { PaymentStatusRules } = require('../../app-constants')
+const { PaymentStatusRules, SearchUsers } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 
 const localLogger = {
@@ -139,24 +140,26 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
     type: 'nested',
     properties: {
       id: { type: 'keyword' },
-      xaiId: { type: 'keyword' },
+      nylasPageId: { type: 'keyword' },
+      nylasPageSlug: { type: 'keyword' },
+      nylasCalendarId: { type: 'keyword' },
+      timezone: { type: 'keyword' },
+      availableTime: {
+        type: 'nested',
+        properties: {
+          days: { type: 'keyword' },
+          end: { type: 'date', format: 'HH:mm' },
+          start: { type: 'date', format: 'HH:mm' }
+        }
+      },
+      hostUserId: { type: 'keyword' },
+      expireTimestamp: { type: 'date' },
       jobCandidateId: { type: 'keyword' },
-      calendarEventId: { type: 'keyword' },
-      templateUrl: { type: 'keyword' },
-      templateId: { type: 'keyword' },
-      templateType: { type: 'keyword' },
-      title: { type: 'keyword' },
-      locationDetails: { type: 'keyword' },
       duration: { type: 'integer' },
       startTimestamp: { type: 'date' },
       endTimestamp: { type: 'date' },
-      hostName: { type: 'keyword' },
-      hostEmail: { type: 'keyword' },
-      guestNames: { type: 'keyword' },
-      guestEmails: { type: 'keyword' },
       round: { type: 'integer' },
       status: { type: 'keyword' },
-      rescheduleUrl: { type: 'keyword' },
       createdAt: { type: 'date' },
       createdBy: { type: 'keyword' },
       updatedAt: { type: 'date' },
@@ -859,7 +862,6 @@ function getESClient () {
   if (esClients.client) {
     return esClients.client
   }
-
   const host = config.esConfig.HOST
   const cloudId = config.esConfig.ELASTICCLOUD.id
   if (cloudId) {
@@ -1122,6 +1124,86 @@ async function getUserById (userId, enrich) {
   }
 
   return user
+}
+
+/**
+ * Function to get users
+ * @param {String} userId the user UUID
+ * @returns the found user details
+ */
+async function getUserDetailsByUserUUID (userUUID) {
+  const token = await getM2MToken()
+  const res = await request
+    .get(`${config.TC_API}/users/${userUUID}?enrich=true`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'getUserById',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName', 'externalProfiles'])
+
+  if (!_.isUndefined(user.externalProfiles) && !_.isEmpty(user.externalProfiles)) {
+    _.assign(user, { userId: _.toInteger(_.get(user.externalProfiles[0], 'externalId')) })
+  }
+
+  const handleQuery = `handleLower:${user.handle.toLowerCase()}`
+  const userIdQuery = `userId:${user.userId}`
+
+  const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
+  try {
+    const searchResult = await searchUsersByQuery(query)
+    const found = _.find(searchResult, !_.isUndefined(user.handle)
+      ? ['handle', user.handle] : ['userId', user.userId]) || {}
+
+    return found
+  } catch (err) {
+    const error = new Error(err.response.text)
+    error.status = err.status
+    throw error
+  }
+}
+
+/**
+ * Search users by query string.
+ * @param {String} query the query string
+ * @returns {Array} the matched users
+ */
+async function searchUsersByQuery (query) {
+  const token = await getM2MToken()
+  let users = []
+  // there may be multiple pages, search all pages
+  let offset = 0
+  const limit = SearchUsers.SEARCH_USERS_PAGE_SIZE
+  // set initial total to 1 so that at least one search is done,
+  // it will be updated from search result
+  let total = 1
+  while (offset < total) {
+    const res = await request
+      .get(`${
+        config.TOPCODER_MEMBERS_API_V3
+        }/_search?query=${
+        query
+        }&offset=${
+        offset
+        }&limit=${
+        limit
+        }&fields=userId,email,handle,firstName,lastName,photoURL,status`)
+      .set('Authorization', `Bearer ${token}`)
+    if (!_.get(res, 'body.result.success')) {
+      throw new Error(`Failed to search users by query: ${query}`)
+    }
+    const records = _.get(res, 'body.result.content') || []
+    // add users
+    users = users.concat(records)
+
+    total = _.get(res, 'body.result.metadata.totalCount') || 0
+    offset += limit
+  }
+
+  logger.verbose(`Searched users: ${JSON.stringify(users, null, 4)}`)
+  return users
 }
 
 /**
@@ -2154,5 +2236,6 @@ module.exports = {
   getMembersSuggest,
   getEmailTemplatesForKey,
   formatDate,
-  formatDateTimeEDT
+  formatDateTimeEDT,
+  getUserDetailsByUserUUID
 }
