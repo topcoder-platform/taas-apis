@@ -94,7 +94,7 @@ const Interviews = {
       Saturday: 'S',
       Sunday: 'U'
     },
-    StartEndRegex: /^[0-9]{2}:[0-9]{2}$/
+    StartEndRegex: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
   }
 }
 
