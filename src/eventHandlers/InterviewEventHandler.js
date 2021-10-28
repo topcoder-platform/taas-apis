@@ -4,7 +4,7 @@
 
 const { Op } = require('sequelize')
 const _ = require('lodash')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const config = require('config')
 const models = require('../models')
 const logger = require('../common/logger')
@@ -126,8 +126,8 @@ async function sendInterviewScheduledNotifications (payload) {
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
         zoomLink: links.start_url,
-        start: moment(interview.startTimestamp).format(TIME_FORMAT),
-        end: moment(interview.endTimestamp).format(TIME_FORMAT),
+        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
+        end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
         timezone: interviewEntity.timezone
       }
     })
@@ -143,8 +143,8 @@ async function sendInterviewScheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          start: moment(interview.startTimestamp).format(TIME_FORMAT),
-          end: moment(interview.endTimestamp).format(TIME_FORMAT),
+          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
+          end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
           timezone: interviewEntity.timezone
         }
       })
