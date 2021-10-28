@@ -186,10 +186,17 @@ createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
  * @returns The url that the user should be redirected to
  */
 async function handleConnectCalendarCallback (reqQuery) {
+  let errorReason = reqQuery.error
+
   // verifying jwt token for request query param - 'state'
   const verifyQueryStateJwt = await jwt.verify(reqQuery.state, config.NYLAS_CONNECT_CALENDAR_JWT_SECRET, (err, decoded) => {
     if (err) {
-      throw new errors.UnauthorizedError('Could not verify JWT token.')
+      // if we cannot decode state, and there is already some error provided by Nylas, then return that error
+      if (errorReason) {
+        throw new Error(errorReason)
+      } else {
+        throw new errors.UnauthorizedError('Could not verify JWT token.')
+      }
     }
 
     return decoded
@@ -198,7 +205,6 @@ async function handleConnectCalendarCallback (reqQuery) {
   // note userId is actually the UUID in the following line. not to confuse with other 'userId'
   const { userId, redirectTo } = verifyQueryStateJwt
 
-  let errorReason = reqQuery.error
   let urlToRedirect
 
   // if Nylas sent error when connecting calendar
