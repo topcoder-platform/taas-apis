@@ -99,7 +99,7 @@ function getTimezoneFromSchedulingPage (page) {
   return page.config.timezone
 }
 
-async function createSchedulingPage (interview, calendar, eventLocation, eventTitle) {
+async function createSchedulingPage (interview, calendar, options) {
   const res = await axios.post('https://api.schedule.nylas.com/manage/pages', {
     access_tokens: [calendar.accessToken],
     slug: `tc-taas-interview-${interview.id}`,
@@ -122,8 +122,7 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
       },
       event: {
         duration: interview.duration, // default duration.
-        location: eventLocation,
-        title: eventTitle // becomes the title of the Edit availability modal, unless overridden through UI
+        title: options.eventTitle // becomes the title of the Edit availability modal, unless overridden through UI
       },
       expire_after: {
         date: interview.expireTimestamp.unix()

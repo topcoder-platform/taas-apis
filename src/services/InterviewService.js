@@ -292,9 +292,11 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
-      const eventTitle = `Interview for job: ${job.title}`
+      const pageOptions = {
+        eventTitle: `Job Interview for "${job.title}"`
+      }
       // create scheduling page on nylas
-      const schedulingPage = await createSchedulingPage(interview, calendar, eventLocation, eventTitle)
+      const schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
 
       // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
