@@ -339,12 +339,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // Don't index interview separately using `await processRequestInterview(entity)`
       // to avoid "version_conflict_engine_exception" error
       updatedJobCandidateWithInterviewsEntity.interviews.push(entity)
-      try {
-        await jobCandidateProcessUpdate(updatedJobCandidateWithInterviewsEntity)
-      } catch (err) {
-        logger.debug(`requestInterview -> jobCandidateProcessUpdate ERROR: ${JSON.stringify(err)}`)
-        throw err
-      }
+      await jobCandidateProcessUpdate(updatedJobCandidateWithInterviewsEntity)
     })
   } catch (err) {
     if (entity) {
