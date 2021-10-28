@@ -1,4 +1,5 @@
 const config = require('config')
+const { Interviews } = require('../app-constants')
 
 /*
  * Add show_in_hot_list, featured, hot_list_excerpt and job_tag to the Job model.
@@ -15,8 +16,27 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction()
     const interviewsTable = { tableName: 'interviews', schema: config.DB_SCHEMA_NAME }
+    const jobCandidatesTable = { tableName: 'job_candidates', schema: config.DB_SCHEMA_NAME }
     try {
+      // log which Job Candidates in "interview" status would become "open" to be aware
+      const jcWithInterview = await queryInterface.sequelize.query(`SELECT id FROM bookings.job_candidates WHERE status = 'interview';`)
+      const jcIds = jcWithInterview[0].map(jc => jc.id)
+      console.log(`NOTE: Job Candidates in "interview" status which would become "open" again, total: ${jcIds.length}, ids: ${jcIds.join(', ')}`)
 
+      // update all existent Job Candidates which are in the interview process to come back to `open` status
+      await queryInterface.bulkUpdate(jobCandidatesTable,
+        {
+          status: 'open'
+        },
+        {
+          status: 'interview'
+        }
+      );
+
+      // remove all existent interview records as they are not compatible with new workflow
+      await queryInterface.bulkDelete(interviewsTable, {}, { transaction })
+
+      // remove not needed columns from interviews
       await queryInterface.removeColumn(interviewsTable, 'xai_id', { transaction })
       await queryInterface.removeColumn(interviewsTable, 'calendar_event_id', { transaction })
       await queryInterface.removeColumn(interviewsTable, 'template_url', { transaction })
