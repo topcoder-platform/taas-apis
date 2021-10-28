@@ -32,7 +32,7 @@ app.use((...args) => {
   // JSON.stringify(req.body) will remove spaces and newlines, so verification
   // will fail. We must add this middleware to ensure we're computing the correct
   // signature
-  if (req.path === `${config.BASE_PATH}/taas/nylas-webhooks`) {
+  if (req.path === `${config.BASE_PATH}/taas-teams/nylas-webhooks`) {
     req.rawBody = ''
     req.on('data', (chunk) => (req.rawBody += chunk))
     req.on('error', () => res.status(500).send('Error parsing body'))
