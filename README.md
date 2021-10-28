@@ -43,8 +43,6 @@
       # Get nylas client id and secret from nylas developer page
       NYLAS_CLIENT_ID=
       NYLAS_CLIENT_SECRET=
-      # Configure a secret value to be used in UserMeetingSettingsService in the method 'handleConnectCalendarCallback'
-      NYLAS_CONNECT_CALENDAR_JWT_SECRET=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
@@ -57,7 +55,7 @@
       - Values from this file would be automatically used by many `npm` commands.
       - ⚠️ Never commit this file or its copy to the repository!
 
-   1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
+   2. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
 
       ```
       127.0.0.1       dockerhost
@@ -270,13 +268,13 @@ npm run data:import -- --file path/to-file.json
 ### schedule
 ngrok http 3000
 
-in https://dashboard.nylas.com/applications/{id} create nylas webhook url with created/updated/deleted event trigger 
+in https://dashboard.nylas.com/applications/{id} create nylas webhook url with created/updated/deleted event trigger
 ```
 https://{generatedId}.ngrok.io/api/v5/taas/nylas-webhooks
 ```
 
 
-create job, job candidate, and request interview 
+create job, job candidate, and request interview
 
 You will get a invitation demo email in out/Please select your available time-xxxx.html, open it in broswer
 
