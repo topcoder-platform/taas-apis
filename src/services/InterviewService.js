@@ -318,7 +318,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
           t
         )
       } catch (err) {
-        logger.debug(`requestInterview -> createUserMeetingSettingsIfNotExisting ERROR: ${JSON.stringify(err)}`)
+        logger.error(`requestInterview -> createUserMeetingSettingsIfNotExisting: ${JSON.stringify(err)}`)
         throw err
       }
       // create the interview
