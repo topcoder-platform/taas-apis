@@ -32,7 +32,6 @@ const {
   patchSchedulingPage
 } = require('./NylasService')
 const { createUserMeetingSettingsIfNotExisting } = require('./UserMeetingSettingsService')
-const { generateZoomMeetingLink } = require('./ZoomService')
 
 /**
   * Ensures user is permitted for the operation.
@@ -293,8 +292,6 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
-      const zoomMeetingLink = await generateZoomMeetingLink()
-      const eventLocation = `Zoom link: ${zoomMeetingLink.join_url}`
       const eventTitle = `Interview for job: ${job.title}`
       // create scheduling page on nylas
       const schedulingPage = await createSchedulingPage(interview, calendar, eventLocation, eventTitle)
