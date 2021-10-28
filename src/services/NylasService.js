@@ -126,8 +126,7 @@ async function createSchedulingPage (interview, calendar, eventLocation, eventTi
         title: eventTitle // becomes the title of the Edit availability modal, unless overridden through UI
       },
       expire_after: {
-        date: interview.expireTimestamp.unix(),
-        uses: 1 // only allow one booking
+        date: interview.expireTimestamp.unix()
       },
       timezone: interview.timezone
     },
