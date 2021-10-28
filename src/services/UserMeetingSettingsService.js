@@ -10,7 +10,7 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const {
-  processCreate,
+  processCreateOrUpdate,
   processUpdate
 } = require('../esProcessors/UserMeetingSettingsProcessor')
 
@@ -85,7 +85,7 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb, opti
         id: userId
       })
       // extract interviews from ES object
-      const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source', [])
+      const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source')
       if (userMeetingSettings) {
         return handleUserMeetingSettingsData(userMeetingSettings, options.shouldNotStripUnwantedData)
       }
@@ -137,7 +137,11 @@ async function createUserMeetingSettingsIfNotExisting (currentUser, data, transa
     data.createdBy = await helper.getUserId(currentUser.userId)
 
     userMeetingSettings = await UserMeetingSettings.create(data, { transaction: transaction })
-    await processCreate(userMeetingSettings.toJSON())
+    // we call method `createUserMeetingSettingsIfNotExisting` as part of complex logic with transaction
+    // it might happen that some other logic fails, and transaction reverts
+    // but records in ES would stay, and if just try to create it again, it would cause error
+    // so we use a special method which would create if not exist or update if already exists
+    await processCreateOrUpdate(userMeetingSettings.toJSON())
   }
 
   return userMeetingSettings
