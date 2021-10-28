@@ -19,7 +19,7 @@ async function updateJobCandidateViaScript (jobCandidateId, script) {
     index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
     id: jobCandidateId,
     body: { script },
-    refresh: true
+    refresh: 'wait_for'
   })
 }
 
