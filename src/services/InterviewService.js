@@ -305,16 +305,21 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // status handling will be implemented in another challenge it seems, setting the default value
       interview.status = InterviewConstants.Status.Scheduling
 
-      await createUserMeetingSettingsIfNotExisting(
-        currentUser,
-        {
-          id: interview.hostUserId,
-          nylasCalendars: [calendar],
-          defaultAvailableTime: interview.availableTime,
-          defaultTimezone: interview.timezone
-        },
-        t
-      )
+      try {
+        await createUserMeetingSettingsIfNotExisting(
+          currentUser,
+          {
+            id: interview.hostUserId,
+            nylasCalendars: [calendar],
+            defaultAvailableTime: interview.availableTime,
+            defaultTimezone: interview.timezone
+          },
+          t
+        )
+      } catch (err) {
+        logger.debug(`requestInterview -> createUserMeetingSettingsIfNotExisting ERROR: ${JSON.stringify(err)}`)
+        throw err
+      }
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()
