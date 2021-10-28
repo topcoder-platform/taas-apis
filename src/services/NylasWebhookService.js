@@ -113,7 +113,7 @@ const parseInterviewId = (emailText) => {
  * @param {*} event event details
  */
 async function processFormattedEvent (webhookData, event) {
-  localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}`)
+  localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}, data: ${JSON.stringify(webhookData)}, event: ${JSON.stringify(event)}`)
 
   const interviewId = parseInterviewId(event.description) // remove prefix
 
