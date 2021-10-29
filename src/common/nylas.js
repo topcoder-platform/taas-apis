@@ -60,6 +60,15 @@ function nylasCalendarsSchema () {
           type: Sequelize.STRING(5),
           allowNull: false
         },
+        email: {
+          field: 'email',
+          type: Sequelize.STRING,
+          validate: {
+            isEmail: {
+              msg: 'Please provide a valid email address'
+            }
+          }
+        },
         id: {
           field: 'id',
           type: Sequelize.STRING(5),
