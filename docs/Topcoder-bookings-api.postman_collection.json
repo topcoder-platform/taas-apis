@@ -19802,7 +19802,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}"
 									]
@@ -19849,7 +19849,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}"
 									],
@@ -19894,7 +19894,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{$guid}}"
 									]
@@ -19933,7 +19933,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}"
 									]
@@ -19972,7 +19972,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}",
 										"calendars",
@@ -20014,7 +20014,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}",
 										"calendars",
@@ -20056,7 +20056,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}",
 										"calendars",
@@ -20098,7 +20098,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}",
 										"calendars",
@@ -20140,7 +20140,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"invalid_userid",
 										"calendars",
@@ -20182,7 +20182,7 @@
 										"{{URL}}"
 									],
 									"path": [
-										"taas",
+										"taas-teams",
 										"user-meeting-settings",
 										"{{userIdWithUserMeetingSettings}}",
 										"calendars",
