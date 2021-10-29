@@ -52,8 +52,9 @@ async function createVirtualCalendarForUser (userId, userEmail, userFullName, ti
     accountId: calendar.account_id,
     accessToken,
     accountProvider: provider,
-    isDeleted: false,
-    isPrimary: calendar.is_primary
+    email: userEmail,
+    isPrimary: calendar.is_primary,
+    isDeleted: false
   }
 }
 
@@ -87,9 +88,9 @@ async function getAccessToken (code) {
     code
   })
 
-  const { account_id: accountId, access_token: accessToken, provider } = res.data
+  const { account_id: accountId, access_token: accessToken, provider, email_address: email } = res.data
 
-  return { accountId, accessToken, provider }
+  return { accountId, accessToken, provider, email }
 }
 
 function getAvailableTimeFromSchedulingPage (page) {

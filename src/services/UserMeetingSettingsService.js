@@ -49,11 +49,10 @@ async function ensureUserIsPermitted (currentUser, userMeetingSettingsUserId) {
  */
 function stripUnwantedData (userMeetingSettings) {
   if (userMeetingSettings.nylasCalendars) {
-    const availableCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
-      if (!item.isDeleted) {
-        return _.omit(item, ['accessToken', 'accountId'])
-      }
-    })
+    const availableCalendars = _.flatMap(
+      userMeetingSettings.nylasCalendars,
+      (item) => !item.isDeleted ? _.omit(item, ['accessToken', 'accountId', 'isDeleted']) : []
+    )
 
     userMeetingSettings.nylasCalendars = availableCalendars
   }
@@ -215,7 +214,7 @@ async function handleConnectCalendarCallback (reqQuery) {
 
   try {
     // getting user's accessToken from Nylas using 'code' found in request query
-    const { accessToken, accountId, provider } = await NylasService.getAccessToken(reqQuery.code)
+    const { accessToken, accountId, provider, email } = await NylasService.getAccessToken(reqQuery.code)
     // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
     if (!accessToken || !accountId) {
       throw new errors.BadRequestError('Error getting access token for the calendar.')
@@ -233,10 +232,11 @@ async function handleConnectCalendarCallback (reqQuery) {
     }
 
     const calendarDetails = {
-      accessToken,
-      accountId,
-      accountProvider: provider,
       id: primaryCalendar.id,
+      accountId,
+      accessToken,
+      accountProvider: provider,
+      email,
       isPrimary: true,
       isDeleted: false
     }
