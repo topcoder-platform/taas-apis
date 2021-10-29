@@ -321,6 +321,8 @@ module.exports = {
   INTERVIEW_REMINDER_DAY_AFTER: process.env.INTERVIEW_REMINDER_DAY_AFTER || 'P1D',
   // Reminder frequency if Job Candidate hasn't selected time, unit: day
   INTERVIEW_REMINDER_FREQUENCY: parseInt(process.env.INTERVIEW_REMINDER_FREQUENCY) || 1,
+  // How far in the feature we may allow scheduling interview, unit: day
+  INTERVIEW_AVAILABLE_DAYS_IN_FEATURE: parseInt(process.env.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE) || 15,
   // The time before resource booking expiry when we should start sending notifications
   RESOURCE_BOOKING_EXPIRY_TIME: process.env.RESOURCE_BOOKING_EXPIRY_TIME || 'P21D',
   // The match window for fetching post interview actions

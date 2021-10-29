@@ -110,6 +110,7 @@ async function createSchedulingPage (interview, calendar, options) {
       },
       booking: {
         additional_guests_hidden: true,
+        available_days_in_future: config.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE,
         opening_hours: [].concat(interview.availableTime),
         // don't send confirmation emails using Nylas, as we are sending custom emails from TaaS
         confirmation_emails_to_guests: false,
