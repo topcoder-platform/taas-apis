@@ -5,6 +5,7 @@
 const axios = require('axios')
 const config = require('config')
 const _ = require('lodash')
+const { NylasVirtualCalendarProvider } = require('../../app-constants')
 
 /**
  * @param {Object} calendarName the name of the Nylas calendar
@@ -34,27 +35,24 @@ async function createVirtualCalendar (calendarName, hostTimezone, accessToken) {
  */
 async function createVirtualCalendarForUser (userId, userEmail, userFullName, timezone) {
   const code = await authenticateAccount(userId, userEmail)
-  const { accessToken, provider } = await getAccessToken(code)
-  const calendars = await getExistingCalendars(accessToken)
-  let calendar
-  if (_.isEmpty(calendars)) {
-    calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
-  } else {
-    calendar = await getPrimaryCalendar(calendars)
-  }
+  const { accessToken } = await getAccessToken(code)
+  try {
+    const calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
 
-  if (!calendar) {
-    throw new Error('Could not obtain a virtual calendar.')
-  }
-
-  return {
-    id: calendar.id,
-    accountId: calendar.account_id,
-    accessToken,
-    accountProvider: provider,
-    email: userEmail,
-    isPrimary: calendar.is_primary,
-    isDeleted: false
+    return {
+      id: calendar.id,
+      accountId: calendar.account_id,
+      accessToken,
+      // we always use `nylas` as a provider for Virtual Calendars,
+      // because from `getAccessToken` we might get other provider
+      // if user has Google or Microsoft calendar connected because we don't remove them from Nylas
+      accountProvider: NylasVirtualCalendarProvider,
+      email: userEmail,
+      isPrimary: calendar.is_primary,
+      isDeleted: false
+    }
+  } catch (err) {
+    throw new Error(`Could not create a virtual calendar because of error: ${JSON.stringify(err)}`)
   }
 }
 

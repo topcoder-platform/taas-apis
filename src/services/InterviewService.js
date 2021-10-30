@@ -31,7 +31,7 @@ const {
   createVirtualCalendarForUser,
   patchSchedulingPage
 } = require('./NylasService')
-const { createUserMeetingSettingsIfNotExisting } = require('./UserMeetingSettingsService')
+const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
 
 /**
   * Ensures user is permitted for the operation.
@@ -281,13 +281,15 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
   try {
     await sequelize.transaction(async (t) => {
       // get calendar if exists, otherwise create a virtual one for the user
-      calendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
-      if (_.isNil(calendar)) {
+      const existentCalendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
+      if (_.isNil(existentCalendar)) {
         const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
         const currentUserFullname = `${firstName} ${lastName}`
         calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.timezone)
         // make the new calendar primary
         calendar.isPrimary = true
+      } else {
+        calendar = existentCalendar
       }
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
@@ -307,18 +309,20 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       interview.status = InterviewConstants.Status.Scheduling
 
       try {
-        await createUserMeetingSettingsIfNotExisting(
+        await syncUserMeetingsSettings(
           currentUser,
           {
             id: interview.hostUserId,
-            nylasCalendars: [calendar],
+            // when scheduling a new interview we always set/update default available time and timezone
             defaultAvailableTime: interview.availableTime,
-            defaultTimezone: interview.timezone
+            defaultTimezone: interview.timezone,
+            // don't add calendar if we use existent one
+            calendar: !existentCalendar ? calendar : undefined
           },
           t
         )
       } catch (err) {
-        logger.error(`requestInterview -> createUserMeetingSettingsIfNotExisting: ${JSON.stringify(err)}`)
+        logger.debug(`requestInterview -> syncUserMeetingsSettings ERROR: ${JSON.stringify(err)}`)
         throw err
       }
       // create the interview

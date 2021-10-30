@@ -189,6 +189,9 @@ const SearchUsers = {
   SEARCH_USERS_PAGE_SIZE: 5
 }
 
+// provider which we have to enforce for Nylas Virtual Calendars
+const NylasVirtualCalendarProvider = 'nylas'
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -205,5 +208,6 @@ module.exports = {
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
   JobCandidateStatus,
-  SearchUsers
+  SearchUsers,
+  NylasVirtualCalendarProvider
 }

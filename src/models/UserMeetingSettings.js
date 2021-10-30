@@ -9,16 +9,15 @@ module.exports = (sequelize) => {
     /**
      * Get UserMeetingSettings by userId
      * @param {String} userId
-     * @param {Boolean} throwOnError indicates whether it should throw on error or gracefully return null when not found
      * @returns {UserMeetingSettings} the UserMeetingSettings instance
      */
-    static async findById (id, throwOnError = true) {
+    static async findById (id) {
       const userMeetingSettings = await UserMeetingSettings.findOne({
         where: {
           id: id
         }
       })
-      if (!userMeetingSettings && throwOnError === true) {
+      if (!userMeetingSettings) {
         throw new errors.NotFoundError(`id: ${id} "UserMeetingSettings" doesn't exist.`)
       }
       return userMeetingSettings
@@ -30,7 +29,8 @@ module.exports = (sequelize) => {
      * @returns {UserMeetingSettings} the NylasCalendar for the user
      */
     static async getPrimaryNylasCalendarForUser (id) {
-      const calendar = await UserMeetingSettings.findById(id, false)
+      const calendar = await UserMeetingSettings.findById(id)
+        .catch(() => null) // in case records is not found
         .then(ums => {
           // NOTE: ums can bee `null` here
           const calendars = _.get(ums, 'nylasCalendars', [])

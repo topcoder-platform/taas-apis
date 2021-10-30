@@ -102,10 +102,6 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb, opti
   logger.info({ component: 'InterviewService', context: 'getUserMeetingSettingsByUserId', message: 'try to query db for data' })
 
   const userMeetingSettings = await UserMeetingSettings.findById(userId)
-  // throw NotFound error if doesn't exist
-  if (!!userMeetingSettings !== true) {
-    throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
-  }
 
   return handleUserMeetingSettingsData(userMeetingSettings, options.shouldNotStripUnwantedData)
 }
@@ -119,46 +115,96 @@ getUserMeetingSettingsByUserId.schema = Joi.object().keys({
 }).required()
 
 /**
- * Create UserMeetingSettings if it doesn't exist
+ * Create UserMeetingSettings if it doesn't exist for user
+ * or updates existent records if it exists
+ *
+ * This method kind of merge provided data with existent
  *
  * @param {Object} currentUser current user object
- * @param {Object} data UserMeetingSettings record data
+ * @param {Object} data data to sync
+ * @param {Object} data.id UserMeetingSettings id (user UUID)
+ * @param {Object} data.defaultAvailableTime default availability time to set
+ * @param {Object} data.defaultTimezone default timezone to set
+ * @param {Object} data.calendar calendar to add or update
  * @param {Object} transaction transaction
  * @returns {Object} existent or created UserMeetingSettings record
  */
-async function createUserMeetingSettingsIfNotExisting (currentUser, data, transaction) {
+async function syncUserMeetingsSettings (currentUser, data, transaction) {
   // check permission
   await ensureUserIsPermitted(currentUser, data.id)
 
-  let userMeetingSettings = await UserMeetingSettings.findById(data.id, false)
+  let userMeetingSettings = await UserMeetingSettings.findOne({
+    where: {
+      id: data.id
+    }
+  })
 
-  if (_.isNil(userMeetingSettings)) {
-    data.createdBy = await helper.getUserId(currentUser.userId)
+  // if UserMeetingSettings doesn't exist yet, then we crate it for the user
+  if (!userMeetingSettings) {
+    const entity = _.pick(data, ['id', 'defaultAvailableTime', 'defaultTimezone'])
 
-    userMeetingSettings = await UserMeetingSettings.create(data, { transaction: transaction })
-    // we call method `createUserMeetingSettingsIfNotExisting` as part of complex logic with transaction
-    // it might happen that some other logic fails, and transaction reverts
-    // but records in ES would stay, and if just try to create it again, it would cause error
-    // so we use a special method which would create if not exist or update if already exists
+    entity.createdBy = await helper.getUserId(currentUser.userId)
+
+    if (data.calendar) {
+      entity.nylasCalendars = [data.calendar]
+    }
+
+    // set empty array by default if not defined
+    if (!entity.defaultAvailableTime) {
+      entity.defaultAvailableTime = []
+    }
+
+    userMeetingSettings = await UserMeetingSettings.create(entity, { transaction: transaction })
     await processCreateOrUpdate(userMeetingSettings.toJSON())
+
+  // if UserMeetingSettings record already exists for the user we update it
+  } else {
+    const updatePayload = {
+      ...userMeetingSettings.toJSON(),
+      // update these values in UserMeetingSettings if provided
+      ..._.pick(data, ['defaultAvailableTime', 'defaultTimezone'])
+    }
+
+    updatePayload.updatedBy = await helper.getUserId(currentUser.userId)
+
+    // add or update calendar if it was provided
+    if (data.calendar) {
+      const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, { id: data.calendar.id })
+
+      // if calendar is not yet on the list, then add it
+      if (calendarIndexInUserMeetingSettings === -1) {
+        updatePayload.nylasCalendars = [...updatePayload.nylasCalendars, data.calendar]
+      } else {
+        const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
+          // if we are adding primary calendar, then make all other calendars non-primary
+          if (index !== calendarIndexInUserMeetingSettings) {
+            if (data.calendar.isPrimary) {
+              return { ...item, isPrimary: false }
+            }
+
+            // otherwise don't update other calendars
+            return item
+          }
+
+          // update calendar record
+          return { ...item, ...data.calendar }
+        })
+
+        updatePayload.nylasCalendars = updatedNylasCalendarsArray
+      }
+    }
+
+    const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
+    userMeetingSettings = updateUserMeetingSettingsResponse[1][0].dataValues
+    await processUpdate(userMeetingSettings)
   }
 
   return userMeetingSettings
 }
-createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
+syncUserMeetingsSettings.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   data: {
     id: Joi.string().uuid().required(),
-    nylasCalendars: Joi.array().items(
-      Joi.object().keys({
-        id: Joi.string().required(),
-        accountId: Joi.string().required(),
-        accessToken: Joi.string().required(),
-        accountProvider: Joi.string().required(),
-        isDeleted: Joi.bool().required(),
-        isPrimary: Joi.bool().required()
-      }).required()
-    ).required(),
     defaultAvailableTime: Joi.array().items(
       Joi.object({
         days: Joi.array().items(Joi.string().valid(
@@ -171,9 +217,17 @@ createUserMeetingSettingsIfNotExisting.schema = Joi.object().keys({
           InterviewConstants.Nylas.Days.Sunday)).required(),
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
-      }).required()
-    ).required(),
-    defaultTimezone: Joi.string()
+      })
+    ),
+    defaultTimezone: Joi.string(),
+    calendar: Joi.object().keys({
+      id: Joi.string().required(),
+      accountId: Joi.string().required(),
+      accessToken: Joi.string().required(),
+      accountProvider: Joi.string().required(),
+      isDeleted: Joi.bool().required(),
+      isPrimary: Joi.bool().required()
+    })
   },
   transaction: Joi.object()
 })
@@ -231,7 +285,7 @@ async function handleConnectCalendarCallback (reqQuery) {
       throw new errors.NotFoundError('Could not find any writable calendar.')
     }
 
-    const calendarDetails = {
+    const calendar = {
       id: primaryCalendar.id,
       accountId,
       accessToken,
@@ -246,41 +300,14 @@ async function handleConnectCalendarCallback (reqQuery) {
     // `currentUser` we need to have integer user id
     const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
 
-    let userMeetingSettings = await UserMeetingSettings.findById(userId, false)
-
-    // reuse this method to create UserMeetingSettings object
-    if (_.isNil(userMeetingSettings)) {
-      userMeetingSettings = await createUserMeetingSettingsIfNotExisting(
-        currentUser,
-        {
-          id: userId,
-          nylasCalendars: [calendarDetails],
-          defaultAvailableTime: [],
-          defaultTimezone: primaryCalendar.timezone
-        }
-      )
-    } else { // or just update calendar details in the exisiting object
-      const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, (item) => item.id === calendarDetails.id)
-
-      // map Nylas calendar array and
-      // if current item's index doesn't match with calendar index saved in UserMeetingSettings, make it non-primary
-      // but if it matches, update the calendar with newer details (which also makes it primary & marks isDeleted = false)
-      const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
-        if (index !== calendarIndexInUserMeetingSettings) { return { ...item, isPrimary: false } }
-
-        return { ...item, ...calendarDetails }
-      })
-
-      // if calendar doesn't exist in Nylas calendars array then add it in the array
-      const updatePayload = {
-        ...userMeetingSettings,
-        nylasCalendars: calendarIndexInUserMeetingSettings === -1 ? updatedNylasCalendarsArray.concat(calendarDetails) : updatedNylasCalendarsArray
+    await syncUserMeetingsSettings(
+      currentUser,
+      {
+        id: userId,
+        defaultTimezone: primaryCalendar.timezone,
+        calendar
       }
-
-      const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
-      userMeetingSettings = updateUserMeetingSettingsResponse[1][0].dataValues
-      await processUpdate(userMeetingSettings)
-    }
+    )
   } catch (err) {
     errorReason = encodeURIComponent(err.message)
   } finally {
@@ -355,7 +382,7 @@ deleteUserCalendar.schema = Joi.object().keys({
 
 module.exports = {
   getUserMeetingSettingsByUserId,
-  createUserMeetingSettingsIfNotExisting,
+  syncUserMeetingsSettings,
   handleConnectCalendarCallback,
   deleteUserCalendar
 }
