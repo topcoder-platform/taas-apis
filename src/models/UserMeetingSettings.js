@@ -32,11 +32,10 @@ module.exports = (sequelize) => {
     static async getPrimaryNylasCalendarForUser (id) {
       const calendar = await UserMeetingSettings.findById(id, false)
         .then(ums => {
-          const calendars = _.get(ums, 'nylasCalendars')
-          if (_.isEmpty(calendars)) {
-            return null
-          }
-          return calendars.filter(c => c.isPrimary)[0]
+          // NOTE: ums can bee `null` here
+          const calendars = _.get(ums, 'nylasCalendars', [])
+          const notDeletedCalendars = _.reject(calendars, { isDeleted: true })
+          return _.find(notDeletedCalendars, { isPrimary: true })
         })
 
       return calendar
