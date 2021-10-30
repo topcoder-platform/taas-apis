@@ -104,7 +104,7 @@ async function sendInterviewScheduledNotifications (payload) {
   try {
     const template = 'taas.notification.interview-link-for-host'
 
-    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a z'
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a'
 
     const interviewEntity = await Interview.findOne({
       where: {
@@ -126,8 +126,8 @@ async function sendInterviewScheduledNotifications (payload) {
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
         zoomLink: links.start_url,
-        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
-        end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
+        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
+        end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
         timezone: interviewEntity.timezone
       }
     })
@@ -143,8 +143,8 @@ async function sendInterviewScheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
-          end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT),
+          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
+          end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
           timezone: interviewEntity.timezone
         }
       })
