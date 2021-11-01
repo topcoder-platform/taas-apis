@@ -246,9 +246,9 @@ async function handleConnectCalendarCallback (reqQuery) {
     if (err) {
       // if we cannot decode state, and there is already some error provided by Nylas, then return that error
       if (errorReason) {
-        throw new Error(errorReason)
+        throw new Error(`Could not verify JWT token: ${errorReason}`)
       } else {
-        throw new errors.UnauthorizedError('Could not verify JWT token.')
+        throw new errors.UnauthorizedError(`Could not verify JWT token: ${JSON.stringify(err)}`)
       }
     }
 
