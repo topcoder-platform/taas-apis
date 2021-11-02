@@ -219,7 +219,7 @@ async function nylasWebhook (req, res) {
       }
     }
   } catch (e) {
-    localLogger.error(`Process nylas webhook failed with error: ${e}`)
+    localLogger.error(`Process nylas webhook failed with error: ${JSON.stringify(e)}`)
   }
 
   // 200 response tells Nylas your endpoint is online and healthy.
