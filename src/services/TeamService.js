@@ -438,9 +438,9 @@ async function getTeamJob (currentUser, id, jobId) {
       if (candidate.interviews && candidate.interviews.length) {
          _.forEach(candidate.interviews, interview => {
           const hostUserDetails = hostMap[interview.hostUserId]
-          interview.firstName = hostUserDetails.firstName
-          interview.lastName = hostUserDetails.lastName
-          interview.handle = hostUserDetails.handle
+          interview.hostFirstName = hostUserDetails.firstName
+          interview.hostLastName = hostUserDetails.lastName
+          interview.hostHandle = hostUserDetails.handle
         })
       }
     })

@@ -4756,18 +4756,22 @@ components:
           type: string
           format: uuid
           description: "The interview id."
-        firstName:
+        hostFirstName:
           type: string
           example: "nkumar"
           description: "The firstName of the interview host"
-        lastName:
+        hostLastName:
           type: string
           example: "nkumar"
           description: "The lastName of the interview host"
-        handle:
+        hostHandle:
           type: string
           example: "nkumartest"
           description: "The handle of the interview host"
+        hostUserId:
+          type: string
+          example: "00000000-0000-0000-0000-000000000000"
+          description: "The userId of the interview host"
         jobCandidateId:
           type: string
           format: uuid
