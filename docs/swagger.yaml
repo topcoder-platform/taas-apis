@@ -4743,6 +4743,79 @@ components:
           type: string
           format: uuid
           description: "The user who updated the interview last time.(Will get the user info from the token)"
+    CandidateInterview:
+      required:
+        - id
+        - jobCandidateId
+        - round
+        - status
+        - createdAt
+        - createdBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "The interview id."
+        firstName:
+          type: string
+          example: "nkumar"
+          description: "The firstName of the interview host"
+        lastName:
+          type: string
+          example: "nkumar"
+          description: "The lastName of the interview host"
+        handle:
+          type: string
+          example: "nkumartest"
+          description: "The handle of the interview host"
+        jobCandidateId:
+          type: string
+          format: uuid
+          description: "The job candidate id."
+        round:
+          type: integer
+          example: 1
+          description: "The interview round."
+        duration:
+          type: integer
+          example: 30
+          description: "The interview duration (in minutes)."
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "Interview start time."
+        endTimestamp:
+          type: string
+          format: date-time
+          description: "Interview end time."
+        status:
+          type: string
+          enum:
+            [
+              "Scheduling",
+              "Scheduled",
+              "Requested for reschedule",
+              "Rescheduled",
+              "Completed",
+              "Cancelled",
+            ]
+          description: "The interview status."
+        createdAt:
+          type: string
+          format: date-time
+          description: "The interview created date."
+        createdBy:
+          type: string
+          format: uuid
+          description: "The user who created the interview.(Will get the user info from the token)"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "The interview last updated at."
+        updatedBy:
+          type: string
+          format: uuid
+          description: "The user who updated the interview last time.(Will get the user info from the token)"
     RequestInterviewBody:
       required:
         - duration
@@ -5850,7 +5923,7 @@ components:
               interviews:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Interview"
+                  $ref: "#/components/schemas/CandidateInterview"
               status:
                 type: string
                 enum:
@@ -6577,3 +6650,4 @@ components:
       properties:
         message:
           type: string
+

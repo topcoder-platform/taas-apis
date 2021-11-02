@@ -399,6 +399,7 @@ async function getTeamJob (currentUser, id, jobId) {
     // find photo URLs for users
     const members = await helper.getMembers(_.map(users, 'handle'))
     const photoURLMap = _.groupBy(members, 'handleLower')
+    const hostMap = {}
 
     result.candidates = _.map(job.candidates, (candidate) => {
       const candidateData = _.pick(candidate, [
@@ -419,10 +420,31 @@ async function getTeamJob (currentUser, id, jobId) {
       if (photoURLMap[handleLower]) {
         candidateData.photo_url = photoURLMap[handleLower][0].photoURL
       }
+      if (candidateData.interviews && candidateData.interviews.length) {
+        _.map(candidateData.interviews, async interview => {
+          hostMap[interview.hostUserId] = true
+        })
+      }
       return candidateData
     })
-  }
 
+    // request host user details only one time if all interview are hosted by the same host
+    const hostUserDetails = await Promise.all(_.map(_.keys(hostMap), hostId => helper.getUserDetailsByUserUUID(hostId)))
+    _.map(_.keys(hostMap), (hostId, index) => {
+      hostMap[hostId] = hostUserDetails[index]
+    })
+
+    _.forEach(job.candidates, (candidate) => {
+      if (candidate.interviews && candidate.interviews.length) {
+         _.forEach(candidate.interviews, interview => {
+          const hostUserDetails = hostMap[interview.hostUserId]
+          interview.firstName = hostUserDetails.firstName
+          interview.lastName = hostUserDetails.lastName
+          interview.handle = hostUserDetails.handle
+        })
+      }
+    })
+  }
   return result
 }
 
