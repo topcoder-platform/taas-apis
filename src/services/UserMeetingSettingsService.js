@@ -15,7 +15,7 @@ const {
 } = require('../esProcessors/UserMeetingSettingsProcessor')
 
 const UserMeetingSettings = models.UserMeetingSettings
-const { Interviews: InterviewConstants } = require('../../app-constants')
+const { Interviews: InterviewConstants, NylasVirtualCalendarProvider } = require('../../app-constants')
 const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
@@ -171,27 +171,30 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
     if (data.calendar) {
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, { id: data.calendar.id })
 
-      // if calendar is not yet on the list, then add it
-      if (calendarIndexInUserMeetingSettings === -1) {
-        updatePayload.nylasCalendars = [...updatePayload.nylasCalendars, data.calendar]
-      } else {
-        const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
-          // if we are adding primary calendar, then make all other calendars non-primary
-          if (index !== calendarIndexInUserMeetingSettings) {
-            if (data.calendar.isPrimary) {
-              return { ...item, isPrimary: false }
-            }
+      const updatedNylasCalendarsArray = _.map(userMeetingSettings.nylasCalendars || [], (item, index) => {
+        // process all other calendar, except the one wa are adding/updating
+        if (index !== calendarIndexInUserMeetingSettings) {
+          const updatedItem = { ...item }
 
-            // otherwise don't update other calendars
-            return item
+          // if we are adding primary calendar, then make all other calendars non-primary
+          if (data.calendar.isPrimary) {
+            updatedItem.isPrimary = false
           }
 
-          // update calendar record
-          return { ...item, ...data.calendar }
-        })
+          // if we are adding not-Nylas calendar, mark all other not-Nylas calendars as removed, as we don't allow having multiple not-Nylas calendars
+          if (data.calendar.accountProvider !== NylasVirtualCalendarProvider && updatedItem.provider !== NylasVirtualCalendarProvider) {
+            updatedItem.isDeleted = true
+          }
 
-        updatePayload.nylasCalendars = updatedNylasCalendarsArray
-      }
+          return updatedItem
+        }
+
+        // if we are updating existent calendar, then update it
+        return { ...item, ...data.calendar }
+      })
+
+      // add new calendar to the list updated list or just use updated list
+      updatePayload.nylasCalendars = calendarIndexInUserMeetingSettings === -1 ? [...updatedNylasCalendarsArray, data.calendar] : updatedNylasCalendarsArray
     }
 
     const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
