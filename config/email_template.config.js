@@ -107,14 +107,14 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-link-for-host': {
-      subject: 'You\'re meeting on {{start}}',
+      subject: 'Candidate confirmed meeting on {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-link-for-guest': {
-      subject: 'Candidate confirmed meeting on {{start}}',
+      subject: 'You\'re meeting on {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
