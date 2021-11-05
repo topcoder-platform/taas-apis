@@ -755,6 +755,17 @@ async function updateCompletedInterviews () {
   logger.info({ component: 'InterviewService', context: 'updateCompletedInterviews', message: `Completed running. Updated ${affectedCount} interviews.` })
 }
 
+/**
+ * Update interview using received webhook data
+ *
+ * @param {String} interviewId interview id
+ * @param {Object} webhookBody webhook body
+ * @returns nothing
+ */
+async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
+  logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+}
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
@@ -762,5 +773,6 @@ module.exports = {
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
   searchInterviews,
-  updateCompletedInterviews
+  updateCompletedInterviews,
+  partiallyUpdateInterviewByWebhook
 }

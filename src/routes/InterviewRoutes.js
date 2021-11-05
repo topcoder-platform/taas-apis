@@ -28,6 +28,12 @@ module.exports = {
       scopes: [constants.Scopes.UPDATE_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
     }
   },
+  '/updateInterview/:id/nylas-webhooks': {
+    post: {
+      controller: 'InterviewController',
+      method: 'partiallyUpdateInterviewByWebhook'
+    }
+  },
   '/jobCandidates/:jobCandidateId/interviews': {
     get: {
       controller: 'InterviewController',
