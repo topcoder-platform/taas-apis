@@ -121,14 +121,14 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-expired-host': {
-      subject: 'Your interview is expired',
+      subject: 'Interview expired - your candidate didn\'t select time',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-expired-guest': {
-      subject: 'Interview expired - your candidate didn\'t select time',
+      subject: 'Your interview invitation is expired',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
