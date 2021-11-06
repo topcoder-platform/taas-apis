@@ -127,6 +127,15 @@ async function createSchedulingPage (interview, calendar, options) {
       expire_after: {
         date: interview.expireTimestamp.unix()
       },
+      reminders: [
+        {
+          delivery_method: 'webhook',
+          delivery_recipient: 'owner',
+          // This time needs to be greater than the furthest out an event can be scheduled in minutes.
+          time_before_event: config.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE * 24 * 60 + 1,
+          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
+        }
+      ],
       timezone: interview.timezone
     },
     disableViewingPages: true

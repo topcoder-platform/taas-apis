@@ -755,6 +755,20 @@ async function updateCompletedInterviews () {
   logger.info({ component: 'InterviewService', context: 'updateCompletedInterviews', message: `Completed running. Updated ${affectedCount} interviews.` })
 }
 
+/**
+ * Update interview using received webhook data
+ *
+ * This method would be always called when someone selects time for new interview using Nylas Page.
+ * This would NOT be called when make updates to the events or cancel them, only when we create event as per Nylas logic.
+ *
+ * @param {String} interviewId interview id
+ * @param {Object} webhookBody webhook body
+ * @returns nothing
+ */
+async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
+  logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+}
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
@@ -762,5 +776,6 @@ module.exports = {
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
   searchInterviews,
-  updateCompletedInterviews
+  updateCompletedInterviews,
+  partiallyUpdateInterviewByWebhook
 }

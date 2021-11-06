@@ -52,6 +52,15 @@ async function partiallyUpdateInterviewById (req, res) {
 }
 
 /**
+ * Patch (partially update) interview by Nylas webhook
+ * @param req the request
+ * @param res the response
+ */
+async function partiallyUpdateInterviewByWebhook (req, res) {
+  res.send(await service.partiallyUpdateInterviewByWebhook(req.params.id, req.body))
+}
+
+/**
  * Search interviews
  * @param req the request
  * @param res the response
@@ -68,5 +77,6 @@ module.exports = {
   requestInterview,
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
-  searchInterviews
+  searchInterviews,
+  partiallyUpdateInterviewByWebhook
 }
