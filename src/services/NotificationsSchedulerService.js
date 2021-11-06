@@ -24,7 +24,7 @@ const localLogger = {
 
 const emailTemplates = helper.getEmailTemplatesForKey('notificationEmailTemplates')
 
-const interviewStatusValidValues = _.join(_.values(constants.Interviews.Status))
+const InterviewConstants = constants.Interviews
 
 /**
  * Returns the project with the given id
@@ -678,16 +678,29 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
     nylasPageSlug: Joi.string(),
     nylasCalendarId: Joi.string(),
     timezone: Joi.string(),
-    availableTime: Joi.array(),
+    availableTime: Joi.array().min(1).items(
+      Joi.object({
+        days: Joi.array().max(7).items(Joi.string().valid(
+          InterviewConstants.Nylas.Days.Monday,
+          InterviewConstants.Nylas.Days.Tuesday,
+          InterviewConstants.Nylas.Days.Wednesday,
+          InterviewConstants.Nylas.Days.Thursday,
+          InterviewConstants.Nylas.Days.Friday,
+          InterviewConstants.Nylas.Days.Saturday,
+          InterviewConstants.Nylas.Days.Sunday)).required(),
+        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
+        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
+      })
+    ),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     jobCandidateId: Joi.string().uuid(),
     duration: Joi.number().integer(),
-    round: Joi.number().integer(),
+    round: Joi.number().integer().positive(),
     startTimestamp: Joi.date(),
     endTimestamp: Joi.date(),
-    status: Joi.string().valid(interviewStatusValidValues)
-  }).required()
+    status: Joi.interviewStatus()
+  }).required().min(1)
 }).required()
 
 // Send notifications to customer and candidate this interview has expired
