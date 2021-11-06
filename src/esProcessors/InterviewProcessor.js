@@ -58,7 +58,9 @@ async function processUpdateInterview (interview) {
         def target = ctx._source.interviews.find(i -> i.id == params.interview.id);
         if (target != null) {
           for (prop in params.interview.entrySet()) {
-            target[prop.getKey()] = prop.getValue()
+            if (prop.getKey() !== 'id') {
+              target[prop.getKey()] = prop.getValue()
+            }
           }
         }
       }

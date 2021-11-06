@@ -4,6 +4,7 @@
 const _ = require('lodash')
 const { Op } = require('sequelize')
 const moment = require('moment')
+const Joi = require('joi')
 const config = require('config')
 const models = require('../models')
 const Job = models.Job
@@ -22,6 +23,8 @@ const localLogger = {
 }
 
 const emailTemplates = helper.getEmailTemplatesForKey('notificationEmailTemplates')
+
+const interviewStatusValidValues = _.join(_.values(constants.Interviews.Status))
 
 /**
  * Returns the project with the given id
@@ -656,15 +659,36 @@ async function sendInterviewScheduleReminderNotifications () {
 }
 
 /**
- * Update interview status by id and jobCandidateId
- * @param {*} entity interview entity
+ * Partially updates the Interview record by Id
+ *
+ * This method updates interview by the fields passed to it
  */
-async function updateInterviewStatus (entity) {
-  const interviewOldValue = await Interview.findById(entity.id)
-  await Interview.update({ status: entity.status }, { where: { id: entity.id } })
-  await processUpdateInterview(entity)
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interviewOldValue.toJSON() })
+async function partiallyUpdateInterviewById (data) {
+  const interview = await Interview.findById(data.id)
+  // removing id from the update object
+  const valuesToUpdate = _.omit(data, ['id'])
+  await Interview.update(valuesToUpdate, { where: { id: data.id } })
+  await processUpdateInterview(data)
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, data, { oldValue: interview.toJSON() })
 }
+partiallyUpdateInterviewById.schema = Joi.object().keys({
+  data: Joi.object().keys({
+    id: Joi.string().uuid().required(),
+    nylasPageId: Joi.string(),
+    nylasPageSlug: Joi.string(),
+    nylasCalendarId: Joi.string(),
+    timezone: Joi.string(),
+    availableTime: Joi.array(),
+    hostUserId: Joi.string().uuid(),
+    expireTimestamp: Joi.date(),
+    jobCandidateId: Joi.string().uuid(),
+    duration: Joi.number().integer(),
+    round: Joi.number().integer(),
+    startTimestamp: Joi.date(),
+    endTimestamp: Joi.date(),
+    status: Joi.string().valid(interviewStatusValidValues)
+  }).required()
+}).required()
 
 // Send notifications to customer and candidate this interview has expired
 async function sendInterviewExpiredNotifications () {
@@ -705,7 +729,7 @@ async function sendInterviewExpiredNotifications () {
   const templateGuest = 'taas.notification.interview-expired-guest'
 
   for (const interview of interviews) {
-    await updateInterviewStatus({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    await partiallyUpdateInterviewById({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
     // send host email
     const data = await getDataForInterview(interview)
     if (!data) { continue }
@@ -762,7 +786,7 @@ module.exports = {
   sendInterviewCompletedNotifications: errorCatchWrapper(sendInterviewCompletedNotifications, 'sendInterviewCompletedNotifications'),
   sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
   sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
-  updateInterviewStatus,
+  partiallyUpdateInterviewById,
   getDataForInterview,
   sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
   sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')

@@ -10,7 +10,7 @@ const axios = require('axios')
 const moment = require('moment')
 
 const logger = require('../common/logger')
-const { updateInterviewStatus } = require('./NotificationsSchedulerService')
+const { partiallyUpdateInterviewById } = require('./NotificationsSchedulerService')
 
 const localLogger = {
   debug: (message, context) =>
@@ -127,7 +127,7 @@ async function processFormattedEvent (webhookData, event) {
     // CREATED + confirmed ==> inteview updated to scheduled
     // UPDATED + cancelled ==> inteview expired
 
-    await updateInterviewStatus({
+    await partiallyUpdateInterviewById({
       status: constants.Interviews.Status.Scheduled,
       startTimestamp: moment.unix(event.startTime).toDate(),
       endTimestamp: moment.unix(event.endTime).toDate(),
@@ -150,7 +150,7 @@ async function processFormattedEvent (webhookData, event) {
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
   ) {
-    await updateInterviewStatus({ status: constants.Interviews.Status.Cancelled, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    await partiallyUpdateInterviewById({ status: constants.Interviews.Status.Cancelled, id: interview.id, jobCandidateId: interview.jobCandidateId })
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
