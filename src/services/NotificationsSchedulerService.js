@@ -4,7 +4,6 @@
 const _ = require('lodash')
 const { Op } = require('sequelize')
 const moment = require('moment')
-const Joi = require('joi')
 const config = require('config')
 const models = require('../models')
 const Job = models.Job
@@ -14,7 +13,8 @@ const ResourceBooking = models.ResourceBooking
 const helper = require('../common/helper')
 const constants = require('../../app-constants')
 const logger = require('../common/logger')
-const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
+const { getAuditM2Muser } = require('../common/helper')
+const interviewService = require('./InterviewService')
 
 const localLogger = {
   debug: (message, context) => logger.debug({ component: 'NotificationSchedulerService', context, message }),
@@ -23,8 +23,6 @@ const localLogger = {
 }
 
 const emailTemplates = helper.getEmailTemplatesForKey('notificationEmailTemplates')
-
-const InterviewConstants = constants.Interviews
 
 /**
  * Returns the project with the given id
@@ -658,51 +656,6 @@ async function sendInterviewScheduleReminderNotifications () {
   localLogger.debug(`[sendInterviewScheduleReminderNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
 }
 
-/**
- * Partially updates the Interview record by Id
- *
- * This method updates interview by the fields passed to it
- */
-async function partiallyUpdateInterviewById (data) {
-  const interview = await Interview.findById(data.id)
-  // removing id from the update object
-  const valuesToUpdate = _.omit(data, ['id'])
-  await Interview.update(valuesToUpdate, { where: { id: data.id } })
-  await processUpdateInterview(data)
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, data, { oldValue: interview.toJSON() })
-}
-partiallyUpdateInterviewById.schema = Joi.object().keys({
-  data: Joi.object().keys({
-    id: Joi.string().uuid().required(),
-    nylasPageId: Joi.string(),
-    nylasPageSlug: Joi.string(),
-    nylasCalendarId: Joi.string(),
-    timezone: Joi.string(),
-    availableTime: Joi.array().min(1).items(
-      Joi.object({
-        days: Joi.array().max(7).items(Joi.string().valid(
-          InterviewConstants.Nylas.Days.Monday,
-          InterviewConstants.Nylas.Days.Tuesday,
-          InterviewConstants.Nylas.Days.Wednesday,
-          InterviewConstants.Nylas.Days.Thursday,
-          InterviewConstants.Nylas.Days.Friday,
-          InterviewConstants.Nylas.Days.Saturday,
-          InterviewConstants.Nylas.Days.Sunday)).required(),
-        end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
-        start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
-      })
-    ),
-    hostUserId: Joi.string().uuid(),
-    expireTimestamp: Joi.date(),
-    jobCandidateId: Joi.string().uuid(),
-    duration: Joi.number().integer(),
-    round: Joi.number().integer().positive(),
-    startTimestamp: Joi.date(),
-    endTimestamp: Joi.date(),
-    status: Joi.interviewStatus()
-  }).required().min(1)
-}).required()
-
 // Send notifications to customer and candidate this interview has expired
 async function sendInterviewExpiredNotifications () {
   localLogger.debug('[sendInterviewExpiredNotifications]: Looking for due records...')
@@ -742,7 +695,17 @@ async function sendInterviewExpiredNotifications () {
   const templateGuest = 'taas.notification.interview-expired-guest'
 
   for (const interview of interviews) {
-    await partiallyUpdateInterviewById({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    // this method is run by the app itself
+    const m2mUser = getAuditM2Muser()
+
+    await interviewService.partiallyUpdateInterviewById(
+      m2mUser,
+      interview.id,
+      {
+        status: constants.Interviews.Status.Expired
+      }
+    )
+
     // send host email
     const data = await getDataForInterview(interview)
     if (!data) { continue }
@@ -799,7 +762,6 @@ module.exports = {
   sendInterviewCompletedNotifications: errorCatchWrapper(sendInterviewCompletedNotifications, 'sendInterviewCompletedNotifications'),
   sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
   sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
-  partiallyUpdateInterviewById,
   getDataForInterview,
   sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
   sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')

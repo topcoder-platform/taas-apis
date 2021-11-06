@@ -10,7 +10,8 @@ const axios = require('axios')
 const moment = require('moment')
 
 const logger = require('../common/logger')
-const { partiallyUpdateInterviewById } = require('./NotificationsSchedulerService')
+const { partiallyUpdateInterviewById } = require('./InterviewService')
+const { getAuditM2Muser } = require('../common/helper')
 
 const localLogger = {
   debug: (message, context) =>
@@ -123,17 +124,21 @@ async function processFormattedEvent (webhookData, event) {
     }
   })
 
+  // this method is used by the Nylas webhooks, so use M2M user
+  const m2mUser = getAuditM2Muser()
+
   if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
     // CREATED + confirmed ==> inteview updated to scheduled
     // UPDATED + cancelled ==> inteview expired
-
-    await partiallyUpdateInterviewById({
-      status: constants.Interviews.Status.Scheduled,
-      startTimestamp: moment.unix(event.startTime).toDate(),
-      endTimestamp: moment.unix(event.endTime).toDate(),
-      id: interview.id,
-      jobCandidateId: interview.jobCandidateId
-    })
+    await partiallyUpdateInterviewById(
+      m2mUser,
+      interview.id,
+      {
+        status: constants.Interviews.Status.Scheduled,
+        startTimestamp: moment.unix(event.startTime).toDate(),
+        endTimestamp: moment.unix(event.endTime).toDate()
+      }
+    )
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
@@ -150,7 +155,13 @@ async function processFormattedEvent (webhookData, event) {
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
   ) {
-    await partiallyUpdateInterviewById({ status: constants.Interviews.Status.Cancelled, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    await partiallyUpdateInterviewById(
+      m2mUser,
+      interview.id,
+      {
+        status: constants.Interviews.Status.Cancelled
+      }
+    )
 
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${

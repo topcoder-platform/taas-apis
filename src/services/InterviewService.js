@@ -540,8 +540,8 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().required(),
   data: Joi.object().keys({
-    duration: Joi.number().integer().positive().required(),
-    timezone: Joi.string().required(),
+    duration: Joi.number().integer().positive(),
+    timezone: Joi.string(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -557,7 +557,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })
-    ).required(),
+    ),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
       then: Joi.required(),
