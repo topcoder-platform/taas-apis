@@ -767,6 +767,47 @@ async function updateCompletedInterviews () {
  */
 async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
   logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+
+  // this method is used by the Nylas webhooks, so use M2M user
+  const m2mUser = helper.getAuditM2Muser()
+  const bookingDetails = webhookBody.booking
+  const interviewStartTimeMoment = moment.unix(bookingDetails.start_time)
+  const interviewEndTimeMoment = moment.unix(bookingDetails.end_time)
+  let updatedInterview
+
+  if (bookingDetails.is_confirmed) {
+    try {
+      // CREATED + confirmed ==> inteview updated to scheduled
+      // UPDATED + cancelled ==> inteview expired
+      updatedInterview = await partiallyUpdateInterviewById(
+        m2mUser,
+        interviewId,
+        {
+          status: InterviewConstants.Status.Scheduled,
+          startTimestamp: interviewStartTimeMoment.toDate(),
+          endTimestamp: interviewEndTimeMoment.toDate()
+        }
+      )
+
+      logger.debug({
+        component: 'InterviewService',
+        context: 'partiallyUpdateInterviewByWebhook',
+        message:
+        `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
+          bookingDetails.account_id
+        } (email is ${bookingDetails.recipient_email}) in calendar id ${
+          bookingDetails.calendar_id
+        }. Event status is ${InterviewConstants.Status.Scheduled} and starts from ${interviewStartTimeMoment
+          .format('MMM DD YYYY HH:mm')} and ends at ${interviewEndTimeMoment
+          .format('MMM DD YYYY HH:mm')}`
+      })
+    } catch (err) {
+      logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+      throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+    }
+
+    return updatedInterview
+  }
 }
 
 module.exports = {

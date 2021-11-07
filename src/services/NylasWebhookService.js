@@ -128,29 +128,7 @@ async function processFormattedEvent (webhookData, event) {
   const m2mUser = getAuditM2Muser()
 
   if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
-    // CREATED + confirmed ==> inteview updated to scheduled
-    // UPDATED + cancelled ==> inteview expired
-    await partiallyUpdateInterviewById(
-      m2mUser,
-      interview.id,
-      {
-        status: constants.Interviews.Status.Scheduled,
-        startTimestamp: moment.unix(event.startTime).toDate(),
-        endTimestamp: moment.unix(event.endTime).toDate()
-      }
-    )
-
-    localLogger.debug(
-      `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
-        event.accountId
-      } (email is ${event.email}) in calendar id ${
-        event.calendarId
-      }. Event status is ${event.status} and starts from ${moment
-        .unix(event.startTime)
-        .format('MMM DD YYYY HH:mm')} and ends at ${moment
-        .unix(event.endTime)
-        .format('MMM DD YYYY HH:mm')}`
-    )
+    localLogger.info('~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nEvent "Interview Scheduled" being processed by method InterviewService.partiallyUpdateInterviewByWebhook')
   } else if (
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
