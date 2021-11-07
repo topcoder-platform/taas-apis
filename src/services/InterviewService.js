@@ -31,6 +31,12 @@ const {
   createVirtualCalendarForUser,
   patchSchedulingPage
 } = require('./NylasService')
+const {
+  getAccountEmail,
+  authenticateAccount,
+  getAccessToken,
+  updateNylasEvent
+} = require('./NylasService')
 const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
 
 /**
@@ -770,15 +776,43 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
 
   // this method is used by the Nylas webhooks, so use M2M user
   const m2mUser = helper.getAuditM2Muser()
-  const bookingDetails = webhookBody.booking
+  const { page: pageDetails, booking: bookingDetails } = webhookBody
   const interviewStartTimeMoment = moment.unix(bookingDetails.start_time)
   const interviewEndTimeMoment = moment.unix(bookingDetails.end_time)
   let updatedInterview
 
   if (bookingDetails.is_confirmed) {
     try {
-      // CREATED + confirmed ==> inteview updated to scheduled
-      // UPDATED + cancelled ==> inteview expired
+      // update the Nylas event to set custom metadata
+      const accountEmail = await getAccountEmail(bookingDetails.account_id)
+      if (!accountEmail) {
+        throw new errors.BadRequestError('Error getting account email for the given account id.')
+      }
+
+      const authorizationCode = await authenticateAccount(bookingDetails.account_id, accountEmail)
+      if (!authorizationCode) {
+        throw new errors.BadRequestError('Error getting account authorization code for the given account.')
+      }
+
+      const { accessToken } = await getAccessToken(authorizationCode)
+      if (!accessToken) {
+        throw new errors.BadRequestError('Error getting access token for the given account.')
+      }
+
+      // update events endpoint only takes stringified values for any key in metadata
+      const pageId = pageDetails && pageDetails.id ? pageDetails.id.toString() : ''
+      const pageSlug = (pageDetails && pageDetails.slug) || ''
+
+      const updateEventData = {
+        metadata: {
+          interviewId,
+          pageId,
+          pageSlug
+        }
+      }
+
+      await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
+
       updatedInterview = await partiallyUpdateInterviewById(
         m2mUser,
         interviewId,
