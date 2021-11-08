@@ -1,5 +1,5 @@
 const config = require('config')
-const constants = require('../../app-constants')
+const { Interviews: { Status: InterviewStatus } } = require('../../app-constants')
 
 const crypto = require('crypto')
 const moment = require('moment')
@@ -8,6 +8,8 @@ const logger = require('../common/logger')
 const { partiallyUpdateInterviewById } = require('./InterviewService')
 const { getEventDetails } = require('./NylasService')
 const { getAuditM2Muser } = require('../common/helper')
+const { Interview } = require('../../src/models')
+const errors = require('../common/errors')
 
 const localLogger = {
   debug: (message, context) =>
@@ -40,27 +42,40 @@ async function processFormattedEvent (webhookData, event) {
   ) {
     // this method is used by the Nylas webhooks, so use M2M user
     const m2mUser = getAuditM2Muser()
+
     // get the interviewId from customized event metadata
     const { interviewId } = event.metadata
-    await partiallyUpdateInterviewById(
-      m2mUser,
-      interviewId,
-      {
-        status: constants.Interviews.Status.Cancelled
-      }
-    )
 
-    localLogger.debug(
-      `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
-        event.accountId
-      } (email is ${event.email}) in calendar id ${
-        event.calendarId
-      }. Event status is ${event.status} and it would have started from ${moment
-        .unix(event.startTime)
-        .format('MMM DD YYYY HH:mm')} and ended at ${moment
-        .unix(event.endTime)
-        .format('MMM DD YYYY HH:mm')}`
-    )
+    const interview = await Interview.findById(interviewId)
+    if (!interview) {
+      throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
+    }
+
+    if (interview.nylasEventId === event.id && interview.status === InterviewStatus.Cancelled) {
+      localLogger.info('Interview is already cancelled. Ignoring event.')
+    } else if (interview.nylasEventId === event.id && interview.status !== InterviewStatus.Cancelled) {
+      await partiallyUpdateInterviewById(
+        m2mUser,
+        interviewId,
+        {
+          status: InterviewStatus.Cancelled
+        }
+      )
+
+      localLogger.debug(
+        `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
+          event.accountId
+        } (email is ${event.email}) in calendar id ${
+          event.calendarId
+        }. Event status is ${event.status} and it would have started from ${moment
+          .unix(event.startTime)
+          .format('MMM DD YYYY HH:mm')} and ended at ${moment
+          .unix(event.endTime)
+          .format('MMM DD YYYY HH:mm')}`
+      )
+    } else {
+      localLogger.info("Event id doesn't match with nylas_event_id of interview. Ignoring event.")
+    }
   } else {
     localLogger.debug(
       `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nUnkonwn event under account id ${

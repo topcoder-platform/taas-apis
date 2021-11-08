@@ -819,7 +819,9 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
         {
           status: InterviewConstants.Status.Scheduled,
           startTimestamp: interviewStartTimeMoment.toDate(),
-          endTimestamp: interviewEndTimeMoment.toDate()
+          endTimestamp: interviewEndTimeMoment.toDate(),
+          nylasEventId: bookingDetails.calendar_event_id,
+          nylasEventEditHash: bookingDetails.editHash
         }
       )
 
