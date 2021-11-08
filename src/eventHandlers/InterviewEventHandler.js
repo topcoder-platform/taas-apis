@@ -118,6 +118,10 @@ async function sendInterviewScheduledNotifications (payload) {
     if (!data) { return }
 
     const links = await generateZoomMeetingLink()
+
+    const interviewCancelLink = `https://platform.topcoder-dev.com/taas/interview/${interview.id}/cancel`
+    const interviewRescheduleLink = `https://platform.topcoder-dev.com/taas/interview/${interview.id}/reschedule`
+
     await notificationsSchedulerService.sendNotification({}, {
       template,
       recipients: [{ email: data.hostEmail }],
@@ -128,7 +132,9 @@ async function sendInterviewScheduledNotifications (payload) {
         zoomLink: links.start_url,
         start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
         end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        timezone: interviewEntity.timezone
+        timezone: interviewEntity.timezone,
+        interviewCancelLink,
+        interviewRescheduleLink
       }
     })
 
@@ -145,7 +151,9 @@ async function sendInterviewScheduledNotifications (payload) {
           zoomLink: links.join_url,
           start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
           end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          timezone: interviewEntity.timezone
+          timezone: interviewEntity.timezone,
+          interviewCancelLink,
+          interviewRescheduleLink
         }
       })
     } else {
