@@ -4715,19 +4715,19 @@ components:
           type: string
           format: date-time
           description: "Interview end time."
-        nylas_page_id:
+        nylasPageId:
           type: string
           description: 'Associated Nylas page id.'
-        nylas_page_slug:
+        nylasPageSlug:
           type: string
           description: 'Associated Nylas page slug.'
-        nylas_calendar_id:
+        nylasCalendarId:
           type: string
           description: 'Associated Nylas calendar id.'
-        nylas_event_id:
+        nylasEventId:
           type: string
           description: 'Associated Nylas event id.'
-        nylas_event_edit_hash:
+        nylasEventEditHash:
           type: string
           description: 'Associated Nylas event edit hash.' 
         status:

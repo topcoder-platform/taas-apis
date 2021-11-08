@@ -783,24 +783,23 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
 
   if (bookingDetails.is_confirmed) {
     try {
-      // update the Nylas event to set custom metadata
-      const accountEmail = await getAccountEmail(bookingDetails.account_id)
-      if (!accountEmail) {
-        throw new errors.BadRequestError('Error getting account email for the given account id.')
+      const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
+        where: {
+          nylasCalendars: {
+            [Op.contains]: [{ id: bookingDetails.calendar_id }]
+          }
+        }
+      })
+
+      if (!userMeetingSettingsForCalendar) {
+        throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
       }
 
-      const authorizationCode = await authenticateAccount(bookingDetails.account_id, accountEmail)
-      if (!authorizationCode) {
-        throw new errors.BadRequestError('Error getting account authorization code for the given account.')
-      }
+      const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
 
-      const { accessToken } = await getAccessToken(authorizationCode)
-      if (!accessToken) {
-        throw new errors.BadRequestError('Error getting access token for the given account.')
-      }
-
-      const cancelInterviewLink = `https://platform.topcoder-dev.com/taas/interview/${interviewId}/cancel`
-      const rescheduleInterviewLink = `https://platform.topcoder-dev.com/taas/interview/${interviewId}/reschedule`
+      // Interview cancel/reschedule links
+      const cancelInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/cancel`
+      const rescheduleInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/reschedule`
 
       // update events endpoint only takes stringified values for any key in metadata
       const pageId = pageDetails && pageDetails.id ? pageDetails.id.toString() : ''
@@ -816,6 +815,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
         }
       }
 
+      // update the Nylas event to set custom metadata
       await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
 
       updatedInterview = await partiallyUpdateInterviewById(
@@ -826,7 +826,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
           startTimestamp: interviewStartTimeMoment.toDate(),
           endTimestamp: interviewEndTimeMoment.toDate(),
           nylasEventId: bookingDetails.calendar_event_id,
-          nylasEventEditHash: bookingDetails.editHash
+          nylasEventEditHash: bookingDetails.edit_hash
         }
       )
 

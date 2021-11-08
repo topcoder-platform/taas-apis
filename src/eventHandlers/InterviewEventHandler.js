@@ -119,8 +119,8 @@ async function sendInterviewScheduledNotifications (payload) {
 
     const links = await generateZoomMeetingLink()
 
-    const interviewCancelLink = `https://platform.topcoder-dev.com/taas/interview/${interview.id}/cancel`
-    const interviewRescheduleLink = `https://platform.topcoder-dev.com/taas/interview/${interview.id}/reschedule`
+    const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
+    const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
 
     await notificationsSchedulerService.sendNotification({}, {
       template,
