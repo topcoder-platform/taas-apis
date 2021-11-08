@@ -98,7 +98,7 @@ async function initConsumer () {
           if (message.payload.notifications) {
             _.forEach(_.filter(message.payload.notifications, ['serviceId', 'email']), (notification) => {
               const email = templateFileMap[notification.details.sendgridTemplateId](notification.details.data)
-              fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
+              fs.writeFileSync(`./out/${notification.details.data.subject.replace(/[^a-z0-9 ]/gi, '_')}-${Date.now()}.html`, email)
             })
             for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {
               if (process.env.SLACK_WEBHOOK_URL) {

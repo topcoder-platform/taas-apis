@@ -386,6 +386,7 @@ requestInterview.schema = Joi.object().keys({
  * @returns {Object} updated interview
  */
 async function partiallyUpdateInterview (currentUser, interview, data) {
+  const oldInterviewValue = interview.toJSON()
   // only status can be updated for Completed interviews
   if (interview.status === InterviewConstants.Status.Completed) {
     const updatedFields = _.keys(data)
@@ -434,7 +435,7 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
     // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
     throw err
   }
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interview.toJSON() })
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: oldInterviewValue })
   return entity
 }
 
