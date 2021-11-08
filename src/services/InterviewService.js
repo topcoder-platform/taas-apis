@@ -799,11 +799,16 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
         throw new errors.BadRequestError('Error getting access token for the given account.')
       }
 
+      const cancelInterviewLink = `https://platform.topcoder-dev.com/taas/interview/${interviewId}/cancel`
+      const rescheduleInterviewLink = `https://platform.topcoder-dev.com/taas/interview/${interviewId}/reschedule`
+
       // update events endpoint only takes stringified values for any key in metadata
       const pageId = pageDetails && pageDetails.id ? pageDetails.id.toString() : ''
       const pageSlug = (pageDetails && pageDetails.slug) || ''
+      const eventDescription = `\n\nTo make changes to this event, click the links below:\n\nReschedule: ${rescheduleInterviewLink}\nCancel: ${cancelInterviewLink}`
 
       const updateEventData = {
+        description: eventDescription,
         metadata: {
           interviewId,
           pageId,
