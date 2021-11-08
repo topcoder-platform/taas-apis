@@ -13,7 +13,8 @@ const ResourceBooking = models.ResourceBooking
 const helper = require('../common/helper')
 const constants = require('../../app-constants')
 const logger = require('../common/logger')
-const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
+const { getAuditM2Muser } = require('../common/helper')
+const interviewService = require('./InterviewService')
 
 const localLogger = {
   debug: (message, context) => logger.debug({ component: 'NotificationSchedulerService', context, message }),
@@ -655,27 +656,6 @@ async function sendInterviewScheduleReminderNotifications () {
   localLogger.debug(`[sendInterviewScheduleReminderNotifications]: Sent notifications for ${interviewCount} interviews which need to schedule.`)
 }
 
-/**
- * Update interview status by id and jobCandidateId
- * @param {*} entity interview entity
- */
-async function updateInterviewStatus (entity) {
-  const interviewOldValue = await Interview.findById(entity.id)
-
-  const newUpdate = {
-    status: entity.status
-  }
-  if (entity.startTimestamp) {
-    newUpdate.startTimestamp = entity.startTimestamp
-  }
-  if (entity.endTimestamp) {
-    newUpdate.endTimestamp = entity.endTimestamp
-  }
-  await Interview.update(newUpdate, { where: { id: entity.id } })
-  await processUpdateInterview(entity)
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interviewOldValue.toJSON() })
-}
-
 // Send notifications to customer and candidate this interview has expired
 async function sendInterviewExpiredNotifications () {
   localLogger.debug('[sendInterviewExpiredNotifications]: Looking for due records...')
@@ -715,7 +695,17 @@ async function sendInterviewExpiredNotifications () {
   const templateGuest = 'taas.notification.interview-expired-guest'
 
   for (const interview of interviews) {
-    await updateInterviewStatus({ status: constants.Interviews.Status.Expired, id: interview.id, jobCandidateId: interview.jobCandidateId })
+    // this method is run by the app itself
+    const m2mUser = getAuditM2Muser()
+
+    await interviewService.partiallyUpdateInterviewById(
+      m2mUser,
+      interview.id,
+      {
+        status: constants.Interviews.Status.Expired
+      }
+    )
+
     // send host email
     const data = await getDataForInterview(interview)
     if (!data) { continue }
@@ -772,7 +762,6 @@ module.exports = {
   sendInterviewCompletedNotifications: errorCatchWrapper(sendInterviewCompletedNotifications, 'sendInterviewCompletedNotifications'),
   sendInterviewExpiredNotifications: errorCatchWrapper(sendInterviewExpiredNotifications, 'sendInterviewExpiredNotifications'),
   sendInterviewScheduleReminderNotifications: errorCatchWrapper(sendInterviewScheduleReminderNotifications, 'sendInterviewScheduleReminderNotifications'),
-  updateInterviewStatus,
   getDataForInterview,
   sendPostInterviewActionNotifications: errorCatchWrapper(sendPostInterviewActionNotifications, 'sendPostInterviewActionNotifications'),
   sendResourceBookingExpirationNotifications: errorCatchWrapper(sendResourceBookingExpirationNotifications, 'sendResourceBookingExpirationNotifications')

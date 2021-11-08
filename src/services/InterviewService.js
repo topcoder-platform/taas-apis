@@ -299,6 +299,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       }
       // create scheduling page on nylas
       const schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
+      logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}""`)
 
       // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
@@ -386,6 +387,7 @@ requestInterview.schema = Joi.object().keys({
  * @returns {Object} updated interview
  */
 async function partiallyUpdateInterview (currentUser, interview, data) {
+  const oldInterviewValue = interview.toJSON()
   // only status can be updated for Completed interviews
   if (interview.status === InterviewConstants.Status.Completed) {
     const updatedFields = _.keys(data)
@@ -434,7 +436,7 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
     // if reaches here, it's not one of the common errors handled in `handleSequelizeError`
     throw err
   }
-  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interview.toJSON() })
+  await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: oldInterviewValue })
   return entity
 }
 
@@ -467,8 +469,8 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   jobCandidateId: Joi.string().uuid().required(),
   round: Joi.number().integer().positive().required(),
   data: Joi.object().keys({
-    duration: Joi.number().integer().positive().required(),
-    timezone: Joi.string().required(),
+    duration: Joi.number().integer().positive(),
+    timezone: Joi.string(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -484,15 +486,15 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })
-    ).required(),
+    ),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
+      then: Joi.invalid(null),
       otherwise: Joi.allow(null)
     }),
     endTimestamp: Joi.date().greater(Joi.ref('startTimestamp')).when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
+      then: Joi.invalid(null),
       otherwise: Joi.allow(null)
     }),
     status: Joi.interviewStatus(),
@@ -540,8 +542,8 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   id: Joi.string().required(),
   data: Joi.object().keys({
-    duration: Joi.number().integer().positive().required(),
-    timezone: Joi.string().required(),
+    duration: Joi.number().integer().positive(),
+    timezone: Joi.string(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -557,15 +559,15 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
         end: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required(),
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })
-    ).required(),
+    ),
     startTimestamp: Joi.date().greater('now').when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
+      then: Joi.invalid(null),
       otherwise: Joi.allow(null)
     }),
     endTimestamp: Joi.date().greater(Joi.ref('startTimestamp')).when('status', {
       is: [InterviewConstants.Status.Scheduled, InterviewConstants.Status.Rescheduled],
-      then: Joi.required(),
+      then: Joi.invalid(null),
       otherwise: Joi.allow(null)
     }),
     status: Joi.interviewStatus(),
@@ -767,6 +769,47 @@ async function updateCompletedInterviews () {
  */
 async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
   logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+
+  // this method is used by the Nylas webhooks, so use M2M user
+  const m2mUser = helper.getAuditM2Muser()
+  const bookingDetails = webhookBody.booking
+  const interviewStartTimeMoment = moment.unix(bookingDetails.start_time)
+  const interviewEndTimeMoment = moment.unix(bookingDetails.end_time)
+  let updatedInterview
+
+  if (bookingDetails.is_confirmed) {
+    try {
+      // CREATED + confirmed ==> inteview updated to scheduled
+      // UPDATED + cancelled ==> inteview expired
+      updatedInterview = await partiallyUpdateInterviewById(
+        m2mUser,
+        interviewId,
+        {
+          status: InterviewConstants.Status.Scheduled,
+          startTimestamp: interviewStartTimeMoment.toDate(),
+          endTimestamp: interviewEndTimeMoment.toDate()
+        }
+      )
+
+      logger.debug({
+        component: 'InterviewService',
+        context: 'partiallyUpdateInterviewByWebhook',
+        message:
+        `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
+          bookingDetails.account_id
+        } (email is ${bookingDetails.recipient_email}) in calendar id ${
+          bookingDetails.calendar_id
+        }. Event status is ${InterviewConstants.Status.Scheduled} and starts from ${interviewStartTimeMoment
+          .format('MMM DD YYYY HH:mm')} and ends at ${interviewEndTimeMoment
+          .format('MMM DD YYYY HH:mm')}`
+      })
+    } catch (err) {
+      logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+      throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+    }
+
+    return updatedInterview
+  }
 }
 
 module.exports = {

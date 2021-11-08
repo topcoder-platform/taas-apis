@@ -4859,11 +4859,7 @@ components:
           type: string
           format: uuid
 
-    UpdateInterviewRequestBody:
-      required:
-        - duration
-        - timezone
-        - availableTime
+    UpdateInterviewByRequestBody:
       properties:
         duration:
           type: integer
@@ -4872,6 +4868,13 @@ components:
         timezone:
           type: string
           example: "Europe/London"
+        hostUserId:
+          type: string
+          description: "UUID of interview host user"
+        expireTimestamp:
+          type: string
+          format: date-time
+          description: "Interview expiry time stamp."
         availableTime:
           type: array
           items:
@@ -4894,6 +4897,20 @@ components:
                 type: string
                 example: "10:00"
                 pattern: "^[0-9]{1,2}:[0-9]{2}$"
+        startTimestamp:
+          type: string
+          format: date-time
+          description: "Interview start time."
+        endTimestamp:
+          type: string
+          format: date-time
+          description: "Interview end time."
+        status:
+          type: string
+          enum: ["Scheduling", "Scheduled", "Requested for reschedule", "Rescheduled", "Completed", "Cancelled", "Expired"]
+        deletedAt:
+          type: string
+          format: date-time
 
     JobPatchRequestBody:
       properties:
