@@ -299,7 +299,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       }
       // create scheduling page on nylas
       const schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
-      logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}""`)
+      logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}"`)
 
       // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
