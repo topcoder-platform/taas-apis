@@ -661,7 +661,17 @@ async function sendInterviewScheduleReminderNotifications () {
  */
 async function updateInterviewStatus (entity) {
   const interviewOldValue = await Interview.findById(entity.id)
-  await Interview.update({ status: entity.status }, { where: { id: entity.id } })
+
+  const newUpdate = {
+    status: entity.status
+  }
+  if (entity.startTimestamp) {
+    newUpdate.startTimestamp = entity.startTimestamp
+  }
+  if (entity.endTimestamp) {
+    newUpdate.endTimestamp = entity.endTimestamp
+  }
+  await Interview.update(newUpdate, { where: { id: entity.id } })
   await processUpdateInterview(entity)
   await helper.postEvent(config.TAAS_INTERVIEW_UPDATE_TOPIC, entity, { oldValue: interviewOldValue.toJSON() })
 }
