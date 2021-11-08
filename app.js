@@ -125,7 +125,7 @@ const server = app.listen(app.get('port'), () => {
   logger.info({ component: 'app', message: `Express server listening on port ${app.get('port')}` })
   eventHandlers.init()
   // schedule updateCompletedInterviews to run every hour
-  schedule.scheduleJob('0 0 * * * *', interviewService.updateCompletedInterviews)
+  schedule.scheduleJob(config.CRON_UPDATE_COMPLETED_INTERVIEWS, interviewService.updateCompletedInterviews)
   // schedule sendSurveys
   if (WeeklySurveySwitch.ON === config.WEEKLY_SURVEY.SWITCH) {
     schedule.scheduleJob(config.WEEKLY_SURVEY.CRON, sendSurveys)
