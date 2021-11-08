@@ -58,6 +58,18 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      nylasEventId: {
+        field: 'nylas_event_id',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      nylasEventEditHash: {
+        field: 'nylas_event_edit_hash',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
       timezone: {
         field: 'timezone',
         type: Sequelize.STRING(255),
