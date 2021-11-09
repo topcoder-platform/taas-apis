@@ -8,6 +8,7 @@ const moment = require('moment')
 const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
 const { v4: uuid, validate: uuidValidate } = require('uuid')
+const { createHash } = require('crypto')
 const { Interviews: InterviewConstants } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
@@ -32,12 +33,20 @@ const {
   patchSchedulingPage
 } = require('./NylasService')
 const {
-  getAccountEmail,
-  authenticateAccount,
-  getAccessToken,
   updateNylasEvent
 } = require('./NylasService')
 const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
+
+// Each request made by Nylas in the partiallyUpdateInterviewByWebhook endpoint
+// includes a SHA256 hash of a secret (stored in env variable) to be sent in the
+// request param. Verifying this hash lets us authenticate the request.
+function verifyNylasWebhookRequest (authToken) {
+  const digest = createHash('sha256')
+    .update(config.NYLAS_SCHEDULER_WEBHOOK_SECRET)
+    .digest('hex')
+
+  return digest === authToken
+}
 
 /**
   * Ensures user is permitted for the operation.
@@ -771,8 +780,19 @@ async function updateCompletedInterviews () {
  * @param {Object} webhookBody webhook body
  * @returns nothing
  */
-async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
+async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhookBody) {
   logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+
+  // Verify the request to make sure it's actually from Nylas.
+  if (!verifyNylasWebhookRequest(authToken)) {
+    logger.error({
+      component: 'InterviewService',
+      context: 'partiallyUpdateInterviewByWebhook',
+      message: `Failed to verify Nylas webhook request authToken: ${authToken}`
+    })
+
+    throw new errors.UnauthorizedError('Webhook request failed verification.')
+  }
 
   // this method is used by the Nylas webhooks, so use M2M user
   const m2mUser = helper.getAuditM2Muser()
@@ -850,6 +870,11 @@ async function partiallyUpdateInterviewByWebhook (interviewId, webhookBody) {
     return updatedInterview
   }
 }
+partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
+  interviewId: Joi.string().uuid().required(),
+  authToken: Joi.string().required(),
+  webhookBody: Joi.object().invalid({}).required()
+}).required()
 
 module.exports = {
   getInterviewByRound,

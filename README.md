@@ -43,6 +43,8 @@
       # Get nylas client id and secret from nylas developer page
       NYLAS_CLIENT_ID=
       NYLAS_CLIENT_SECRET=
+      # Configure Nylas scheduler webhook secret to verify scheduler webhook requests
+      NYLAS_SCHEDULER_WEBHOOK_SECRET=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres

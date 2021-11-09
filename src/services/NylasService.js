@@ -3,6 +3,7 @@
  */
 
 const axios = require('axios')
+const { createHash } = require('crypto')
 const config = require('config')
 const _ = require('lodash')
 const { NylasVirtualCalendarProvider } = require('../../app-constants')
@@ -151,6 +152,11 @@ function getTimezoneFromSchedulingPage (page) {
 }
 
 async function createSchedulingPage (interview, calendar, options) {
+  const webhookAuthTokenSecret = config.NYLAS_SCHEDULER_WEBHOOK_SECRET
+  const authTokenHash = createHash('sha256')
+    .update(webhookAuthTokenSecret)
+    .digest('hex')
+
   const res = await axios.post('https://api.schedule.nylas.com/manage/pages', {
     access_tokens: [calendar.accessToken],
     slug: `tc-taas-interview-${interview.id}`,
@@ -185,7 +191,7 @@ async function createSchedulingPage (interview, calendar, options) {
           delivery_recipient: 'owner',
           // This time needs to be greater than the furthest out an event can be scheduled in minutes.
           time_before_event: config.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE * 24 * 60 + 1,
-          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
+          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks?authToken=${authTokenHash}` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
         }
       ],
       timezone: interview.timezone
