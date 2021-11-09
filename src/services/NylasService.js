@@ -194,7 +194,7 @@ async function createSchedulingPage (interview, calendar, options) {
           webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks?authToken=${authTokenHash}` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
         }
       ],
-      timezone: interview.timezone
+      timezone: interview.hostTimezone
     },
     disableViewingPages: true
   })

@@ -143,7 +143,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
       nylasPageId: { type: 'keyword' },
       nylasPageSlug: { type: 'keyword' },
       nylasCalendarId: { type: 'keyword' },
-      timezone: { type: 'keyword' },
+      hostTimezone: { type: 'keyword' },
+      guestTimezone: { type: 'keyword' },
       availableTime: {
         type: 'nested',
         properties: {

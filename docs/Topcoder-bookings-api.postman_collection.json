@@ -3790,7 +3790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3842,7 +3842,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3894,7 +3894,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3943,7 +3943,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3992,7 +3992,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4014,7 +4014,7 @@
 					"response": []
 				},
 				{
-					"name": "Request interview without timezone - should fail Copy",
+					"name": "Request interview without hostTimezone - should fail Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -4023,7 +4023,7 @@
 									"pm.test('Status code is 400', function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"    const response = pm.response.json()\r",
-									"    pm.expect(response.message).to.eq(\"\\\"interview.timezone\\\" is required\")\r",
+									"    pm.expect(response.message).to.eq(\"\\\"interview.hostTimezone\\\" is required\")\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -4090,7 +4090,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\"\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4139,7 +4139,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": []\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": []\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4188,7 +4188,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4237,7 +4237,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4286,7 +4286,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"L\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"L\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4335,7 +4335,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\", \"R\", \"F\", \"S\", \"U\", \"F\", \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\", \"R\", \"F\", \"S\", \"U\", \"F\", \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4384,7 +4384,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"round\": 1,\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"round\": 1,\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4433,7 +4433,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"2021-04-17\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"2021-04-17\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4482,7 +4482,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4531,7 +4531,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4578,7 +4578,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4625,7 +4625,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4674,7 +4674,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4721,7 +4721,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4768,7 +4768,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4817,7 +4817,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4866,7 +4866,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"hostUserId\": \"57646ff9-1cd3-4d3c-88ba-eb09a395366c\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4915,7 +4915,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4964,7 +4964,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5013,7 +5013,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5056,7 +5056,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5105,7 +5105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5876,7 +5876,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5977,7 +5977,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"xxx\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"xxx\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6027,7 +6027,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"startTimestamp\": \"2021-04-01\",\r\n    \"duration\": 30,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"2021-04-01\",\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6075,7 +6075,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6123,7 +6123,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6171,7 +6171,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6219,7 +6219,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6269,7 +6269,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6319,7 +6319,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6369,7 +6369,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6419,7 +6419,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6469,7 +6469,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6513,7 +6513,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6563,7 +6563,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"M\", \"T\", \"W\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:30\"\r\n        },\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6611,7 +6611,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"timezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

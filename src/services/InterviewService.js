@@ -300,7 +300,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       if (_.isNil(existentCalendar)) {
         const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
         const currentUserFullname = `${firstName} ${lastName}`
-        calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.timezone)
+        calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.hostTimezone)
         // make the new calendar primary
         calendar.isPrimary = true
       } else {
@@ -330,7 +330,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
             id: interview.hostUserId,
             // when scheduling a new interview we always set/update default available time and timezone
             defaultAvailableTime: interview.availableTime,
-            defaultTimezone: interview.timezone,
+            defaultTimezone: interview.hostTimezone,
             // don't add calendar if we use existent one
             calendar: !existentCalendar ? calendar : undefined
           },
@@ -372,7 +372,7 @@ requestInterview.schema = Joi.object().keys({
   jobCandidateId: Joi.string().uuid().required(),
   interview: Joi.object().keys({
     duration: Joi.number().integer().positive().required(),
-    timezone: Joi.string().required(),
+    hostTimezone: Joi.string().required(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -418,8 +418,8 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      // check if  "duration", "availableTime" or "timezone" changed. In that case we need to keep nylas consistent
-      if (interview.duration !== data.duration || interview.availableTime !== data.availableTime || interview.timezone !== data.timezone) {
+      // check if  "duration", "availableTime" or "hostTimezone" changed. In that case we need to keep nylas consistent
+      if (interview.duration !== data.duration || interview.availableTime !== data.availableTime || interview.hostTimezone !== data.hostTimezone) {
         const settingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
@@ -432,7 +432,7 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
         await patchSchedulingPage(interview.nylasPageId, nylasAccessToken, {
           duration: interview.duration !== data.duration ? data.duration : null,
           availableTime: interview.availableTime !== data.availableTime ? data.availableTime : null,
-          timezone: interview.timezone !== data.timezone ? data.timezone : null
+          timezone: interview.hostTimezone !== data.hostTimezone ? data.hostTimezone : null
         })
       }
 
@@ -483,7 +483,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   round: Joi.number().integer().positive().required(),
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
-    timezone: Joi.string(),
+    hostTimezone: Joi.string(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -556,7 +556,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   id: Joi.string().required(),
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
-    timezone: Joi.string(),
+    hostTimezone: Joi.string(),
     hostUserId: Joi.string().uuid(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
@@ -815,6 +815,9 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
       }
 
+      // get the associated interview
+      const interview = await Interview.findById(interviewId)
+
       const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
 
       // Interview cancel/reschedule links
@@ -846,7 +849,8 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
           startTimestamp: interviewStartTimeMoment.toDate(),
           endTimestamp: interviewEndTimeMoment.toDate(),
           nylasEventId: bookingDetails.calendar_event_id,
-          nylasEventEditHash: bookingDetails.edit_hash
+          nylasEventEditHash: bookingDetails.edit_hash,
+          guestTimezone: interview.guestTimezone || bookingDetails.recipient_tz
         }
       )
 
