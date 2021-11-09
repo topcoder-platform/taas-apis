@@ -293,6 +293,8 @@ module.exports = {
   TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of job candidate invited
   TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
+  // frequency of cron update  scheduled or rescheduled interview to completed status
+  CRON_UPDATE_COMPLETED_INTERVIEWS: process.env.CRON_UPDATE_COMPLETED_INTERVIEWS || '0 0 * * * *',
   // frequency of cron checking for available candidates for review
   CRON_CANDIDATE_REVIEW: process.env.CRON_CANDIDATE_REVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for coming up interviews
