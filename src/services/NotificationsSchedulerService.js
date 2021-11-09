@@ -596,7 +596,7 @@ async function sendInterviewScheduleReminderNotifications () {
 
   localLogger.debug('[sendInterviewScheduleReminderNotifications]: Looking for due records...')
   const currentTime = moment.utc()
-  const compareTime = currentTime.add(-INTERVIEW_REMINDER_DAY_AFTER).add(1, 'days').startOf('day')
+  const compareTime = currentTime.clone().subtract(moment.duration(INTERVIEW_REMINDER_DAY_AFTER)).endOf('day')
 
   const timestampFilter = {
     [Op.and]: [
@@ -631,25 +631,28 @@ async function sendInterviewScheduleReminderNotifications () {
   let interviewCount = 0
   for (const interview of interviews) {
     const start = moment(interview.createdAt)
-    if (currentTime.subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
-      // sendEmail
-      const data = await getDataForInterview(interview)
-      if (!data) { continue }
+    if (currentTime.clone().subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
+      const minutesInterval = currentTime.clone().diff(start, 'minutes') % (60 * 24)
+      if (minutesInterval < moment.duration(config.INTERVIEW_SCHEDULE_REMINDER_WINDOW).minutes()) {
+        // sendEmail
+        const data = await getDataForInterview(interview)
+        if (!data) { continue }
 
-      if (!_.isEmpty(data.guestEmail)) {
-        // send guest emails
-        sendNotification({}, {
-          template,
-          recipients: [{ email: data.guestEmail }],
-          data: {
-            ...data,
-            subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
-          }
-        })
-      } else {
-        localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+        if (!_.isEmpty(data.guestEmail)) {
+          // send guest emails
+          sendNotification({}, {
+            template,
+            recipients: [{ email: data.guestEmail }],
+            data: {
+              ...data,
+              subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+            }
+          })
+        } else {
+          localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+        }
+        interviewCount++
       }
-      interviewCount++
     }
   }
 
