@@ -183,6 +183,7 @@ module.exports = {
   INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  TAAS_APP_BASE_URL: process.env.TAAS_APP_BASE_URL || 'https://platform.topcoder-dev.com/taas',
   // the URL where TaaS App Earn is hosted
   TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
   // environment variables for Payment Service
@@ -338,6 +339,7 @@ module.exports = {
   // Nylas Client id
   NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
   NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
+  NYLAS_SCHEDULER_WEBHOOK_SECRET: process.env.NYLAS_SCHEDULER_WEBHOOK_SECRET,
   // We don't have to keep it secret, we use this JWT token just to compress data, not to secure it
   NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
 

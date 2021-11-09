@@ -4715,6 +4715,21 @@ components:
           type: string
           format: date-time
           description: "Interview end time."
+        nylasPageId:
+          type: string
+          description: 'Associated Nylas page id.'
+        nylasPageSlug:
+          type: string
+          description: 'Associated Nylas page slug.'
+        nylasCalendarId:
+          type: string
+          description: 'Associated Nylas calendar id.'
+        nylasEventId:
+          type: string
+          description: 'Associated Nylas event id.'
+        nylasEventEditHash:
+          type: string
+          description: 'Associated Nylas event edit hash.' 
         status:
           type: string
           enum:

@@ -57,7 +57,7 @@ async function partiallyUpdateInterviewById (req, res) {
  * @param res the response
  */
 async function partiallyUpdateInterviewByWebhook (req, res) {
-  res.send(await service.partiallyUpdateInterviewByWebhook(req.params.id, req.body))
+  res.send(await service.partiallyUpdateInterviewByWebhook(req.params.id, req.query.authToken, req.body))
 }
 
 /**
