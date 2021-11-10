@@ -3,6 +3,7 @@ const { Interviews: { Status: InterviewStatus } } = require('../../app-constants
 
 const crypto = require('crypto')
 const moment = require('moment')
+const _ = require('lodash')
 
 const logger = require('../common/logger')
 const { partiallyUpdateInterviewById } = require('./InterviewService')
@@ -34,9 +35,7 @@ const EVENTTYPES = {
 async function processFormattedEvent (webhookData, event) {
   localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}, data: ${JSON.stringify(webhookData)}, event: ${JSON.stringify(event)}`)
 
-  if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
-    localLogger.info('~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nEvent "Interview Scheduled" being processed by method InterviewService.partiallyUpdateInterviewByWebhook')
-  } else if (
+  if (
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
   ) {
@@ -63,7 +62,7 @@ async function processFormattedEvent (webhookData, event) {
       )
 
       localLogger.debug(
-        `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
+        `Interview cancelled under account id ${
           event.accountId
         } (email is ${event.email}) in calendar id ${
           event.calendarId
@@ -76,18 +75,6 @@ async function processFormattedEvent (webhookData, event) {
     } else {
       localLogger.info("Event id doesn't match with nylas_event_id of interview. Ignoring event.")
     }
-  } else {
-    localLogger.debug(
-      `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nUnkonwn event under account id ${
-        event.accountId
-      } (email is ${event.email}) in calendar id ${
-        event.calendarId
-      }. Event status is ${event.status} and it starts from ${moment
-        .unix(event.startTime)
-        .format('MMM DD YYYY HH:mm')} and ends at ${moment
-        .unix(event.endTime)
-        .format('MMM DD YYYY HH:mm')}`
-    )
   }
 }
 
@@ -123,12 +110,17 @@ async function nylasWebhook (req, res) {
     // process it!
     const data = req.body.deltas
     for (let i = 0; i < data.length; i++) {
-      const event = await getEventDetails(
-        data[i].object_data.account_id,
-        data[i].object_data.id
-      )
-      if (event) {
-        await processFormattedEvent(data[i], event)
+      // only process webhook with which we are interested in and ignore other
+      if (_.includes([EVENTTYPES.UPDATED], data[i].type)) {
+        const event = await getEventDetails(
+          data[i].object_data.account_id,
+          data[i].object_data.id
+        )
+        if (event) {
+          await processFormattedEvent(data[i], event)
+        }
+      } else {
+        localLogger.debug(`Ignoring Nylas Webhook type: "${data[i].type}".`)
       }
     }
   } catch (e) {
