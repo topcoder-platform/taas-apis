@@ -339,7 +339,7 @@ module.exports = {
   // Nylas Client id
   NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
   NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
-  NYLAS_SCHEDULER_WEBHOOK_SECRET: process.env.NYLAS_SCHEDULER_WEBHOOK_SECRET,
+  NYLAS_SCHEDULER_WEBHOOK_SECRET: process.env.NYLAS_SCHEDULER_WEBHOOK_SECRET || 'dummy-secret-for-local-testing-only',
   // We don't have to keep it secret, we use this JWT token just to compress data, not to secure it
   NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
 
