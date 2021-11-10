@@ -6,7 +6,6 @@ const axios = require('axios')
 const { createHash } = require('crypto')
 const config = require('config')
 const _ = require('lodash')
-const { NylasVirtualCalendarProvider } = require('../../app-constants')
 const errors = require('../common/errors')
 const logger = require('../common/logger')
 
@@ -37,25 +36,35 @@ async function createVirtualCalendar (calendarName, hostTimezone, accessToken) {
  * @returns {String} id of the created virtual calendar
  */
 async function createVirtualCalendarForUser (userId, userEmail, userFullName, timezone) {
-  const code = await authenticateAccount(userId, userEmail)
-  const { accessToken } = await getAccessToken(code)
-  try {
-    const calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
+  // We don't use email directly to identify user virtual calendar, because of the bug in Nylas
+  // If user connects Google/Microsoft calendar using the same email,
+  // then we always get Google/Microsoft account instead of nylas account
+  // so to bypass it, instead of email we use email with prefix, so Nylas Virtual Calendar email
+  // would never match real user email which they connect to Google/Microsoft
+  const virtualCalendarEmail = `virtual-calendar:${userEmail}`
+  const code = await authenticateAccount(userId, virtualCalendarEmail)
+  const { accessToken, provider } = await getAccessToken(code)
 
-    return {
-      id: calendar.id,
-      accountId: calendar.account_id,
-      accessToken,
-      // we always use `nylas` as a provider for Virtual Calendars,
-      // because from `getAccessToken` we might get other provider
-      // if user has Google or Microsoft calendar connected because we don't remove them from Nylas
-      accountProvider: NylasVirtualCalendarProvider,
-      email: userEmail,
-      isPrimary: calendar.is_primary,
-      isDeleted: false
+  const existentCalendars = await getExistingCalendars(accessToken)
+  let calendar = await getPrimaryCalendar(existentCalendars)
+
+  // if don't have existent calendar, then create a new one
+  if (!calendar) {
+    try {
+      calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
+    } catch (err) {
+      throw new Error(`Could not create a virtual calendar because of error: ${JSON.stringify(err)}`)
     }
-  } catch (err) {
-    throw new Error(`Could not create a virtual calendar because of error: ${JSON.stringify(err)}`)
+  }
+
+  return {
+    id: calendar.id,
+    accountId: calendar.account_id,
+    accessToken,
+    accountProvider: provider,
+    email: userEmail,
+    isPrimary: calendar.is_primary,
+    isDeleted: false
   }
 }
 
