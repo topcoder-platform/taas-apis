@@ -34,7 +34,11 @@ const templateFileMap = {
   [config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-expired-host.html', 'utf8')),
   [config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-invitation.html', 'utf8')),
   [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-host.html', 'utf8')),
-  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-guest.html', 'utf8'))
+  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-rescheduled-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-rescheduled-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-cancelled-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-cancelled-guest.html', 'utf8'))
 }
 
 /**

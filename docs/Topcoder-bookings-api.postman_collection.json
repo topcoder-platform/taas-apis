@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b412d070-e12c-49d6-809a-e71076d0ec95",
+		"_postman_id": "11b12c20-8ed1-4a9f-848b-b1caa511b62e",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -34330,6 +34330,98 @@
 								"jobCandidates",
 								"{{jobCandidateId}}",
 								"requestInterview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reschedule interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Rescheduled\",\r\n    \"startTimestamp\": \"2025-11-14T06:00:52.430Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"updateInterview",
+								"{{interviewRound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelled interview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{token_bookingManager}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"Cancelled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/jobCandidates/{{jobCandidateId}}/updateInterview/{{interviewRound}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"jobCandidates",
+								"{{jobCandidateId}}",
+								"updateInterview",
+								"{{interviewRound}}"
 							]
 						}
 					},
