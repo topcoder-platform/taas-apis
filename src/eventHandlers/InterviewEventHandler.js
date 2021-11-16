@@ -187,6 +187,24 @@ async function sendInterviewRescheduledNotifications (payload) {
   const interview = payload.value
   const interviewOldValue = payload.options.oldValue
 
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: `interview status ${interview.status} can not be rescheduled`
+    })
+    return
+  }
+
+  if (moment(interview.startTimestamp).isSame(interviewOldValue.startTimestamp)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: 'interview has same startTime can not be rescheduled'
+    })
+    return
+  }
+
   logger.debug({
     component: 'InterviewEventHandler',
     context: 'sendInterviewRescheduledNotifications',
@@ -279,6 +297,24 @@ async function sendInterviewRescheduledNotifications (payload) {
  */
 async function sendInterviewCancelledNotifications (payload) {
   const interview = payload.value
+  const interviewOldValue = payload.options.oldValue
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewCancelledNotifications',
+      message: `interview status ${interviewOldValue.status} can not be cancelled`
+    })
+    return
+  }
+  if (interview.status !== Constants.Interviews.Status.Cancelled) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewCancelledNotifications',
+      message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
 
   logger.debug({
     component: 'InterviewEventHandler',
@@ -486,21 +522,10 @@ async function processRequest (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
-  const interview = payload.value
-  const interviewOldValue = payload.options.oldValue
-  if (_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status) &&
-interview.status === interviewOldValue.status && !moment(interview.startTimestamp).isSame(interviewOldValue.startTimestamp)) {
-    // rescheduled
-    await sendInterviewRescheduledNotifications(payload)
-    await checkOverlapping(payload)
-  } else if (_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status) && interview.status === Constants.Interviews.Status.Cancelled) {
-    // cancelled
-    await sendInterviewCancelledNotifications(payload)
-  } else {
-    // scheduled
-    await sendInterviewScheduledNotifications(payload)
-    await checkOverlapping(payload)
-  }
+  await sendInterviewRescheduledNotifications(payload)
+  await sendInterviewCancelledNotifications(payload)
+  await sendInterviewScheduledNotifications(payload)
+  await checkOverlapping(payload)
 }
 
 module.exports = {
