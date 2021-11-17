@@ -292,6 +292,14 @@ module.exports = {
   TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of guest
   TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview rescheduled for host
+  TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview rescheduled for guest
+  TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview cancelled for host
+  TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview cancelled for guest
+  TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of job candidate invited
   TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron update  scheduled or rescheduled interview to completed status
