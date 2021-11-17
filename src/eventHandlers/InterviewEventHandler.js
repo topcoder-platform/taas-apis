@@ -187,11 +187,20 @@ async function sendInterviewRescheduledNotifications (payload) {
   const interview = payload.value
   const interviewOldValue = payload.options.oldValue
 
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: `interview status ${interviewOldValue.status} can not be rescheduled`
+    })
+    return
+  }
+
   if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
     logger.debug({
       component: 'InterviewEventHandler',
       context: 'sendInterviewRescheduledNotifications',
-      message: `interview status ${interview.status} can not be rescheduled`
+      message: `not interested in interview - status: ${interview.status}`
     })
     return
   }
