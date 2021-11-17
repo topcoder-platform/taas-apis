@@ -4715,6 +4715,12 @@ components:
           type: string
           format: date-time
           description: "Interview end time."
+        hostTimezone:
+          type: string
+          description: "Timezone of interview host."
+        guestTimezone:
+          type: string
+          description: "Timezone of interview candidate."
         nylasPageId:
           type: string
           description: 'Associated Nylas page id.'
@@ -4838,14 +4844,14 @@ components:
     RequestInterviewBody:
       required:
         - duration
-        - timezone
+        - hostTimezone
         - availableTime
       properties:
         duration:
           type: integer
           example: 30
           description: "duration of the interview"
-        timezone:
+        hostTimezone:
           type: string
           example: "Europe/London"
         availableTime:
@@ -4880,7 +4886,7 @@ components:
           type: integer
           example: 30
           description: "duration of the interview"
-        timezone:
+        hostTimezone:
           type: string
           example: "Europe/London"
         hostUserId:
@@ -6686,4 +6692,3 @@ components:
       properties:
         message:
           type: string
-
