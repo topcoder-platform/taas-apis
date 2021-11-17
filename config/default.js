@@ -307,7 +307,7 @@ module.exports = {
   // frequency of checking expired interview
   CRON_INTERVIEW_EXPIRED: process.env.CRON_INTERVIEW_EXPIRED || '*/5 * * * *',
   // frequency of checking interview schedule status which need remind job candidate to select time
-  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '00 00 13 * * 0-6',
+  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '*/5 * * * *',
   // frequency of cron checking for post interview actions
   CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for upcoming resource bookings
@@ -316,6 +316,8 @@ module.exports = {
   INTERVIEW_COMING_UP_MATCH_WINDOW: process.env.INTERVIEW_COMING_UP_MATCH_WINDOW || 'PT5M',
   // The remind time for fetching interviews which are coming up
   INTERVIEW_COMING_UP_REMIND_TIME: (process.env.INTERVIEW_COMING_UP_REMIND_TIME || 'PT1H,PT24H').split(','),
+  // The match window for fetching schedule reminder interviews
+  INTERVIEW_SCHEDULE_REMINDER_WINDOW: process.env.INTERVIEW_SCHEDULE_REMINDER_WINDOW || 'PT5M',
   // The match window for fetching completed interviews
   INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
   // The interview completed past time for fetching interviews
