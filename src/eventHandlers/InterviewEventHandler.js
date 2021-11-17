@@ -249,10 +249,10 @@ async function sendInterviewRescheduledNotifications (payload) {
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
         zoomLink: links.start_url,
-        oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        timezone: interviewEntity.timezone,
+        oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        end: moment(interview.endTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        hostTimezone: interviewEntity.hostTimezone,
         interviewCancelLink,
         interviewRescheduleLink
       }
@@ -269,10 +269,10 @@ async function sendInterviewRescheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          timezone: interviewEntity.timezone,
+          oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          guestTimezone: interviewEntity.guestTimezone,
           interviewCancelLink,
           interviewRescheduleLink
         }
@@ -354,7 +354,7 @@ async function sendInterviewCancelledNotifications (payload) {
         host: data.hostFullName,
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
-        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`
+        start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`
       }
     })
 
@@ -368,7 +368,7 @@ async function sendInterviewCancelledNotifications (payload) {
           host: data.hostFullName,
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
-          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`
+          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`
         }
       })
     } else {
