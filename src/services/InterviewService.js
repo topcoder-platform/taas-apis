@@ -7,7 +7,7 @@ const Joi = require('joi')
 const moment = require('moment')
 const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
-const { v4: uuid, validate: uuidValidate } = require('uuid')
+const { v4: uuid } = require('uuid')
 const { createHash } = require('crypto')
 const { Interviews: InterviewConstants } = require('../../app-constants')
 const helper = require('../common/helper')
@@ -36,6 +36,7 @@ const {
   updateNylasEvent
 } = require('./NylasService')
 const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
+const { processInterviewWebhookUsingMutex } = require('../common/helper')
 
 // Each request made by Nylas in the partiallyUpdateInterviewByWebhook endpoint
 // includes a SHA256 hash of a secret (stored in env variable) to be sent in the
@@ -185,14 +186,6 @@ async function getInterviewById (currentUser, id, fromDb = false) {
           }
         }
       })
-      // xaiId
-      esQueryBody.query.nested.query.bool.should.push({
-        term: {
-          'interviews.xaiId': {
-            value: id
-          }
-        }
-      })
       // search
       const { body } = await esClient.search({
         index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
@@ -206,7 +199,7 @@ async function getInterviewById (currentUser, id, fromDb = false) {
         return interview
       }
       // if reaches here, the interview with this IDs is not found
-      throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+      throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
     } catch (err) {
       logger.logFullError(err, { component: 'InterviewService', context: 'getInterviewById' })
       throw err
@@ -214,27 +207,16 @@ async function getInterviewById (currentUser, id, fromDb = false) {
   }
   // either ES query failed or `fromDb` is set - fallback to DB
   logger.info({ component: 'InterviewService', context: 'getInterviewById', message: 'try to query db for data' })
-  var interview
-  if (uuidValidate(id)) {
-    interview = await Interview.findOne({
-      where: {
-        [Op.or]: [
-          { id }
-        ]
-      }
-    })
-  } else {
-    interview = await Interview.findOne({
-      where: {
-        [Op.or]: [
-          { xaiId: id }
-        ]
-      }
-    })
-  }
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id }
+      ]
+    }
+  })
   // throw NotFound error if doesn't exist
   if (!!interview !== true) {
-    throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
   }
   // check permission before returning
   await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
@@ -525,27 +507,16 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
  * @returns {Object} the patched interview object
  */
 async function partiallyUpdateInterviewById (currentUser, id, data) {
-  var interview
-  if (uuidValidate(id)) {
-    interview = await Interview.findOne({
-      where: {
-        [Op.or]: [
-          { id }
-        ]
-      }
-    })
-  } else {
-    interview = await Interview.findOne({
-      where: {
-        [Op.or]: [
-          { xaiId: id }
-        ]
-      }
-    })
-  }
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id }
+      ]
+    }
+  })
   // throw NotFound error if doesn't exist
   if (!!interview !== true) {
-    throw new errors.NotFoundError(`Interview doesn't exist with id/xaiId: ${id}`)
+    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
   }
   // check permission
   await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
@@ -783,98 +754,101 @@ async function updateCompletedInterviews () {
  * @returns nothing
  */
 async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhookBody) {
-  logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+  // don't await for response to prevent gateway timeout
+  // we use mutex here, otherwise we might update the same interview using `NylasWebhookService`
+  // and there maybe race condition when updating ES
+  processInterviewWebhookUsingMutex(interviewId, async () => {
+    logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
 
-  // Verify the request to make sure it's actually from Nylas.
-  if (!verifyNylasWebhookRequest(authToken)) {
-    logger.error({
-      component: 'InterviewService',
-      context: 'partiallyUpdateInterviewByWebhook',
-      message: `Failed to verify Nylas webhook request authToken: ${authToken}`
-    })
-
-    throw new errors.UnauthorizedError('Webhook request failed verification.')
-  }
-
-  // this method is used by the Nylas webhooks, so use M2M user
-  const m2mUser = helper.getAuditM2Muser()
-  const { page: pageDetails, booking: bookingDetails } = webhookBody
-  const interviewStartTimeMoment = moment.unix(bookingDetails.start_time)
-  const interviewEndTimeMoment = moment.unix(bookingDetails.end_time)
-  let updatedInterview
-
-  if (bookingDetails.is_confirmed) {
-    try {
-      const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
-        where: {
-          nylasCalendars: {
-            [Op.contains]: [{ id: bookingDetails.calendar_id }]
-          }
-        }
-      })
-
-      if (!userMeetingSettingsForCalendar) {
-        throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
-      }
-
-      // get the associated interview
-      const interview = await Interview.findById(interviewId)
-
-      const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
-
-      // Interview cancel/reschedule links
-      const cancelInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/cancel`
-      const rescheduleInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/reschedule`
-
-      // update events endpoint only takes stringified values for any key in metadata
-      const pageId = pageDetails && pageDetails.id ? pageDetails.id.toString() : ''
-      const pageSlug = (pageDetails && pageDetails.slug) || ''
-      const eventDescription = `\n\nTo make changes to this event, click the links below:\n\nReschedule: ${rescheduleInterviewLink}\nCancel: ${cancelInterviewLink}`
-
-      const updateEventData = {
-        description: eventDescription,
-        metadata: {
-          interviewId,
-          pageId,
-          pageSlug
-        }
-      }
-
-      // update the Nylas event to set custom metadata
-      await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
-
-      updatedInterview = await partiallyUpdateInterviewById(
-        m2mUser,
-        interviewId,
-        {
-          status: InterviewConstants.Status.Scheduled,
-          startTimestamp: interviewStartTimeMoment.toDate(),
-          endTimestamp: interviewEndTimeMoment.toDate(),
-          nylasEventId: bookingDetails.calendar_event_id,
-          nylasEventEditHash: bookingDetails.edit_hash,
-          guestTimezone: interview.guestTimezone || bookingDetails.recipient_tz
-        }
-      )
-
-      logger.debug({
+    // Verify the request to make sure it's actually from Nylas.
+    if (!verifyNylasWebhookRequest(authToken)) {
+      logger.error({
         component: 'InterviewService',
         context: 'partiallyUpdateInterviewByWebhook',
-        message:
-        `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
-          bookingDetails.account_id
-        } (email is ${bookingDetails.recipient_email}) in calendar id ${
-          bookingDetails.calendar_id
-        }. Event status is ${InterviewConstants.Status.Scheduled} and starts from ${interviewStartTimeMoment
-          .format('MMM DD YYYY HH:mm')} and ends at ${interviewEndTimeMoment
-          .format('MMM DD YYYY HH:mm')}`
+        message: `Failed to verify Nylas webhook request authToken: ${authToken}`
       })
-    } catch (err) {
-      logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
-      throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+
+      throw new errors.UnauthorizedError('Webhook request failed verification.')
     }
 
-    return updatedInterview
-  }
+    // this method is used by the Nylas webhooks, so use M2M user
+    const m2mUser = helper.getAuditM2Muser()
+    const { page: pageDetails, booking: bookingDetails } = webhookBody
+    const interviewStartTimeMoment = moment.unix(bookingDetails.start_time)
+    const interviewEndTimeMoment = moment.unix(bookingDetails.end_time)
+
+    if (bookingDetails.is_confirmed) {
+      try {
+        const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
+          where: {
+            nylasCalendars: {
+              [Op.contains]: [{ id: bookingDetails.calendar_id }]
+            }
+          }
+        })
+
+        if (!userMeetingSettingsForCalendar) {
+          throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
+        }
+
+        // get the associated interview
+        const interview = await Interview.findById(interviewId)
+
+        const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
+
+        // Interview cancel/reschedule links
+        const cancelInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/cancel`
+        const rescheduleInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/reschedule`
+
+        // update events endpoint only takes stringified values for any key in metadata
+        const pageId = pageDetails && pageDetails.id ? pageDetails.id.toString() : ''
+        const pageSlug = (pageDetails && pageDetails.slug) || ''
+        const eventDescription = `\n\nTo make changes to this event, click the links below:\n\nReschedule: ${rescheduleInterviewLink}\nCancel: ${cancelInterviewLink}`
+
+        const updateEventData = {
+          description: eventDescription,
+          metadata: {
+            interviewId,
+            pageId,
+            pageSlug
+          }
+        }
+
+        // update the Nylas event to set custom metadata
+        await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
+
+        await partiallyUpdateInterviewById(
+          m2mUser,
+          interviewId,
+          {
+            status: InterviewConstants.Status.Scheduled,
+            startTimestamp: interviewStartTimeMoment.toDate(),
+            endTimestamp: interviewEndTimeMoment.toDate(),
+            // additionally `nylasEventId` would be always set inside NylasWebhookService to make sure it always happens before cancelling
+            nylasEventId: bookingDetails.calendar_event_id,
+            nylasEventEditHash: bookingDetails.edit_hash,
+            guestTimezone: interview.guestTimezone || bookingDetails.recipient_tz
+          }
+        )
+
+        logger.debug({
+          component: 'InterviewService',
+          context: 'partiallyUpdateInterviewByWebhook',
+          message:
+          `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
+            bookingDetails.account_id
+          } (email is ${bookingDetails.recipient_email}) in calendar id ${
+            bookingDetails.calendar_id
+          }. Event status is ${InterviewConstants.Status.Scheduled} and starts from ${interviewStartTimeMoment
+            .format('MMM DD YYYY HH:mm')} and ends at ${interviewEndTimeMoment
+            .format('MMM DD YYYY HH:mm')}`
+        })
+      } catch (err) {
+        logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+        throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+      }
+    }
+  })
 }
 partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
   interviewId: Joi.string().uuid().required(),
