@@ -3,9 +3,11 @@
  */
 
 const axios = require('axios')
+const { createHash } = require('crypto')
 const config = require('config')
 const _ = require('lodash')
-const { NylasVirtualCalendarProvider } = require('../../app-constants')
+const errors = require('../common/errors')
+const logger = require('../common/logger')
 
 /**
  * @param {Object} calendarName the name of the Nylas calendar
@@ -34,25 +36,35 @@ async function createVirtualCalendar (calendarName, hostTimezone, accessToken) {
  * @returns {String} id of the created virtual calendar
  */
 async function createVirtualCalendarForUser (userId, userEmail, userFullName, timezone) {
-  const code = await authenticateAccount(userId, userEmail)
-  const { accessToken } = await getAccessToken(code)
-  try {
-    const calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
+  // We don't use email directly to identify user virtual calendar, because of the bug in Nylas
+  // If user connects Google/Microsoft calendar using the same email,
+  // then we always get Google/Microsoft account instead of nylas account
+  // so to bypass it, instead of email we use email with prefix, so Nylas Virtual Calendar email
+  // would never match real user email which they connect to Google/Microsoft
+  const virtualCalendarEmail = `virtual-calendar:${userEmail}`
+  const code = await authenticateAccount(userId, virtualCalendarEmail)
+  const { accessToken, provider } = await getAccessToken(code)
 
-    return {
-      id: calendar.id,
-      accountId: calendar.account_id,
-      accessToken,
-      // we always use `nylas` as a provider for Virtual Calendars,
-      // because from `getAccessToken` we might get other provider
-      // if user has Google or Microsoft calendar connected because we don't remove them from Nylas
-      accountProvider: NylasVirtualCalendarProvider,
-      email: userEmail,
-      isPrimary: calendar.is_primary,
-      isDeleted: false
+  const existentCalendars = await getExistingCalendars(accessToken)
+  let calendar = await getPrimaryCalendar(existentCalendars)
+
+  // if don't have existent calendar, then create a new one
+  if (!calendar) {
+    try {
+      calendar = await createVirtualCalendar(userFullName, timezone, accessToken)
+    } catch (err) {
+      throw new Error(`Could not create a virtual calendar because of error: ${JSON.stringify(err)}`)
     }
-  } catch (err) {
-    throw new Error(`Could not create a virtual calendar because of error: ${JSON.stringify(err)}`)
+  }
+
+  return {
+    id: calendar.id,
+    accountId: calendar.account_id,
+    accessToken,
+    accountProvider: provider,
+    email: userEmail,
+    isPrimary: calendar.is_primary,
+    isDeleted: false
   }
 }
 
@@ -64,6 +76,24 @@ async function getExistingCalendars (accessToken) {
   })
 
   return res.data
+}
+
+async function getAccountEmail (accountId) {
+  const base64Secret = Buffer.from(
+    `${config.get('NYLAS_CLIENT_SECRET')}:`
+  ).toString('base64')
+  const res = await axios.get(
+    `https://api.nylas.com/a/${config.get(
+      'NYLAS_CLIENT_ID'
+    )}/accounts/${accountId}`,
+    {
+      headers: {
+        Authorization: `Basic ${base64Secret}`
+      }
+    }
+  )
+
+  return res.data.email
 }
 
 async function authenticateAccount (userId, email) {
@@ -91,6 +121,38 @@ async function getAccessToken (code) {
   return { accountId, accessToken, provider, email }
 }
 
+async function getEventDetails (accountId, eventId) {
+  const email = await getAccountEmail(accountId)
+  const code = await authenticateAccount(accountId, email)
+  const { accessToken } = await getAccessToken(code)
+
+  try {
+    const res = await axios.get(`https://api.nylas.com/events/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+
+    const { when } = res.data
+    const { end_time: endTime, start_time: startTime } = when
+
+    return {
+      endTime,
+      startTime,
+      status: res.data.status,
+      accountId: res.data.account_id,
+      email,
+      calendarId: res.data.calendar_id,
+      ..._.omit(res.data, ['account_id', 'calendar_id'])
+    }
+  } catch (error) {
+    logger.error({
+      component: 'NylasService',
+      message: `Get event details error, ${error.response.status}`
+    })
+  }
+}
+
 function getAvailableTimeFromSchedulingPage (page) {
   return page.config.booking.opening_hours
 }
@@ -99,6 +161,11 @@ function getTimezoneFromSchedulingPage (page) {
 }
 
 async function createSchedulingPage (interview, calendar, options) {
+  const webhookAuthTokenSecret = config.NYLAS_SCHEDULER_WEBHOOK_SECRET
+  const authTokenHash = createHash('sha256')
+    .update(webhookAuthTokenSecret)
+    .digest('hex')
+
   const res = await axios.post('https://api.schedule.nylas.com/manage/pages', {
     access_tokens: [calendar.accessToken],
     slug: `tc-taas-interview-${interview.id}`,
@@ -133,10 +200,10 @@ async function createSchedulingPage (interview, calendar, options) {
           delivery_recipient: 'owner',
           // This time needs to be greater than the furthest out an event can be scheduled in minutes.
           time_before_event: config.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE * 24 * 60 + 1,
-          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
+          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks?authToken=${authTokenHash}` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
         }
       ],
-      timezone: interview.timezone
+      timezone: interview.hostTimezone
     },
     disableViewingPages: true
   })
@@ -200,6 +267,26 @@ async function getPrimaryCalendar (calendars) {
   return null
 }
 
+/**
+ * Update the Nylas event with provided data
+ *
+ * @param {string} eventId
+ * @param {object} data - this endpoint only takes stringified values for any key in metadata
+ * @returns {object} the updated event record
+ */
+async function updateNylasEvent (eventId, data, accessToken) {
+  try {
+    const res = await axios.put(`https://api.nylas.com/events/${eventId}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    return res.data
+  } catch (err) {
+    throw new errors.BadRequestError(`Error updating event data: ${JSON.stringify(err)}`)
+  }
+}
+
 module.exports = {
   createVirtualCalendarForUser,
   createSchedulingPage,
@@ -208,5 +295,9 @@ module.exports = {
   getTimezoneFromSchedulingPage,
   getExistingCalendars,
   getAccessToken,
-  getPrimaryCalendar
+  getPrimaryCalendar,
+  getEventDetails,
+  getAccountEmail,
+  updateNylasEvent,
+  authenticateAccount
 }

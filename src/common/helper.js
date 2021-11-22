@@ -24,6 +24,7 @@ const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment-timezone')
 const { PaymentStatusRules, SearchUsers } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
+const Mutex = require('async-mutex').Mutex
 
 const localLogger = {
   debug: (message) =>
@@ -143,7 +144,8 @@ esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
       nylasPageId: { type: 'keyword' },
       nylasPageSlug: { type: 'keyword' },
       nylasCalendarId: { type: 'keyword' },
-      timezone: { type: 'keyword' },
+      hostTimezone: { type: 'keyword' },
+      guestTimezone: { type: 'keyword' },
       availableTime: {
         type: 'nested',
         properties: {
@@ -2170,6 +2172,33 @@ function formatDate (date) {
   }
 }
 
+const interviewMutexMap = {}
+/**
+ * Runs code one by one using mutex for particular interview.
+ * If interview id is not provided, it would run code one by one globally.
+ * So it's better to provide interview id to avoid to long queue.
+ *
+ * @param {String} interviewId interview id or `null`
+ * @param {Function} func function to execute
+ * @returns Promise
+ */
+async function processInterviewWebhookUsingMutex (interviewId = null, func) {
+  let accountMutex = interviewMutexMap[interviewId]
+  if (!accountMutex) {
+    accountMutex = new Mutex()
+    interviewMutexMap[interviewId] = accountMutex
+  }
+
+  return accountMutex.runExclusive(func).then((result) => {
+    // free up memory for individual interviews
+    if (interviewId) {
+      delete interviewMutexMap[interviewId]
+    }
+
+    return result
+  })
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2237,5 +2266,6 @@ module.exports = {
   getEmailTemplatesForKey,
   formatDate,
   formatDateTimeEDT,
-  getUserDetailsByUserUUID
+  getUserDetailsByUserUUID,
+  processInterviewWebhookUsingMutex
 }

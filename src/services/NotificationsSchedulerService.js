@@ -4,6 +4,7 @@
 const _ = require('lodash')
 const { Op } = require('sequelize')
 const moment = require('moment')
+const momentTz = require('moment-timezone')
 const config = require('config')
 const models = require('../models')
 const Job = models.Job
@@ -71,6 +72,32 @@ async function getUserWithId (userId) {
   }
 
   return user
+}
+
+/**
+ * Format Interview time according to timezone of host or guest
+ *
+ * @param {object} interview
+ * @param {object} options
+ *
+ * @returns Formatted time in specified user's timezone
+ */
+function formatInterviewTime (interview, options = { forInterviewHost: false, forInterviewGuest: false }) {
+  // using format as used in helper.formatDateTimeEDT function, this also shows the provided timezone
+  const INTERVIEW_START_TIME_FORMAT = 'MMM D, YYYY, HH:mm z'
+
+  let startTime
+  if (interview.startTimestamp) {
+    if (options.forInterviewHost) {
+      startTime = momentTz(interview.startTimestamp).tz(interview.hostTimezone).format(INTERVIEW_START_TIME_FORMAT)
+    } else if (options.forInterviewGuest) {
+      startTime = momentTz(interview.startTimestamp).tz(interview.guestTimezone).format(INTERVIEW_START_TIME_FORMAT)
+    }
+  } else {
+    startTime = ''
+  }
+
+  return startTime
 }
 
 /**
@@ -250,6 +277,7 @@ async function sendInterviewComingUpNotifications () {
     if (!data) { continue }
 
     if (!_.isEmpty(interview.hostEmail)) {
+      data.startTime = formatInterviewTime(interview, { forInterviewHost: true })
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
         recipients: [{ email: interview.hostEmail }],
@@ -262,6 +290,7 @@ async function sendInterviewComingUpNotifications () {
     }
 
     if (!_.isEmpty(interview.guestEmails)) {
+      data.startTime = formatInterviewTime(interview, { forInterviewGuest: true })
       // send guest emails
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
@@ -336,6 +365,7 @@ async function sendInterviewCompletedNotifications () {
 
     const data = await getDataForInterview(interview, jcMap[interview.jobCandidateId])
     if (!data) { continue }
+    data.startTime = formatInterviewTime(interview, { forInterviewHost: true })
 
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
@@ -411,6 +441,7 @@ async function sendPostInterviewActionNotifications () {
         const d = await getDataForInterview(interview, projectJc, projectJob)
         if (!d) { continue }
         d.jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
+        d.startTime = formatInterviewTime(interview, { forInterviewHost: true })
         webNotifications.push({
           serviceId: 'web',
           type: template,
@@ -596,7 +627,7 @@ async function sendInterviewScheduleReminderNotifications () {
 
   localLogger.debug('[sendInterviewScheduleReminderNotifications]: Looking for due records...')
   const currentTime = moment.utc()
-  const compareTime = currentTime.add(-INTERVIEW_REMINDER_DAY_AFTER).add(1, 'days').startOf('day')
+  const compareTime = currentTime.clone().subtract(moment.duration(INTERVIEW_REMINDER_DAY_AFTER)).endOf('day')
 
   const timestampFilter = {
     [Op.and]: [
@@ -631,25 +662,28 @@ async function sendInterviewScheduleReminderNotifications () {
   let interviewCount = 0
   for (const interview of interviews) {
     const start = moment(interview.createdAt)
-    if (currentTime.subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
-      // sendEmail
-      const data = await getDataForInterview(interview)
-      if (!data) { continue }
+    if (currentTime.clone().subtract(INTERVIEW_REMINDER_DAY_AFTER).diff(start, 'days') % INTERVIEW_REMINDER_FREQUENCY === 0) {
+      const minutesInterval = currentTime.clone().diff(start, 'minutes') % (60 * 24)
+      if (minutesInterval < moment.duration(config.INTERVIEW_SCHEDULE_REMINDER_WINDOW).minutes()) {
+        // sendEmail
+        const data = await getDataForInterview(interview)
+        if (!data) { continue }
 
-      if (!_.isEmpty(data.guestEmail)) {
-        // send guest emails
-        sendNotification({}, {
-          template,
-          recipients: [{ email: data.guestEmail }],
-          data: {
-            ...data,
-            subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
-          }
-        })
-      } else {
-        localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+        if (!_.isEmpty(data.guestEmail)) {
+          // send guest emails
+          sendNotification({}, {
+            template,
+            recipients: [{ email: data.guestEmail }],
+            data: {
+              ...data,
+              subject: `Reminder: ${data.duration} minutes tech interview with ${data.guestFullName} for ${data.jobTitle} is requested by the Customer`
+            }
+          })
+        } else {
+          localLogger.error(`Interview id: ${interview.id} guest emails not present`, 'sendInterviewScheduleReminderNotifications')
+        }
+        interviewCount++
       }
-      interviewCount++
     }
   }
 

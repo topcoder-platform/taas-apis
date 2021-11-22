@@ -1,17 +1,17 @@
 const config = require('config')
-const models = require('../models')
-const { Op } = require('sequelize')
-const Interview = models.Interview
-const _ = require('lodash')
-const constants = require('../../app-constants')
+const { Interviews: { Status: InterviewStatus } } = require('../../app-constants')
 
 const crypto = require('crypto')
-const axios = require('axios')
 const moment = require('moment')
+const _ = require('lodash')
+const { validate: uuidValidate } = require('uuid')
 
 const logger = require('../common/logger')
 const { partiallyUpdateInterviewById } = require('./InterviewService')
-const { getAuditM2Muser } = require('../common/helper')
+const { getEventDetails } = require('./NylasService')
+const { getAuditM2Muser, processInterviewWebhookUsingMutex } = require('../common/helper')
+const { Interview } = require('../../src/models')
+const errors = require('../common/errors')
 
 const localLogger = {
   debug: (message, context) =>
@@ -28,84 +28,23 @@ const EVENTTYPES = {
   DELETED: 'event.deleted'
 }
 
-async function getAccountEmail (accountId) {
-  const base64Secret = Buffer.from(
-    `${config.get('NYLAS_CLIENT_SECRET')}:`
-  ).toString('base64')
-  const res = await axios.get(
-    `https://api.nylas.com/a/${config.get(
-      'NYLAS_CLIENT_ID'
-    )}/accounts/${accountId}`,
-    {
-      headers: {
-        Authorization: `Basic ${base64Secret}`
-      }
+const getInterviewIdFromEvent = (event) => {
+  // if we already update event description and added metadata, then use it to get interview id
+  if (_.get(event, 'metadata.interviewId')) {
+    return event.metadata.interviewId
+
+  // if this is a new event and we haven't updated description yet, and haven't set metadata,
+  // then parse description
+  } else {
+    const matchId = event.description.match(/tc-taas-interview-([^/]+)/)
+    const interviewId = matchId && matchId[1]
+
+    if (!uuidValidate(interviewId)) {
+      throw new Error(`Cannot get interview id for event ${event.id}.`)
     }
-  )
 
-  return res.data.email
-}
-
-async function authenticateAccount (accountId, email) {
-  const res = await axios.post('https://api.nylas.com/connect/authorize', {
-    client_id: config.get('NYLAS_CLIENT_ID'),
-    provider: 'nylas',
-    scopes: 'calendar',
-    email,
-    name: `${accountId} virtual calendar`,
-    settings: {}
-  })
-
-  return res.data.code
-}
-
-async function getAccessToken (code) {
-  const res = await axios.post('https://api.nylas.com/connect/token', {
-    client_id: config.get('NYLAS_CLIENT_ID'),
-    client_secret: config.get('NYLAS_CLIENT_SECRET'),
-    code
-  })
-
-  const { access_token: accessToken } = res.data
-
-  return accessToken
-}
-
-async function getEventDetails (accountId, eventId) {
-  const email = await getAccountEmail(accountId)
-  const code = await authenticateAccount(accountId, email)
-  const accessToken = await getAccessToken(code)
-
-  try {
-    const res = await axios.get(`https://api.nylas.com/events/${eventId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    const { when } = res.data
-    const { end_time: endTime, start_time: startTime } = when
-
-    return {
-      endTime,
-      startTime,
-      status: res.data.status,
-      accountId: res.data.account_id,
-      email,
-      calendarId: res.data.calendar_id,
-      ..._.omit(res.data, ['account_id', 'calendar_id'])
-    }
-  } catch (error) {
-    localLogger.error(`Get event details error, ${error.response.status}`)
+    return interviewId
   }
-}
-
-const parseInterviewId = (emailText) => {
-  const sArray = emailText.trim().split('\n')
-  const lastLine = sArray.slice(-1)[0]
-  // eslint-disable-next-line
-  const id = lastLine.match(/tc-taas-interview-([^\/]*)/)[1]
-  return id
 }
 
 /**
@@ -116,54 +55,70 @@ const parseInterviewId = (emailText) => {
 async function processFormattedEvent (webhookData, event) {
   localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}, data: ${JSON.stringify(webhookData)}, event: ${JSON.stringify(event)}`)
 
-  const interviewId = parseInterviewId(event.description) // remove prefix
-
-  const interview = await Interview.findOne({
-    where: {
-      [Op.or]: [{ id: interviewId }]
-    }
-  })
-
+  const interviewId = getInterviewIdFromEvent(event)
   // this method is used by the Nylas webhooks, so use M2M user
   const m2mUser = getAuditM2Muser()
 
+  // once event is created associate it with corresponding interview
   if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
-    localLogger.info('~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nEvent "Interview Scheduled" being processed by method InterviewService.partiallyUpdateInterviewByWebhook')
+    try {
+      const interview = await Interview.findById(interviewId)
+      if (!interview) {
+        throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
+      }
+
+      await partiallyUpdateInterviewById(
+        m2mUser,
+        interviewId,
+        {
+          nylasEventId: event.id
+          // other fields would be updated inside `partiallyUpdateInterviewByWebhook`
+        }
+      )
+
+      if (interview.nylasEventId) {
+        localLogger.debug(`Interview with id "${interview.id}" has been re-assigned from Nylas event id "${interview.nylasEventId}" to "${event.id}".`)
+      } else {
+        localLogger.debug(`Interview with id "${interview.id}" is now assigned to Nylas event id "${event.id}".`)
+      }
+    } catch (err) {
+      logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+      throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+    }
   } else if (
     webhookData.type === EVENTTYPES.UPDATED &&
     event.status === 'cancelled'
   ) {
-    await partiallyUpdateInterviewById(
-      m2mUser,
-      interview.id,
-      {
-        status: constants.Interviews.Status.Cancelled
-      }
-    )
+    const interview = await Interview.findById(interviewId)
+    if (!interview) {
+      throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
+    }
 
-    localLogger.debug(
-      `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview cancelled under account id ${
-        event.accountId
-      } (email is ${event.email}) in calendar id ${
-        event.calendarId
-      }. Event status is ${event.status} and it would have started from ${moment
-        .unix(event.startTime)
-        .format('MMM DD YYYY HH:mm')} and ended at ${moment
-        .unix(event.endTime)
-        .format('MMM DD YYYY HH:mm')}`
-    )
-  } else {
-    localLogger.debug(
-      `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nUnkonwn event under account id ${
-        event.accountId
-      } (email is ${event.email}) in calendar id ${
-        event.calendarId
-      }. Event status is ${event.status} and it starts from ${moment
-        .unix(event.startTime)
-        .format('MMM DD YYYY HH:mm')} and ends at ${moment
-        .unix(event.endTime)
-        .format('MMM DD YYYY HH:mm')}`
-    )
+    if (interview.nylasEventId === event.id && interview.status === InterviewStatus.Cancelled) {
+      localLogger.info('Interview is already cancelled. Ignoring event.')
+    } else if (interview.nylasEventId === event.id && interview.status !== InterviewStatus.Cancelled) {
+      await partiallyUpdateInterviewById(
+        m2mUser,
+        interviewId,
+        {
+          status: InterviewStatus.Cancelled
+        }
+      )
+
+      localLogger.debug(
+        `Interview cancelled under account id ${
+          event.accountId
+        } (email is ${event.email}) in calendar id ${
+          event.calendarId
+        }. Event status is ${event.status} and it would have started from ${moment
+          .unix(event.startTime)
+          .format('MMM DD YYYY HH:mm')} and ended at ${moment
+          .unix(event.endTime)
+          .format('MMM DD YYYY HH:mm')}`
+      )
+    } else {
+      localLogger.info("Event id doesn't match with nylas_event_id of interview. Ignoring event.")
+    }
   }
 }
 
@@ -199,16 +154,35 @@ async function nylasWebhook (req, res) {
     // process it!
     const data = req.body.deltas
     for (let i = 0; i < data.length; i++) {
-      const event = await getEventDetails(
-        data[i].object_data.account_id,
-        data[i].object_data.id
-      )
-      if (event) {
-        await processFormattedEvent(data[i], event)
+      // only process webhook with which we are interested in and ignore other
+      if (_.includes([EVENTTYPES.CREATED, EVENTTYPES.UPDATED], data[i].type)) {
+        // make sure that we process webhooks one by one for the same interview
+        // if interviewId is not yet set inside the metadata, then such webhook would be processed
+        // in the global queue
+        const interviewIdOrNull = _.get(data[i], 'object_data.metadata.interviewId', null)
+        // don't await for response to prevent gateway timeout
+        // we have to use mutex here to support re-scheduling
+        // otherwise when new event is created we might not yet update `nylasEventId`
+        // and then we would accidentally cancel re-scheduled event
+        processInterviewWebhookUsingMutex(interviewIdOrNull, async () => {
+          try {
+            const event = await getEventDetails(
+              data[i].object_data.account_id,
+              data[i].object_data.id
+            )
+            if (event) {
+              await processFormattedEvent(data[i], event)
+            }
+          } catch (e) {
+            localLogger.error(`Process nylas webhook failed with error: ${e.toString()}`)
+          }
+        })
+      } else {
+        localLogger.debug(`Ignoring Nylas Webhook type: "${data[i].type}".`)
       }
     }
   } catch (e) {
-    localLogger.error(`Process nylas webhook failed with error: ${JSON.stringify(e)}`)
+    localLogger.error(`Process nylas webhook failed with error: ${e.toString()}`)
   }
 
   // 200 response tells Nylas your endpoint is online and healthy.

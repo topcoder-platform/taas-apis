@@ -861,7 +861,8 @@
                         }
                     ],
                     "nylasCalendarId": "b3b0ebdb-3379-4971-8abd-d2d840af5b09",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "c3d4fbf3-2269-4ebc-a0fe-c4af094997e6",
                     "nylasPageSlug": "tc-taas-interview-077aa2ca-5b60-4ad9-a965-1b37e08a5046",
                     "duration": null,
@@ -902,7 +903,8 @@
                         }
                     ],
                     "nylasCalendarId": "f5b672a9-228c-4041-9761-ab7bc9a5dd64",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "319ac38a-fdfe-48c1-9669-0b03f18c9354",
                     "nylasPageSlug": "tc-taas-interview-b1f7ba76-640f-47e2-9463-59e51b51ec60",
                     "duration": null,
@@ -928,7 +930,8 @@
                         }
                     ],
                     "nylasCalendarId": "785735",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "902bb544-594a-4667-9646-460171c4efa0",
                     "nylasPageSlug": "tc-taas-interview-3144fa65-ea1a-4bec-81b0-7cb1c8845826",
                     "duration": null,
@@ -969,7 +972,8 @@
                         }
                     ],
                     "nylasCalendarId": "785735",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "dfc118c9-cdc6-4716-a8c5-763b5ff2383c",
                     "nylasPageSlug": "tc-taas-interview-976d23a9-5710-453f-99d9-f57a588bb610",
                     "duration": null,
@@ -995,7 +999,8 @@
                         }
                     ],
                     "nylasCalendarId": "785735",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "f3e3a400-44e9-445a-96b4-adff39b0344d",
                     "nylasPageSlug": "tc-taas-interview-a23e1bf2-1084-4cfe-a0d8-d83bc6fec655",
                     "duration": null,
@@ -1021,7 +1026,8 @@
                         }
                     ],
                     "nylasCalendarId": "785735",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "f3e3a400-44e9-445a-96b4-adff39b0344d",
                     "nylasPageSlug": "tc-taas-interview-505db942-79fe-4b6f-974c-b359e1b61967",
                     "duration": null,
@@ -1047,7 +1053,8 @@
                         }
                     ],
                     "nylasCalendarId": "785735",
-                    "timezone": "Europe/London",
+                    "hostTimezone": "Europe/London",
+                    "guestTimezone": null,
                     "hostUserId": "c0c6e737-1f1e-457e-b146-15a05752e652",
                     "nylasPageSlug": "tc-taas-interview-9efd72c3-1dc7-4ce2-9869-8cca81d0adeb",
                     "duration": null,

@@ -118,6 +118,10 @@ async function sendInterviewScheduledNotifications (payload) {
     if (!data) { return }
 
     const links = await generateZoomMeetingLink()
+
+    const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
+    const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
+
     await notificationsSchedulerService.sendNotification({}, {
       template,
       recipients: [{ email: data.hostEmail }],
@@ -126,9 +130,11 @@ async function sendInterviewScheduledNotifications (payload) {
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
         zoomLink: links.start_url,
-        start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-        timezone: interviewEntity.timezone
+        start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        end: moment(interview.endTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        hostTimezone: interviewEntity.hostTimezone,
+        interviewCancelLink,
+        interviewRescheduleLink
       }
     })
 
@@ -143,9 +149,11 @@ async function sendInterviewScheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          start: moment(interview.startTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          end: moment(interview.endTimestamp).tz(interviewEntity.timezone).format(TIME_FORMAT) + ` ${interviewEntity.timezone}`,
-          timezone: interviewEntity.timezone
+          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          guestTimezone: interviewEntity.guestTimezone,
+          interviewCancelLink,
+          interviewRescheduleLink
         }
       })
     } else {
@@ -166,6 +174,221 @@ async function sendInterviewScheduledNotifications (payload) {
   logger.debug({
     component: 'InterviewEventHandler',
     context: 'sendInterviewScheduledNotifications',
+    message: `Sent notifications for interview ${interview.id}`
+  })
+}
+
+/**
+ * Send interview rescheduled notifications
+ * @param {*} interview the interview
+ * @returns
+ */
+async function sendInterviewRescheduledNotifications (payload) {
+  const interview = payload.value
+  const interviewOldValue = payload.options.oldValue
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: `interview status ${interviewOldValue.status} can not be rescheduled`
+    })
+    return
+  }
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
+
+  if (moment(interview.startTimestamp).isSame(interviewOldValue.startTimestamp)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: 'interview has same startTime can not be rescheduled'
+    })
+    return
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewRescheduledNotifications',
+    message: `sending for interview ${interview.id}`
+  })
+
+  try {
+    const template = 'taas.notification.interview-rescheduled-host'
+
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a'
+
+    const interviewEntity = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { id: interview.id }
+        ]
+      }
+    })
+    // send host email
+    const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
+    if (!data) { return }
+
+    const links = await generateZoomMeetingLink()
+
+    const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
+    const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
+
+    await notificationsSchedulerService.sendNotification({}, {
+      template,
+      recipients: [{ email: data.hostEmail }],
+      data: {
+        host: data.hostFullName,
+        guest: data.guestFullName,
+        jobTitle: data.jobTitle,
+        zoomLink: links.start_url,
+        oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        end: moment(interview.endTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
+        hostTimezone: interviewEntity.hostTimezone,
+        interviewCancelLink,
+        interviewRescheduleLink
+      }
+    })
+
+    if (!_.isEmpty(data.guestEmail)) {
+      const template = 'taas.notification.interview-rescheduled-guest'
+      // send guest emails
+      await notificationsSchedulerService.sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          host: data.hostFullName,
+          guest: data.guestFullName,
+          jobTitle: data.jobTitle,
+          zoomLink: links.join_url,
+          oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
+          guestTimezone: interviewEntity.guestTimezone,
+          interviewCancelLink,
+          interviewRescheduleLink
+        }
+      })
+    } else {
+      logger.error({
+        component: 'InterviewEventHandler',
+        context: 'sendInterviewRescheduledNotifications',
+        message: `Interview id: ${interview.id} guest emails not present`
+      })
+    }
+  } catch (e) {
+    logger.error({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: `Send email to interview ${interview.id}: ${e}`
+    })
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewRescheduledNotifications',
+    message: `Sent notifications for interview ${interview.id}`
+  })
+}
+
+/**
+ * Send interview cancelled notifications
+ * @param {*} interview the interview
+ * @returns
+ */
+async function sendInterviewCancelledNotifications (payload) {
+  const interview = payload.value
+  const interviewOldValue = payload.options.oldValue
+
+  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status)) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewCancelledNotifications',
+      message: `interview status ${interviewOldValue.status} can not be cancelled`
+    })
+    return
+  }
+  if (interview.status !== Constants.Interviews.Status.Cancelled) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewCancelledNotifications',
+      message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewCancelledNotifications',
+    message: `sending for interview ${interview.id}`
+  })
+
+  try {
+    const template = 'taas.notification.interview-cancelled-host'
+
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a'
+
+    const interviewEntity = await Interview.findOne({
+      where: {
+        [Op.or]: [
+          { id: interview.id }
+        ]
+      }
+    })
+    // send host email
+    const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
+    if (!data) { return }
+
+    await notificationsSchedulerService.sendNotification({}, {
+      template,
+      recipients: [{ email: data.hostEmail }],
+      data: {
+        host: data.hostFullName,
+        guest: data.guestFullName,
+        jobTitle: data.jobTitle,
+        start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`
+      }
+    })
+
+    if (!_.isEmpty(data.guestEmail)) {
+      const template = 'taas.notification.interview-cancelled-guest'
+      // send guest emails
+      await notificationsSchedulerService.sendNotification({}, {
+        template,
+        recipients: [{ email: data.guestEmail }],
+        data: {
+          host: data.hostFullName,
+          guest: data.guestFullName,
+          jobTitle: data.jobTitle,
+          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`
+        }
+      })
+    } else {
+      logger.error({
+        component: 'InterviewEventHandler',
+        context: 'sendInterviewCancelledNotifications',
+        message: `Interview id: ${interview.id} guest emails not present`
+      })
+    }
+  } catch (e) {
+    logger.error({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewCancelledNotifications',
+      message: `Send email to interview ${interview.id}: ${e}`
+    })
+  }
+
+  logger.debug({
+    component: 'InterviewEventHandler',
+    context: 'sendInterviewCancelledNotifications',
     message: `Sent notifications for interview ${interview.id}`
   })
 }
@@ -308,6 +531,8 @@ async function processRequest (payload) {
  * @returns {undefined}
  */
 async function processUpdate (payload) {
+  await sendInterviewRescheduledNotifications(payload)
+  await sendInterviewCancelledNotifications(payload)
   await sendInterviewScheduledNotifications(payload)
   await checkOverlapping(payload)
 }

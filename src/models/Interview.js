@@ -58,10 +58,27 @@ module.exports = (sequelize) => {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      timezone: {
-        field: 'timezone',
+      nylasEventId: {
+        field: 'nylas_event_id',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      nylasEventEditHash: {
+        field: 'nylas_event_edit_hash',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      hostTimezone: {
+        field: 'host_timezone',
         type: Sequelize.STRING(255),
         allowNull: false
+      },
+      guestTimezone: {
+        field: 'guest_timezone',
+        type: Sequelize.STRING(255),
+        allowNull: true
       },
       availableTime: nylasAvailableTimeSchema('availableTime'),
       hostUserId: {

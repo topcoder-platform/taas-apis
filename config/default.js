@@ -183,6 +183,7 @@ module.exports = {
   INTERVIEW_SCHEDULING_EXPIRE_TIME: process.env.INTERVIEW_SCHEDULING_EXPIRE_TIME || 'P5D',
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
+  TAAS_APP_BASE_URL: process.env.TAAS_APP_BASE_URL || 'https://platform.topcoder-dev.com/taas',
   // the URL where TaaS App Earn is hosted
   TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
   // environment variables for Payment Service
@@ -291,6 +292,14 @@ module.exports = {
   TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of guest
   TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview rescheduled for host
+  TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview rescheduled for guest
+  TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview cancelled for host
+  TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID,
+  // the email notification sendgrid template id of interview cancelled for guest
+  TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID,
   // the email notification sendgrid template id of job candidate invited
   TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID: process.env.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID,
   // frequency of cron update  scheduled or rescheduled interview to completed status
@@ -306,7 +315,7 @@ module.exports = {
   // frequency of checking expired interview
   CRON_INTERVIEW_EXPIRED: process.env.CRON_INTERVIEW_EXPIRED || '*/5 * * * *',
   // frequency of checking interview schedule status which need remind job candidate to select time
-  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '00 00 13 * * 0-6',
+  CRON_INTERVIEW_SCHEDULE_REMINDER: process.env.CRON_INTERVIEW_SCHEDULE_REMINDER || '*/5 * * * *',
   // frequency of cron checking for post interview actions
   CRON_POST_INTERVIEW: process.env.CRON_POST_INTERVIEW || '00 00 13 * * 0-6',
   // frequency of cron checking for upcoming resource bookings
@@ -315,6 +324,8 @@ module.exports = {
   INTERVIEW_COMING_UP_MATCH_WINDOW: process.env.INTERVIEW_COMING_UP_MATCH_WINDOW || 'PT5M',
   // The remind time for fetching interviews which are coming up
   INTERVIEW_COMING_UP_REMIND_TIME: (process.env.INTERVIEW_COMING_UP_REMIND_TIME || 'PT1H,PT24H').split(','),
+  // The match window for fetching schedule reminder interviews
+  INTERVIEW_SCHEDULE_REMINDER_WINDOW: process.env.INTERVIEW_SCHEDULE_REMINDER_WINDOW || 'PT5M',
   // The match window for fetching completed interviews
   INTERVIEW_COMPLETED_MATCH_WINDOW: process.env.INTERVIEW_COMPLETED_MATCH_WINDOW || 'PT5M',
   // The interview completed past time for fetching interviews
@@ -338,6 +349,7 @@ module.exports = {
   // Nylas Client id
   NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
   NYLAS_CLIENT_SECRET: process.env.NYLAS_CLIENT_SECRET,
+  NYLAS_SCHEDULER_WEBHOOK_SECRET: process.env.NYLAS_SCHEDULER_WEBHOOK_SECRET || 'dummy-secret-for-local-testing-only',
   // We don't have to keep it secret, we use this JWT token just to compress data, not to secure it
   NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
 

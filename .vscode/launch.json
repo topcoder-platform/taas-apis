@@ -5,6 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "name": "Nodemon TaaS API",
+      "program": "${workspaceFolder}/app.js",
+      "envFile": "${workspaceFolder}/.env",
+      "request": "launch",
+      "restart": true,
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
       "type": "pwa-node",
       "request": "launch",
       "name": "Launch TaaS API",
@@ -12,7 +26,7 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/app.js",
-      "envFile": "${workspaceRoot}/.env",
+      "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal"
     }
   ]

@@ -182,7 +182,7 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
           }
 
           // if we are adding not-Nylas calendar, mark all other not-Nylas calendars as removed, as we don't allow having multiple not-Nylas calendars
-          if (data.calendar.accountProvider !== NylasVirtualCalendarProvider && updatedItem.provider !== NylasVirtualCalendarProvider) {
+          if (data.calendar.accountProvider !== NylasVirtualCalendarProvider && updatedItem.accountProvider !== NylasVirtualCalendarProvider) {
             updatedItem.isDeleted = true
           }
 

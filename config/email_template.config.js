@@ -99,6 +99,34 @@ module.exports = {
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID
     },
+    'taas.notification.interview-rescheduled-host': {
+      subject: 'Your meeting has been rescheduled to {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-rescheduled-guest': {
+      subject: 'Your meeting has been rescheduled to {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-cancelled-host': {
+      subject: 'Your meeting on {{start}} has been cancelled',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-cancelled-guest': {
+      subject: 'Your meeting on {{start}} has been cancelled',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID
+    },
     'taas.notification.interview-invitation': {
       subject: 'Please select your available time',
       body: '',
