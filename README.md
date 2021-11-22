@@ -40,11 +40,10 @@
       AUTH0_AUDIENCE_UBAHN=
       AUTH0_CLIENT_ID=
       AUTH0_CLIENT_SECRET=
-      # Get nylas client id and secret from nylas developer page
+      # If you would like to test Interview Workflow then Config Nylas as per ./docs/guides/Setup-Interview-Workflow-Locally.md
       NYLAS_CLIENT_ID=
       NYLAS_CLIENT_SECRET=
-      # Configure Nylas scheduler webhook secret to verify scheduler webhook requests
-      NYLAS_SCHEDULER_WEBHOOK_SECRET=
+      NYLAS_SCHEDULER_WEBHOOK_BASE_URL=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
@@ -172,6 +171,8 @@
    Runs the Topcoder TaaS API using nodemon, so it would be restarted after any of the files is updated.
    The Topcoder TaaS API will be served on `http://localhost:3000`.
 
+   - 💡 If you would like to test Interview Workflow locally, then follow the guide [How to Setup Interview Workflow Locally](./docs/guides/Setup-Interview-Workflow-Locally.md).
+
 ### Working on `taas-es-processor` locally
 
 When you run `taas-apis` locally as per "[Steps to run locally](#steps-to-run-locally)" the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) would be run for you automatically together with other services inside the docker container via `npm run services:up`.
@@ -226,7 +227,7 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
-| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                           |
+| `npm run demo-email-notifications`                                                                                          | Listen to the Kafka events of email notification and render all the emails into `./out` folder. See [its readme](scripts/demo-email-notifications/README.md) for details. |
 | `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                                                               |
 
 ## Import and Export data
@@ -265,34 +266,6 @@ npm run data:import -- --file path/to-file.json
 
 - List of models that will be imported are defined in `scripts/data/importData.js`.
 
-## Nylas Webhook verification
-
-### schedule
-ngrok http 3000
-
-in https://dashboard.nylas.com/applications/{id} create nylas webhook url with created/updated/deleted event trigger
-```
-https://{generatedId}.ngrok.io/api/v5/taas-teams/nylas-webhooks
-```
-
-
-create job, job candidate, and request interview
-
-You will get a invitation demo email in out/Please select your available time-xxxx.html, open it in broswer
-
-go to `https://schedule.nylas.com/{nylasSlug}` to schedule a time.
-
-In Postman, invoke `Get interview by id` to see the interview status
-
-### cancel
-In your email, click `cancel` to cancel interview
-
-Verify inteview status by postman
-
-### reschedule
-The webhook didn't support it(schedule and reschedule have same event), ignore it currently.
-
-
 ## Kafka commands
 
 If you've used `docker-compose` with the file `local/docker-compose.yml` during local setup to spawn kafka & zookeeper, you can use the following commands to manipulate kafka topics and messages:
@@ -323,6 +296,29 @@ docker exec -it tc-taas-kafka /opt/kafka/bin/kafka-console-producer.sh --broker-
 ```
 
 - Enter or copy/paste the message into the console after starting this command.
+
+## Email Notifications
+
+We have various email notifications. For example many emails are sent to support Interview Scheduling Workflow. All email templates are placed inside the [.data/notification-email-templates](./data/notification-email-templates/) folder.
+
+### Add a new Email Notification
+
+To add a new email notification:
+
+0. Each email notification need to have a unique topic identifier of the shape `taas.notification.{notification-type}`. Where `{notification-type}` is unique for each email notification type.
+1. Create a new HTML template inside folder  [.data/notification-email-templates](./data/notification-email-templates/). (You may duplicate any existent template to reuse existent styles.). Name it the same as topic: `taas.notification.{notification-type}.html`.
+2. Create a corresponding config in file [./config/email_template.config.js](./config/email_template.config.js), section `notificationEmailTemplates`.
+3. Name environment variable the same as topic, but **uppercase** and replace all special symbols to `_` and add suffix `_SENDGRID_TEMPLATE_ID`:
+   - For example topic `taas.notification.job-candidate-resume-viewed` would have corresponding environment variable
+`TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID`.
+4. When deploying to DEV/PROD someone would have to create a new Sendgird template and fill inside Sendgrid UI subject and email HTML template by copy/pasting HTML file from the repo. And then set environment variable with the value of template if provided by Sendgrid.
+
+### Test/Render Email Notifications Locally
+
+To test and render email notification locally run a special script `npm run demo-email-notifications`. Before running it, follow it's [README](./scripts/demo-email-notifications/README.md) as you would have to set some additional environment variables first (add them into `.env` file).
+
+- This script first would update demo data to create some situations to trigger notifications.
+- And it would listen to Kafka events and render email notification into `./out` folder.
 
 ## DB Migration
 
