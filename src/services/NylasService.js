@@ -200,7 +200,7 @@ async function createSchedulingPage (interview, calendar, options) {
           delivery_recipient: 'owner',
           // This time needs to be greater than the furthest out an event can be scheduled in minutes.
           time_before_event: config.INTERVIEW_AVAILABLE_DAYS_IN_FEATURE * 24 * 60 + 1,
-          webhook_url: `${config.TC_API}/updateInterview/${interview.id}/nylas-webhooks?authToken=${authTokenHash}` // `https://d3c7-77-120-181-211.ngrok.io/api/v5/updateInterview/${interview.id}/nylas-webhooks`
+          webhook_url: `${config.NYLAS_SCHEDULER_WEBHOOK_BASE_URL}/updateInterview/${interview.id}/nylas-webhooks?authToken=${authTokenHash}`
         }
       ],
       timezone: interview.hostTimezone
