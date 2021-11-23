@@ -81,7 +81,7 @@ async function sendInterviewScheduledNotifications (payload) {
     logger.debug({
       component: 'InterviewEventHandler',
       context: 'sendInterviewScheduledNotifications',
-      message: 'interview status is not changed'
+      message: 'not interested in interview - interview status is not changed'
     })
     return
   }
@@ -91,6 +91,16 @@ async function sendInterviewScheduledNotifications (payload) {
       component: 'InterviewEventHandler',
       context: 'sendInterviewScheduledNotifications',
       message: `not interested in interview - status: ${interview.status}`
+    })
+    return
+  }
+
+  // if interview already has timestamp it means rescheduling interview
+  if (interviewOldValue.startTimestamp) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewScheduledNotifications',
+      message: 'not interested in interview - it already has startTimestamp'
     })
     return
   }
@@ -187,15 +197,6 @@ async function sendInterviewRescheduledNotifications (payload) {
   const interview = payload.value
   const interviewOldValue = payload.options.oldValue
 
-  if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interviewOldValue.status)) {
-    logger.debug({
-      component: 'InterviewEventHandler',
-      context: 'sendInterviewRescheduledNotifications',
-      message: `interview status ${interviewOldValue.status} can not be rescheduled`
-    })
-    return
-  }
-
   if (!_.includes([Constants.Interviews.Status.Scheduled, Constants.Interviews.Status.Rescheduled], interview.status)) {
     logger.debug({
       component: 'InterviewEventHandler',
@@ -205,11 +206,21 @@ async function sendInterviewRescheduledNotifications (payload) {
     return
   }
 
+  // interview is rescheduled it had startTimestamp before, and it has startTimestamp now
+  if (!interviewOldValue.startTimestamp || !interview.startTimestamp) {
+    logger.debug({
+      component: 'InterviewEventHandler',
+      context: 'sendInterviewRescheduledNotifications',
+      message: 'not interested in interview - didn\'t have or doesn\'t have startTimestamp '
+    })
+    return
+  }
+
   if (moment(interview.startTimestamp).isSame(interviewOldValue.startTimestamp)) {
     logger.debug({
       component: 'InterviewEventHandler',
       context: 'sendInterviewRescheduledNotifications',
-      message: 'interview has same startTime can not be rescheduled'
+      message: 'not interested in interview - interview has same startTime'
     })
     return
   }
