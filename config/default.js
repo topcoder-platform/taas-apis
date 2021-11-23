@@ -184,6 +184,7 @@ module.exports = {
   // the URL where TaaS App is hosted
   TAAS_APP_URL: process.env.TAAS_APP_URL || 'https://platform.topcoder-dev.com/taas/myteams',
   TAAS_APP_BASE_URL: process.env.TAAS_APP_BASE_URL || 'https://platform.topcoder-dev.com/taas',
+  TAAS_APP_BFF_BASE_URL: process.env.TAAS_APP_BFF_BASE_URL || 'https://platform.topcoder-dev.com/taas-app',
   // the URL where TaaS App Earn is hosted
   TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
   // environment variables for Payment Service

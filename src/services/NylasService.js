@@ -171,6 +171,7 @@ async function createSchedulingPage (interview, calendar, options) {
     slug: `tc-taas-interview-${interview.id}`,
     config: {
       appearance: {
+        thank_you_redirect: `${config.TAAS_APP_BFF_BASE_URL}/misc/interview-thank-you-page`,
         show_autoschedule: false // Hides the Google / Outlook connect buttons in scheduling page
       },
       booking: {
