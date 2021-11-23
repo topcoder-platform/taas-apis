@@ -329,10 +329,7 @@ Configuration for migration is at `./config/config.json`.
 
 The following parameters can be set in the config file or via env variables:
 
-- `username`: set via env `DB_USERNAME`; datebase username
-- `password`: set via env `DB_PASSWORD`; datebase password
-- `database`: set via env `DB_NAME`; datebase name
-- `host`: set via env `DB_HOST`; datebase host name
+- `url`: set via env `DATABASE_URL`; datebase url
 
 ## Testing
 
