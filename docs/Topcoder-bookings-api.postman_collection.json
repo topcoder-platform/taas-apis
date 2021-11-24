@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "11b12c20-8ed1-4a9f-848b-b1caa511b62e",
+		"_postman_id": "9a2573b4-16c9-4073-bd4f-51d0934cec11",
 		"name": "Topcoder-bookings-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3790,7 +3790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"T\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"10:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"duration\": 30,\r\n    \"hostTimezone\": \"Europe/London\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"U\",\r\n                \"M\",\r\n                \"T\",\r\n                \"W\",\r\n                \"T\",\r\n                \"F\",\r\n                \"S\"\r\n            ],\r\n            \"start\": \"01:00\",\r\n            \"end\": \"23:00\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -6611,7 +6611,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"duration\": 60,\r\n    \"hostTimezone\": \"Europe/Rome\",\r\n    \"availableTime\": [\r\n        {\r\n            \"days\": [\r\n                \"F\"\r\n            ],\r\n            \"start\": \"09:00\",\r\n            \"end\": \"14:00\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"startTimestamp\": \"2021-11-30T16:15:00.000Z\",\r\n    \"status\": \"Scheduled\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
