@@ -150,6 +150,8 @@ async function sendInterviewScheduledNotifications (payload) {
 
     if (!_.isEmpty(data.guestEmail)) {
       const template = 'taas.notification.interview-link-for-guest'
+      // fallback to host timezone if by some reason we didn't obtain guest timezone
+      const guestTimezone = interviewEntity.guestTimezone || interviewEntity.hostTimezone
       // send guest emails
       await notificationsSchedulerService.sendNotification({}, {
         template,
@@ -159,9 +161,9 @@ async function sendInterviewScheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
-          end: moment(interview.endTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
-          guestTimezone: interviewEntity.guestTimezone,
+          start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          guestTimezone,
           interviewCancelLink,
           interviewRescheduleLink
         }
@@ -271,6 +273,8 @@ async function sendInterviewRescheduledNotifications (payload) {
 
     if (!_.isEmpty(data.guestEmail)) {
       const template = 'taas.notification.interview-rescheduled-guest'
+      // fallback to host timezone if by some reason we didn't obtain guest timezone
+      const guestTimezone = interviewEntity.guestTimezone || interviewEntity.hostTimezone
       // send guest emails
       await notificationsSchedulerService.sendNotification({}, {
         template,
@@ -280,10 +284,10 @@ async function sendInterviewRescheduledNotifications (payload) {
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
           zoomLink: links.join_url,
-          oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
-          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
-          end: moment(interview.endTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`,
-          guestTimezone: interviewEntity.guestTimezone,
+          oldStart: moment(interviewOldValue.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          guestTimezone,
           interviewCancelLink,
           interviewRescheduleLink
         }
@@ -371,6 +375,8 @@ async function sendInterviewCancelledNotifications (payload) {
 
     if (!_.isEmpty(data.guestEmail)) {
       const template = 'taas.notification.interview-cancelled-guest'
+      // fallback to host timezone if by some reason we didn't obtain guest timezone
+      const guestTimezone = interviewEntity.guestTimezone || interviewEntity.hostTimezone
       // send guest emails
       await notificationsSchedulerService.sendNotification({}, {
         template,
@@ -379,7 +385,7 @@ async function sendInterviewCancelledNotifications (payload) {
           host: data.hostFullName,
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
-          start: moment(interview.startTimestamp).tz(interviewEntity.guestTimezone).format(TIME_FORMAT) + ` ${interviewEntity.guestTimezone}`
+          start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`
         }
       })
     } else {
