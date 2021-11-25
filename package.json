@@ -66,6 +66,7 @@
     "pg": "^8.4.0",
     "pg-hstore": "^2.3.3",
     "prompt-confirm": "^2.0.4",
+    "retry": "^0.13.1",
     "rewire": "^5.0.0",
     "sequelize": "^6.3.5",
     "stripe": "^8.168.0",

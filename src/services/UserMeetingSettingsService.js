@@ -19,6 +19,7 @@ const { Interviews: InterviewConstants, NylasVirtualCalendarProvider } = require
 const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
+const retry = require('retry')
 
 /**
   * Ensures user is permitted for the operation.
@@ -236,6 +237,59 @@ syncUserMeetingsSettings.schema = Joi.object().keys({
 })
 
 /**
+ * Load calendars from Nylas and return the primary writable calendar
+ *
+ * @param {String} accessToken Nylas access token
+ * @returns {Object} calendar
+ */
+async function getConnectedCalendar (accessToken) {
+  // getting user's all existing calendars
+  const calendars = await NylasService.getExistingCalendars(accessToken)
+  if (!Array.isArray(calendars) || calendars.length < 1) {
+    throw new errors.BadRequestError('Error getting calendar data for the user.')
+  }
+
+  const primaryCalendar = await NylasService.getPrimaryCalendar(calendars)
+  if (!primaryCalendar) {
+    throw new errors.NotFoundError('Could not find any writable calendar.')
+  }
+
+  return primaryCalendar
+}
+
+/**
+ * Tries to load calendar from Nylas several times, because it takes time from Nylas to
+ * sync the calendar when it's connected the first time
+ *
+ * @param {String} accessToken Nylas access token
+ * @returns {Object} calendar
+ */
+async function getConnectedCalendarWithRetry (accessToken) {
+  return new Promise((resolve, reject) => {
+    const operation = retry.operation({
+      retries: 10, // try 10 times
+      // factor 1.2 to run it 10 times during 30 seconds as per https://www.wolframalpha.com/input/?i=Sum%5B1000*x%5Ek%2C+%7Bk%2C+0%2C+9%7D%5D+%3D+30+*+1000
+      factor: 1.2, // this factor would increase time between attempts
+      minTimeout: 1000 // minimal delay between attempts
+    })
+
+    operation.attempt(() => {
+      getConnectedCalendar(accessToken)
+        .then(resolve)
+        .catch((err) => {
+          logger.debug({ component: 'InterviewService', context: 'getConnectedCalendarWithRetry', message: 'did not get connected calendar' })
+          // if maximum number of times has been reached, then return error
+          if (!operation.retry(err)) {
+            reject(err)
+          } else {
+            logger.debug({ component: 'InterviewService', context: 'getConnectedCalendarWithRetry', message: 'trying to get connected calendar again...' })
+          }
+        })
+    })
+  })
+}
+
+/**
  * Handle connect calendar callback
  *
  * @param {*} reqQuery containing state, code &/or error
@@ -265,7 +319,7 @@ async function handleConnectCalendarCallback (reqQuery) {
 
   // if Nylas sent error when connecting calendar
   if (errorReason) {
-    urlToRedirect = `${redirectTo}&calendarConnected=false&error=${errorReason}`
+    urlToRedirect = `${redirectTo}&calendarConnected=false&error=${encodeURIComponent(errorReason)}`
     return urlToRedirect
   }
 
@@ -277,16 +331,9 @@ async function handleConnectCalendarCallback (reqQuery) {
       throw new errors.BadRequestError('Error getting access token for the calendar.')
     }
 
-    // getting user's all existing calendars
-    const calendars = await NylasService.getExistingCalendars(accessToken)
-    if (!Array.isArray(calendars) || calendars.length < 1) {
-      throw new errors.BadRequestError('Error getting calendar data for the user.')
-    }
-
-    const primaryCalendar = await NylasService.getPrimaryCalendar(calendars)
-    if (!primaryCalendar) {
-      throw new errors.NotFoundError('Could not find any writable calendar.')
-    }
+    // When user connect their calendar to the Nylas the first time, it takes time for Nylas to sync that calendar into Nylas
+    // So if from the first attempt we haven't found the connected calendar, then we try several times after some delay
+    const primaryCalendar = await getConnectedCalendarWithRetry(accessToken)
 
     const calendar = {
       id: primaryCalendar.id,
@@ -317,7 +364,7 @@ async function handleConnectCalendarCallback (reqQuery) {
     urlToRedirect = `${redirectTo}&calendarConnected=true`
 
     if (errorReason) {
-      urlToRedirect = `${redirectTo}&calendarConnected=false&error=${errorReason}`
+      urlToRedirect = `${redirectTo}&calendarConnected=false&error=${encodeURIComponent(errorReason)}`
     }
   }
 
