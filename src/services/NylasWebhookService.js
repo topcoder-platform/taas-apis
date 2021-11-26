@@ -67,6 +67,12 @@ async function processFormattedEvent (webhookData, event) {
         throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
       }
 
+      // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
+      if (interview.nylasCalendarId !== event.calendarId) {
+        localLogger.debug(`Skipping event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendarId}" doesn't match interview calendar "${interview.nylasCalendarId}".`)
+        return
+      }
+
       await partiallyUpdateInterviewById(
         m2mUser,
         interviewId,

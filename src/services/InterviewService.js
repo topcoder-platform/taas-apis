@@ -779,6 +779,19 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
 
     if (bookingDetails.is_confirmed) {
       try {
+        // get the associated interview
+        const interview = await Interview.findById(interviewId)
+
+        // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
+        if (interview.nylasCalendarId !== bookingDetails.calendar_id) {
+          logger.debug({
+            component: 'InterviewService',
+            context: 'partiallyUpdateInterviewByWebhook',
+            message: `Skipping event "${bookingDetails.calendar_event_id}" for interview "${interviewId}" because event calendar "${bookingDetails.calendar_id}" doesn't match interview calendar "${interview.nylasCalendarId}".`
+          })
+          return
+        }
+
         const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
@@ -790,9 +803,6 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         if (!userMeetingSettingsForCalendar) {
           throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
         }
-
-        // get the associated interview
-        const interview = await Interview.findById(interviewId)
 
         const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
 
