@@ -32,19 +32,25 @@ const getInterviewIdFromEvent = (event) => {
   // if we already update event description and added metadata, then use it to get interview id
   if (_.get(event, 'metadata.interviewId')) {
     return event.metadata.interviewId
+  }
 
   // if this is a new event and we haven't updated description yet, and haven't set metadata,
   // then parse description
-  } else {
-    const matchId = event.description.match(/tc-taas-interview-([^/]+)/)
-    const interviewId = matchId && matchId[1]
-
-    if (!uuidValidate(interviewId)) {
-      throw new Error(`Cannot get interview id for event ${event.id}.`)
-    }
-
-    return interviewId
+  const matchIdOriginalDescription = event.description.match(/tc-taas-interview-([^/]+)/)
+  const interviewIdFromOriginalDescription = matchIdOriginalDescription && matchIdOriginalDescription[1]
+  if (uuidValidate(interviewIdFromOriginalDescription)) {
+    return interviewIdFromOriginalDescription
   }
+
+  // if this is a duplicate event which we are actually not interested in, then it would have update description, but not updated metadata
+  // so we extract id from the updated description
+  const matchIdUpdatedDescription = event.description.match(/taas\/interview\/([^/]+)/)
+  const interviewIdFromUpdatedDescription = matchIdUpdatedDescription && matchIdUpdatedDescription[1]
+  if (uuidValidate(interviewIdFromUpdatedDescription)) {
+    return interviewIdFromUpdatedDescription
+  }
+
+  throw new Error(`Cannot get interview id for event ${event.id}.`)
 }
 
 /**
@@ -98,6 +104,12 @@ async function processFormattedEvent (webhookData, event) {
     const interview = await Interview.findById(interviewId)
     if (!interview) {
       throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
+    }
+
+    // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
+    if (interview.nylasCalendarId !== event.calendarId) {
+      localLogger.debug(`Skipping event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendarId}" doesn't match interview calendar "${interview.nylasCalendarId}".`)
+      return
     }
 
     if (interview.nylasEventId === event.id && interview.status === InterviewStatus.Cancelled) {
