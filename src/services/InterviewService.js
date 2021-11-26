@@ -219,7 +219,7 @@ async function getInterviewById (currentUser, id, fromDb = false) {
     throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
   }
   // check permission before returning
-  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+  await ensureUserIsPermitted(currentUser, interview.jobCandidateId, true)
 
   return interview.dataValues
 }
