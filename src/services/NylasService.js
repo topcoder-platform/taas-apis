@@ -6,6 +6,7 @@ const axios = require('axios')
 const { createHash } = require('crypto')
 const config = require('config')
 const _ = require('lodash')
+const { v4: uuid } = require('uuid')
 const errors = require('../common/errors')
 const logger = require('../common/logger')
 
@@ -58,7 +59,8 @@ async function createVirtualCalendarForUser (userId, userEmail, userFullName, ti
   }
 
   return {
-    id: calendar.id,
+    id: uuid(), // internal UUID
+    calendarId: calendar.id,
     accountId: calendar.account_id,
     accessToken,
     accountProvider: provider,
@@ -121,7 +123,7 @@ async function getAccessToken (code) {
   return { accountId, accessToken, provider, email }
 }
 
-async function getEventDetails (accountId, eventId) {
+async function getEvent (accountId, eventId) {
   const email = await getAccountEmail(accountId)
   const code = await authenticateAccount(accountId, email)
   const { accessToken } = await getAccessToken(code)
@@ -133,23 +135,30 @@ async function getEventDetails (accountId, eventId) {
       }
     })
 
-    const { when } = res.data
-    const { end_time: endTime, start_time: startTime } = when
+    return res.data
+  } catch (err) {
+    throw new Error(`Error getting event "${eventId}": ${err.toString()}`)
+  }
+}
 
-    return {
-      endTime,
-      startTime,
-      status: res.data.status,
-      accountId: res.data.account_id,
-      email,
-      calendarId: res.data.calendar_id,
-      ..._.omit(res.data, ['account_id', 'calendar_id'])
-    }
-  } catch (error) {
-    logger.error({
-      component: 'NylasService',
-      message: `Get event details error, ${error.response.status}`
+/**
+ * Get Nylas calendar
+ *
+ * @param {String} calendarId calendar id
+ * @param {String} accessToken Nylas account access token
+ * @returns {Promise<Object>} Nylas calendar
+ */
+async function getCalendar (calendarId, accessToken) {
+  try {
+    const res = await axios.get(`https://api.nylas.com/calendars/${calendarId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
     })
+
+    return res.data
+  } catch (err) {
+    throw new Error(`Error getting calendar "${calendarId}": ${err.toString()}`)
   }
 }
 
@@ -184,8 +193,8 @@ async function createSchedulingPage (interview, calendar, options) {
       },
       calendar_ids: {
         [calendar.accountId]: {
-          availability: [calendar.id],
-          booking: calendar.id
+          availability: [calendar.calendarId],
+          booking: calendar.calendarId
         }
       },
       event: {
@@ -275,7 +284,7 @@ async function getPrimaryCalendar (calendars) {
  * @param {object} data - this endpoint only takes stringified values for any key in metadata
  * @returns {object} the updated event record
  */
-async function updateNylasEvent (eventId, data, accessToken) {
+async function updateEvent (eventId, data, accessToken) {
   try {
     const res = await axios.put(`https://api.nylas.com/events/${eventId}`, data, {
       headers: {
@@ -284,7 +293,7 @@ async function updateNylasEvent (eventId, data, accessToken) {
     })
     return res.data
   } catch (err) {
-    throw new errors.BadRequestError(`Error updating event data: ${JSON.stringify(err)}`)
+    throw new Error(`Error updating event "${eventId}" with data "${JSON.stringify(data)}": ${err.toString()}`)
   }
 }
 
@@ -297,8 +306,9 @@ module.exports = {
   getExistingCalendars,
   getAccessToken,
   getPrimaryCalendar,
-  getEventDetails,
+  getEvent,
+  getCalendar,
   getAccountEmail,
-  updateNylasEvent,
+  updateEvent,
   authenticateAccount
 }

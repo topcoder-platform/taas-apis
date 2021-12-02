@@ -9,6 +9,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
+const { v4: uuid } = require('uuid')
 const {
   processCreateOrUpdate,
   processUpdate
@@ -20,6 +21,7 @@ const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
 const retry = require('retry')
+const { runExclusiveCalendarConnectionHandler } = require('../common/helper')
 
 /**
   * Ensures user is permitted for the operation.
@@ -170,7 +172,11 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
 
     // add or update calendar if it was provided
     if (data.calendar) {
-      const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, { id: data.calendar.id })
+      const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, {
+        // we only allow one calendar by the pair of email/accountProvider
+        email: data.calendar.email,
+        accountProvider: data.calendar.accountProvider,
+      })
 
       const updatedNylasCalendarsArray = _.map(userMeetingSettings.nylasCalendars || [], (item, index) => {
         // process all other calendar, except the one wa are adding/updating
@@ -198,7 +204,7 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
       updatePayload.nylasCalendars = calendarIndexInUserMeetingSettings === -1 ? [...updatedNylasCalendarsArray, data.calendar] : updatedNylasCalendarsArray
     }
 
-    const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
+    const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction })
     userMeetingSettings = updateUserMeetingSettingsResponse[1][0].dataValues
     await processUpdate(userMeetingSettings)
   }
@@ -226,6 +232,8 @@ syncUserMeetingsSettings.schema = Joi.object().keys({
     defaultTimezone: Joi.string(),
     calendar: Joi.object().keys({
       id: Joi.string().required(),
+      calendarId: Joi.string().required().allow(null),
+      email: Joi.string().required(),
       accountId: Joi.string().required(),
       accessToken: Joi.string().required(),
       accountProvider: Joi.string().required(),
@@ -296,79 +304,97 @@ async function getConnectedCalendarWithRetry (accessToken) {
  * @returns The url that the user should be redirected to
  */
 async function handleConnectCalendarCallback (reqQuery) {
-  let errorReason = reqQuery.error
+  // we force "calendar.created" webhook to wait until UserMeetingSettings records with "accountId" is created
+  // otherwise there could be a race condition and "calendar.created" this method started running,
+  // but UserMeetingSettings with "accountId" is not yet in DB
+  return runExclusiveCalendarConnectionHandler(async () => {
+    let errorReason = reqQuery.error
 
-  // verifying jwt token for request query param - 'state'
-  const verifyQueryStateJwt = await jwt.verify(reqQuery.state, config.NYLAS_CONNECT_CALENDAR_JWT_SECRET, (err, decoded) => {
-    if (err) {
-      // if we cannot decode state, and there is already some error provided by Nylas, then return that error
-      if (errorReason) {
-        throw new Error(`Could not verify JWT token: ${errorReason}`)
-      } else {
-        throw new errors.UnauthorizedError(`Could not verify JWT token: ${JSON.stringify(err)}`)
+    // verifying jwt token for request query param - 'state'
+    const verifyQueryStateJwt = await jwt.verify(reqQuery.state, config.NYLAS_CONNECT_CALENDAR_JWT_SECRET, (err, decoded) => {
+      if (err) {
+        // if we cannot decode state, and there is already some error provided by Nylas, then return that error
+        if (errorReason) {
+          throw new Error(`Could not verify JWT token: ${errorReason}`)
+        } else {
+          throw new errors.UnauthorizedError(`Could not verify JWT token: ${JSON.stringify(err)}`)
+        }
       }
-    }
 
-    return decoded
-  })
+      return decoded
+    })
 
-  // note userId is actually the UUID in the following line. not to confuse with other 'userId'
-  const { userId, redirectTo } = verifyQueryStateJwt
+    // note userId is actually the UUID in the following line. not to confuse with other 'userId'
+    const { userId, redirectTo } = verifyQueryStateJwt
 
-  let urlToRedirect
+    let urlToRedirect
 
-  // if Nylas sent error when connecting calendar
-  if (errorReason) {
-    urlToRedirect = `${redirectTo}&calendarConnected=false&error=${encodeURIComponent(errorReason)}`
-    return urlToRedirect
-  }
-
-  try {
-    // getting user's accessToken from Nylas using 'code' found in request query
-    const { accessToken, accountId, provider, email } = await NylasService.getAccessToken(reqQuery.code)
-    // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
-    if (!accessToken || !accountId) {
-      throw new errors.BadRequestError('Error getting access token for the calendar.')
-    }
-
-    // When user connect their calendar to the Nylas the first time, it takes time for Nylas to sync that calendar into Nylas
-    // So if from the first attempt we haven't found the connected calendar, then we try several times after some delay
-    const primaryCalendar = await getConnectedCalendarWithRetry(accessToken)
-
-    const calendar = {
-      id: primaryCalendar.id,
-      accountId,
-      accessToken,
-      accountProvider: provider,
-      email,
-      isPrimary: true,
-      isDeleted: false
-    }
-
-    // as a current user use the user who is connecting the calendar
-    // NOTE, that we cannot use `userId` because it's UUID, while in
-    // `currentUser` we need to have integer user id
-    const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
-
-    await syncUserMeetingsSettings(
-      currentUser,
-      {
-        id: userId,
-        defaultTimezone: primaryCalendar.timezone,
-        calendar
-      }
-    )
-  } catch (err) {
-    errorReason = encodeURIComponent(err.message)
-  } finally {
-    urlToRedirect = `${redirectTo}&calendarConnected=true`
-
+    // if Nylas sent error when connecting calendar
     if (errorReason) {
       urlToRedirect = `${redirectTo}&calendarConnected=false&error=${encodeURIComponent(errorReason)}`
+      return urlToRedirect
     }
-  }
 
-  return urlToRedirect
+    try {
+      // getting user's accessToken from Nylas using 'code' found in request query
+      const { accessToken, accountId, provider, email } = await NylasService.getAccessToken(reqQuery.code)
+      // view https://developer.nylas.com/docs/api/#post/oauth/token for error response schema
+      if (!accessToken || !accountId) {
+        throw new errors.BadRequestError('Error getting access token for the calendar.')
+      }
+
+      // When user connect their calendar to the Nylas the first time, it takes time for Nylas to sync that calendar into Nylas
+      // So if from the first attempt we haven't found the connected calendar, then we try several times after some delay
+      let primaryCalendar
+      try {
+        primaryCalendar = await getConnectedCalendar(accessToken)
+      } catch (err) {
+        logger.debug({
+          component: 'InterviewService',
+          context: 'handleConnectCalendarCallback',
+          message: `Could not get connected calendar id for account "${accountId}" email "${email}" provider "${provider}". Proceeding without calendar id for now...`
+        })
+      }
+
+      const calendarId = primaryCalendar ? primaryCalendar.id : null
+      const defaultTimezone = primaryCalendar ? primaryCalendar.timezone : null
+
+      const calendar = {
+        id: uuid(), // internal UUID
+        calendarId, // would be `null` if calendar was not retrieved from Nylas yet
+        accountId,
+        accessToken,
+        accountProvider: provider,
+        email,
+        isPrimary: true,
+        isDeleted: false
+      }
+
+      // as a current user use the user who is connecting the calendar
+      // NOTE, that we cannot use `userId` because it's UUID, while in
+      // `currentUser` we need to have integer user id
+      const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
+
+      await syncUserMeetingsSettings(
+        currentUser,
+        {
+          id: userId,
+          defaultTimezone,
+          calendar
+        }
+      )
+    } catch (err) {
+      errorReason = encodeURIComponent(err.message)
+    } finally {
+      urlToRedirect = `${redirectTo}&calendarConnected=true`
+
+      if (errorReason) {
+        urlToRedirect = `${redirectTo}&calendarConnected=false&error=${encodeURIComponent(errorReason)}`
+      }
+    }
+
+    return urlToRedirect
+  })
 }
 
 handleConnectCalendarCallback.schema = Joi.object().keys({

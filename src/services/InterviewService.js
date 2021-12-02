@@ -33,10 +33,10 @@ const {
   patchSchedulingPage
 } = require('./NylasService')
 const {
-  updateNylasEvent
+  updateEvent
 } = require('./NylasService')
-const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
-const { processInterviewWebhookUsingMutex } = require('../common/helper')
+const UserMeetingSettingsService = require('./UserMeetingSettingsService')
+const { runExclusiveInterviewEventHandler } = require('../common/helper')
 
 // Each request made by Nylas in the partiallyUpdateInterviewByWebhook endpoint
 // includes a SHA256 hash of a secret (stored in env variable) to be sent in the
@@ -288,6 +288,12 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       } else {
         calendar = existentCalendar
       }
+
+      // if primary calendar doesn't have `calendarId`
+      if (!calendar.calendarId) {
+        throw errors.BadRequestError(`Cannot schedule interview using calendar "${calendar.email}" as it was not fully connected. Try waiting a couple of minutes, removing or reconnecting the calendar.`)
+      }
+
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
@@ -295,19 +301,25 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
         eventTitle: `Job Interview for "${job.title}"`
       }
       // create scheduling page on nylas
-      const schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
-      logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}"`)
+      let schedulingPage
+      try {
+        schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
+        logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}"`)
+      } catch (err) {
+        logger.error(`requestInterview -> createSchedulingPage failed: ${err.toString()}, using accessToken: "${calendar.accessToken}"`)
+        throw err
+      }
 
       // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
       interview.nylasPageSlug = schedulingPage.slug
-      interview.nylasCalendarId = calendar.id
+      interview.nylasCalendarId = calendar.calendarId
 
       // status handling will be implemented in another challenge it seems, setting the default value
       interview.status = InterviewConstants.Status.Scheduling
 
       try {
-        await syncUserMeetingsSettings(
+        await UserMeetingSettingsService.syncUserMeetingsSettings(
           currentUser,
           {
             id: interview.hostUserId,
@@ -407,11 +419,11 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
         const settingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
-              [Op.contains]: [{ id: interview.nylasCalendarId }]
+              [Op.contains]: [{ calendarId: interview.nylasCalendarId }]
             }
           }
         })
-        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, ['id', interview.nylasCalendarId]).accessToken
+        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, { calendarId: interview.nylasCalendarId }).accessToken
 
         await patchSchedulingPage(interview.nylasPageId, nylasAccessToken, {
           duration: interview.duration !== data.duration ? data.duration : null,
@@ -754,11 +766,11 @@ async function updateCompletedInterviews () {
  * @returns nothing
  */
 async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhookBody) {
-  // don't await for response to prevent gateway timeout
+  // don't await for response to prevent gateway timeout because it might wait for mutex to release
   // we use mutex here, otherwise we might update the same interview using `NylasWebhookService`
-  // and there maybe race condition when updating ES
-  processInterviewWebhookUsingMutex(interviewId, async () => {
-    logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+  // and there maybe race condition when updating the same record
+  runExclusiveInterviewEventHandler(async () => {
+    logger.debug({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Mutex: processing webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
 
     // Verify the request to make sure it's actually from Nylas.
     if (!verifyNylasWebhookRequest(authToken)) {
@@ -795,7 +807,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
-              [Op.contains]: [{ id: bookingDetails.calendar_id }]
+              [Op.contains]: [{ calendarId: bookingDetails.calendar_id }]
             }
           }
         })
@@ -804,7 +816,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
           throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
         }
 
-        const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
+        const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, { calendarId: bookingDetails.calendar_id }).accessToken
 
         // Interview cancel/reschedule links
         const cancelInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/cancel`
@@ -825,7 +837,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         }
 
         // update the Nylas event to set custom metadata
-        await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
+        await updateEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
 
         await partiallyUpdateInterviewById(
           m2mUser,
@@ -858,6 +870,10 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
       }
     }
+  }).catch((err) => {
+    logger.logFullError('Mutex: released', { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+  }).catch((err) => {
+    logger.logFullError(`Mutex: error "${err.toString()}".`, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
   })
 }
 partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
