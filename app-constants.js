@@ -192,6 +192,11 @@ const SearchUsers = {
 // provider which we have to enforce for Nylas Virtual Calendars
 const NylasVirtualCalendarProvider = 'nylas'
 
+const ZoomLinkType = {
+  HOST: 'host',
+  GUEST: 'guest'
+}
+
 module.exports = {
   UserRoles,
   FullManagePermissionRoles,
@@ -209,5 +214,6 @@ module.exports = {
   JobStatus,
   JobCandidateStatus,
   SearchUsers,
-  NylasVirtualCalendarProvider
+  NylasVirtualCalendarProvider,
+  ZoomLinkType
 }

@@ -187,6 +187,8 @@ module.exports = {
   TAAS_APP_BFF_BASE_URL: process.env.TAAS_APP_BFF_BASE_URL || 'https://platform.topcoder-dev.com/taas-app',
   // the URL where TaaS App Earn is hosted
   TAAS_APP_EARN_URL: process.env.TAAS_APP_EARN_URL || 'https://platform.topcoder-dev.com/earn/my-gigs',
+  // the URL where TaaS API is hosted
+  TAAS_API_BASE_URL: process.env.TAAS_API_BASE_URL || 'http://localhost:3000/api/v5',
   // environment variables for Payment Service
   ROLE_ID_SUBMITTER: process.env.ROLE_ID_SUBMITTER || '732339e7-8e30-49d7-9198-cccf9451e221',
   TYPE_ID_TASK: process.env.TYPE_ID_TASK || 'ecd58c69-238f-43a4-a4bb-d172719b9f31',
@@ -356,5 +358,10 @@ module.exports = {
   NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
 
   // Zoom JWT credentials
-  ZOOM_ACCOUNTS: process.env.ZOOM_ACCOUNTS
+  ZOOM_ACCOUNTS: process.env.ZOOM_ACCOUNTS,
+
+  // The secret key for get zoom link token
+  ZOOM_LINK_SECRET: process.env.ZOOM_LINK_SECRET || 'zoom-link-secret',
+  // The get zoom link token expiry time
+  ZOOM_LINK_TOKEN_EXPIRY: process.env.ZOOM_LINK_TOKEN_EXPIRY || '180d'
 }

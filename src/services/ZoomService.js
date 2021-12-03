@@ -10,11 +10,22 @@ let currentZoomAccountIndex = -1
 /**
  * Get Zoom account credentials from the list credentials by round robin
  *
+ * @param {String} apiKey zoom account api key
  * @returns { zoomAccountApiKey: string, zoomAccountApiSecret: string } zoom account credentials
  */
-function getZoomAccountByRoundRobin () {
+function getZoomAccountByRoundRobin (apiKey) {
   if (ALL_ZOOM_ACCOUNTS.length === 0) {
     throw new Error('No Zoom accounts is configured by "ALL_ZOOM_ACCOUNTS" environment variable.')
+  }
+
+  if (apiKey) {
+    const zoomAccount = _.find(ALL_ZOOM_ACCOUNTS, a => _.startsWith(a, `${apiKey}:`))
+    if (zoomAccount) {
+      const [zoomAccountApiKey, zoomAccountApiSecret] = _.split(zoomAccount, ':')
+      return { zoomAccountApiKey, zoomAccountApiSecret }
+    } else {
+      throw new Error(`No Zoom accounts is configured by "ALL_ZOOM_ACCOUNTS" environment matching the interview zoom meeting account ${apiKey}.`)
+    }
   }
 
   const nextIndex = currentZoomAccountIndex + 1
@@ -31,12 +42,13 @@ function getZoomAccountByRoundRobin () {
 /**
  * Generate a Zoom JWT bearer access token
  *
+ * @param {String} apiKey zoom account api key
  * @returns JWT bearer access token for Zoom API access
  */
-async function generateZoomJWTBearerAccessToken () {
-  const { zoomAccountApiKey, zoomAccountApiSecret } = getZoomAccountByRoundRobin()
+async function generateZoomJWTBearerAccessToken (apiKey) {
+  const { zoomAccountApiKey, zoomAccountApiSecret } = getZoomAccountByRoundRobin(apiKey)
 
-  const token = jwt.sign(
+  const accessToken = jwt.sign(
     {},
     zoomAccountApiSecret,
     {
@@ -46,28 +58,32 @@ async function generateZoomJWTBearerAccessToken () {
     }
   )
 
-  return token
+  return { accessToken, zoomAccountApiKey }
 }
 
 /**
  * Create Zoom meeting via Zoom API
  *
+ * @param {Date} startTime the start time of the meeting
+ * @param {Integer} duration the duration of the meeting
  * @returns Zoom API response
  */
-async function createZoomMeeting () {
-  const accessToken = await generateZoomJWTBearerAccessToken()
+async function createZoomMeeting (startTime, duration) {
+  const { accessToken, zoomAccountApiKey } = await generateZoomJWTBearerAccessToken()
 
   // POST request details in Zoom API docs:
   // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate
   const res = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
-    type: 3
+    type: 2,
+    start_time: startTime.toISOString(),
+    duration
   }, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   })
 
-  return res.data
+  return { meeting: res.data, zoomAccountApiKey }
 }
 
 /**
@@ -76,21 +92,83 @@ async function createZoomMeeting () {
  * This method generates Zoom API JWT access token and uses it to
  * create a Zoom meeting and gets the meeting link.
  *
+ * @param {Date} startTime the start time of the meeting
+ * @param {Integer} duration the duration of the meeting
  * @returns The meeting urls for the Zoom meeting
  */
-async function generateZoomMeetingLink () {
+async function generateZoomMeetingLink (startTime, duration) {
   try {
-    const meetingObject = await createZoomMeeting()
+    const { meeting, zoomAccountApiKey } = await createZoomMeeting(startTime, duration)
 
     // learn more: https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate#responses
-    console.log(meetingObject.start_url, 'Zoom meeting link for host')
-    console.log(meetingObject.join_url, 'Zoom meeting link for participants')
+    console.log(meeting.start_url, 'Zoom meeting link for host')
+    console.log(meeting.join_url, 'Zoom meeting link for participants')
 
-    return meetingObject
+    return { meeting, zoomAccountApiKey }
   } catch (err) {
     console.log(err.message)
     throw err
   }
 }
 
-module.exports = { generateZoomMeetingLink }
+/**
+ * Update Zoom meeting
+ *
+ * @param {Date} startTime the start time of the meeting
+ * @param {Integer} duration the duration of the meeting
+ * @param {String} apiKey zoom account api key
+ * @param {Integer} zoomMeetingId zoom meeting id
+ * @returns {undefined}
+ */
+async function updateZoomMeeting (startTime, duration, zoomAccountApiKey, zoomMeetingId) {
+  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+  // PATCH request details in Zoom API docs:
+  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingupdate
+  await axios.patch(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+    start_time: startTime.toISOString(),
+    duration
+  }, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+}
+
+/**
+ * Cancel Zoom meeting via Zoom API
+ *
+ * @param {String} zoomAccountApiKey zoom account api key
+ * @param {Integer} zoomMeetingId zoom meeting id
+ * @returns {undefined}
+ */
+async function cancelZoomMeeting (zoomAccountApiKey, zoomMeetingId) {
+  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+  // DELETE request details in Zoom API docs:
+  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingdelete
+  await axios.delete(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+}
+
+/**
+ * Get Zoom meeting via Zoom API
+ *
+ * @param {String} zoomAccountApiKey zoom account api key
+ * @param {Integer} zoomMeetingId zoom meeting id
+ * @returns {undefined}
+ */
+async function getZoomMeeting (zoomAccountApiKey, zoomMeetingId) {
+  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+  // GET request details in Zoom API docs:
+  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meeting
+  const res = await axios.get(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+  return res.data
+}
+
+module.exports = { generateZoomMeetingLink, updateZoomMeeting, cancelZoomMeeting, getZoomMeeting }

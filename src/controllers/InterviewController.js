@@ -71,6 +71,16 @@ async function searchInterviews (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Get a fresh Zoom Links from Zoom Meeting and redirect to Zoom Link
+ * @param req the request
+ * @param res the response
+ */
+async function getZoomLink (req, res) {
+  const zoomLink = await service.getZoomLink(req.params.id, req.query)
+  return res.redirect(zoomLink)
+}
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
@@ -78,5 +88,6 @@ module.exports = {
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
   searchInterviews,
-  partiallyUpdateInterviewByWebhook
+  partiallyUpdateInterviewByWebhook,
+  getZoomLink
 }

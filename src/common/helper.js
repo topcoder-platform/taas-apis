@@ -25,6 +25,7 @@ const moment = require('moment-timezone')
 const { PaymentStatusRules, SearchUsers } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 const Mutex = require('async-mutex').Mutex
+const jwt = require('jsonwebtoken')
 
 const localLogger = {
   debug: (message) =>
@@ -2199,6 +2200,37 @@ async function processInterviewWebhookUsingMutex (interviewId = null, func) {
   })
 }
 
+/**
+ * Sign zoom link.
+ *
+ * @param {Object} data the object to sign
+ * @returns token
+ */
+function signZoomLink (data) {
+  return jwt.sign(
+    data,
+    config.ZOOM_LINK_SECRET,
+    {
+      algorithm: 'HS256',
+      expiresIn: config.ZOOM_LINK_TOKEN_EXPIRY
+    }
+  )
+}
+
+/**
+ * Verify zoom link request token.
+ *
+ * @param {String} token the token to verify
+ * @returns data if token is valid
+ */
+function verifyZoomLinkToken (token) {
+  try {
+    return jwt.verify(token, config.ZOOM_LINK_SECRET)
+  } catch (e) {
+    throw new errors.UnauthorizedError(`token invalid: ${e.message}`)
+  }
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2267,5 +2299,7 @@ module.exports = {
   formatDate,
   formatDateTimeEDT,
   getUserDetailsByUserUUID,
-  processInterviewWebhookUsingMutex
+  processInterviewWebhookUsingMutex,
+  signZoomLink,
+  verifyZoomLinkToken
 }
