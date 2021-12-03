@@ -112,6 +112,16 @@ module.exports = (sequelize) => {
         field: 'end_timestamp',
         type: Sequelize.DATE
       },
+      zoomAccountApiKey: {
+        field: 'zoom_account_api_key',
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
+      zoomMeetingId: {
+        field: 'zoom_meeting_id',
+        type: Sequelize.BIGINT,
+        allowNull: true
+      },
       status: {
         type: Sequelize.ENUM(statuses),
         allowNull: false
