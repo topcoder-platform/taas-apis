@@ -9,7 +9,7 @@ const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const { createHash } = require('crypto')
-const { Interviews: InterviewConstants } = require('../../app-constants')
+const { Interviews: InterviewConstants, ZoomLinkType } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -37,6 +37,7 @@ const {
 } = require('./NylasService')
 const UserMeetingSettingsService = require('./UserMeetingSettingsService')
 const { runExclusiveInterviewEventHandler } = require('../common/helper')
+const { getZoomMeeting } = require('./ZoomService')
 
 // Each request made by Nylas in the partiallyUpdateInterviewByWebhook endpoint
 // includes a SHA256 hash of a secret (stored in env variable) to be sent in the
@@ -882,6 +883,35 @@ partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
   webhookBody: Joi.object().invalid({}).required()
 }).required()
 
+/**
+ * Get zoom link.
+ *
+ * @param {String} interviewId the interview id
+ * @param {Object} data the request query data
+ * @returns zoom link
+ */
+async function getZoomLink (interviewId, data) {
+  const { type, id } = helper.verifyZoomLinkToken(data.token)
+  if (data.type !== type || interviewId !== id) {
+    throw new errors.BadRequestError('Invalid type or id.')
+  }
+  const interview = await Interview.findById(interviewId)
+  const zoomMeeting = await getZoomMeeting(interview.zoomAccountApiKey, interview.zoomMeetingId)
+  if (data.type === ZoomLinkType.HOST) {
+    return zoomMeeting.start_url
+  } else if (data.type === ZoomLinkType.GUEST) {
+    return zoomMeeting.join_url
+  }
+}
+
+getZoomLink.schema = Joi.object().keys({
+  interviewId: Joi.string().uuid().required(),
+  data: Joi.object().keys({
+    type: Joi.string().valid(ZoomLinkType.HOST, ZoomLinkType.GUEST).required(),
+    token: Joi.string().required()
+  }).required()
+}).required()
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
@@ -890,5 +920,6 @@ module.exports = {
   partiallyUpdateInterviewById,
   searchInterviews,
   updateCompletedInterviews,
-  partiallyUpdateInterviewByWebhook
+  partiallyUpdateInterviewByWebhook,
+  getZoomLink
 }

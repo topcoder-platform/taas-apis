@@ -12,7 +12,8 @@ const helper = require('../common/helper')
 const Constants = require('../../app-constants')
 const notificationsSchedulerService = require('../services/NotificationsSchedulerService')
 const Interview = models.Interview
-const { generateZoomMeetingLink } = require('../services/ZoomService')
+const { generateZoomMeetingLink, updateZoomMeeting, cancelZoomMeeting } = require('../services/ZoomService')
+const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
 /**
  * Send interview invitaion notifications
  * @param {*} interview the requested interview
@@ -127,10 +128,19 @@ async function sendInterviewScheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    const links = await generateZoomMeetingLink()
+    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration)
+
+    const updatedInterview = await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
+    await processUpdateInterview(updatedInterview.toJSON())
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
+
+    const hostZoomToken = helper.signZoomLink({ type: Constants.ZoomLinkType.HOST, id: interview.id })
+    const hostZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${Constants.ZoomLinkType.HOST}&token=${hostZoomToken}`
+
+    const guestZoomToken = helper.signZoomLink({ type: Constants.ZoomLinkType.GUEST, id: interview.id })
+    const guestZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${Constants.ZoomLinkType.GUEST}&token=${guestZoomToken}`
 
     await notificationsSchedulerService.sendNotification({}, {
       template,
@@ -139,7 +149,7 @@ async function sendInterviewScheduledNotifications (payload) {
         host: data.hostFullName,
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
-        zoomLink: links.start_url,
+        zoomLink: hostZoomLink,
         start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
         end: moment(interview.endTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
         hostTimezone: interviewEntity.hostTimezone,
@@ -160,7 +170,7 @@ async function sendInterviewScheduledNotifications (payload) {
           host: data.hostFullName,
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
-          zoomLink: links.join_url,
+          zoomLink: guestZoomLink,
           start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
           end: moment(interview.endTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
           guestTimezone,
@@ -249,10 +259,16 @@ async function sendInterviewRescheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    const links = await generateZoomMeetingLink()
+    await updateZoomMeeting(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId)
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
+
+    const hostZoomToken = helper.signZoomLink({ type: Constants.ZoomLinkType.HOST, id: interview.id })
+    const hostZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${Constants.ZoomLinkType.HOST}&token=${hostZoomToken}`
+
+    const guestZoomToken = helper.signZoomLink({ type: Constants.ZoomLinkType.GUEST, id: interview.id })
+    const guestZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${Constants.ZoomLinkType.GUEST}&token=${guestZoomToken}`
 
     await notificationsSchedulerService.sendNotification({}, {
       template,
@@ -261,7 +277,7 @@ async function sendInterviewRescheduledNotifications (payload) {
         host: data.hostFullName,
         guest: data.guestFullName,
         jobTitle: data.jobTitle,
-        zoomLink: links.start_url,
+        zoomLink: hostZoomLink,
         oldStart: moment(interviewOldValue.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
         start: moment(interview.startTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
         end: moment(interview.endTimestamp).tz(interviewEntity.hostTimezone).format(TIME_FORMAT) + ` ${interviewEntity.hostTimezone}`,
@@ -283,7 +299,7 @@ async function sendInterviewRescheduledNotifications (payload) {
           host: data.hostFullName,
           guest: data.guestFullName,
           jobTitle: data.jobTitle,
-          zoomLink: links.join_url,
+          zoomLink: guestZoomLink,
           oldStart: moment(interviewOldValue.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
           start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
           end: moment(interview.endTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
@@ -361,6 +377,8 @@ async function sendInterviewCancelledNotifications (payload) {
     // send host email
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
+
+    await cancelZoomMeeting(interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId)
 
     await notificationsSchedulerService.sendNotification({}, {
       template,
