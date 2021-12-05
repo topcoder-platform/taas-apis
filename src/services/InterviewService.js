@@ -156,7 +156,7 @@ getInterviewByRound.schema = Joi.object().keys({
 /**
  * Get interview by id
  * @param {Object} currentUser the user who perform this operation.
- * @param {String} id the interview or xai id
+ * @param {String} id the interview
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the interview
  */
@@ -515,26 +515,12 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
 /**
  * Patch (partially update) interview by id
  * @param {Object} currentUser the user who perform this operation
- * @param {String} id the interview or x.ai meeting id
+ * @param {String} id the interview
  * @param {Object} data object containing patched fields
  * @returns {Object} the patched interview object
  */
 async function partiallyUpdateInterviewById (currentUser, id, data) {
-  const interview = await Interview.findOne({
-    where: {
-      [Op.or]: [
-        { id }
-      ]
-    }
-  })
-  // throw NotFound error if doesn't exist
-  if (!!interview !== true) {
-    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
-  }
-  // check permission
-  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
-
-  return await partiallyUpdateInterview(currentUser, interview, data)
+  return internallyUpdateInterviewById(currentUser, id, data)
 }
 
 partiallyUpdateInterviewById.schema = Joi.object().keys({
@@ -573,6 +559,34 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
     deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
+
+/**
+ * Patch (partially update) interview by id
+ *
+ * The same as `partiallyUpdateInterviewById` but without validation for internal usage.
+ *
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the interview
+ * @param {Object} data object containing patched fields
+ * @returns {Object} the patched interview object
+ */
+ async function internallyUpdateInterviewById (currentUser, id, data) {
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id }
+      ]
+    }
+  })
+  // throw NotFound error if doesn't exist
+  if (!!interview !== true) {
+    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
+  }
+  // check permission
+  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+
+  return await partiallyUpdateInterview(currentUser, interview, data)
+}
 
 /**
  * List interviews
@@ -840,7 +854,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         // update the Nylas event to set custom metadata
         await updateEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
 
-        await partiallyUpdateInterviewById(
+        await internallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {
@@ -872,7 +886,11 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
       }
     }
   }).then(() => {
-    logger.logFullError('Mutex: released', { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
+    logger.debug({
+      component: 'InterviewService',
+      context: 'partiallyUpdateInterviewByWebhook',
+      message: 'Mutex: released'
+    })
   }).catch((err) => {
     logger.logFullError(`Mutex: error "${err.toString()}".`, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
   })
@@ -918,6 +936,7 @@ module.exports = {
   requestInterview,
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
+  internallyUpdateInterviewById,
   searchInterviews,
   updateCompletedInterviews,
   partiallyUpdateInterviewByWebhook,

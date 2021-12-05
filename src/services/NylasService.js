@@ -42,11 +42,10 @@ async function createVirtualCalendarForUser (userId, userEmail, userFullName, ti
   // so to bypass it, instead of email we use email with prefix, so Nylas Virtual Calendar email
   // would never match real user email which they connect to Google/Microsoft
   const virtualCalendarEmail = `virtual-calendar:${userEmail}`
-  const code = await authenticateAccount(userId, virtualCalendarEmail)
+  const code = await authenticateAccount(userFullName, virtualCalendarEmail)
   const { accessToken, provider } = await getAccessToken(code)
 
-  const existentCalendars = await getExistingCalendars(accessToken)
-  let calendar = await getPrimaryCalendar(existentCalendars)
+  let calendar = await getPrimaryCalendar(accessToken)
 
   // if don't have existent calendar, then create a new one
   if (!calendar) {
@@ -97,13 +96,13 @@ async function getAccountEmail (accountId) {
   return res.data.email
 }
 
-async function authenticateAccount (userId, email) {
+async function authenticateAccount (userFullName, email) {
   const res = await axios.post('https://api.nylas.com/connect/authorize', {
     client_id: config.NYLAS_CLIENT_ID,
     provider: 'nylas',
     scopes: 'calendar',
     email,
-    name: `${userId} virtual calendar`,
+    name: userFullName,
     settings: {}
   })
 
@@ -124,7 +123,7 @@ async function getAccessToken (code) {
 
 async function getEvent (accountId, eventId) {
   const email = await getAccountEmail(accountId)
-  const code = await authenticateAccount(accountId, email)
+  const code = await authenticateAccount('', email)
   const { accessToken } = await getAccessToken(code)
 
   try {
@@ -306,12 +305,12 @@ async function getPrimaryCalendar (accessToken) {
   // getting user's all existing calendars
   const calendars = await getExistingCalendars(accessToken)
   if (!Array.isArray(calendars) || calendars.length < 1) {
-    throw new errors.BadRequestError('Error getting calendar data for the user.')
+    return null
   }
 
   const primaryCalendar = await findPrimaryCalendar(calendars)
   if (!primaryCalendar) {
-    throw new errors.NotFoundError('Could not find any writable calendar.')
+    return null
   }
 
   return primaryCalendar

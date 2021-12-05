@@ -295,10 +295,8 @@ async function handleConnectCalendarCallback (reqQuery) {
 
       // When user connect their calendar to the Nylas the first time, it takes time for Nylas to sync that calendar into Nylas
       // So if from the first attempt we haven't found the connected calendar, then we try several times after some delay
-      let primaryCalendar
-      try {
-        primaryCalendar = await NylasService.getPrimaryCalendar(accessToken)
-      } catch (err) {
+      const primaryCalendar = await NylasService.getPrimaryCalendar(accessToken)
+      if (!primaryCalendar) {
         logger.debug({
           component: 'InterviewService',
           context: 'handleConnectCalendarCallback',

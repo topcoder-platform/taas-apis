@@ -123,7 +123,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
           return
         }
 
-        await InterviewService.partiallyUpdateInterviewById(
+        await InterviewService.internallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {
@@ -214,7 +214,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
           return
         }
 
-        await InterviewService.partiallyUpdateInterviewById(
+        await InterviewService.internallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {

@@ -168,7 +168,6 @@ module.exports = {
   // INTERVIEW_INVITATION_CC_LIST may contain comma-separated list of email which is converted to array
   INTERVIEW_INVITATION_CC_LIST: (process.env.INTERVIEW_INVITATION_CC_LIST || '').split(','),
   // INTERVIEW_INVITATION_RECIPIENTS_LIST may contain comma-separated list of email which is converted to array
-  // scheduler@x.ai should be in the RECIPIENTS list
   INTERVIEW_INVITATION_RECIPIENTS_LIST: (process.env.INTERVIEW_INVITATION_RECIPIENTS_LIST || 'scheduler@topcoder.com').split(','),
   // the emails address for overlapping interview
   NOTIFICATION_OPS_EMAILS: (process.env.NOTIFICATION_OPS_EMAILS || 'overlapping@topcoder.com').split(','),

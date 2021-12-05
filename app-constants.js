@@ -78,11 +78,6 @@ const Interviews = {
     Cancelled: 'Cancelled',
     Expired: 'Expired'
   },
-  // key: template name in x.ai, value: duration
-  XaiTemplate: {
-    'interview-30': 30,
-    'interview-60': 60
-  },
   MaxAllowedCount: 3,
   Nylas: {
     Days: {

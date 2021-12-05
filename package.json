@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "dev:debug": "nodemon --inspect app.js",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "init-db": "node src/init-db.js",

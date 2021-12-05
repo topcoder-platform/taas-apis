@@ -1159,7 +1159,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: The interview or xai id.
+          description: The interview id.
           required: true
           schema:
             type: string
@@ -1392,7 +1392,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: The interview or xai id.
+          description: The interview id.
           required: true
           schema:
             type: string
@@ -1450,7 +1450,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: The interview or xai id.
+          description: The interview id.
           required: true
           schema:
             type: string
@@ -4806,7 +4806,7 @@ components:
           description: 'Associated Nylas event id.'
         nylasEventEditHash:
           type: string
-          description: 'Associated Nylas event edit hash.' 
+          description: 'Associated Nylas event edit hash.'
         status:
           type: string
           enum:
