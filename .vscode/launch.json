@@ -28,6 +28,13 @@
       "program": "${workspaceFolder}/app.js",
       "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Attach to dev:debug",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229
     }
   ]
 }
