@@ -8,10 +8,9 @@ const { validate: uuidValidate } = require('uuid')
 const { Op } = require('sequelize')
 
 const logger = require('../common/logger')
-const { partiallyUpdateInterviewById } = require('./InterviewService')
-const { getEvent, getCalendar } = require('./NylasService')
+const InterviewService = require('./InterviewService')
+const NylasService = require('./NylasService')
 const UserMeetingSettingsService = require('./UserMeetingSettingsService')
-const { getAuditM2Muser, runExclusiveInterviewEventHandler, waitForUnlockCalendarConnectionHandler } = require('../common/helper')
 const { Interview, UserMeetingSettings } = require('../../src/models')
 const helper = require('../common/helper')
 const errors = require('../common/errors')
@@ -85,7 +84,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
   // start retrieving event immediately after getting webhook
   // but don't wait for it, the main code should be run inside mutex
   // to process all the webhooks in correct order
-  const eventPromise = getEvent(
+  const eventPromise = NylasService.getEvent(
     webhookData.object_data.account_id,
     webhookData.object_data.id
   ).then((event) => {
@@ -96,7 +95,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
   // we have to use mutex here to support re-scheduling
   // otherwise when new event is created we might not yet update `nylasEventId`
   // and then we would accidentally cancel re-scheduled event
-  await runExclusiveInterviewEventHandler(async () => {
+  await helper.runExclusiveInterviewEventHandler(async () => {
     localLogger.debug(`Mutex: acquired. Webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processEventCreatedWebhook #webhook-${webhookId}`)
     try {
       const event = await eventPromise
@@ -110,7 +109,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
       }
 
       // this method is used by the Nylas webhooks, so use M2M user
-      const m2mUser = getAuditM2Muser()
+      const m2mUser = helper.getAuditM2Muser()
 
       if (webhookData.type === EVENT_TYPE.EVENT.CREATED && event.status === 'confirmed') {
         const interview = await Interview.findById(interviewId)
@@ -124,7 +123,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
           return
         }
 
-        await partiallyUpdateInterviewById(
+        await InterviewService.partiallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {
@@ -145,7 +144,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
       localLogger.error(err, `processEventCreatedWebhook #webhook-${webhookId}`)
     }
   }).then(() => {
-    localLogger.debug(`Mutex: released.`, `processEventCreatedWebhook #webhook-${webhookId}`)
+    localLogger.debug('Mutex: released.', `processEventCreatedWebhook #webhook-${webhookId}`)
   }).catch((err) => {
     localLogger.error(`Mutex: error "${err.toString()}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
   })
@@ -163,7 +162,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
   // start retrieving event immediately after getting webhook
   // but don't wait for it, the main code should be run inside mutex
   // to process all the webhooks in correct order
-  const eventPromise = getEvent(
+  const eventPromise = NylasService.getEvent(
     webhookData.object_data.account_id,
     webhookData.object_data.id
   ).then((event) => {
@@ -174,7 +173,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
   // we have to use mutex here to support re-scheduling
   // otherwise when new event is created we might not yet update `nylasEventId`
   // and then we would accidentally cancel re-scheduled event
-  await runExclusiveInterviewEventHandler(async () => {
+  await helper.runExclusiveInterviewEventHandler(async () => {
     localLogger.debug(`Mutex: acquired. Webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processEventUpdatedWebhook #webhook-${webhookId}`)
     try {
       const event = await eventPromise
@@ -188,7 +187,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
       }
 
       // this method is used by the Nylas webhooks, so use M2M user
-      const m2mUser = getAuditM2Muser()
+      const m2mUser = helper.getAuditM2Muser()
 
       if (
         webhookData.type === EVENT_TYPE.EVENT.UPDATED &&
@@ -215,7 +214,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
           return
         }
 
-        await partiallyUpdateInterviewById(
+        await InterviewService.partiallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {
@@ -231,7 +230,7 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
       localLogger.error(err, `processEventUpdatedWebhook #webhook-${webhookId}`)
     }
   }).then(() => {
-    localLogger.debug(`Mutex: released.`, `processEventCreatedWebhook #webhook-${webhookId}`)
+    localLogger.debug('Mutex: released.', `processEventCreatedWebhook #webhook-${webhookId}`)
   }).catch((err) => {
     localLogger.error(`Mutex: error "${err.toString()}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
   })
@@ -247,53 +246,69 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
  */
 async function processCalendarCreatedWebhook (webhookData, webhookId) {
   // wait for the end of `UserMeetingSettingsService.handleConnectCalendarCallback` is it's currently running
-  await waitForUnlockCalendarConnectionHandler(async () => {
-    localLogger.debug(`Mutex unlocked. Processing webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
-    const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
-      where: {
-        nylasCalendars: {
-          [Op.contains]: [{ accountId: webhookData.object_data.account_id }]
+  await helper.waitForUnlockCalendarConnectionHandler(async () => {
+    localLogger.debug(`Interview mutex unlocked. Processing webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+
+    // as multiple calendars could come during short period of time
+    // to keep the logic more predictable we process calendars one by one for the same account using mutex
+    const mutexName = `mutex-webhook-calendar-for-account-${webhookData.object_data.account_id}`
+    await helper.runExclusiveByNamedMutex(mutexName, async () => {
+      localLogger.debug(`#${mutexName} Mutex: acquired. Processing webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+      const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
+        where: {
+          nylasCalendars: {
+            [Op.contains]: [{ accountId: webhookData.object_data.account_id }]
+          }
         }
+      })
+
+      if (!userMeetingSettingsForCalendar) {
+        localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because there are no users who connected calendar with Nylas Account Id: "${webhookData.object_data.account_id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
       }
-    })
 
-    if (!userMeetingSettingsForCalendar) {
-      localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because there are no users who connected calendar with Nylas Account Id: "${webhookData.object_data.account_id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
-      return
-    }
+      localLogger.debug(`Found user settings associated with created calendar: ${JSON.stringify(userMeetingSettingsForCalendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
 
-    localLogger.debug(`Found user settings associated with created calendar: ${JSON.stringify(userMeetingSettingsForCalendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+      const calendarRecord = _.find(userMeetingSettingsForCalendar.nylasCalendars, { accountId: webhookData.object_data.account_id })
 
-    const calendarRecord = _.find(userMeetingSettingsForCalendar.nylasCalendars, { accountId: webhookData.object_data.account_id })
-
-    if (calendarRecord.calendarId) {
-      localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because user already has calendar "${calendarRecord.calendarId}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
-      return
-    }
-
-    const accessToken = calendarRecord.accessToken
-    const calendar = await getCalendar(webhookData.object_data.id, accessToken)
-
-    localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, id: ${calendar.id}, calendar: ${JSON.stringify(calendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
-
-    if (calendar.read_only) {
-      localLogger.debug(`Ignoring read-only calendar "${webhookData.object_data.id}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
-      return
-    }
-
-    // NOTE, that we cannot use `userId` because it's UUID, while in
-    // `currentUser` we need to have integer user id
-    const user = _.pick(await helper.getUserDetailsByUserUUID(userMeetingSettingsForCalendar.id), ['userId', 'handle'])
-
-    await UserMeetingSettingsService.syncUserMeetingsSettings(user, {
-      id: userMeetingSettingsForCalendar.id,
-      calendar: {
-        ...calendarRecord,
-        calendarId: calendar.id, // we are only setting calendar id
+      if (calendarRecord.calendarId) {
+        localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because user already has calendar "${calendarRecord.calendarId}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
       }
-    })
 
-    localLogger.debug(`Linked user settings "${userMeetingSettingsForCalendar.id}" account "${calendarRecord.accountId}" email "${calendarRecord.email}" with calendar "${calendar.id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+      const accessToken = calendarRecord.accessToken
+
+      const calendar = await NylasService.getCalendar(webhookData.object_data.id, accessToken)
+
+      localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, id: ${calendar.id}, calendar: ${JSON.stringify(calendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+
+      // check if loaded calendar could play role of a primary calendar
+      const canBePrimary = !!(await NylasService.findPrimaryCalendar([calendar]))
+      if (!canBePrimary) {
+        localLogger.debug(`Ignoring read-only calendar "${webhookData.object_data.id}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
+      }
+
+      // NOTE, that we cannot use `userId` because it's UUID, while in
+      // `currentUser` we need to have integer user id
+      const user = _.pick(await helper.getUserDetailsByUserUUID(userMeetingSettingsForCalendar.id), ['userId', 'handle'])
+
+      await UserMeetingSettingsService.syncUserMeetingsSettings(user, {
+        id: userMeetingSettingsForCalendar.id,
+        // update default timezone same like in `UserMeetingSettingsService.handleConnectCalendarCallback`
+        defaultTimezone: calendar.timezone || null,
+        calendar: {
+          ...calendarRecord,
+          calendarId: calendar.id // we are only setting calendar id
+        }
+      })
+
+      localLogger.debug(`Linked user settings "${userMeetingSettingsForCalendar.id}" account "${calendarRecord.accountId}" email "${calendarRecord.email}" with calendar "${calendar.id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    }).then(() => {
+      localLogger.debug(`#${mutexName} Mutex: released.`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    }).catch((err) => {
+      localLogger.error(`#${mutexName} Mutex: error. "${err.toString()}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    })
   }).catch((err) => {
     localLogger.error(`Error "${err.toString()}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
   })

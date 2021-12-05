@@ -20,7 +20,6 @@ const { Interviews: InterviewConstants, NylasVirtualCalendarProvider } = require
 const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
-const retry = require('retry')
 const { runExclusiveCalendarConnectionHandler } = require('../common/helper')
 
 /**
@@ -162,11 +161,15 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
 
   // if UserMeetingSettings record already exists for the user we update it
   } else {
-    const updatePayload = {
-      ...userMeetingSettings.toJSON(),
-      // update these values in UserMeetingSettings if provided
-      ..._.pick(data, ['defaultAvailableTime', 'defaultTimezone'])
-    }
+    const updatePayload = userMeetingSettings.toJSON()
+
+    _.forEach(['defaultAvailableTime', 'defaultTimezone'], (updatedProp) => {
+      // we only update values if provided new values are non-null
+      // so we don't remove existent values
+      if (data[updatedProp]) {
+        updatePayload[updatedProp] = data[updatedProp]
+      }
+    })
 
     updatePayload.updatedBy = await helper.getUserId(currentUser.userId)
 
@@ -175,7 +178,7 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
       const calendarIndexInUserMeetingSettings = _.findIndex(userMeetingSettings.nylasCalendars, {
         // we only allow one calendar by the pair of email/accountProvider
         email: data.calendar.email,
-        accountProvider: data.calendar.accountProvider,
+        accountProvider: data.calendar.accountProvider
       })
 
       const updatedNylasCalendarsArray = _.map(userMeetingSettings.nylasCalendars || [], (item, index) => {
@@ -229,7 +232,7 @@ syncUserMeetingsSettings.schema = Joi.object().keys({
         start: Joi.string().regex(InterviewConstants.Nylas.StartEndRegex).required()
       })
     ),
-    defaultTimezone: Joi.string(),
+    defaultTimezone: Joi.string().allow(null),
     calendar: Joi.object().keys({
       id: Joi.string().required(),
       calendarId: Joi.string().required().allow(null),
@@ -243,59 +246,6 @@ syncUserMeetingsSettings.schema = Joi.object().keys({
   },
   transaction: Joi.object()
 })
-
-/**
- * Load calendars from Nylas and return the primary writable calendar
- *
- * @param {String} accessToken Nylas access token
- * @returns {Object} calendar
- */
-async function getConnectedCalendar (accessToken) {
-  // getting user's all existing calendars
-  const calendars = await NylasService.getExistingCalendars(accessToken)
-  if (!Array.isArray(calendars) || calendars.length < 1) {
-    throw new errors.BadRequestError('Error getting calendar data for the user.')
-  }
-
-  const primaryCalendar = await NylasService.getPrimaryCalendar(calendars)
-  if (!primaryCalendar) {
-    throw new errors.NotFoundError('Could not find any writable calendar.')
-  }
-
-  return primaryCalendar
-}
-
-/**
- * Tries to load calendar from Nylas several times, because it takes time from Nylas to
- * sync the calendar when it's connected the first time
- *
- * @param {String} accessToken Nylas access token
- * @returns {Object} calendar
- */
-async function getConnectedCalendarWithRetry (accessToken) {
-  return new Promise((resolve, reject) => {
-    const operation = retry.operation({
-      retries: 10, // try 10 times
-      // factor 1.2 to run it 10 times during 30 seconds as per https://www.wolframalpha.com/input/?i=Sum%5B1000*x%5Ek%2C+%7Bk%2C+0%2C+9%7D%5D+%3D+30+*+1000
-      factor: 1.2, // this factor would increase time between attempts
-      minTimeout: 1000 // minimal delay between attempts
-    })
-
-    operation.attempt(() => {
-      getConnectedCalendar(accessToken)
-        .then(resolve)
-        .catch((err) => {
-          logger.debug({ component: 'InterviewService', context: 'getConnectedCalendarWithRetry', message: 'did not get connected calendar' })
-          // if maximum number of times has been reached, then return error
-          if (!operation.retry(err)) {
-            reject(err)
-          } else {
-            logger.debug({ component: 'InterviewService', context: 'getConnectedCalendarWithRetry', message: 'trying to get connected calendar again...' })
-          }
-        })
-    })
-  })
-}
 
 /**
  * Handle connect calendar callback
@@ -347,7 +297,7 @@ async function handleConnectCalendarCallback (reqQuery) {
       // So if from the first attempt we haven't found the connected calendar, then we try several times after some delay
       let primaryCalendar
       try {
-        primaryCalendar = await getConnectedCalendar(accessToken)
+        primaryCalendar = await NylasService.getPrimaryCalendar(accessToken)
       } catch (err) {
         logger.debug({
           component: 'InterviewService',

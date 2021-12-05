@@ -8,7 +8,6 @@ const config = require('config')
 const _ = require('lodash')
 const { v4: uuid } = require('uuid')
 const errors = require('../common/errors')
-const logger = require('../common/logger')
 
 /**
  * @param {Object} calendarName the name of the Nylas calendar
@@ -261,7 +260,7 @@ async function patchSchedulingPage (pageId, accessToken, changes) {
  * @param {Array<Object>} calendars list of Nylas calendars
  * @returns
  */
-async function getPrimaryCalendar (calendars) {
+async function findPrimaryCalendar (calendars) {
   const primaryCalendar = _.find(calendars, { is_primary: true, read_only: false })
 
   if (primaryCalendar) {
@@ -297,17 +296,38 @@ async function updateEvent (eventId, data, accessToken) {
   }
 }
 
+/**
+ * Load calendars from Nylas and return the primary writable calendar
+ *
+ * @param {String} accessToken Nylas access token
+ * @returns {Object} calendar
+ */
+async function getPrimaryCalendar (accessToken) {
+  // getting user's all existing calendars
+  const calendars = await getExistingCalendars(accessToken)
+  if (!Array.isArray(calendars) || calendars.length < 1) {
+    throw new errors.BadRequestError('Error getting calendar data for the user.')
+  }
+
+  const primaryCalendar = await findPrimaryCalendar(calendars)
+  if (!primaryCalendar) {
+    throw new errors.NotFoundError('Could not find any writable calendar.')
+  }
+
+  return primaryCalendar
+}
+
 module.exports = {
   createVirtualCalendarForUser,
   createSchedulingPage,
   patchSchedulingPage,
   getAvailableTimeFromSchedulingPage,
   getTimezoneFromSchedulingPage,
-  getExistingCalendars,
   getAccessToken,
-  getPrimaryCalendar,
   getEvent,
   getCalendar,
+  getPrimaryCalendar,
+  findPrimaryCalendar,
   getAccountEmail,
   updateEvent,
   authenticateAccount

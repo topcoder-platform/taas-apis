@@ -871,7 +871,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
       }
     }
-  }).catch((err) => {
+  }).then(() => {
     logger.logFullError('Mutex: released', { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
   }).catch((err) => {
     logger.logFullError(`Mutex: error "${err.toString()}".`, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })

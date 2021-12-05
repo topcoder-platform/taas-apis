@@ -2190,12 +2190,39 @@ async function runExclusiveInterviewEventHandler (func) {
  * @param {Function} func function to execute
  * @returns Promise
  */
- const calendarWebhookMutex = new Mutex()
- async function waitForUnlockCalendarConnectionHandler (func) {
-   return calendarWebhookMutex.waitForUnlock().then(func)
- }
- async function runExclusiveCalendarConnectionHandler (func) {
+const calendarWebhookMutex = new Mutex()
+async function waitForUnlockCalendarConnectionHandler (func) {
+  return calendarWebhookMutex.waitForUnlock().then(func)
+}
+async function runExclusiveCalendarConnectionHandler (func) {
   return calendarWebhookMutex.runExclusive(func)
+}
+
+const namedMutexMap = {}
+/**
+ * Runs code one by one using mutex.
+ *
+ * @param {String|Number} mutexName mutex name
+ * @param {Function} func function to execute
+ * @returns {Promise<any>}
+ */
+async function runExclusiveByNamedMutex (mutexName, func) {
+  // mutex name should be either string or number
+  if (!(_.isString(mutexName) || _.isNumber(mutexName))) {
+    throw new Error('Mutex name has to be provided.')
+  }
+
+  if (!_.isFunction(func)) {
+    throw new Error('Mutex callback function has to be provided.')
+  }
+
+  let namedMutex = namedMutexMap[mutexName]
+  if (!namedMutex) {
+    namedMutex = new Mutex()
+    namedMutexMap[mutexName] = namedMutex
+  }
+
+  return namedMutex.runExclusive(func)
 }
 
 /**
@@ -2300,6 +2327,7 @@ module.exports = {
   runExclusiveCalendarConnectionHandler,
   waitForUnlockCalendarConnectionHandler,
   runExclusiveInterviewEventHandler,
+  runExclusiveByNamedMutex,
   signZoomLink,
   verifyZoomLinkToken
 }
