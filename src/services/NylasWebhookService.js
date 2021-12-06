@@ -349,7 +349,7 @@ async function nylasWebhook (req, res) {
     for (let i = 0; i < data.length; i++) {
       if (eventProcessors[data[i].type]) {
         nylasWebhookInvocationId += 1
-        localLogger.debug(`Processing Nylas Webhook type: "${data[i].type}", object id: "${_.get(data[i], 'object_data.id')}", date: "${data[i].date ? moment.unix(data[i].date).utc().format() : 'na'}", data: ${JSON.stringify(data[i])}.`, `nylasWebhook #webhook:${nylasWebhookInvocationId}`)
+        localLogger.debug(`Processing Nylas Webhook type: "${data[i].type}", object id: "${_.get(data[i], 'object_data.id')}", date: "${data[i].date ? moment.unix(data[i].date).utc().format() : 'na'}", data: ${JSON.stringify(data[i])}.`, `nylasWebhook #webhook-${nylasWebhookInvocationId}`)
         await eventProcessors[data[i].type](data[i], nylasWebhookInvocationId)
       } else {
         localLogger.debug(`Ignoring Nylas Webhook type: "${data[i].type}", data: ${JSON.stringify(data[i])}.`, 'nylasWebhook')
