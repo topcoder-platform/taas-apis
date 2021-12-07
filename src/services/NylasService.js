@@ -7,7 +7,6 @@ const { createHash } = require('crypto')
 const config = require('config')
 const _ = require('lodash')
 const { v4: uuid } = require('uuid')
-const errors = require('../common/errors')
 
 /**
  * @param {Object} calendarName the name of the Nylas calendar
@@ -135,7 +134,10 @@ async function getEvent (accountId, eventId) {
 
     return res.data
   } catch (err) {
-    throw new Error(`Error getting event "${eventId}": ${err.toString()}`)
+    const customError = new Error(`Error getting event "${eventId}": ${err.toString()}`)
+    // we must return http status of error as we are relying on it
+    customError.httpStatus = _.get(err, 'response.status')
+    throw customError
   }
 }
 

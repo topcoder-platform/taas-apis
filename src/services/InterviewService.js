@@ -570,7 +570,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
  * @param {Object} data object containing patched fields
  * @returns {Object} the patched interview object
  */
- async function internallyUpdateInterviewById (currentUser, id, data) {
+async function internallyUpdateInterviewById (currentUser, id, data) {
   const interview = await Interview.findOne({
     where: {
       [Op.or]: [
@@ -871,14 +871,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         logger.debug({
           component: 'InterviewService',
           context: 'partiallyUpdateInterviewByWebhook',
-          message:
-          `~~~~~~~~~~~NEW EVENT~~~~~~~~~~~\nInterview Scheduled under account id ${
-            bookingDetails.account_id
-          } (email is ${bookingDetails.recipient_email}) in calendar id ${
-            bookingDetails.calendar_id
-          }. Event status is ${InterviewConstants.Status.Scheduled} and starts from ${interviewStartTimeMoment
-            .format('MMM DD YYYY HH:mm')} and ends at ${interviewEndTimeMoment
-            .format('MMM DD YYYY HH:mm')}`
+          message: `Interview scheduled by event "${bookingDetails.calendar_event_id}" in calendar "${bookingDetails.calendar_id}" for account "${bookingDetails.account_id}" on ${interviewStartTimeMoment.format('MMM DD YYYY HH:mm')}`
         })
       } catch (err) {
         logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
