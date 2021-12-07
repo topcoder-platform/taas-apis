@@ -34,6 +34,23 @@ module.exports = (sequelize) => {
       }
       return interview
     }
+
+    /**
+     * Get interview by Nylas Event Id
+     * @param {String} nylasEventId Nylas Event Id
+     * @returns {Interview} the Interview instance
+     */
+    static async findByNylasEventId (nylasEventId) {
+      const interview = await Interview.findOne({
+        where: {
+          nylasEventId
+        }
+      })
+      if (!interview) {
+        throw new errors.NotFoundError(`"Interview" doesn't exist with nylasEventId: "${nylasEventId}"`)
+      }
+      return interview
+    }
   }
   Interview.init(
     {

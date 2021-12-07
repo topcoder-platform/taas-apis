@@ -193,7 +193,7 @@ const ZoomLinkType = {
 }
 
 // how long to wait for the Interview Webhook Mutes to release (ms)
-const InterviewEventHandlerTimeout = 10 * 1000 // 10 seconds
+const InterviewEventHandlerTimeout = 60 * 1000 // 60 seconds
 
 module.exports = {
   InterviewEventHandlerTimeout,

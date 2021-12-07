@@ -91,6 +91,10 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
     localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}, event: ${JSON.stringify(event)}`, `processEventCreatedWebhook #webhook-${webhookId}`)
 
     return event
+  }).catch((err) => {
+    localLogger.error(err, `processEventCreatedWebhook #webhook-${webhookId}`)
+
+    return null
   })
   // we have to use mutex here to support re-scheduling
   // otherwise when new event is created we might not yet update `nylasEventId`
@@ -100,6 +104,10 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
     try {
       const event = await eventPromise
 
+      if (!event) {
+        throw new errors.BadRequestError(`Could not get event "${webhookData.object_data.id}".`)
+      }
+
       let interviewId
       try {
         interviewId = getInterviewIdFromEvent(event)
@@ -108,10 +116,7 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
         return
       }
 
-      // this method is used by the Nylas webhooks, so use M2M user
-      const m2mUser = helper.getAuditM2Muser()
-
-      if (webhookData.type === EVENT_TYPE.EVENT.CREATED && event.status === 'confirmed') {
+      if (event.status === 'confirmed') {
         const interview = await Interview.findById(interviewId)
         if (!interview) {
           throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
@@ -122,6 +127,9 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
           localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendar_id}" doesn't match interview calendar "${interview.nylasCalendarId}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
           return
         }
+
+        // this method is used by the Nylas webhooks, so use M2M user
+        const m2mUser = helper.getAuditM2Muser()
 
         await InterviewService.internallyUpdateInterviewById(
           m2mUser,
@@ -159,16 +167,27 @@ async function processEventCreatedWebhook (webhookData, webhookId) {
  * @param {Number} webhookId webhook id for tracking
  */
 async function processEventUpdatedWebhook (webhookData, webhookId) {
+  const eventId = webhookData.object_data.id
   // start retrieving event immediately after getting webhook
   // but don't wait for it, the main code should be run inside mutex
   // to process all the webhooks in correct order
-  const eventPromise = NylasService.getEvent(
+  const eventStatusPromise = NylasService.getEvent(
     webhookData.object_data.account_id,
     webhookData.object_data.id
   ).then((event) => {
     localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}, event: ${JSON.stringify(event)}`, `processEventUpdatedWebhook #webhook-${webhookId}`)
 
-    return event
+    // if we could get the event, then just return its status
+    return event.status
+  }).catch((err) => {
+    // if we cannot load event from Nylas it means Nylas internally has deleted it
+    // so we can treat this case as "cancelled" if previously it was us who created such an event
+    if (err.httpStatus === 404) {
+      return 'deleted'
+    }
+
+    localLogger.error(err, `processEventUpdatedWebhook #webhook-${webhookId}`)
+    return null
   })
   // we have to use mutex here to support re-scheduling
   // otherwise when new event is created we might not yet update `nylasEventId`
@@ -176,55 +195,42 @@ async function processEventUpdatedWebhook (webhookData, webhookId) {
   await helper.runExclusiveInterviewEventHandler(async () => {
     localLogger.debug(`Mutex: acquired. Webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processEventUpdatedWebhook #webhook-${webhookId}`)
     try {
-      const event = await eventPromise
+      const eventStatus = await eventStatusPromise
 
-      let interviewId
-      try {
-        interviewId = getInterviewIdFromEvent(event)
-      } catch (err) {
-        localLogger.debug(`Ignoring event "${event.id}" because cannot extract interview id from its description "${event.description}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
-        return
+      if (!eventStatus) {
+        throw new errors.BadRequestError(`Could not determine event status for "${eventId}".`)
       }
 
-      // this method is used by the Nylas webhooks, so use M2M user
-      const m2mUser = helper.getAuditM2Muser()
-
-      if (
-        webhookData.type === EVENT_TYPE.EVENT.UPDATED &&
-        event.status === 'cancelled'
-      ) {
-        const interview = await Interview.findById(interviewId)
-        if (!interview) {
-          throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
-        }
-
-        // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
-        if (interview.nylasCalendarId !== event.calendar_id) {
-          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendar_id}" doesn't match interview calendar "${interview.nylasCalendarId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
-          return
-        }
-
-        if (interview.nylasEventId !== event.id) {
-          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because this interview is assigned to another event id "${interview.nylasEventId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+      if (eventStatus === 'cancelled' || eventStatus === 'deleted') {
+        // find interview associated with this event
+        let interview
+        try {
+          interview = await Interview.findByNylasEventId(eventId)
+          localLogger.debug(`Found interview "${interview.id}" associated with event "${eventId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+        } catch (err) {
+          localLogger.debug(`Ignoring event "${eventId}" because cannot find any interview associated with this event.`, `processEventUpdatedWebhook #webhook-${webhookId}`)
           return
         }
 
         if (interview.status === InterviewStatus.Cancelled) {
-          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because this interview is already cancelled.`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+          localLogger.debug(`Ignoring event "${eventId}" for interview "${interview.id}" because this interview is already cancelled.`, `processEventUpdatedWebhook #webhook-${webhookId}`)
           return
         }
 
+        // this method is used by the Nylas webhooks, so use M2M user
+        const m2mUser = helper.getAuditM2Muser()
+
         await InterviewService.internallyUpdateInterviewById(
           m2mUser,
-          interviewId,
+          interview.id,
           {
             status: InterviewStatus.Cancelled
           }
         )
 
-        localLogger.debug(`Interview "${interviewId}" was canceled by webhook for event "${event.id}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+        localLogger.debug(`Interview "${interview.id}" was canceled by webhook by "${eventStatus}" event "${eventId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
       } else {
-        localLogger.debug(`ignoring event, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+        localLogger.debug(`Ignoring event ${eventId}, status "${eventStatus}", type: ${webhookData.type}`, `processEventUpdatedWebhook #webhook-${webhookId}`)
       }
     } catch (err) {
       localLogger.error(err, `processEventUpdatedWebhook #webhook-${webhookId}`)
