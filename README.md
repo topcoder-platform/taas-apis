@@ -48,6 +48,7 @@
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
       BUSAPI_URL=http://dockerhost:8002/v5
+      TAAS_API_BASE_URL=http://localhost:3000/api/v5
       # stripe
       STRIPE_SECRET_KEY=
       CURRENCY=usd

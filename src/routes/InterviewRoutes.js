@@ -57,5 +57,11 @@ module.exports = {
       auth: 'jwt',
       scopes: [constants.Scopes.READ_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
     }
+  },
+  '/getInterview/:id/zoom-link': {
+    get: {
+      controller: 'InterviewController',
+      method: 'getZoomLink'
+    }
   }
 }

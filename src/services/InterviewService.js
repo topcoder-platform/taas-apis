@@ -9,7 +9,7 @@ const config = require('config')
 const { Op, ForeignKeyConstraintError } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const { createHash } = require('crypto')
-const { Interviews: InterviewConstants } = require('../../app-constants')
+const { Interviews: InterviewConstants, ZoomLinkType } = require('../../app-constants')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -33,10 +33,11 @@ const {
   patchSchedulingPage
 } = require('./NylasService')
 const {
-  updateNylasEvent
+  updateEvent
 } = require('./NylasService')
-const { syncUserMeetingsSettings } = require('./UserMeetingSettingsService')
-const { processInterviewWebhookUsingMutex } = require('../common/helper')
+const UserMeetingSettingsService = require('./UserMeetingSettingsService')
+const { runExclusiveInterviewEventHandler } = require('../common/helper')
+const { getZoomMeeting } = require('./ZoomService')
 
 // Each request made by Nylas in the partiallyUpdateInterviewByWebhook endpoint
 // includes a SHA256 hash of a secret (stored in env variable) to be sent in the
@@ -155,7 +156,7 @@ getInterviewByRound.schema = Joi.object().keys({
 /**
  * Get interview by id
  * @param {Object} currentUser the user who perform this operation.
- * @param {String} id the interview or xai id
+ * @param {String} id the interview
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the interview
  */
@@ -288,6 +289,12 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       } else {
         calendar = existentCalendar
       }
+
+      // if primary calendar doesn't have `calendarId`
+      if (!calendar.calendarId) {
+        throw errors.BadRequestError(`Cannot schedule interview using calendar "${calendar.email}" as it was not fully connected. Try waiting a couple of minutes, removing or reconnecting the calendar.`)
+      }
+
       // configure scheduling page
       const jobCandidate = await models.JobCandidate.findById(interview.jobCandidateId)
       const job = await jobCandidate.getJob()
@@ -295,19 +302,25 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
         eventTitle: `Job Interview for "${job.title}"`
       }
       // create scheduling page on nylas
-      const schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
-      logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}"`)
+      let schedulingPage
+      try {
+        schedulingPage = await createSchedulingPage(interview, calendar, pageOptions)
+        logger.debug(`requestInterview -> createSchedulingPage created: ${JSON.stringify(schedulingPage)}, using accessToken: "${calendar.accessToken}"`)
+      } catch (err) {
+        logger.error(`requestInterview -> createSchedulingPage failed: ${err.toString()}, using accessToken: "${calendar.accessToken}"`)
+        throw err
+      }
 
       // Link nylasPage to interview
       interview.nylasPageId = schedulingPage.id
       interview.nylasPageSlug = schedulingPage.slug
-      interview.nylasCalendarId = calendar.id
+      interview.nylasCalendarId = calendar.calendarId
 
       // status handling will be implemented in another challenge it seems, setting the default value
       interview.status = InterviewConstants.Status.Scheduling
 
       try {
-        await syncUserMeetingsSettings(
+        await UserMeetingSettingsService.syncUserMeetingsSettings(
           currentUser,
           {
             id: interview.hostUserId,
@@ -407,11 +420,11 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
         const settingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
-              [Op.contains]: [{ id: interview.nylasCalendarId }]
+              [Op.contains]: [{ calendarId: interview.nylasCalendarId }]
             }
           }
         })
-        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, ['id', interview.nylasCalendarId]).accessToken
+        const nylasAccessToken = _.find(settingsForCalendar.nylasCalendars, { calendarId: interview.nylasCalendarId }).accessToken
 
         await patchSchedulingPage(interview.nylasPageId, nylasAccessToken, {
           duration: interview.duration !== data.duration ? data.duration : null,
@@ -502,26 +515,12 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
 /**
  * Patch (partially update) interview by id
  * @param {Object} currentUser the user who perform this operation
- * @param {String} id the interview or x.ai meeting id
+ * @param {String} id the interview
  * @param {Object} data object containing patched fields
  * @returns {Object} the patched interview object
  */
 async function partiallyUpdateInterviewById (currentUser, id, data) {
-  const interview = await Interview.findOne({
-    where: {
-      [Op.or]: [
-        { id }
-      ]
-    }
-  })
-  // throw NotFound error if doesn't exist
-  if (!!interview !== true) {
-    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
-  }
-  // check permission
-  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
-
-  return await partiallyUpdateInterview(currentUser, interview, data)
+  return internallyUpdateInterviewById(currentUser, id, data)
 }
 
 partiallyUpdateInterviewById.schema = Joi.object().keys({
@@ -560,6 +559,34 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
     deletedAt: Joi.date().allow(null)
   }).required().min(1) // at least one key - i.e. don't allow empty object
 }).required()
+
+/**
+ * Patch (partially update) interview by id
+ *
+ * The same as `partiallyUpdateInterviewById` but without validation for internal usage.
+ *
+ * @param {Object} currentUser the user who perform this operation
+ * @param {String} id the interview
+ * @param {Object} data object containing patched fields
+ * @returns {Object} the patched interview object
+ */
+ async function internallyUpdateInterviewById (currentUser, id, data) {
+  const interview = await Interview.findOne({
+    where: {
+      [Op.or]: [
+        { id }
+      ]
+    }
+  })
+  // throw NotFound error if doesn't exist
+  if (!!interview !== true) {
+    throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
+  }
+  // check permission
+  await ensureUserIsPermitted(currentUser, interview.jobCandidateId)
+
+  return await partiallyUpdateInterview(currentUser, interview, data)
+}
 
 /**
  * List interviews
@@ -754,11 +781,11 @@ async function updateCompletedInterviews () {
  * @returns nothing
  */
 async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhookBody) {
-  // don't await for response to prevent gateway timeout
+  // don't await for response to prevent gateway timeout because it might wait for mutex to release
   // we use mutex here, otherwise we might update the same interview using `NylasWebhookService`
-  // and there maybe race condition when updating ES
-  processInterviewWebhookUsingMutex(interviewId, async () => {
-    logger.info({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Received webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
+  // and there maybe race condition when updating the same record
+  runExclusiveInterviewEventHandler(async () => {
+    logger.debug({ component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook', message: `Mutex: processing webhook for interview id "${interviewId}": ${JSON.stringify(webhookBody)}` })
 
     // Verify the request to make sure it's actually from Nylas.
     if (!verifyNylasWebhookRequest(authToken)) {
@@ -795,7 +822,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
           where: {
             nylasCalendars: {
-              [Op.contains]: [{ id: bookingDetails.calendar_id }]
+              [Op.contains]: [{ calendarId: bookingDetails.calendar_id }]
             }
           }
         })
@@ -804,7 +831,7 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
           throw new errors.BadRequestError('Error getting UserMeetingSettings for the booking calendar id.')
         }
 
-        const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, ['id', bookingDetails.calendar_id]).accessToken
+        const accessToken = _.find(userMeetingSettingsForCalendar.nylasCalendars, { calendarId: bookingDetails.calendar_id }).accessToken
 
         // Interview cancel/reschedule links
         const cancelInterviewLink = `${config.TAAS_APP_BASE_URL}/interview/${interviewId}/cancel`
@@ -825,9 +852,9 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         }
 
         // update the Nylas event to set custom metadata
-        await updateNylasEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
+        await updateEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
 
-        await partiallyUpdateInterviewById(
+        await internallyUpdateInterviewById(
           m2mUser,
           interviewId,
           {
@@ -858,6 +885,14 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
         throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
       }
     }
+  }).then(() => {
+    logger.debug({
+      component: 'InterviewService',
+      context: 'partiallyUpdateInterviewByWebhook',
+      message: 'Mutex: released'
+    })
+  }).catch((err) => {
+    logger.logFullError(`Mutex: error "${err.toString()}".`, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
   })
 }
 partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
@@ -866,13 +901,44 @@ partiallyUpdateInterviewByWebhook.schema = Joi.object().keys({
   webhookBody: Joi.object().invalid({}).required()
 }).required()
 
+/**
+ * Get zoom link.
+ *
+ * @param {String} interviewId the interview id
+ * @param {Object} data the request query data
+ * @returns zoom link
+ */
+async function getZoomLink (interviewId, data) {
+  const { type, id } = helper.verifyZoomLinkToken(data.token)
+  if (data.type !== type || interviewId !== id) {
+    throw new errors.BadRequestError('Invalid type or id.')
+  }
+  const interview = await Interview.findById(interviewId)
+  const zoomMeeting = await getZoomMeeting(interview.zoomAccountApiKey, interview.zoomMeetingId)
+  if (data.type === ZoomLinkType.HOST) {
+    return zoomMeeting.start_url
+  } else if (data.type === ZoomLinkType.GUEST) {
+    return zoomMeeting.join_url
+  }
+}
+
+getZoomLink.schema = Joi.object().keys({
+  interviewId: Joi.string().uuid().required(),
+  data: Joi.object().keys({
+    type: Joi.string().valid(ZoomLinkType.HOST, ZoomLinkType.GUEST).required(),
+    token: Joi.string().required()
+  }).required()
+}).required()
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
   requestInterview,
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
+  internallyUpdateInterviewById,
   searchInterviews,
   updateCompletedInterviews,
-  partiallyUpdateInterviewByWebhook
+  partiallyUpdateInterviewByWebhook,
+  getZoomLink
 }

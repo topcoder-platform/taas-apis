@@ -22,9 +22,10 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment-timezone')
-const { PaymentStatusRules, SearchUsers } = require('../../app-constants')
+const { PaymentStatusRules, SearchUsers, InterviewEventHandlerTimeout } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
-const Mutex = require('async-mutex').Mutex
+const { Mutex, withTimeout } = require('async-mutex')
+const jwt = require('jsonwebtoken')
 
 const localLogger = {
   debug: (message) =>
@@ -1204,7 +1205,7 @@ async function searchUsersByQuery (query) {
     offset += limit
   }
 
-  logger.verbose(`Searched users: ${JSON.stringify(users, null, 4)}`)
+  logger.verbose(`Searched users: ${JSON.stringify(users)}`)
   return users
 }
 
@@ -2172,31 +2173,87 @@ function formatDate (date) {
   }
 }
 
-const interviewMutexMap = {}
 /**
- * Runs code one by one using mutex for particular interview.
- * If interview id is not provided, it would run code one by one globally.
- * So it's better to provide interview id to avoid to long queue.
+ * Runs code one by one for interview event handlers.
  *
- * @param {String} interviewId interview id or `null`
  * @param {Function} func function to execute
  * @returns Promise
  */
-async function processInterviewWebhookUsingMutex (interviewId = null, func) {
-  let accountMutex = interviewMutexMap[interviewId]
-  if (!accountMutex) {
-    accountMutex = new Mutex()
-    interviewMutexMap[interviewId] = accountMutex
+const interviewsWebhookMutex = withTimeout(new Mutex(), InterviewEventHandlerTimeout)
+async function runExclusiveInterviewEventHandler (func) {
+  return interviewsWebhookMutex.runExclusive(func)
+}
+
+/**
+ * Runs code one by one for calendar webhooks.
+ *
+ * @param {Function} func function to execute
+ * @returns Promise
+ */
+const calendarWebhookMutex = new Mutex()
+async function waitForUnlockCalendarConnectionHandler (func) {
+  return calendarWebhookMutex.waitForUnlock().then(func)
+}
+async function runExclusiveCalendarConnectionHandler (func) {
+  return calendarWebhookMutex.runExclusive(func)
+}
+
+const namedMutexMap = {}
+/**
+ * Runs code one by one using mutex.
+ *
+ * @param {String|Number} mutexName mutex name
+ * @param {Function} func function to execute
+ * @returns {Promise<any>}
+ */
+async function runExclusiveByNamedMutex (mutexName, func) {
+  // mutex name should be either string or number
+  if (!(_.isString(mutexName) || _.isNumber(mutexName))) {
+    throw new Error('Mutex name has to be provided.')
   }
 
-  return accountMutex.runExclusive(func).then((result) => {
-    // free up memory for individual interviews
-    if (interviewId) {
-      delete interviewMutexMap[interviewId]
-    }
+  if (!_.isFunction(func)) {
+    throw new Error('Mutex callback function has to be provided.')
+  }
 
-    return result
-  })
+  let namedMutex = namedMutexMap[mutexName]
+  if (!namedMutex) {
+    namedMutex = new Mutex()
+    namedMutexMap[mutexName] = namedMutex
+  }
+
+  return namedMutex.runExclusive(func)
+}
+
+/**
+ * Sign zoom link.
+ *
+ * @param {Object} data the object to sign
+ * @returns token
+ */
+function signZoomLink (data) {
+  return jwt.sign(
+    data,
+    config.ZOOM_LINK_SECRET,
+    {
+      algorithm: 'HS256',
+      expiresIn: config.ZOOM_LINK_TOKEN_EXPIRY
+    }
+  )
+}
+
+/**
+ * Verify zoom link request token.
+ *
+ * @param {String} token the token to verify
+ * @returns data if token is valid
+ */
+function verifyZoomLinkToken (token) {
+  try {
+    return jwt.verify(token, config.ZOOM_LINK_SECRET)
+  } catch (e) {
+    throw new errors.UnauthorizedError(`token invalid: ${e.message}`)
+  }
 }
 
 module.exports = {
@@ -2267,5 +2324,10 @@ module.exports = {
   formatDate,
   formatDateTimeEDT,
   getUserDetailsByUserUUID,
-  processInterviewWebhookUsingMutex
+  runExclusiveCalendarConnectionHandler,
+  waitForUnlockCalendarConnectionHandler,
+  runExclusiveInterviewEventHandler,
+  runExclusiveByNamedMutex,
+  signZoomLink,
+  verifyZoomLinkToken
 }

@@ -1108,7 +1108,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateInterviewRequestBody"
+              $ref: "#/components/schemas/UpdateInterviewByRequestBody"
       responses:
         "200":
           description: OK
@@ -1159,7 +1159,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: The interview or xai id.
+          description: The interview id.
           required: true
           schema:
             type: string
@@ -1167,7 +1167,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateInterviewRequestBody"
+              $ref: "#/components/schemas/UpdateInterviewByRequestBody"
       responses:
         "200":
           description: OK
@@ -1392,7 +1392,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: The interview or xai id.
+          description: The interview id.
           required: true
           schema:
             type: string
@@ -1423,6 +1423,69 @@ paths:
                 $ref: "#/components/schemas/Error"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /getInterview/{id}/zoom-link:
+    get:
+      tags:
+        - Interviews
+      description: |
+        Get a fresh Zoom Links from Zoom Meeting and redirect to Zoom Link.
+
+      parameters:
+        - in: path
+          name: id
+          description: The interview id.
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          description: the zoom link type (host or guest).
+          required: true
+          schema:
+            type: string
+            enum:
+              - host
+              - guest
+        - in: query
+          name: token
+          description: the request token.
+          required: true
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect to link of Zoom Meeting
+          headers:
+            Location:
+              description: Zoom Meeting Link.
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated
           content:
             application/json:
               schema:
@@ -3126,7 +3189,8 @@ paths:
           description: The userId
           required: true
           schema:
-            type: uuid
+            type: string
+            format: uuid
 
       responses:
         "200":
@@ -3182,7 +3246,8 @@ paths:
           description: The UUID of the User whose calendar should be deleted
           required: true
           schema:
-            type: uuid
+            type: string
+            format: uuid
         - in: path
           name: calendarId
           description: The id of the calendar to delete. This id comes from Nylas backend server
@@ -3806,6 +3871,12 @@ paths:
         - Teams
       description: |
         Returns suggested members for the given handle fragment
+      parameters:
+        - in: path
+          name: fragment
+          required: true
+          schema:
+            type: string
       security:
         - bearerAuth: []
       responses:
@@ -4735,7 +4806,7 @@ components:
           description: 'Associated Nylas event id.'
         nylasEventEditHash:
           type: string
-          description: 'Associated Nylas event edit hash.' 
+          description: 'Associated Nylas event edit hash.'
         status:
           type: string
           enum:

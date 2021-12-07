@@ -78,11 +78,6 @@ const Interviews = {
     Cancelled: 'Cancelled',
     Expired: 'Expired'
   },
-  // key: template name in x.ai, value: duration
-  XaiTemplate: {
-    'interview-30': 30,
-    'interview-60': 60
-  },
   MaxAllowedCount: 3,
   Nylas: {
     Days: {
@@ -192,7 +187,16 @@ const SearchUsers = {
 // provider which we have to enforce for Nylas Virtual Calendars
 const NylasVirtualCalendarProvider = 'nylas'
 
+const ZoomLinkType = {
+  HOST: 'host',
+  GUEST: 'guest'
+}
+
+// how long to wait for the Interview Webhook Mutes to release (ms)
+const InterviewEventHandlerTimeout = 10 * 1000 // 10 seconds
+
 module.exports = {
+  InterviewEventHandlerTimeout,
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
@@ -209,5 +213,6 @@ module.exports = {
   JobStatus,
   JobCandidateStatus,
   SearchUsers,
-  NylasVirtualCalendarProvider
+  NylasVirtualCalendarProvider,
+  ZoomLinkType
 }

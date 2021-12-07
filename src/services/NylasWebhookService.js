@@ -2,15 +2,17 @@ const config = require('config')
 const { Interviews: { Status: InterviewStatus } } = require('../../app-constants')
 
 const crypto = require('crypto')
-const moment = require('moment')
 const _ = require('lodash')
+const moment = require('moment')
 const { validate: uuidValidate } = require('uuid')
+const { Op } = require('sequelize')
 
 const logger = require('../common/logger')
-const { partiallyUpdateInterviewById } = require('./InterviewService')
-const { getEventDetails } = require('./NylasService')
-const { getAuditM2Muser, processInterviewWebhookUsingMutex } = require('../common/helper')
-const { Interview } = require('../../src/models')
+const InterviewService = require('./InterviewService')
+const NylasService = require('./NylasService')
+const UserMeetingSettingsService = require('./UserMeetingSettingsService')
+const { Interview, UserMeetingSettings } = require('../../src/models')
+const helper = require('../common/helper')
 const errors = require('../common/errors')
 
 const localLogger = {
@@ -22,16 +24,33 @@ const localLogger = {
     logger.info({ component: 'NylasWebhookService', context, message })
 }
 
-const EVENTTYPES = {
-  CREATED: 'event.created',
-  UPDATED: 'event.updated',
-  DELETED: 'event.deleted'
+const EVENT_TYPE = {
+  EVENT: {
+    CREATED: 'event.created',
+    UPDATED: 'event.updated',
+    DELETED: 'event.deleted'
+  },
+  CALENDAR: {
+    CREATED: 'calendar.created',
+    UPDATED: 'calendar.updated',
+    DELETED: 'calendar.deleted'
+  }
+}
+
+const eventProcessors = {
+  [EVENT_TYPE.EVENT.CREATED]: processEventCreatedWebhook,
+  [EVENT_TYPE.EVENT.UPDATED]: processEventUpdatedWebhook,
+  [EVENT_TYPE.CALENDAR.CREATED]: processCalendarCreatedWebhook
 }
 
 const getInterviewIdFromEvent = (event) => {
   // if we already update event description and added metadata, then use it to get interview id
   if (_.get(event, 'metadata.interviewId')) {
     return event.metadata.interviewId
+  }
+
+  if (!event.description) {
+    throw new Error(`Cannot get interview id for event ${event.id} as it doesn't have description.`)
   }
 
   // if this is a new event and we haven't updated description yet, and haven't set metadata,
@@ -54,90 +73,245 @@ const getInterviewIdFromEvent = (event) => {
 }
 
 /**
- * Processor for nylas webhook
- * @param {*} webhookData webhook delta data
- * @param {*} event event details
+ * Process "event.created" webhook
+ *
+ * - associate created event with interview
+ *
+ * @param {Object} webhookData webhook data
+ * @param {Number} webhookId webhook id for tracking
  */
-async function processFormattedEvent (webhookData, event) {
-  localLogger.debug(`get event, type: ${webhookData.type}, status: ${event.status}, data: ${JSON.stringify(webhookData)}, event: ${JSON.stringify(event)}`)
+async function processEventCreatedWebhook (webhookData, webhookId) {
+  // start retrieving event immediately after getting webhook
+  // but don't wait for it, the main code should be run inside mutex
+  // to process all the webhooks in correct order
+  const eventPromise = NylasService.getEvent(
+    webhookData.object_data.account_id,
+    webhookData.object_data.id
+  ).then((event) => {
+    localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}, event: ${JSON.stringify(event)}`, `processEventCreatedWebhook #webhook-${webhookId}`)
 
-  const interviewId = getInterviewIdFromEvent(event)
-  // this method is used by the Nylas webhooks, so use M2M user
-  const m2mUser = getAuditM2Muser()
-
-  // once event is created associate it with corresponding interview
-  if (webhookData.type === EVENTTYPES.CREATED && event.status === 'confirmed') {
+    return event
+  })
+  // we have to use mutex here to support re-scheduling
+  // otherwise when new event is created we might not yet update `nylasEventId`
+  // and then we would accidentally cancel re-scheduled event
+  await helper.runExclusiveInterviewEventHandler(async () => {
+    localLogger.debug(`Mutex: acquired. Webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processEventCreatedWebhook #webhook-${webhookId}`)
     try {
-      const interview = await Interview.findById(interviewId)
-      if (!interview) {
-        throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
-      }
+      const event = await eventPromise
 
-      // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
-      if (interview.nylasCalendarId !== event.calendarId) {
-        localLogger.debug(`Skipping event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendarId}" doesn't match interview calendar "${interview.nylasCalendarId}".`)
+      let interviewId
+      try {
+        interviewId = getInterviewIdFromEvent(event)
+      } catch (err) {
+        localLogger.debug(`Ignoring event "${event.id}" because cannot extract interview id from its description "${event.description}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
         return
       }
 
-      await partiallyUpdateInterviewById(
-        m2mUser,
-        interviewId,
-        {
-          nylasEventId: event.id
-          // other fields would be updated inside `partiallyUpdateInterviewByWebhook`
-        }
-      )
+      // this method is used by the Nylas webhooks, so use M2M user
+      const m2mUser = helper.getAuditM2Muser()
 
-      if (interview.nylasEventId) {
-        localLogger.debug(`Interview with id "${interview.id}" has been re-assigned from Nylas event id "${interview.nylasEventId}" to "${event.id}".`)
+      if (webhookData.type === EVENT_TYPE.EVENT.CREATED && event.status === 'confirmed') {
+        const interview = await Interview.findById(interviewId)
+        if (!interview) {
+          throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
+        }
+
+        // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
+        if (interview.nylasCalendarId !== event.calendar_id) {
+          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendar_id}" doesn't match interview calendar "${interview.nylasCalendarId}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+          return
+        }
+
+        await InterviewService.internallyUpdateInterviewById(
+          m2mUser,
+          interviewId,
+          {
+            nylasEventId: event.id
+            // other fields would be updated inside `partiallyUpdateInterviewByWebhook`
+          }
+        )
+
+        if (interview.nylasEventId) {
+          localLogger.debug(`Interview with id "${interview.id}" has been re-assigned from Nylas event id "${interview.nylasEventId}" to "${event.id}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+        } else {
+          localLogger.debug(`Interview with id "${interview.id}" is now assigned to Nylas event id "${event.id}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+        }
       } else {
-        localLogger.debug(`Interview with id "${interview.id}" is now assigned to Nylas event id "${event.id}".`)
+        localLogger.debug(`ignoring event, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}`, `processEventCreatedWebhook #webhook-${webhookId}`)
       }
     } catch (err) {
-      logger.logFullError(err, { component: 'InterviewService', context: 'partiallyUpdateInterviewByWebhook' })
-      throw new errors.BadRequestError(`Could not update interview: ${err.message}`)
+      localLogger.error(err, `processEventCreatedWebhook #webhook-${webhookId}`)
     }
-  } else if (
-    webhookData.type === EVENTTYPES.UPDATED &&
-    event.status === 'cancelled'
-  ) {
-    const interview = await Interview.findById(interviewId)
-    if (!interview) {
-      throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
-    }
+  }).then(() => {
+    localLogger.debug('Mutex: released.', `processEventCreatedWebhook #webhook-${webhookId}`)
+  }).catch((err) => {
+    localLogger.error(`Mutex: error "${err.toString()}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+  })
+}
 
-    // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
-    if (interview.nylasCalendarId !== event.calendarId) {
-      localLogger.debug(`Skipping event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendarId}" doesn't match interview calendar "${interview.nylasCalendarId}".`)
-      return
-    }
+/**
+ * Process "event.updated" webhook
+ *
+ * - marks interview as cancelled when associated event is cancelled
+ *
+ * @param {Object} webhookData webhook data
+ * @param {Number} webhookId webhook id for tracking
+ */
+async function processEventUpdatedWebhook (webhookData, webhookId) {
+  // start retrieving event immediately after getting webhook
+  // but don't wait for it, the main code should be run inside mutex
+  // to process all the webhooks in correct order
+  const eventPromise = NylasService.getEvent(
+    webhookData.object_data.account_id,
+    webhookData.object_data.id
+  ).then((event) => {
+    localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}, event: ${JSON.stringify(event)}`, `processEventUpdatedWebhook #webhook-${webhookId}`)
 
-    if (interview.nylasEventId === event.id && interview.status === InterviewStatus.Cancelled) {
-      localLogger.info('Interview is already cancelled. Ignoring event.')
-    } else if (interview.nylasEventId === event.id && interview.status !== InterviewStatus.Cancelled) {
-      await partiallyUpdateInterviewById(
-        m2mUser,
-        interviewId,
-        {
-          status: InterviewStatus.Cancelled
+    return event
+  })
+  // we have to use mutex here to support re-scheduling
+  // otherwise when new event is created we might not yet update `nylasEventId`
+  // and then we would accidentally cancel re-scheduled event
+  await helper.runExclusiveInterviewEventHandler(async () => {
+    localLogger.debug(`Mutex: acquired. Webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+    try {
+      const event = await eventPromise
+
+      let interviewId
+      try {
+        interviewId = getInterviewIdFromEvent(event)
+      } catch (err) {
+        localLogger.debug(`Ignoring event "${event.id}" because cannot extract interview id from its description "${event.description}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+        return
+      }
+
+      // this method is used by the Nylas webhooks, so use M2M user
+      const m2mUser = helper.getAuditM2Muser()
+
+      if (
+        webhookData.type === EVENT_TYPE.EVENT.UPDATED &&
+        event.status === 'cancelled'
+      ) {
+        const interview = await Interview.findById(interviewId)
+        if (!interview) {
+          throw new errors.BadRequestError(`Could not find interview with given id: ${interviewId}`)
         }
-      )
 
-      localLogger.debug(
-        `Interview cancelled under account id ${
-          event.accountId
-        } (email is ${event.email}) in calendar id ${
-          event.calendarId
-        }. Event status is ${event.status} and it would have started from ${moment
-          .unix(event.startTime)
-          .format('MMM DD YYYY HH:mm')} and ended at ${moment
-          .unix(event.endTime)
-          .format('MMM DD YYYY HH:mm')}`
-      )
-    } else {
-      localLogger.info("Event id doesn't match with nylas_event_id of interview. Ignoring event.")
+        // Nylas might create multiple events for the same booking, so we have to only listen for the event inside calendar which was used for interview booking
+        if (interview.nylasCalendarId !== event.calendar_id) {
+          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because event calendar "${event.calendar_id}" doesn't match interview calendar "${interview.nylasCalendarId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+          return
+        }
+
+        if (interview.nylasEventId !== event.id) {
+          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because this interview is assigned to another event id "${interview.nylasEventId}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+          return
+        }
+
+        if (interview.status === InterviewStatus.Cancelled) {
+          localLogger.debug(`Ignoring event "${event.id}" for interview "${interviewId}" because this interview is already cancelled.`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+          return
+        }
+
+        await InterviewService.internallyUpdateInterviewById(
+          m2mUser,
+          interviewId,
+          {
+            status: InterviewStatus.Cancelled
+          }
+        )
+
+        localLogger.debug(`Interview "${interviewId}" was canceled by webhook for event "${event.id}".`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+      } else {
+        localLogger.debug(`ignoring event, type: ${webhookData.type}, status: ${event.status}, id: ${event.id}`, `processEventUpdatedWebhook #webhook-${webhookId}`)
+      }
+    } catch (err) {
+      localLogger.error(err, `processEventUpdatedWebhook #webhook-${webhookId}`)
     }
-  }
+  }).then(() => {
+    localLogger.debug('Mutex: released.', `processEventCreatedWebhook #webhook-${webhookId}`)
+  }).catch((err) => {
+    localLogger.error(`Mutex: error "${err.toString()}".`, `processEventCreatedWebhook #webhook-${webhookId}`)
+  })
+}
+
+/**
+ * Process "calendar.created" webhook
+ *
+ * - save calendar id for created calendar if it wasn't saved before
+ *
+ * @param {Object} webhookData webhook data
+ * @param {Number} webhookId webhook id for tracking
+ */
+async function processCalendarCreatedWebhook (webhookData, webhookId) {
+  // wait for the end of `UserMeetingSettingsService.handleConnectCalendarCallback` is it's currently running
+  await helper.waitForUnlockCalendarConnectionHandler(async () => {
+    localLogger.debug(`Interview mutex unlocked. Processing webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+
+    // as multiple calendars could come during short period of time
+    // to keep the logic more predictable we process calendars one by one for the same account using mutex
+    const mutexName = `mutex-webhook-calendar-for-account-${webhookData.object_data.account_id}`
+    await helper.runExclusiveByNamedMutex(mutexName, async () => {
+      localLogger.debug(`#${mutexName} Mutex: acquired. Processing webhook type: "${webhookData.type}", object id: "${webhookData.object_data.id}", date: "${moment.unix(webhookData.date).utc().format()}"`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+      const userMeetingSettingsForCalendar = await UserMeetingSettings.findOne({
+        where: {
+          nylasCalendars: {
+            [Op.contains]: [{ accountId: webhookData.object_data.account_id }]
+          }
+        }
+      })
+
+      if (!userMeetingSettingsForCalendar) {
+        localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because there are no users who connected calendar with Nylas Account Id: "${webhookData.object_data.account_id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
+      }
+
+      localLogger.debug(`Found user settings associated with created calendar: ${JSON.stringify(userMeetingSettingsForCalendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+
+      const calendarRecord = _.find(userMeetingSettingsForCalendar.nylasCalendars, { accountId: webhookData.object_data.account_id })
+
+      if (calendarRecord.calendarId) {
+        localLogger.debug(`Ignoring created calendar "${webhookData.object_data.id}" because user already has calendar "${calendarRecord.calendarId}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
+      }
+
+      const accessToken = calendarRecord.accessToken
+
+      const calendar = await NylasService.getCalendar(webhookData.object_data.id, accessToken)
+
+      localLogger.debug(`Got object details for webhook, type: ${webhookData.type}, id: ${calendar.id}, calendar: ${JSON.stringify(calendar)}`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+
+      // check if loaded calendar could play role of a primary calendar
+      const canBePrimary = !!(await NylasService.findPrimaryCalendar([calendar]))
+      if (!canBePrimary) {
+        localLogger.debug(`Ignoring read-only calendar "${webhookData.object_data.id}" for account "${calendarRecord.accountId}" email "${calendarRecord.email}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+        return
+      }
+
+      // NOTE, that we cannot use `userId` because it's UUID, while in
+      // `currentUser` we need to have integer user id
+      const user = _.pick(await helper.getUserDetailsByUserUUID(userMeetingSettingsForCalendar.id), ['userId', 'handle'])
+
+      await UserMeetingSettingsService.syncUserMeetingsSettings(user, {
+        id: userMeetingSettingsForCalendar.id,
+        // update default timezone same like in `UserMeetingSettingsService.handleConnectCalendarCallback`
+        defaultTimezone: calendar.timezone || null,
+        calendar: {
+          ...calendarRecord,
+          calendarId: calendar.id // we are only setting calendar id
+        }
+      })
+
+      localLogger.debug(`Linked user settings "${userMeetingSettingsForCalendar.id}" account "${calendarRecord.accountId}" email "${calendarRecord.email}" with calendar "${calendar.id}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    }).then(() => {
+      localLogger.debug(`#${mutexName} Mutex: released.`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    }).catch((err) => {
+      localLogger.error(`#${mutexName} Mutex: error. "${err.toString()}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+    })
+  }).catch((err) => {
+    localLogger.error(`Error "${err.toString()}".`, `processCalendarCreatedWebhook #webhook-${webhookId}`)
+  })
 }
 
 // Each request made by Nylas includes an X-Nylas-Signature header. The header
@@ -160,10 +334,11 @@ async function nylasWebhookCheck (req, res) {
   return req.query.challenge
 }
 
+let nylasWebhookInvocationId = 0
 async function nylasWebhook (req, res) {
   // Verify the request to make sure it's actually from Nylas.
   if (!verifyNylasRequest(req)) {
-    localLogger.error('Failed to verify nylas')
+    localLogger.error('Failed to verify nylas', 'nylasWebhook')
     return res.status(401).send('X-Nylas-Signature failed verification 🚷 ')
   }
 
@@ -172,35 +347,16 @@ async function nylasWebhook (req, res) {
     // process it!
     const data = req.body.deltas
     for (let i = 0; i < data.length; i++) {
-      // only process webhook with which we are interested in and ignore other
-      if (_.includes([EVENTTYPES.CREATED, EVENTTYPES.UPDATED], data[i].type)) {
-        // make sure that we process webhooks one by one for the same interview
-        // if interviewId is not yet set inside the metadata, then such webhook would be processed
-        // in the global queue
-        const interviewIdOrNull = _.get(data[i], 'object_data.metadata.interviewId', null)
-        // don't await for response to prevent gateway timeout
-        // we have to use mutex here to support re-scheduling
-        // otherwise when new event is created we might not yet update `nylasEventId`
-        // and then we would accidentally cancel re-scheduled event
-        processInterviewWebhookUsingMutex(interviewIdOrNull, async () => {
-          try {
-            const event = await getEventDetails(
-              data[i].object_data.account_id,
-              data[i].object_data.id
-            )
-            if (event) {
-              await processFormattedEvent(data[i], event)
-            }
-          } catch (e) {
-            localLogger.error(`Process nylas webhook failed with error: ${e.toString()}`)
-          }
-        })
+      if (eventProcessors[data[i].type]) {
+        nylasWebhookInvocationId += 1
+        localLogger.debug(`Processing Nylas Webhook type: "${data[i].type}", object id: "${_.get(data[i], 'object_data.id')}", date: "${data[i].date ? moment.unix(data[i].date).utc().format() : 'na'}", data: ${JSON.stringify(data[i])}.`, `nylasWebhook #webhook-${nylasWebhookInvocationId}`)
+        await eventProcessors[data[i].type](data[i], nylasWebhookInvocationId)
       } else {
-        localLogger.debug(`Ignoring Nylas Webhook type: "${data[i].type}".`)
+        localLogger.debug(`Ignoring Nylas Webhook type: "${data[i].type}", data: ${JSON.stringify(data[i])}.`, 'nylasWebhook')
       }
     }
   } catch (e) {
-    localLogger.error(`Process nylas webhook failed with error: ${e.toString()}`)
+    localLogger.error(`Process nylas webhook failed with error: ${e.toString()}`, 'nylasWebhook')
   }
 
   // 200 response tells Nylas your endpoint is online and healthy.
