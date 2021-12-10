@@ -135,7 +135,7 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-link-for-host': {
-      subject: 'Candidate confirmed interview on {{start}}',
+      subject: 'Your candidate interview is confirmed! {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
@@ -163,7 +163,7 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-schedule-reminder': {
-      subject: 'Reminder: Please select your available time for interview',
+      subject: 'ACTION REQUIRED: Schedule your interview',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
