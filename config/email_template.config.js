@@ -100,42 +100,42 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-rescheduled-host': {
-      subject: 'Your meeting has been rescheduled to {{start}}',
+      subject: 'Your interview has been rescheduled to {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-rescheduled-guest': {
-      subject: 'Your meeting has been rescheduled to {{start}}',
+      subject: 'Your interview has been rescheduled to {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-cancelled-host': {
-      subject: 'Your meeting on {{start}} has been cancelled',
+      subject: 'Your interview on {{start}} has been cancelled',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-cancelled-guest': {
-      subject: 'Your meeting on {{start}} has been cancelled',
+      subject: 'Your interview on {{start}} has been cancelled',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-invitation': {
-      subject: 'Please select your available time',
+      subject: 'Schedule your interview for {{jobTitle}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-link-for-host': {
-      subject: 'Candidate confirmed meeting on {{start}}',
+      subject: 'Your candidate interview is confirmed! {{start}}',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
@@ -163,7 +163,7 @@ module.exports = {
       sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-schedule-reminder': {
-      subject: 'Reminder: Please select your available time for interview',
+      subject: 'ACTION REQUIRED: Schedule your interview',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
