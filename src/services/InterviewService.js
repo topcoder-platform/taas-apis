@@ -907,6 +907,12 @@ async function getZoomLink (interviewId, data) {
     throw new errors.BadRequestError('Invalid type or id.')
   }
   const interview = await Interview.findById(interviewId)
+
+  // check if the interview zoom link is not expired
+  const { Completed, Cancelled, Expired } = InterviewConstants.Status
+  if (_.includes([Completed, Cancelled, Expired], interview.status)) {
+    throw new errors.BadRequestError(`Zoom link is no longer available for this interview because the current status of the interview is "${interview.status}".`)
+  }
   const zoomMeeting = await getZoomMeeting(interview.zoomAccountApiKey, interview.zoomMeetingId)
   if (data.type === ZoomLinkType.HOST) {
     return zoomMeeting.start_url
