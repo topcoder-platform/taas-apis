@@ -365,6 +365,7 @@ When we add, update or delete models and/or endpoints we have to make sure that 
   - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
 
 ## EMSI mapping
+
 mapping EMSI tags to topcoder skills
 Run `npm run emsi-mapping` to create the mapping file
 It will take about 15 minutes to create the mapping file `script/emsi-mapping/emsi-skils-mapping.js`
