@@ -66,9 +66,10 @@ async function generateZoomJWTBearerAccessToken (apiKey) {
  *
  * @param {Date} startTime the start time of the meeting
  * @param {Integer} duration the duration of the meeting
+ * @param {String} timezone the timezone of the meeting
  * @returns Zoom API response
  */
-async function createZoomMeeting (startTime, duration) {
+async function createZoomMeeting (startTime, duration, timezone) {
   const { accessToken, zoomAccountApiKey } = await generateZoomJWTBearerAccessToken()
 
   // POST request details in Zoom API docs:
@@ -76,6 +77,7 @@ async function createZoomMeeting (startTime, duration) {
   const res = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
     type: 2,
     start_time: startTime.toISOString(),
+    timezone,
     duration
   }, {
     headers: {
@@ -94,11 +96,12 @@ async function createZoomMeeting (startTime, duration) {
  *
  * @param {Date} startTime the start time of the meeting
  * @param {Integer} duration the duration of the meeting
+ * @param {String} timezone the timezone of the meeting
  * @returns The meeting urls for the Zoom meeting
  */
-async function generateZoomMeetingLink (startTime, duration) {
+async function generateZoomMeetingLink (startTime, duration, timezone) {
   try {
-    const { meeting, zoomAccountApiKey } = await createZoomMeeting(startTime, duration)
+    const { meeting, zoomAccountApiKey } = await createZoomMeeting(startTime, duration, timezone)
 
     // learn more: https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate#responses
     console.log(meeting.start_url, 'Zoom meeting link for host')
