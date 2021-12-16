@@ -128,7 +128,7 @@ async function sendInterviewScheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration)
+    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.guestTimezone || interviewEntity.hostTimezone)
 
     const updatedInterview = await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
     await processUpdateInterview(updatedInterview.toJSON())
