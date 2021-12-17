@@ -259,7 +259,7 @@ async function sendInterviewRescheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    await updateZoomMeeting(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId)
+    await updateZoomMeeting(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId, interviewEntity.guestTimezone || interviewEntity.hostTimezone)
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
