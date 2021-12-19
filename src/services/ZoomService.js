@@ -121,14 +121,16 @@ async function generateZoomMeetingLink (startTime, duration, timezone) {
  * @param {Integer} duration the duration of the meeting
  * @param {String} apiKey zoom account api key
  * @param {Integer} zoomMeetingId zoom meeting id
+ * @param {String} timezone the timezone of the meeting
  * @returns {undefined}
  */
-async function updateZoomMeeting (startTime, duration, zoomAccountApiKey, zoomMeetingId) {
+async function updateZoomMeeting (startTime, duration, zoomAccountApiKey, zoomMeetingId, timezone) {
   const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
   // PATCH request details in Zoom API docs:
   // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingupdate
   await axios.patch(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
     start_time: startTime.toISOString(),
+    timezone,
     duration
   }, {
     headers: {
