@@ -128,7 +128,7 @@ async function sendInterviewScheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.guestTimezone || interviewEntity.hostTimezone)
+    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration)
 
     const updatedInterview = await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
     await processUpdateInterview(updatedInterview.toJSON())
@@ -259,7 +259,7 @@ async function sendInterviewRescheduledNotifications (payload) {
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
 
-    await updateZoomMeeting(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId, interviewEntity.guestTimezone || interviewEntity.hostTimezone)
+    await updateZoomMeeting(interviewEntity.startTimestamp, interviewEntity.duration, interviewEntity.zoomAccountApiKey, interviewEntity.zoomMeetingId)
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
