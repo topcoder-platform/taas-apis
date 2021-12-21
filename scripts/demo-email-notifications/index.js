@@ -49,7 +49,7 @@ async function resetNotificationRecords () {
   localLogger.info('reset coming up interview records')
   const interview = await Interview.findById('976d23a9-5710-453f-99d9-f57a588bb610')
   const startTimestamp = moment().add(moment.duration(config.INTERVIEW_COMING_UP_REMIND_TIME[0])).add(config.INTERVIEW_COMING_UP_MATCH_WINDOW).toDate()
-  await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName' })
+  await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName', guestTimezone: 'Europe/London' })
 
   // reset completed interview records
   localLogger.info('reset completed interview records')
@@ -61,6 +61,8 @@ async function resetNotificationRecords () {
   await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const completedInterview2 = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
   await completedInterview2.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const jobCandidateForInterview = await JobCandidate.findById('a4ea7bcf-5b99-4381-b99c-a9bd05d83a36')
+  await jobCandidateForInterview.update({ status: 'interview' })
 
   // reset post interview candidate action reminder records
   localLogger.info('reset post interview candidate action reminder records')
