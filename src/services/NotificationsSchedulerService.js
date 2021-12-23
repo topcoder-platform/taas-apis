@@ -44,12 +44,12 @@ async function getProjectWithId (projectId) {
 
 /**
  * extract the members of projects and build recipients list out of them
- * we can use `email` to identify recipients
+ * we can use `userId` to identify recipients
  * @param project the project
  * @returns {string[]} array of recipients
  */
 function buildProjectTeamRecipients (project) {
-  const recipients = _.unionBy(_.map(project.members, m => _.pick(m, 'email')), 'email')
+  const recipients = _.unionBy(_.map(project.members, m => _.pick(m, 'userId')), 'userId')
   if (_.isEmpty(recipients)) {
     localLogger.error(`No recipients for projectId:${project.id}`, 'buildProjectTeamRecipients')
   }
