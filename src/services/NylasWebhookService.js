@@ -301,8 +301,6 @@ async function processCalendarCreatedWebhook (webhookData, webhookId) {
 
       await UserMeetingSettingsService.syncUserMeetingsSettings(user, {
         id: userMeetingSettingsForCalendar.id,
-        // update default timezone same like in `UserMeetingSettingsService.handleConnectCalendarCallback`
-        defaultTimezone: calendar.timezone || null,
         calendar: {
           ...calendarRecord,
           calendarId: calendar.id // we are only setting calendar id

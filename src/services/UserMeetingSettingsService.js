@@ -305,7 +305,6 @@ async function handleConnectCalendarCallback (reqQuery) {
       }
 
       const calendarId = primaryCalendar ? primaryCalendar.id : null
-      const defaultTimezone = primaryCalendar ? primaryCalendar.timezone : null
 
       const calendar = {
         id: uuid(), // internal UUID
@@ -327,7 +326,6 @@ async function handleConnectCalendarCallback (reqQuery) {
         currentUser,
         {
           id: userId,
-          defaultTimezone,
           calendar
         }
       )
