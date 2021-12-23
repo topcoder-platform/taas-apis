@@ -44,12 +44,12 @@ async function getProjectWithId (projectId) {
 
 /**
  * extract the members of projects and build recipients list out of them
- * we can use `userId` to identify recipients
+ * we can use `email` to identify recipients
  * @param project the project
  * @returns {string[]} array of recipients
  */
 function buildProjectTeamRecipients (project) {
-  const recipients = _.unionBy(_.map(project.members, m => _.pick(m, 'userId')), 'userId')
+  const recipients = _.unionBy(_.map(project.members, m => _.pick(m, 'email')), 'email')
   if (_.isEmpty(recipients)) {
     localLogger.error(`No recipients for projectId:${project.id}`, 'buildProjectTeamRecipients')
   }
@@ -276,11 +276,11 @@ async function sendInterviewComingUpNotifications () {
     const data = await getDataForInterview(interview)
     if (!data) { continue }
 
-    if (!_.isEmpty(interview.hostEmail)) {
+    if (!_.isEmpty(data.hostEmail)) {
       data.startTime = formatInterviewTime(interview, { forInterviewHost: true })
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
-        recipients: [{ email: interview.hostEmail }],
+        recipients: [{ email: data.hostEmail }],
         data
       })
 
@@ -289,12 +289,12 @@ async function sendInterviewComingUpNotifications () {
       localLogger.error(`Interview id: ${interview.id} host email not present`, 'sendInterviewComingUpNotifications')
     }
 
-    if (!_.isEmpty(interview.guestEmails)) {
+    if (!_.isEmpty(data.guestEmail)) {
       data.startTime = formatInterviewTime(interview, { forInterviewGuest: true })
       // send guest emails
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
-        recipients: interview.guestEmails.map((email) => ({ email })),
+        recipients: [{ email: data.guestEmail }],
         data
       })
 
@@ -354,22 +354,23 @@ async function sendInterviewCompletedNotifications () {
 
   let sentCount = 0
   for (const interview of interviews) {
-    if (_.isEmpty(interview.hostEmail)) {
-      localLogger.error(`Interview id: ${interview.id} host email not present`)
-      continue
-    }
     if (!jcMap[interview.jobCandidateId] || jcMap[interview.jobCandidateId].status !== constants.JobCandidateStatus.INTERVIEW) {
       localLogger.error(`Interview id: ${interview.id} job candidate status is not ${constants.JobCandidateStatus.INTERVIEW}`)
       continue
     }
 
     const data = await getDataForInterview(interview, jcMap[interview.jobCandidateId])
+
+    if (_.isEmpty(data.hostEmail)) {
+      localLogger.error(`Interview id: ${interview.id} host email not present`)
+      continue
+    }
     if (!data) { continue }
     data.startTime = formatInterviewTime(interview, { forInterviewHost: true })
 
     sendNotification({}, {
       template: 'taas.notification.interview-awaits-resolution',
-      recipients: [{ email: interview.hostEmail }],
+      recipients: [{ email: data.hostEmail }],
       data
     })
 
