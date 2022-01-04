@@ -96,8 +96,17 @@
                         <td
                                 style="color:#151516;font-size:13px;line-height:20px;margin:0;padding:0;vertical-align:middle">
                             <br/>
-                            You have an interview coming up for a Topcoder gig! See the job and get the meeting link <a href={{interviewLink}} target="_blank" rel="noopener noreferrer">here</a>.
+                            You have an interview coming up for a Topcoder gig! 
                             <br/>
+                            <br/>
+                            <div><strong>Job: </strong><span>{{this.jobTitle}}</span></div>
+                            <div><strong>Interviewer: </strong><span>{{this.host}}</span></div>
+                            <div><strong>Zoom link: </strong> <span>
+                              <a href="{{this.zoomLink}}" target="_blank" rel="noopener noreferrer">zoom link</a>
+                              </span></div>
+                            <div><strong>Start: </strong><span>{{this.start}}</span></div>
+                            <div><strong>End: </strong><span>{{this.end}}</span></div>
+                            <div><strong>Timezone: </strong><span>{{this.guestTimezone}}</span></div>
                           <br/>
                           If you’re signed in to your Topcoder account, you can also find this information on the My Gigs <a href={{applicationUrl}} target="_blank" rel="noopener noreferrer">Applications</a> page.
 
