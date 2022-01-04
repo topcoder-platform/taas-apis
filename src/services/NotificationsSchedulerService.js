@@ -130,7 +130,6 @@ async function getDataForInterview (interview, jobCandidate, job) {
     hostFullName: hostUserDetails.firstName + ' ' + hostUserDetails.lastName,
     candidateName: `${user.firstName} ${user.lastName}`,
     handle: user.handle,
-    attendees: interview.guestNames,
     startTime: startTime,
     duration: interview.duration,
     interviewId: interview.id,

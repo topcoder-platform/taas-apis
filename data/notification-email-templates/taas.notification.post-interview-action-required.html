@@ -104,7 +104,6 @@
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Handle</td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Date and Time</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Attendees</td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviews</td>
                                   </tr>
                                   {{#each teamInterviews}}
@@ -114,13 +113,6 @@
                                     </td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      <ul style="list-style-type:none;margin:0;padding:0;">
-                                        {{#each this.attendees}}
-                                        <li>{{this}}</li>
-                                        {{/each}}
-                                      </ul>
-                                    </td>
                                     <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
                                       <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Link</a></td>
                                   </tr>
