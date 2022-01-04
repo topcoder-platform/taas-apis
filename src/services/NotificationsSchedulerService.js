@@ -275,12 +275,25 @@ async function sendInterviewComingUpNotifications () {
     const data = await getDataForInterview(interview)
     if (!data) { continue }
 
+    const TIME_FORMAT = 'dddd MMM. Do, hh:mm a'
+    const hostZoomToken = helper.signZoomLink({ type: constants.ZoomLinkType.HOST, id: interview.id })
+    const hostZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${constants.ZoomLinkType.HOST}&token=${hostZoomToken}`
+
+    const guestZoomToken = helper.signZoomLink({ type: constants.ZoomLinkType.GUEST, id: interview.id })
+    const guestZoomLink = `${config.TAAS_API_BASE_URL}/getInterview/${interview.id}/zoom-link?type=${constants.ZoomLinkType.GUEST}&token=${guestZoomToken}`
     if (!_.isEmpty(data.hostEmail)) {
-      data.startTime = formatInterviewTime(interview, { forInterviewHost: true })
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-host',
         recipients: [{ email: data.hostEmail }],
-        data
+        data: {
+          guest: data.guestFullName,
+          jobTitle: data.jobTitle,
+          zoomLink: hostZoomLink,
+          start: moment(interview.startTimestamp).tz(interview.hostTimezone).format(TIME_FORMAT) + ` ${interview.hostTimezone}`,
+          end: moment(interview.endTimestamp).tz(interview.hostTimezone).format(TIME_FORMAT) + ` ${interview.hostTimezone}`,
+          hostTimezone: interview.hostTimezone,
+          interviewLink: data.interviewLink
+        }
       })
 
       sentHostCount++
@@ -289,12 +302,20 @@ async function sendInterviewComingUpNotifications () {
     }
 
     if (!_.isEmpty(data.guestEmail)) {
-      data.startTime = formatInterviewTime(interview, { forInterviewGuest: true })
+      // fallback to host timezone if by some reason we didn't obtain guest timezone
+      const guestTimezone = interview.guestTimezone || interview.hostTimezone
       // send guest emails
       sendNotification({}, {
         template: 'taas.notification.interview-coming-up-guest',
         recipients: [{ email: data.guestEmail }],
-        data
+        data: {
+          host: data.hostFullName,
+          jobTitle: data.jobTitle,
+          zoomLink: guestZoomLink,
+          start: moment(interview.startTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          end: moment(interview.endTimestamp).tz(guestTimezone).format(TIME_FORMAT) + ` ${guestTimezone}`,
+          guestTimezone
+        }
       })
 
       sentGuestCount++

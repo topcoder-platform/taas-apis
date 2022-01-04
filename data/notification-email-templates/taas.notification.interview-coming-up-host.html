@@ -102,35 +102,24 @@
                     This is your reminder that you have an interview coming up with an awesome Topcoder freelance candidate. Click the link below to review their resume and profile before the big event.
                     <br/>
                     <br/>
-                                <table style="font-size:13px;border:1px solid black;border-collapse:collapse;width:100%;">
-                                  <tr style="font-weight:bold;border:1px solid black;border-collapse:collapse">
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Job title</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Candidate Handle</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Interviews</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">Date and Time</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      <a href={{this.jobUrl}} target="_blank" rel="noopener noreferrer">{{this.jobTitle}}</a>
-                                    </td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.handle}}</td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">
-                                      <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Link</a></td>
-                                    <td style="border:1px solid black;border-collapse:collapse;text-align:center;line-height:1.5;">{{this.startTime}}</td>
-                                  </tr>
-                                </table>
-
-                          <br/>
-                          <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Candidate resume and profile</a>
-                          <p>Can’t wait to hear how it goes,<br/>
-                            The Topcoder Team
-                          </p>
-                        </td>
-                        <td
-                                style="color:#151516;font-size:13px;height:20px;line-height:20px;margin:0;padding:0;vertical-align:middle;width:20px">
-                        </td>
-                      </tr>
-
+                    <div><strong>Job: </strong><span>{{this.jobTitle}}</span></div>
+                    <div><strong>Interviewer: </strong><span>{{this.guest}}</span></div>
+                    <div><strong>Zoom link: </strong> <span>
+                      <a href="{{this.zoomLink}}" target="_blank" rel="noopener noreferrer">zoom link</a>
+                      </span></div>
+                    <div><strong>Start: </strong><span>{{this.start}}</span></div>
+                    <div><strong>End: </strong><span>{{this.end}}</span></div>
+                    <div><strong>Timezone: </strong><span>{{this.hostTimezone}}</span></div>
+                        <br/>
+                        <a href={{this.interviewLink}} target="_blank" rel="noopener noreferrer">Candidate resume and profile</a>
+                        <p>Can’t wait to hear how it goes,<br/>
+                          The Topcoder Team
+                        </p>
+                      </td>
+                      <td
+                              style="color:#151516;font-size:13px;height:20px;line-height:20px;margin:0;padding:0;vertical-align:middle;width:20px">
+                      </td>
+                    </tr>
                       </tbody>
                     </table>
                   </td>
