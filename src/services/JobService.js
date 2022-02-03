@@ -751,7 +751,7 @@ searchJobs.schema = Joi.object().keys({
     jobLocation: Joi.string(),
     specialJob: Joi.boolean(),
     featured: Joi.boolean(),
-    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed')
+    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed', 'Did not Post')
   }).required(),
   options: Joi.object()
 }).required()
