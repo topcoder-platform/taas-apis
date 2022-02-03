@@ -224,7 +224,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: ["Open", "On Hold", "Canceled", "Draft", "Closed"]
+            enum: ["Open", "On Hold", "Canceled", "Draft", "Closed", "Did not Post"]
       requestBody:
         content:
           application/json:
