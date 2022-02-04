@@ -16,7 +16,7 @@ async function backup () {
     fs.rmdirSync(filePath, { recursive: true })
   }
   fs.mkdirSync(filePath)
-  let { body: jobs } = await request.get('https://www.topcoder.com/api/recruit/jobs?job_status=1')
+  let { body: jobs } = await request.get('https://www.topcoder-dev.com/api/recruit/jobs?job_status=1')
   jobs = jobs.map((item) => item.slug)
   const backupJobs = []
   if (jobs && jobs.length > 0) {
@@ -25,7 +25,7 @@ async function backup () {
         where: { rcrmStatus: 'Open' }
       })
       for (const j of jbsInDb) {
-        if (jobs.indexOf(j.externalId) < 0) {
+        if (j.externalId && jobs.indexOf(j.externalId) < 0) {
           // The open job exists in taas but not showing up on Community-App
           backupJobs.push(j.externalId)
         }
