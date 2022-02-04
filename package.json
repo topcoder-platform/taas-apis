@@ -36,7 +36,10 @@
     "migrate:restore-withdrawn": "node scripts/withdrawn-migration/restore.js",
     "migrate:backup-rcrm-status": "node scripts/job-rcrm-status-migration/backup.js",
     "migrate:migration-rcrm-status": "node scripts/job-rcrm-status-migration/migration.js",
-    "migrate:restore-rcrm-status": "node scripts/job-rcrm-status-migration/restore.js"
+    "migrate:restore-rcrm-status": "node scripts/job-rcrm-status-migration/restore.js",
+    "migrate:backup-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/backup.js",
+    "migrate:migration-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/migration.js",
+    "migrate:restore-rcrm-status-v2": "node scripts/job-rcrm-status-migration-v2/restore.js"
   },
   "keywords": [],
   "author": "",
