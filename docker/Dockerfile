@@ -1,5 +1,5 @@
 
-FROM node:14.15.0
+FROM node:14.18.2
 
 # Set working directory. Paths will be relative this WORKDIR.
 WORKDIR /usr/src/app
