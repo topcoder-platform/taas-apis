@@ -28,6 +28,12 @@ module.exports = {
       scopes: [constants.Scopes.UPDATE_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
     }
   },
+  '/updateInterview/:id/nylas-webhooks': {
+    post: {
+      controller: 'InterviewController',
+      method: 'partiallyUpdateInterviewByWebhook'
+    }
+  },
   '/jobCandidates/:jobCandidateId/interviews': {
     get: {
       controller: 'InterviewController',
@@ -50,6 +56,12 @@ module.exports = {
       method: 'getInterviewById',
       auth: 'jwt',
       scopes: [constants.Scopes.READ_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
+    }
+  },
+  '/getInterview/:id/zoom-link': {
+    get: {
+      controller: 'InterviewController',
+      method: 'getZoomLink'
     }
   }
 }

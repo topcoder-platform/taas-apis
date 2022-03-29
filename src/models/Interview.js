@@ -3,6 +3,7 @@ const config = require('config')
 const _ = require('lodash')
 const { Interviews } = require('../../app-constants')
 const errors = require('../common/errors')
+const { nylasAvailableTimeSchema } = require('../common/nylas')
 
 // allowed status values
 const statuses = _.values(Interviews.Status)
@@ -33,6 +34,23 @@ module.exports = (sequelize) => {
       }
       return interview
     }
+
+    /**
+     * Get interview by Nylas Event Id
+     * @param {String} nylasEventId Nylas Event Id
+     * @returns {Interview} the Interview instance
+     */
+    static async findByNylasEventId (nylasEventId) {
+      const interview = await Interview.findOne({
+        where: {
+          nylasEventId
+        }
+      })
+      if (!interview) {
+        throw new errors.NotFoundError(`"Interview" doesn't exist with nylasEventId: "${nylasEventId}"`)
+      }
+      return interview
+    }
   }
   Interview.init(
     {
@@ -42,39 +60,58 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4
       },
-      xaiId: {
-        field: 'xai_id',
-        type: Sequelize.STRING(255)
+      nylasPageId: {
+        field: 'nylas_page_id',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      nylasPageSlug: {
+        field: 'nylas_page_slug',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      nylasCalendarId: {
+        field: 'nylas_calendar_id',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      nylasEventId: {
+        field: 'nylas_event_id',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      nylasEventEditHash: {
+        field: 'nylas_event_edit_hash',
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        defaultValue: null
+      },
+      hostTimezone: {
+        field: 'host_timezone',
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      guestTimezone: {
+        field: 'guest_timezone',
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
+      availableTime: nylasAvailableTimeSchema('availableTime'),
+      hostUserId: {
+        field: 'hostUserId',
+        type: Sequelize.UUID,
+        allowNull: false
+      },
+      expireTimestamp: {
+        field: 'expireTimestamp',
+        type: Sequelize.DATE,
+        allowNull: true
       },
       jobCandidateId: {
         field: 'job_candidate_id',
         type: Sequelize.UUID,
         allowNull: false
-      },
-      calendarEventId: {
-        field: 'calendar_event_id',
-        type: Sequelize.STRING(255)
-      },
-      templateUrl: {
-        field: 'template_url',
-        type: Sequelize.STRING(255),
-        allowNull: false
-      },
-      templateId: {
-        field: 'template_id',
-        type: Sequelize.STRING(255)
-      },
-      templateType: {
-        field: 'template_type',
-        type: Sequelize.STRING(255)
-      },
-      title: {
-        field: 'title',
-        type: Sequelize.STRING(255)
-      },
-      locationDetails: {
-        field: 'location_details',
-        type: Sequelize.STRING(255)
       },
       duration: {
         field: 'duration',
@@ -92,29 +129,19 @@ module.exports = (sequelize) => {
         field: 'end_timestamp',
         type: Sequelize.DATE
       },
-      hostName: {
-        field: 'host_name',
-        type: Sequelize.STRING(255)
+      zoomAccountApiKey: {
+        field: 'zoom_account_api_key',
+        type: Sequelize.STRING(255),
+        allowNull: true
       },
-      hostEmail: {
-        field: 'host_email',
-        type: Sequelize.STRING(255)
-      },
-      guestNames: {
-        field: 'guest_names',
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      guestEmails: {
-        field: 'guest_emails',
-        type: Sequelize.ARRAY(Sequelize.STRING)
+      zoomMeetingId: {
+        field: 'zoom_meeting_id',
+        type: Sequelize.BIGINT,
+        allowNull: true
       },
       status: {
         type: Sequelize.ENUM(statuses),
         allowNull: false
-      },
-      rescheduleUrl: {
-        field: 'reschedule_url',
-        type: Sequelize.STRING(255)
       },
       createdBy: {
         field: 'created_by',

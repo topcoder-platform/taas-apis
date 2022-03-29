@@ -58,7 +58,13 @@ const Scopes = {
   CREATE_ROLE: 'create:taas-roles',
   UPDATE_ROLE: 'update:taas-roles',
   DELETE_ROLE: 'delete:taas-roles',
-  ALL_ROLE: 'all:taas-roles'
+  ALL_ROLE: 'all:taas-roles',
+  // userMeetingSettings
+  READ_USER_MEETING_SETTINGS: 'read:taas-userMeetingsSettings',
+  CREATE_USER_MEETING_SETTINGS: 'create:taas-userMeetingsSettings',
+  UPDATE_USER_MEETING_SETTINGS: 'update:taas-userMeetingsSettings',
+  ALL_USER_MEETING_SETTINGS: 'all:taas-userMeetingsSettings'
+
 }
 
 // Interview related constants
@@ -69,14 +75,22 @@ const Interviews = {
     RequestedForReschedule: 'Requested for reschedule',
     Rescheduled: 'Rescheduled',
     Completed: 'Completed',
-    Cancelled: 'Cancelled'
+    Cancelled: 'Cancelled',
+    Expired: 'Expired'
   },
-  // key: template name in x.ai, value: duration
-  XaiTemplate: {
-    'interview-30': 30,
-    'interview-60': 60
-  },
-  MaxAllowedCount: 3
+  MaxAllowedCount: 3,
+  Nylas: {
+    Days: {
+      Monday: 'M',
+      Tuesday: 'T',
+      Wednesday: 'W',
+      Thursday: 'R',
+      Friday: 'F',
+      Saturday: 'S',
+      Sunday: 'U'
+    },
+    StartEndRegex: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
+  }
 }
 
 const ChallengeStatus = {
@@ -166,7 +180,23 @@ const JobCandidateStatus = {
   INTERVIEW: 'interview'
 }
 
+const SearchUsers = {
+  SEARCH_USERS_PAGE_SIZE: 5
+}
+
+// provider which we have to enforce for Nylas Virtual Calendars
+const NylasVirtualCalendarProvider = 'nylas'
+
+const ZoomLinkType = {
+  HOST: 'host',
+  GUEST: 'guest'
+}
+
+// how long to wait for the Interview Webhook Mutes to release (ms)
+const InterviewEventHandlerTimeout = 60 * 1000 // 60 seconds
+
 module.exports = {
+  InterviewEventHandlerTimeout,
   UserRoles,
   FullManagePermissionRoles,
   Scopes,
@@ -181,5 +211,8 @@ module.exports = {
   WeeklySurveySwitch,
   ActiveWorkPeriodPaymentStatuses,
   JobStatus,
-  JobCandidateStatus
+  JobCandidateStatus,
+  SearchUsers,
+  NylasVirtualCalendarProvider,
+  ZoomLinkType
 }

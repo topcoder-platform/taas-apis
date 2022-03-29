@@ -420,10 +420,7 @@ async function downloadJobCandidateResume (currentUser, id) {
         data: {
           jobCandidateUserHandle: handle,
           jobName: job.title,
-          description: 'Client Viewed Resume',
-          notificationType: {
-            jobCandidateResumeViewed: true
-          }
+          applicationUrl: `${config.TAAS_APP_EARN_URL}?status=Active%20Gigs`
         }
       })
 

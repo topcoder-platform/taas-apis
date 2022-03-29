@@ -63,48 +63,8 @@ module.exports = {
         '{{text}}',
       recipients: config.REPORT_ISSUE_EMAILS,
       sendgridTemplateId: config.REQUEST_EXTENSION_SENDGRID_TEMPLATE_ID
-    },
-
-    /* Request interview for a job candidate
-     *
-     * - interviewType: the x.ai interview type. Example: "interview-30"
-     * - interviewRound: the round of the interview. Example: 2
-     * - interviewDuration: duration of the interview, in minutes. Example: 30
-     * - interviewerList: The list of interviewer email addresses. Example:  "first@attendee.com, second@attendee.com"
-     * - candidateId: the id of the jobCandidate. Example: "cc562545-7b75-48bf-87e7-50b3c57e41b1"
-     * - candidateName: Full name of candidate. Example: "John Doe"
-     * - jobName: The title of the job. Example: "TaaS API Misc Updates"
-     *
-     * Template (defined in SendGrid):
-     * Subject: '{{interviewType}} tech interview with {{candidateName}} for {{jobName}} is requested by the Customer'
-     * Body:
-     * 'Hello!
-     *  <br /><br />
-     *  Congratulations, you have been selected to participate in a Topcoder Gig Work Interview!
-     *  <br /><br />
-     *  Please monitor your email for a response to this where you can coordinate your availability.
-     *  <br /><br />
-     *  Interviewee: {{candidateName}}<br />
-     *  Interviewer(s): {{interviewerList}}<br />
-     *  Interview Length: {{interviewDuration}} minutes
-     *  <br /><br />
-     *  /{{interviewType}}
-     *  <br /><br />
-     *  Topcoder Info:<br />
-     *  Note: "id: {{candidateId}}, round: {{interviewRound}}"'
-     *
-     * Note, that the template should be defined in SendGrid.
-     * The subject & body above (identical to actual SendGrid template) is for reference purposes.
-     * We won't pass subject & body but only substitutions (replacements in template subject/body).
-     */
-    'interview-invitation': {
-      subject: '',
-      body: '',
-      from: config.INTERVIEW_INVITATION_SENDER_EMAIL,
-      cc: config.INTERVIEW_INVITATION_CC_LIST,
-      recipients: config.INTERVIEW_INVITATION_RECIPIENTS_LIST,
-      sendgridTemplateId: config.INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
     }
+
   },
 
   /**
@@ -112,88 +72,158 @@ module.exports = {
    */
   notificationEmailTemplates: {
     'taas.notification.job-candidate-resume-viewed': {
-      subject: 'Topcoder - Client View Resume for Job {{jobName}}',
+      subject: 'Client has viewed your Topcoder profile',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.candidates-available-for-review': {
-      subject: 'Topcoder - {{teamName}} has job candidates available for review',
+      subject: 'You have candidates to review',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_CANDIDATES_AVAILABLE_FOR_REVIEW_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-coming-up-host': {
-      subject: 'Topcoder - Interview Coming Up: {{jobTitle}} with {{guestFullName}}',
+      subject: 'Interview reminder: Your Topcoder interview is coming up',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_HOST_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-coming-up-guest': {
-      subject: 'Topcoder - Interview Coming Up: {{jobTitle}} with {{hostFullName}}',
+      subject: 'Reminder: Interview coming up',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-rescheduled-host': {
+      subject: 'Your interview has been rescheduled to {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-rescheduled-guest': {
+      subject: 'Your interview has been rescheduled to {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-cancelled-host': {
+      subject: 'Your interview on {{start}} has been cancelled',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-cancelled-guest': {
+      subject: 'Your interview on {{start}} has been cancelled',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-invitation': {
+      subject: 'Schedule your interview for {{jobTitle}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-link-for-host': {
+      subject: 'Your candidate interview is confirmed! {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-link-for-guest': {
+      subject: 'Your interview is confirmed! {{start}}',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-expired-host': {
+      subject: 'Interview expired - your candidate didn\'t select time',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-expired-guest': {
+      subject: 'Your interview invitation is expired',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID
+    },
+    'taas.notification.interview-schedule-reminder': {
+      subject: 'ACTION REQUIRED: Schedule your interview',
+      body: '',
+      recipients: [],
+      from: config.NOTIFICATION_SENDER_EMAIL,
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interview-awaits-resolution': {
-      subject: 'Topcoder - Interview Awaits Resolution: {{jobTitle}} for {{guestFullName}}',
+      subject: 'Interview complete - here’s what to do next',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEW_AWAITS_RESOLUTION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.post-interview-action-required': {
-      subject: 'Topcoder - Candidate Action Required in {{teamName}} for {{numCandidates}} candidates',
+      subject: 'Reminder: Take action to reserve your talent',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_POST_INTERVIEW_ACTION_REQUIRED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.resource-booking-expiration': {
-      subject: 'Topcoder - Resource Booking Expiring in {{teamName}} for {{numResourceBookings}} resource bookings',
+      subject: 'Reminder: 3 weeks left for your Topcoder Freelancer(s)',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.team-created': {
-      subject: 'Topcoder - New Team {{teamName}} Created',
+      subject: 'Your Topcoder talent request confirmation',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_TEAM_CREATED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.job-created': {
-      subject: 'Topcoder - New Job {{jobTitle}} Created in Team {{teamName}}',
+      subject: 'New job added to your Topcoder team',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_JOB_CREATED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.interviews-overlapping': {
       subject: 'Topcoder - Interviews overlapping',
       body: '',
       recipients: config.NOTIFICATION_OPS_EMAILS,
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.job-candidate-selected': {
       subject: 'Topcoder - Job Candidate {{userHandle}} Selected for {{jobTitle}} in Team {{teamName}}',
       body: '',
       recipients: config.NOTIFICATION_OPS_EMAILS,
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID
     },
     'taas.notification.resource-booking-placed': {
-      subject: 'Topcoder - Resource Booking {{userHandle}} Placed for Job {{jobTitle}} in Team {{teamName}}',
+      subject: 'Your Topcoder talent is confirmed! How to start working with them.',
       body: '',
       recipients: [],
       from: config.NOTIFICATION_SENDER_EMAIL,
-      sendgridTemplateId: config.NOTIFICATION_SENDGRID_TEMPLATE_ID
+      sendgridTemplateId: config.TAAS_NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID
     }
   }
 }

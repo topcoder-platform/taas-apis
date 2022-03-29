@@ -40,6 +40,22 @@ module.exports = {
       method: 'getSkillsByJobDescription'
     }
   },
+  /**
+   * Nylas Webhook Route
+   *
+   * IMPORTANT, don't forget to update this route in `app.js` if you change it
+   * as we are using a special middleware for this route
+   */
+  '/taas-teams/nylas-webhooks': {
+    post: {
+      controller: 'WebhookController',
+      method: 'nylasWebhook'
+    },
+    get: {
+      controller: 'WebhookController',
+      method: 'nylasWebhookCheck'
+    }
+  },
   '/taas-teams/:id': {
     get: {
       controller: 'TeamController',

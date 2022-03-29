@@ -40,13 +40,15 @@
       AUTH0_AUDIENCE_UBAHN=
       AUTH0_CLIENT_ID=
       AUTH0_CLIENT_SECRET=
-      # necessary if you'll utilize email functionality of interviews
-      INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID=
-      INTERVIEW_INVITATION_SENDER_EMAIL=
+      # If you would like to test Interview Workflow then Config Nylas as per ./docs/guides/Setup-Interview-Workflow-Locally.md
+      NYLAS_CLIENT_ID=
+      NYLAS_CLIENT_SECRET=
+      NYLAS_SCHEDULER_WEBHOOK_BASE_URL=
       # Locally deployed services (via docker-compose)
       ES_HOST=http://dockerhost:9200
       DATABASE_URL=postgres://postgres:postgres@dockerhost:5432/postgres
       BUSAPI_URL=http://dockerhost:8002/v5
+      TAAS_API_BASE_URL=http://localhost:3000/api/v5
       # stripe
       STRIPE_SECRET_KEY=
       CURRENCY=usd
@@ -55,7 +57,7 @@
       - Values from this file would be automatically used by many `npm` commands.
       - ⚠️ Never commit this file or its copy to the repository!
 
-   1. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
+   2. Set `dockerhost` to point the IP address of Docker. Docker IP address depends on your system. For example if docker is run on IP `127.0.0.1` add a the next line to your `/etc/hosts` file:
 
       ```
       127.0.0.1       dockerhost
@@ -170,6 +172,8 @@
    Runs the Topcoder TaaS API using nodemon, so it would be restarted after any of the files is updated.
    The Topcoder TaaS API will be served on `http://localhost:3000`.
 
+   - 💡 If you would like to test Interview Workflow locally, then follow the guide [How to Setup Interview Workflow Locally](./docs/guides/Setup-Interview-Workflow-Locally.md).
+
 ### Working on `taas-es-processor` locally
 
 When you run `taas-apis` locally as per "[Steps to run locally](#steps-to-run-locally)" the [taas-es-processor](https://github.com/topcoder-platform/taas-es-processor) would be run for you automatically together with other services inside the docker container via `npm run services:up`.
@@ -224,7 +228,7 @@ To be able to change and test `taas-es-processor` locally you can follow the nex
 | `npm run cov`                                                                                                             | Code Coverage Report.                                                                                                                              |
 | `npm run migrate`                                                                                                         | Run any migration files which haven't run yet.                                                                                                     |
 | `npm run migrate:undo`                                                                                                    | Revert most recent migration.                                                                                                                      |
-| `npm run demo-payment-scheduler`                                                                                          | Create 1000 Work Periods Payment records in with status "scheduled" and various "amount"                                                           |
+| `npm run demo-email-notifications`                                                                                          | Listen to the Kafka events of email notification and render all the emails into `./out` folder. See [its readme](scripts/demo-email-notifications/README.md) for details. |
 | `npm run emsi-mapping`                                                                                                    | mapping EMSI tags to topcoder skills                                                                                                               |
 
 ## Import and Export data
@@ -294,6 +298,29 @@ docker exec -it tc-taas-kafka /opt/kafka/bin/kafka-console-producer.sh --broker-
 
 - Enter or copy/paste the message into the console after starting this command.
 
+## Email Notifications
+
+We have various email notifications. For example many emails are sent to support Interview Scheduling Workflow. All email templates are placed inside the [.data/notification-email-templates](./data/notification-email-templates/) folder.
+
+### Add a new Email Notification
+
+To add a new email notification:
+
+0. Each email notification need to have a unique topic identifier of the shape `taas.notification.{notification-type}`. Where `{notification-type}` is unique for each email notification type.
+1. Create a new HTML template inside folder  [.data/notification-email-templates](./data/notification-email-templates/). (You may duplicate any existent template to reuse existent styles.). Name it the same as topic: `taas.notification.{notification-type}.html`.
+2. Create a corresponding config in file [./config/email_template.config.js](./config/email_template.config.js), section `notificationEmailTemplates`.
+3. Name environment variable the same as topic, but **uppercase** and replace all special symbols to `_` and add suffix `_SENDGRID_TEMPLATE_ID`:
+   - For example topic `taas.notification.job-candidate-resume-viewed` would have corresponding environment variable
+`TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID`.
+4. When deploying to DEV/PROD someone would have to create a new Sendgird template and fill inside Sendgrid UI subject and email HTML template by copy/pasting HTML file from the repo. And then set environment variable with the value of template if provided by Sendgrid.
+
+### Test/Render Email Notifications Locally
+
+To test and render email notification locally run a special script `npm run demo-email-notifications`. Before running it, follow it's [README](./scripts/demo-email-notifications/README.md) as you would have to set some additional environment variables first (add them into `.env` file).
+
+- This script first would update demo data to create some situations to trigger notifications.
+- And it would listen to Kafka events and render email notification into `./out` folder.
+
 ## DB Migration
 
 - `npm run migrate`: run any migration files which haven't run yet.
@@ -303,10 +330,7 @@ Configuration for migration is at `./config/config.json`.
 
 The following parameters can be set in the config file or via env variables:
 
-- `username`: set via env `DB_USERNAME`; datebase username
-- `password`: set via env `DB_PASSWORD`; datebase password
-- `database`: set via env `DB_NAME`; datebase name
-- `host`: set via env `DB_HOST`; datebase host name
+- `url`: set via env `DATABASE_URL`; datebase url
 
 ## Testing
 
@@ -341,6 +365,7 @@ When we add, update or delete models and/or endpoints we have to make sure that 
   - Test, that when we migrate DB from the previous state using `npm run migrate`, we get exactly the same DB schema as if we create DB from scratch using command `npm run init-db force`.
 
 ## EMSI mapping
+
 mapping EMSI tags to topcoder skills
 Run `npm run emsi-mapping` to create the mapping file
 It will take about 15 minutes to create the mapping file `script/emsi-mapping/emsi-skils-mapping.js`

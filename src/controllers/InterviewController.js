@@ -52,6 +52,15 @@ async function partiallyUpdateInterviewById (req, res) {
 }
 
 /**
+ * Patch (partially update) interview by Nylas webhook
+ * @param req the request
+ * @param res the response
+ */
+async function partiallyUpdateInterviewByWebhook (req, res) {
+  res.send(await service.partiallyUpdateInterviewByWebhook(req.params.id, req.query.authToken, req.body))
+}
+
+/**
  * Search interviews
  * @param req the request
  * @param res the response
@@ -62,11 +71,23 @@ async function searchInterviews (req, res) {
   res.send(result.result)
 }
 
+/**
+ * Get a fresh Zoom Links from Zoom Meeting and redirect to Zoom Link
+ * @param req the request
+ * @param res the response
+ */
+async function getZoomLink (req, res) {
+  const zoomLink = await service.getZoomLink(req.params.id, req.query)
+  return res.redirect(zoomLink)
+}
+
 module.exports = {
   getInterviewByRound,
   getInterviewById,
   requestInterview,
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
-  searchInterviews
+  searchInterviews,
+  partiallyUpdateInterviewByWebhook,
+  getZoomLink
 }

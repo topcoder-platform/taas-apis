@@ -16,7 +16,30 @@ const localLogger = {
   info: message => logger.info({ component: 'render email content', context: 'test', message })
 }
 
-const template = handlebars.compile(fs.readFileSync('./data/notifications-email-template.html', 'utf8'))
+const templateFileMap = {
+  [config.TAAS_NOTIFICATION_JOB_CANDIDATE_RESUME_VIEWED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-candidate-resume-viewed.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_CANDIDATES_AVAILABLE_FOR_REVIEW_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.candidates-available-for-review.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-coming-up-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_COMING_UP_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-coming-up-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_AWAITS_RESOLUTION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-awaits-resolution.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_POST_INTERVIEW_ACTION_REQUIRED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.post-interview-action-required.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_RESOURCE_BOOKING_EXPIRATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.resource-booking-expiration.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_TEAM_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.team-created.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_JOB_CREATED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-created.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEWS_OVERLAPPING_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interviews-overlapping.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_JOB_CANDIDATE_SELECTED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.job-candidate-selected.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_RESOURCE_BOOKING_PLACED_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.resource-booking-placed.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_SCHEDULE_REMINDER_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-schedule-reminder.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-expired-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_EXPIRED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-expired-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_INVITATION_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-invitation.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_LINK_FOR_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-link-for-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-rescheduled-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_RESCHEDULED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-rescheduled-guest.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_HOST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-cancelled-host.html', 'utf8')),
+  [config.TAAS_NOTIFICATION_INTERVIEW_CANCELLED_GUEST_SENDGRID_TEMPLATE_ID]: handlebars.compile(fs.readFileSync('./data/notification-email-templates/taas.notification.interview-cancelled-guest.html', 'utf8'))
+}
 
 /**
  * Reset notification records
@@ -26,7 +49,7 @@ async function resetNotificationRecords () {
   localLogger.info('reset coming up interview records')
   const interview = await Interview.findById('976d23a9-5710-453f-99d9-f57a588bb610')
   const startTimestamp = moment().add(moment.duration(config.INTERVIEW_COMING_UP_REMIND_TIME[0])).add(config.INTERVIEW_COMING_UP_MATCH_WINDOW).toDate()
-  await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName' })
+  await interview.update({ startTimestamp, duration: 30, status: Interviews.Status.Scheduled, guestNames: ['test1', 'test2'], hostName: 'hostName', guestTimezone: 'Europe/London' })
 
   // reset completed interview records
   localLogger.info('reset completed interview records')
@@ -38,6 +61,8 @@ async function resetNotificationRecords () {
   await completedInterview.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const completedInterview2 = await Interview.findById('3144fa65-ea1a-4bec-81b0-7cb1c8845826')
   await completedInterview2.update({ startTimestamp: completedStartTimestamp, duration, endTimeStamp: completedEndTimestamp, status: Interviews.Status.Scheduled, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+  const jobCandidateForInterview = await JobCandidate.findById('a4ea7bcf-5b99-4381-b99c-a9bd05d83a36')
+  await jobCandidateForInterview.update({ status: 'interview' })
 
   // reset post interview candidate action reminder records
   localLogger.info('reset post interview candidate action reminder records')
@@ -47,6 +72,13 @@ async function resetNotificationRecords () {
   await c2Interview.update({ startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
   const c2InterviewR2 = await Interview.findById('b1f7ba76-640f-47e2-9463-59e51b51ec60')
   await c2InterviewR2.update({ status: 'Scheduled', startTimestamp: moment().subtract(moment.duration(config.POST_INTERVIEW_ACTION_MATCH_WINDOW)).subtract(30, 'm').toDate(), duration, endTimeStamp: completedEndTimestamp, guestNames: ['guest1', 'guest2'], hostName: 'hostName' })
+
+  const interviewForReminder = await Interview.findById('a23e1bf2-1084-4cfe-a0d8-d83bc6fec655')
+  // update hostUserId to test user phash_manager
+  await interviewForReminder.update({ createdAt: moment().subtract(moment.duration(config.INTERVIEW_REMINDER_DAY_AFTER)).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
+
+  const interviewExpired = await Interview.findById('505db942-79fe-4b6f-974c-b359e1b61967')
+  await interviewExpired.update({ expireTimestamp: moment().subtract(moment.duration(1, 'days')).toDate(), hostUserId: '57646ff9-1cd3-4d3c-88ba-eb09a395366c' })
 
   // reset upcoming resource booking expiration records
   localLogger.info('reset upcoming resource booking expiration records')
@@ -71,8 +103,8 @@ async function initConsumer () {
           }
           if (message.payload.notifications) {
             _.forEach(_.filter(message.payload.notifications, ['serviceId', 'email']), (notification) => {
-              const email = template(notification.details.data)
-              fs.writeFileSync(`./out/${notification.details.data.subject}-${Date.now()}.html`, email)
+              const email = templateFileMap[notification.details.sendgridTemplateId](notification.details.data)
+              fs.writeFileSync(`./out/${notification.details.data.subject.replace(/[^a-z0-9 ]/gi, '_')}-${Date.now()}.html`, email)
             })
             for (const notification of _.filter(message.payload.notifications, ['serviceId', 'slack'])) {
               if (process.env.SLACK_WEBHOOK_URL) {
