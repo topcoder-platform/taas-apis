@@ -64,7 +64,7 @@
     "joi": "^17.2.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",
     "node-schedule": "^2.0.0",
     "pg": "^8.4.0",
@@ -76,7 +76,7 @@
     "stripe": "^8.168.0",
     "superagent": "^6.1.0",
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js#v2.6",
-    "urijs": "^1.19.7",
+    "urijs": "^1.19.11",
     "util": "^0.12.3",
     "uuid": "^8.3.1",
     "winston": "^3.3.3"
