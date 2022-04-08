@@ -107,7 +107,7 @@ async function generateZoomMeetingLink (startTime, duration) {
 
     return { meeting, zoomAccountApiKey }
   } catch (err) {
-    console.log(err.message)
+    console.log(`generateZoomMeetingLink error: ${err.message}`)
     throw err
   }
 }
@@ -122,17 +122,22 @@ async function generateZoomMeetingLink (startTime, duration) {
  * @returns {undefined}
  */
 async function updateZoomMeeting (startTime, duration, zoomAccountApiKey, zoomMeetingId) {
-  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
-  // PATCH request details in Zoom API docs:
-  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingupdate
-  await axios.patch(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
-    start_time: moment(startTime).utc().format(),
-    duration
-  }, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+  try {
+    const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+    // PATCH request details in Zoom API docs:
+    // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingupdate
+    await axios.patch(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+      start_time: moment(startTime).utc().format(),
+      duration
+    }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+  } catch (err) {
+    console.log(`updateZoomMeeting error: ${err.message}`)
+    throw err
+  }
 }
 
 /**
@@ -143,14 +148,19 @@ async function updateZoomMeeting (startTime, duration, zoomAccountApiKey, zoomMe
  * @returns {undefined}
  */
 async function cancelZoomMeeting (zoomAccountApiKey, zoomMeetingId) {
-  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
-  // DELETE request details in Zoom API docs:
-  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingdelete
-  await axios.delete(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+  try {
+    const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+    // DELETE request details in Zoom API docs:
+    // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingdelete
+    await axios.delete(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+  } catch (err) {
+    console.log(`cancelZoomMeeting error: ${err.message}`)
+    throw err
+  }
 }
 
 /**
@@ -161,15 +171,20 @@ async function cancelZoomMeeting (zoomAccountApiKey, zoomMeetingId) {
  * @returns {undefined}
  */
 async function getZoomMeeting (zoomAccountApiKey, zoomMeetingId) {
-  const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
-  // GET request details in Zoom API docs:
-  // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meeting
-  const res = await axios.get(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-  return res.data
+  try {
+    const { accessToken } = await generateZoomJWTBearerAccessToken(zoomAccountApiKey)
+    // GET request details in Zoom API docs:
+    // https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meeting
+    const res = await axios.get(`https://api.zoom.us/v2/meetings/${zoomMeetingId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    return res.data
+  } catch (err) {
+    console.log(`getZoomMeeting error: ${err.message}`)
+    throw err
+  }
 }
 
 module.exports = { generateZoomMeetingLink, updateZoomMeeting, cancelZoomMeeting, getZoomMeeting }
