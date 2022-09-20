@@ -15,6 +15,8 @@ const FullManagePermissionRoles = [
 ]
 
 const Scopes = {
+  // all resources
+  ALL_RESOURCES: 'all:resources',
   // job
   READ_JOB: 'read:taas-jobs',
   CREATE_JOB: 'create:taas-jobs',

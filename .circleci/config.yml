@@ -1,13 +1,20 @@
-version: 2
+version: 2.1
+parameters:
+  run_automatedtesting:
+    default: false
+    type: boolean
+  run_basedeployment:
+    default: true
+    type: boolean
 defaults: &defaults
     docker:
       - image: circleci/python:2.7.18-stretch-browsers
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
-    sudo apt install jq
-    sudo pip install awscli --upgrade
-    sudo pip install docker-compose
+    sudo apt install jq python3-pip
+    sudo pip3 install awscli --upgrade
+    # sudo pip install docker-compose
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
   command: |
@@ -39,6 +46,17 @@ builddeploy_steps: &builddeploy_steps
             ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
             source buildenvvar
             ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME}
+            #testing code changes
+            if [[ true ]]; then
+                ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-qa-v1-appvar
+                source buildenvvar  
+                curl --request POST \
+                  --url https://circleci.com/api/v2/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pipeline \
+                  --header "Circle-Token: ${QA_USER_TOKEN}" \
+                  --header 'content-type: application/json' \
+                  --data '{"branch":"'"$CIRCLE_BRANCH"'","parameters":{"run_automatedtesting":true , "run_basedeployment": false}}'
+            fi  
+
 jobs:
   # Build & Deploy against development backend
   "build-dev":
@@ -57,9 +75,45 @@ jobs:
       APPNAME: "taas-apis"
     steps: *builddeploy_steps
 
+  "Run-Newman-Test":
+    docker:
+      - image: circleci/node:12
+        environment:
+          DEPLOY_ENV: "DEV"
+          LOGICAL_ENV: "dev"
+          APPNAME: "taas-api"        
+      - image: tray/dynamodb-local
+        command: "-inMemory -port 7777"
+      - image: elasticsearch:6.8.13
+        environment:
+          discovery.type: "single-node"
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: *install_dependency
+      - run: *install_deploysuite      
+      - run:
+          name: 'newman test'
+          no_output_timeout: 30m
+          command: |
+            ./awsconfiguration.sh $DEPLOY_ENV
+            source awsenvconf
+            ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-qa-appvar
+            source buildenvvar
+            npm install --loglevel verbose
+            cd mock
+            (npm run mock-challenge-api&)
+            (NODE_ENV=test npm start&)
+            npm run test:newman:clear
+            npm run test:newman
+            npm run test:newman:clear
+      - store_artifacts:
+          path: ./newman
+
 workflows:
   version: 2
   build:
+    when: << pipeline.parameters.run_basedeployment >>
     jobs:
       # Development builds are executed on "develop" branch only.
       - "build-dev":
@@ -67,7 +121,7 @@ workflows:
           filters:
             branches:
               only:
-                - dev
+                - circleci
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
@@ -76,3 +130,18 @@ workflows:
           filters:
             branches:
               only: master
+
+  testingflow:
+    when: << pipeline.parameters.run_automatedtesting >>
+    jobs:
+      - Hold [Performance-Testing]:
+          type: approval
+      - "Run-Newman-Test":
+          context : org-global   
+          requires:
+            - Hold [Performance-Testing]     
+          filters:
+            branches:
+              only:
+                - circleci
+                - dev-circleci

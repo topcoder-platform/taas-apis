@@ -123,6 +123,7 @@
 											"        delete response.id\r",
 											"        delete response.createdAt\r",
 											"        delete response.updatedAt\r",
+											"        delete response.createdBy\r",
 											"        pm.expect(response).to.deep.eq(iterationData.get('responseBody'));\r",
 											"    }\r",
 											"});"

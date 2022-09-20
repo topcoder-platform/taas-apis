@@ -906,14 +906,14 @@ const taasTeamRequests = [
 ]
 
 const requests = [
-  ...healthCheckRequests,
+  //...healthCheckRequests,
   ...jobRequests,
   ...jobCandidateRequests,
-  ...resourceBookingRequests,
-  ...workPeriodRequests,
-  ...workPeriodPaymentRequests,
-  ...interviewRequests,
-  ...taasTeamRequests
+  // ...resourceBookingRequests,
+  // ...workPeriodRequests,
+  // ...workPeriodPaymentRequests,
+  // ...interviewRequests,
+  // ...taasTeamRequests
 ]
 
 /**
