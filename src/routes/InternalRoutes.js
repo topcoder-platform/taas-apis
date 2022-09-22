@@ -9,7 +9,7 @@ module.exports = {
       method: 'cleanUpTestData',
       auth: 'jwt',
       scopes: [constants.Scopes.ALL_JOB, constants.Scopes.ALL_JOB_CANDIDATE, constants.Scopes.ALL_RESOURCE_BOOKING,
-        constants.Scopes.ALL_WORK_PERIOD, constants.Scopes.ALL_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_INTERVIEW]
+        constants.Scopes.ALL_WORK_PERIOD, constants.Scopes.ALL_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_INTERVIEW, constants.Scopes.ALL_RESOURCES]
     }
   }
 }

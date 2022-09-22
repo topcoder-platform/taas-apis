@@ -7,7 +7,7 @@
             "sortBy": "title"
         },
         "httpStatus": 400,
-        "message": "\"criteria.sortBy\" must be one of \\[id, createdAt, startDate, rateType, status\\]"
+        "message": "\"criteria.sortBy\" must be one of \\[id, createdAt, updatedAt, startDate, rateType, status\\]"
     },
     {
         "token": "m2m_token",
@@ -29,7 +29,7 @@
             "startDate": "tomorrow"
         },
         "httpStatus": 400,
-        "message": "\"criteria.startDate\" must be a valid date"
+        "message": "\"criteria.startDate\" must be in YYYY-MM-DD format"
     },
     {
         "token": "m2m_token",
@@ -51,7 +51,7 @@
             "rateType": "whatever"
         },
         "httpStatus": 400,
-        "message": "\"criteria.rateType\" must be one of \\[hourly, daily, weekly, monthly\\]"
+        "message": "\"criteria.rateType\" must be one of \\[hourly, daily, weekly, monthly, annual\\]"
     },
     {
         "token": "m2m_token",

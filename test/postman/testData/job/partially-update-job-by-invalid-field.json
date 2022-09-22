@@ -62,7 +62,7 @@
             "startDate": "today"
         },
         "httpStatus": 400,
-        "message": "\"data.startDate\" must be a valid date"
+        "message": "\"data.startDate\" must be in YYYY-MM-DD format"
     },
     {
         "token": "m2m_token",
@@ -98,7 +98,7 @@
             "rateType": "year"
         },
         "httpStatus": 400,
-        "message": "\"data.rateType\" must be one of \\[hourly, daily, weekly, monthly, null\\]"
+        "message": "\"data.rateType\" must be one of \\[hourly, daily, weekly, monthly, annual, null\\]"
     },
     {
         "token": "m2m_token",

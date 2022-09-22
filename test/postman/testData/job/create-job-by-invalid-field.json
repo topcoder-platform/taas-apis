@@ -221,7 +221,7 @@
             ]
         },
         "httpStatus": 400,
-        "message": "\"job.rateType\" must be one of \\[hourly, daily, weekly, monthly, null\\]"
+        "message": "\"job.rateType\" must be one of \\[hourly, daily, weekly, monthly, annual, null\\]"
     },
     {
         "token": "m2m_token",

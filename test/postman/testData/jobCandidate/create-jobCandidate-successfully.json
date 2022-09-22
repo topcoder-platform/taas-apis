@@ -3,17 +3,18 @@
         "token": "admin_token",
         "requestBody": {
             "jobId": "{{JobId-1}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example.com"
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "viewedByCustomer": false,
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example.com",
             "status": "open",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "remark": null,
             "updatedBy": null
         },
         "saveId": "JobCandidateId-1"
@@ -22,17 +23,18 @@
         "token": "m2m_token",
         "requestBody": {
             "jobId": "{{JobId-2}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234322",
             "resume": "http://example.com"
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "viewedByCustomer": false,
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234322",
             "resume": "http://example.com",
             "status": "open",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "remark": null,
             "updatedBy": null
         },
         "saveId": "JobCandidateId-2"
@@ -41,17 +43,18 @@
         "token": "admin_token",
         "requestBody": {
             "jobId": "{{JobId-1}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234323",
             "resume": "http://example.com"
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "viewedByCustomer": false,
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234323",
             "resume": "http://example.com",
             "status": "open",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "remark": null,
             "updatedBy": null
         },
         "saveId": "JobCandidateId-3"
@@ -60,17 +63,18 @@
         "token": "m2m_token",
         "requestBody": {
             "jobId": "{{JobId-2}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234324",
             "resume": "http://example.com"
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "viewedByCustomer": false,
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234324",
             "resume": "http://example.com",
             "status": "open",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "remark": null,
             "updatedBy": null
         },
         "saveId": "JobCandidateId-4"
@@ -79,17 +83,18 @@
         "token": "manager_token",
         "requestBody": {
             "jobId": "{{JobId-1}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example.com"
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "viewedByCustomer": false,
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example.com",
             "status": "open",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "remark": null,
             "updatedBy": null
         },
         "saveId": "JobCandidateId-5"

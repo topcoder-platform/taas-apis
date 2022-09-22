@@ -907,7 +907,7 @@ const taasTeamRequests = [
 
 const requests = [
   //...healthCheckRequests,
-  ...jobRequests,
+  // ...jobRequests,
   ...jobCandidateRequests,
   // ...resourceBookingRequests,
   // ...workPeriodRequests,
@@ -922,6 +922,7 @@ const requests = [
  */
 async function clearTestData () {
   logger.info('Clear the Postman test data.')
+  logger.info(`${config.API_BASE_URL}${config.BASE_PATH}/internal/jobs/clean`);
   await envHelper.postRequest(`${config.API_BASE_URL}${config.BASE_PATH}/internal/jobs/clean`)
   logger.info('Finished clear the Postman test data.')
 }

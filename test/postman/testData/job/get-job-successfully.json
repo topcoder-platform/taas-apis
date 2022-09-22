@@ -6,10 +6,9 @@
         "responseBody": {
             "isApplicationPageActive": false,
             "projectId": 222,
-            "externalId": "1212",
             "title": "POSTMANE2E-Dummy title",
             "description": "Dummy Description",
-            "startDate": "2020-09-27T04:17:23.131Z",
+            "startDate": "2020-09-27",
             "duration": 1,
             "numPositions": 13,
             "resourceType": "Dummy Resource Type",
@@ -22,8 +21,20 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "sourcing",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": null
+            "showInHotList": false,
+            "featured": false,
+            "hotListExcerpt": "",
+            "jobTag": "",
+            "rcrmStatus": "Open",
+            "rcrmReason": null,
+            "minSalary": null,
+            "maxSalary": null,
+            "hoursPerWeek": null,
+            "jobLocation": null,
+            "jobTimezone": null,
+            "currency": null,
+            "roleIds": null,
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
         }
     },
     {
@@ -33,10 +44,9 @@
         "responseBody": {
             "isApplicationPageActive": false,
             "projectId": 111,
-            "externalId": "1212",
             "title": "POSTMANE2E-Dummy title",
             "description": "Dummy Description",
-            "startDate": "2020-09-27T04:17:23.131Z",
+            "startDate": "2020-09-27",
             "duration": 1,
             "numPositions": 13,
             "resourceType": "Dummy Resource Type",
@@ -49,8 +59,20 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "sourcing",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": null
+            "showInHotList": false,
+            "featured": false,
+            "hotListExcerpt": "",
+            "jobTag": "",
+            "rcrmStatus": "Open",
+            "rcrmReason": null,
+            "minSalary": null,
+            "maxSalary": null,
+            "hoursPerWeek": null,
+            "jobLocation": null,
+            "jobTimezone": null,
+            "currency": null,
+            "roleIds": null,
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
         }
     },
     {
@@ -59,11 +81,10 @@
         "httpStatus": 200,
         "responseBody": {
             "isApplicationPageActive": false,
-            "projectId": 111,
-            "externalId": "1212",
+            "projectId": 111,            
             "title": "POSTMANE2E-Dummy title",
             "description": "Dummy Description",
-            "startDate": "2020-09-27T04:17:23.131Z",
+            "startDate": "2020-09-27",
             "duration": 1,
             "numPositions": 13,
             "resourceType": "Dummy Resource Type",
@@ -76,8 +97,20 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "sourcing",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": null
+            "showInHotList": false,
+            "featured": false,
+            "hotListExcerpt": "",
+            "jobTag": "",
+            "rcrmStatus": "Open",
+            "rcrmReason": null,
+            "minSalary": null,
+            "maxSalary": null,
+            "hoursPerWeek": null,
+            "jobLocation": null,
+            "jobTimezone": null,
+            "currency": null,
+            "roleIds": null,
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
         }
     },
     {
@@ -87,10 +120,9 @@
         "responseBody": {
             "isApplicationPageActive": false,
             "projectId": 222,
-            "externalId": "1212",
             "title": "POSTMANE2E-Dummy title",
             "description": "Dummy Description",
-            "startDate": "2020-09-27T04:17:23.131Z",
+            "startDate": "2020-09-27",
             "duration": 1,
             "numPositions": 13,
             "resourceType": "Dummy Resource Type",
@@ -103,8 +135,20 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "sourcing",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": null
+            "showInHotList": false,
+            "featured": false,
+            "hotListExcerpt": "",
+            "jobTag": "",
+            "rcrmStatus": "Open",
+            "rcrmReason": null,
+            "minSalary": null,
+            "maxSalary": null,
+            "hoursPerWeek": null,
+            "jobLocation": null,
+            "jobTimezone": null,
+            "currency": null,
+            "roleIds": null,
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
         }
     },
     {
@@ -114,10 +158,9 @@
         "responseBody": {
             "isApplicationPageActive": false,
             "projectId": 222,
-            "externalId": "1212",
             "title": "POSTMANE2E-Dummy title",
             "description": "Dummy Description",
-            "startDate": "2020-09-27T04:17:23.131Z",
+            "startDate": "2020-09-27",
             "duration": 1,
             "numPositions": 13,
             "resourceType": "Dummy Resource Type",
@@ -130,8 +173,20 @@
                 "a2b4bc11-c641-4a19-9eb7-33980378f82e"
             ],
             "status": "sourcing",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": null
+            "showInHotList": false,
+            "featured": false,
+            "hotListExcerpt": "",
+            "jobTag": "",
+            "rcrmStatus": "Open",
+            "rcrmReason": null,
+            "minSalary": null,
+            "maxSalary": null,
+            "hoursPerWeek": null,
+            "jobLocation": null,
+            "jobTimezone": null,
+            "currency": null,
+            "roleIds": null,
+            "updatedBy": "00000000-0000-0000-0000-000000000000"
         }
     }
 ]

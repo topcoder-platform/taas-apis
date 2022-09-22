@@ -57,7 +57,7 @@
             ]
         },
         "httpStatus": 400,
-        "message": "\"data.numPositions\" is required"
+        "message": "\"data.startDate\" must be in YYYY-MM-DD format"
     },
     {
         "token": "m2m_token",
@@ -75,6 +75,6 @@
             "workload": "full-time"
         },
         "httpStatus": 400,
-        "message": "\"data.skills\" is required"
+        "message": "\"data.startDate\" must be in YYYY-MM-DD format"
     }
 ]
