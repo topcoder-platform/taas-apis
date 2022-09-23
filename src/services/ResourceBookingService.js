@@ -56,7 +56,7 @@ function _checkUserScopesForGetWorkPeriods (currentUser) {
  * @returns {Boolean} true if user is machine and has read/all workPeriodPayment scopes
  */
 function _checkUserScopesForGetWorkPeriodPayments (currentUser) {
-  const getWorkPeriodPaymentsScopes = [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT]
+  const getWorkPeriodPaymentsScopes = [constants.Scopes.READ_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_WORK_PERIOD_PAYMENT, constants.Scopes.ALL_RESOURCES]
   return currentUser.isMachine && helper.checkIfExists(getWorkPeriodPaymentsScopes, currentUser.scopes)
 }
 

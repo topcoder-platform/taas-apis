@@ -74,8 +74,7 @@
             "billingAccountId": 80000071,
             "workPeriods": [
                 {
-                    "userHandle": "userHandle",
-                    "customerRate": null,
+                    "userHandle": "lazybaer",
                     "startDate": "2021-05-23",
                     "endDate": "2021-05-29"
                 }

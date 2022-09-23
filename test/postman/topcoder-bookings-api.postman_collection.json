@@ -4167,6 +4167,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",	
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",

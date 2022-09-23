@@ -8,13 +8,13 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "workPeriods": [
                 {
-                    "daysWorked": null,
+                    "daysWorked": 5,
                     "paymentStatus": "pending"
                 }
             ]
@@ -29,7 +29,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "workPeriods": [
@@ -44,7 +44,7 @@
         "token": "user_token",
         "resourceBookingId": "ResourceBookingId-3",
         "requestParameters": {
-            "fields": "projectId,status,startDate,billingAccountId,customerRate,workPeriods.userHandle,workPeriods.customerRate"
+            "fields": "projectId,status,startDate,billingAccountId,customerRate,workPeriods.userHandle"
         },
         "httpStatus": 200,
         "responseBody": {
@@ -55,8 +55,7 @@
             "customerRate": 13,
             "workPeriods": [
                 {
-                    "userHandle": "userHandle",
-                    "customerRate": null
+                    "userHandle": "lazybaer"
                 }
             ]
         }
@@ -65,7 +64,7 @@
         "token": "m2m_token",
         "resourceBookingId": "ResourceBookingId-4",
         "requestParameters": {
-            "fields": "memberRate,status,startDate,billingAccountId,memberRate,workPeriods.userHandle,workPeriods.customerRate,workPeriods.startDate,workPeriods.endDate"
+            "fields": "memberRate,status,startDate,billingAccountId,memberRate,workPeriods.userHandle,workPeriods.startDate,workPeriods.endDate"
         },
         "httpStatus": 200,
         "responseBody": {
@@ -75,8 +74,7 @@
             "billingAccountId": 80000071,
             "workPeriods": [
                 {
-                    "userHandle": "userHandle",
-                    "customerRate": null,
+                    "userHandle": "lazybaer",
                     "startDate": "2021-05-23",
                     "endDate": "2021-05-29"
                 }
@@ -92,13 +90,13 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "workPeriods": [
                 {
-                    "daysWorked": null,
+                    "daysWorked": 5,
                     "paymentStatus": "pending"
                 }
             ]
