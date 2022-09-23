@@ -3469,6 +3469,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3584,6 +3585,8 @@
 											"    delete response.jobId\r",
 											"    delete response.createdAt\r",
 											"    delete response.updatedAt\r",
+											"    delete response.createdBy\r",
+											"    delete response.updatedBy\r",
 											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));\r",
 											"});"
 										],
@@ -3629,6 +3632,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3638,6 +3642,8 @@
 											"    delete response.jobId\r",
 											"    delete response.createdAt\r",
 											"    delete response.updatedAt\r",
+											"    delete response.createdBy\r",
+											"    delete response.updatedBy\r",
 											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));\r",
 											"});"
 										],
@@ -3692,6 +3698,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3701,6 +3708,8 @@
 											"    delete response.jobId\r",
 											"    delete response.createdAt\r",
 											"    delete response.updatedAt\r",
+											"    delete response.createdBy\r",
+											"    delete response.updatedBy\r",
 											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));\r",
 											"});"
 										],
@@ -3758,6 +3767,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3830,6 +3840,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3896,6 +3907,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -3959,6 +3971,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -4022,6 +4035,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",
@@ -4085,6 +4099,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"console.log(JSON.stringify(pm.response.json()))",
 											"const iterationData = pm.iterationData;\r",
 											"const httpStatus = iterationData.get('httpStatus');\r",
 											"pm.test(`Status code is ${httpStatus}`, function () {\r",

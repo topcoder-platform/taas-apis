@@ -46,7 +46,7 @@ function _cacheModelFields () {
  * @returns {Boolean} true if user is machine and has read/all workPeriod scopes
  */
 function _checkUserScopesForGetWorkPeriods (currentUser) {
-  const getWorkPeriodsScopes = [constants.Scopes.READ_WORK_PERIOD, constants.Scopes.ALL_WORK_PERIOD]
+  const getWorkPeriodsScopes = [constants.Scopes.READ_WORK_PERIOD, constants.Scopes.ALL_WORK_PERIOD, constants.Scopes.ALL_RESOURCES]
   return currentUser.isMachine && helper.checkIfExists(getWorkPeriodsScopes, currentUser.scopes)
 }
 

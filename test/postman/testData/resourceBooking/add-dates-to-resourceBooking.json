@@ -9,16 +9,15 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "customerRate": 13,
             "rateType": "hourly",
             "billingAccountId": 80000071,
-            "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "sendWeeklySurvey": true,
+            "status": "placed"
         }
     },
     {
@@ -31,16 +30,15 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "customerRate": 13,
             "rateType": "hourly",
             "billingAccountId": 80000071,
-            "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "sendWeeklySurvey": true,
+            "status": "placed"
         }
     },
     {
@@ -53,16 +51,15 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "customerRate": 13,
             "rateType": "hourly",
             "billingAccountId": 80000071,
-            "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "sendWeeklySurvey": true,
+            "status": "placed"
         }
     },
     {
@@ -75,16 +72,15 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "customerRate": 13,
             "rateType": "hourly",
             "billingAccountId": 80000071,
-            "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "sendWeeklySurvey": true,
+            "status": "placed"
         }
     },
     {
@@ -97,16 +93,15 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": "2021-05-23",
             "endDate": "2021-05-29",
             "memberRate": 13.23,
             "customerRate": 13,
             "rateType": "hourly",
             "billingAccountId": 80000071,
-            "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "sendWeeklySurvey": true,
+            "status": "placed"
         }
     }
 ]

@@ -150,7 +150,7 @@
             "billingAccountId": 80000071
         },
         "httpStatus": 400,
-        "message": "\"resourceBooking.rateType\" must be one of \\[hourly, daily, weekly, monthly\\]"
+        "message": "\"resourceBooking.rateType\" must be one of \\[hourly, daily, weekly, monthly, annual\\]"
     },
     {
         "token": "m2m_token",
