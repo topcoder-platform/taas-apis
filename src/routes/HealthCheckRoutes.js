@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-  '/taas/health': {
+  '/health': {
     get: {
       controller: 'HealthCheckController',
       method: 'checkHealth'
