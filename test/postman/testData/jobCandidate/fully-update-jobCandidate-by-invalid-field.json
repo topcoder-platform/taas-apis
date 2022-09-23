@@ -71,6 +71,6 @@
             "status": "other"
         },
         "httpStatus": 400,
-        "message": "\"data.status\" must be one of \\[open, placed, selected, client rejected - screening, client rejected - interview, rejected - other, cancelled, interview, topcoder-rejected\\]"
+        "message": "\"data.status\" must be one of \\[open, placed, selected, client rejected - screening, client rejected - interview, rejected - other, cancelled, interview, topcoder-rejected, applied, rejected-pre-screen, skills-test, phone-screen, job-closed, offered, withdrawn, withdrawn-prescreen\\]"
     }
 ]

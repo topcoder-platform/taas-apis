@@ -3,7 +3,7 @@
  */
 const constants = require('../../app-constants')
 module.exports = {
-  '/internal/jobs/clean': {
+  '/taas/internal/jobs/clean': {
     post: {
       controller: 'CleanUpController',
       method: 'cleanUpTestData',

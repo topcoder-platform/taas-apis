@@ -3,7 +3,7 @@
         "token": "admin_token",
         "requestBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "jobId": "{{JobId-1}}",
             "memberRate": 13.23,
             "customerRate": 13,
@@ -13,7 +13,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": null,
             "endDate": null,
             "memberRate": 13.23,
@@ -21,7 +21,7 @@
             "rateType": "hourly",
             "billingAccountId": 80000071,
             "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "sendWeeklySurvey": true,
             "updatedBy": null
         },
         "saveId": "ResourceBookingId-1"
@@ -30,7 +30,7 @@
         "token": "admin_token",
         "requestBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "jobId": "{{JobId-2}}",
             "memberRate": 13.23,
             "customerRate": 13,
@@ -40,7 +40,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": null,
             "endDate": null,
             "memberRate": 13.23,
@@ -48,7 +48,7 @@
             "rateType": "hourly",
             "billingAccountId": 80000071,
             "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "sendWeeklySurvey": true,
             "updatedBy": null
         },
         "saveId": "ResourceBookingId-2"
@@ -57,7 +57,7 @@
         "token": "m2m_token",
         "requestBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "jobId": "{{JobId-1}}",
             "memberRate": 13.23,
             "customerRate": 13,
@@ -67,7 +67,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 111,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1003",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": null,
             "endDate": null,
             "memberRate": 13.23,
@@ -75,7 +75,7 @@
             "rateType": "hourly",
             "billingAccountId": 80000071,
             "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "sendWeeklySurvey": true,
             "updatedBy": null
         },
         "saveId": "ResourceBookingId-3"
@@ -84,7 +84,7 @@
         "token": "m2m_token",
         "requestBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "jobId": "{{JobId-1}}",
             "memberRate": 13.23,
             "customerRate": 13,
@@ -94,7 +94,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1004",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": null,
             "endDate": null,
             "memberRate": 13.23,
@@ -102,7 +102,7 @@
             "rateType": "hourly",
             "billingAccountId": 80000071,
             "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "sendWeeklySurvey": true,
             "updatedBy": null
         },
         "saveId": "ResourceBookingId-4"
@@ -111,7 +111,7 @@
         "token": "manager_token",
         "requestBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "jobId": "{{JobId-1}}",
             "memberRate": 13.23,
             "customerRate": 13,
@@ -121,7 +121,7 @@
         "httpStatus": 200,
         "responseBody": {
             "projectId": 222,
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "startDate": null,
             "endDate": null,
             "memberRate": 13.23,
@@ -129,7 +129,7 @@
             "rateType": "hourly",
             "billingAccountId": 80000071,
             "status": "placed",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
+            "sendWeeklySurvey": true,
             "updatedBy": null
         },
         "saveId": "ResourceBookingId-5"

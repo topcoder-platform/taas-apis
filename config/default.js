@@ -1,5 +1,6 @@
 require('dotenv').config()
 module.exports = {
+  API_VERSION: process.env.API_VERSION || 'v5',
   // the log level, default is 'debug'
   LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
   // the server port, default is 3000

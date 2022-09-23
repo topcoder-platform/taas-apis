@@ -4,7 +4,7 @@
         "jobCandidateId": "JobCandidateId-1",
         "requestBody": {
             "jobId": "{{JobId-1}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example2.com"
         },
@@ -16,7 +16,7 @@
         "jobCandidateId": "JobCandidateId-1",
         "requestBody": {
             "jobId": "{{JobId-1}}",
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example2.com"
         },

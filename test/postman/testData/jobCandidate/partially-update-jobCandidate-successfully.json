@@ -9,12 +9,12 @@
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
+            "viewedByCustomer": false,
             "resume": "http://example2.com",
-            "status": "selected",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "remark": null,
+            "status": "selected"
         }
     },
     {
@@ -27,12 +27,12 @@
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1001",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
+            "remark": null,
+            "viewedByCustomer": false,
             "resume": "http://example2.com",
-            "status": "selected",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "status": "selected"
         }
     },
     {
@@ -45,12 +45,12 @@
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234322",
             "resume": "http://example2.com",
-            "status": "selected",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "remark": null,
+            "viewedByCustomer": false,
+            "status": "selected"
         }
     },
     {
@@ -63,12 +63,12 @@
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1002",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234322",
             "resume": "http://example2.com",
-            "status": "selected",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "remark": null,
+            "viewedByCustomer": false,
+            "status": "selected"
         }
     },
     {
@@ -81,12 +81,12 @@
         },
         "httpStatus": 200,
         "responseBody": {
-            "userId": "a55fe1bc-1754-45fa-9adc-cf3d6d7c1005",
+            "userId": "0bcb0d86-09bb-410a-b2b1-fba90d1a7699",
             "externalId": "300234321",
             "resume": "http://example2.com",
             "status": "selected",
-            "createdBy": "00000000-0000-0000-0000-000000000000",
-            "updatedBy": "00000000-0000-0000-0000-000000000000"
+            "remark": null,
+            "viewedByCustomer": false
         }
     }
 ]
