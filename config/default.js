@@ -362,5 +362,6 @@ module.exports = {
   // The secret key for get zoom link token
   ZOOM_LINK_SECRET: process.env.ZOOM_LINK_SECRET || 'zoom-link-secret',
   // The get zoom link token expiry time
-  ZOOM_LINK_TOKEN_EXPIRY: process.env.ZOOM_LINK_TOKEN_EXPIRY || '180d'
+  ZOOM_LINK_TOKEN_EXPIRY: process.env.ZOOM_LINK_TOKEN_EXPIRY || '180d',
+  TC_EMSI_SKILLS_API_URL: process.env.TC_EMSI_SKILLS_API_URL || 'https://api.topcoder-dev.com/v1/emsi-skills'
 }

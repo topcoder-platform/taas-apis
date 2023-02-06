@@ -26,6 +26,7 @@ const { PaymentStatusRules, SearchUsers, InterviewEventHandlerTimeout } = requir
 const emailTemplateConfig = require('../../config/email_template.config')
 const { Mutex, withTimeout } = require('async-mutex')
 const jwt = require('jsonwebtoken')
+const constants = require('../../app-constants')
 
 const localLogger = {
   debug: (message) =>
@@ -2256,6 +2257,51 @@ function verifyZoomLinkToken (token) {
   }
 }
 
+// Get the job emsi skills from Topcoder emsi skills api
+const getJobEmsiSkills = async jobId => {
+  const token = await getM2MToken()
+  const perPage = 30
+  let page = 1
+  let result = []
+  while (true) {
+    const url = `${config.TC_EMSI_SKILLS_API_URL}/job-emsi-skills?jobId=${jobId}&perPage=${perPage}&page=${page}`
+    let res
+    try {
+      res = await request.get(url)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+    } catch (e) {
+      if (_.isUndefined(e.response)) {
+        logger.error(`Error getting a response from GET ${url}`)
+        throw e
+      } else {
+        if (e.response.statusCode === HttpStatus.StatusCodes.NOT_FOUND) {
+          // Log the error and return an empty array
+          logger.error(`EMSI skills for jobId=${jobId} are not found`)
+          return []
+        } else {
+          // Other errors will be propagated to the caller
+          // propagate the error
+          throw e
+        }
+      }
+    }
+
+    if (!res.body || res.body.length === 0) {
+      break
+    }
+    result = result.concat(res.body)
+    page += 1
+    if (res.headers['x-total-pages'] && page > Number(res.headers['x-total-pages'])) {
+      break
+    }
+  }
+  // pick only needed fields
+  result = _.map(result, skill => _.pick(skill, constants.JobEmsiSkillsSelectFields))
+  return result
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2329,5 +2375,6 @@ module.exports = {
   runExclusiveInterviewEventHandler,
   runExclusiveByNamedMutex,
   signZoomLink,
-  verifyZoomLinkToken
+  verifyZoomLinkToken,
+  getJobEmsiSkills
 }

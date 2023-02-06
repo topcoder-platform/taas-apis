@@ -138,6 +138,8 @@ async function getJob (currentUser, id, fromDb = false) {
       if (candidates.length) {
         jobRecord.candidates = candidates
       }
+      // Get the job EMSI skills
+      jobRecord.emsiSkills = await helper.getJobEmsiSkills(jobId)
       return jobRecord
     } catch (err) {
       if (helper.isDocumentMissingException(err)) {
@@ -155,6 +157,8 @@ async function getJob (currentUser, id, fromDb = false) {
   await _checkUserPermissionForGetJob(currentUser, job.projectId) // check user permission
 
   job.dataValues.candidates = _.map(job.dataValues.candidates, (c) => c.dataValues)
+  // Get the job EMSI skills
+  job.dataValues.emsiSkills = await helper.getJobEmsiSkills(id)
   return job.dataValues
 }
 
@@ -602,6 +606,10 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
       if (candidates.length) {
         jobRecord.candidates = candidates
       }
+      // Check if emsiSkills are required to be returned in the response
+      if (_.includes(criteria.fields, 'emsiSkills')) {
+        jobRecord.emsiSkills = await helper.getJobEmsiSkills(jobRecord.id)
+      }
       return jobRecord
     }))
 
@@ -703,7 +711,7 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     filter[Op.and].push({ featured: false })
     filter[Op.and].push({ showInHotList: false })
   }
-  const jobs = await Job.findAll({
+  let jobs = await Job.findAll({
     where: filter,
     offset: ((page - 1) * perPage),
     limit: perPage,
@@ -715,6 +723,14 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     }]
   })
   const total = await Job.count({ where: filter })
+  if (_.includes(criteria.fields, 'emsiSkills')) {
+    const promises = _.map(jobs, async job => {
+      job.dataValues.emsiSkills = await helper.getJobEmsiSkills(job.dataValues.id)
+      return job
+    })
+    jobs = await Promise.all(promises)
+  }
+
   return {
     fromDb: true,
     total,
@@ -751,7 +767,8 @@ searchJobs.schema = Joi.object().keys({
     jobLocation: Joi.string(),
     specialJob: Joi.boolean(),
     featured: Joi.boolean(),
-    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed', 'Did not Post')
+    rcrmStatus: Joi.string().valid('Open', 'On Hold', 'Canceled', 'Draft', 'Closed', 'Did not Post'),
+    fields: Joi.string() // Represents the comma separated list of fields to retrieve for the job
   }).required(),
   options: Joi.object()
 }).required()

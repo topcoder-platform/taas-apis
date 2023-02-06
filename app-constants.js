@@ -195,6 +195,9 @@ const ZoomLinkType = {
 // how long to wait for the Interview Webhook Mutes to release (ms)
 const InterviewEventHandlerTimeout = 60 * 1000 // 60 seconds
 
+// The Job Emsi skills to be returned in the API response
+const JobEmsiSkillsSelectFields = ['emsiId', 'name', 'confidence']
+
 module.exports = {
   InterviewEventHandlerTimeout,
   UserRoles,
@@ -214,5 +217,6 @@ module.exports = {
   JobCandidateStatus,
   SearchUsers,
   NylasVirtualCalendarProvider,
-  ZoomLinkType
+  ZoomLinkType,
+  JobEmsiSkillsSelectFields
 }
