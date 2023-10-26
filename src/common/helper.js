@@ -1377,7 +1377,7 @@ async function getAllTopcoderSkills (criteria) {
 async function getSkillById (skillId) {
   const token = await getM2MUbahnToken()
   const res = await request
-    .get(`${config.TC_API}/skills/${skillId}`)
+    .get(`${config.TC_API}/standardized-skills/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
