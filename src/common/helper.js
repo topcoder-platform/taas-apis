@@ -1376,6 +1376,10 @@ async function getAllTopcoderSkills (criteria) {
  */
 async function getSkillById (skillId) {
   const token = await getM2MToken()
+  localLogger.debug({
+    context: 'getSkillById',
+    message: `M2M Token: ${token}`
+  })
   const res = await request
     .get(`${config.TC_API}/standardized-skills/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
