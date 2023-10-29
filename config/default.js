@@ -356,6 +356,9 @@ module.exports = {
   // We don't have to keep it secret, we use this JWT token just to compress data, not to secure it
   NYLAS_CONNECT_CALENDAR_JWT_SECRET: process.env.NYLAS_CONNECT_CALENDAR_JWT_SECRET || 'secret',
 
+  //Work type ID used with standardised skills.  This ID corresponds to a gig / job:
+  STANDARDIZED_SKILL_WORK_TYPE_ID: '413340e8-f56f-4061-8796-c916dfa82770',
+  
   // Zoom JWT credentials
   ZOOM_ACCOUNTS: process.env.ZOOM_ACCOUNTS,
 
