@@ -180,10 +180,10 @@ async function createJob (currentUser, job, onTeamCreating) {
   if (!_.isUndefined(job.isApplicationPageActive) && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to set/update the value of field "isApplicationPageActive".')
   }
-  
+
   await _validateSkills(job.skills)
-  //Save the full skills array, with names, for use later
-  skills = job.skills
+  // Save the full skills array, with names, for use later
+  const skills = job.skills
   if (job.roleIds) {
     job.roleIds = _.uniq(job.roleIds)
     await _validateRoles(job.roleIds)
@@ -192,7 +192,7 @@ async function createJob (currentUser, job, onTeamCreating) {
   job.createdBy = await helper.getUserId(currentUser.userId)
 
   // Compact the skills to *just* the IDs for saving to ES
-  job.skills = _.chain(job.skills).map('skillId').uniq().compact().value();
+  job.skills = _.chain(job.skills).map('skillId').uniq().compact().value()
   let entity
   try {
     await sequelize.transaction(async (t) => {
@@ -208,7 +208,7 @@ async function createJob (currentUser, job, onTeamCreating) {
     throw e
   }
 
-  //Add back in the expanded skills for the Kafka queue event
+  // Add back in the expanded skills for the Kafka queue event
   entity.skills = skills
   await helper.postEvent(config.TAAS_JOB_CREATE_TOPIC, entity, { onTeamCreating })
   return entity
