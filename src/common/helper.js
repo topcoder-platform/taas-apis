@@ -1375,9 +1375,13 @@ async function getAllTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2MUbahnToken()
+  const token = await getM2MToken()
+  localLogger.debug({
+    context: 'getSkillById',
+    message: `M2M Token: ${token}`
+  })
   const res = await request
-    .get(`${config.TC_API}/skills/${skillId}`)
+    .get(`${config.TC_API}/standardized-skills/skills/${skillId}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
@@ -2128,6 +2132,35 @@ async function getMembersSuggest (fragment) {
 }
 
 /**
+ * Function to register job skills with the standardised skills API
+ * @param {Object} job the job data, including skills
+ * @returns the request result
+ */
+async function registerSkills (job) {
+  const token = await getM2MToken()
+  const body = {
+    workId: job.id,
+    workTypeId: config.STANDARDIZED_SKILL_WORK_TYPE_ID,
+    skillIds: job.skills
+  }
+  localLogger.debug({
+    context: 'registerSkills',
+    message: `request: ${JSON.stringify(body)}`
+  })
+  const res = await request
+    .post(`${config.TC_API}/standardized-skills/work-skills`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .send(body)
+  localLogger.debug({
+    context: 'registerSkills',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  return res.body
+}
+
+/**
  * Returns the email templates for given key
  * @param key the type of email template ex: teamTemplates
  * @returns the list of templates for the given key
@@ -2320,6 +2353,7 @@ module.exports = {
   getMemberGroups,
   removeTextFormatting,
   getMembersSuggest,
+  registerSkills,
   getEmailTemplatesForKey,
   formatDate,
   formatDateTimeEDT,
