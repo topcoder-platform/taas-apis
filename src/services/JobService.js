@@ -295,6 +295,7 @@ async function updateJob (currentUser, id, data) {
       const updated = await job.update(data, { transaction: t })
       entity = updated.toJSON()
       await processUpdate(entity)
+      await helper.registerSkills(job)
     })
   } catch (e) {
     if (entity) {
