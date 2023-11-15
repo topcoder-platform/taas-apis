@@ -332,7 +332,7 @@ partiallyUpdateJob.schema = Joi.object()
         resourceType: Joi.stringAllowEmpty().allow(null),
         rateType: Joi.rateType().allow(null),
         workload: Joi.workload().allow(null),
-        skills: Joi.array().items(Joi.string().uuid()),
+        skills: Joi.array().allow(null),
         isApplicationPageActive: Joi.boolean(),
         minSalary: Joi.number().integer(),
         maxSalary: Joi.number().integer(),
