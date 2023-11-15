@@ -262,6 +262,9 @@ async function updateJob (currentUser, id, data) {
   if (data.skills) {
     await _validateSkills(data.skills)
   }
+  // Compact the skills to *just* the IDs for saving to ES
+  data.skills = _.chain(data.skills).map('skillId').uniq().compact().value()
+
   if (data.roleIds) {
     data.roleIds = _.uniq(data.roleIds)
     await _validateRoles(data.roleIds)
