@@ -120,7 +120,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
   }
 
   await helper.ensureJobById(jobCandidate.jobId) // ensure job exists
-  await helper.ensureUserById(jobCandidate.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(jobCandidate.tcUserId) // ensure user exists
 
   jobCandidate.id = uuid()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
@@ -147,7 +147,7 @@ createJobCandidate.schema = Joi.object().keys({
   jobCandidate: Joi.object().keys({
     status: Joi.jobCandidateStatus().default('open'),
     jobId: Joi.string().uuid().required(),
-    userId: Joi.string().uuid().required(),
+    tcUserId: Joi.number().integer().required(),
     externalId: Joi.string().allow(null),
     resume: Joi.string().uri().allow(null),
     remark: Joi.stringAllowEmpty().allow(null)
@@ -224,7 +224,7 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
  */
 async function fullyUpdateJobCandidate (currentUser, id, data) {
   await helper.ensureJobById(data.jobId) // ensure job exists
-  await helper.ensureUserById(data.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(data.tcUserId) // ensure user exists
   return updateJobCandidate(currentUser, id, data)
 }
 
@@ -235,7 +235,7 @@ fullyUpdateJobCandidate.schema = Joi.object()
     data: Joi.object()
       .keys({
         jobId: Joi.string().uuid().required(),
-        userId: Joi.string().uuid().required(),
+        tcUserId: Joi.number().integer(),
         status: Joi.jobCandidateStatus().default('open'),
         viewedByCustomer: Joi.boolean().allow(null),
         externalId: Joi.string().allow(null).default(null),
@@ -316,7 +316,7 @@ async function searchJobCandidates (currentUser, criteria) {
       }
     }
 
-    _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
+    _.each(_.pick(criteria, ['jobId', 'tcUserId', 'status', 'externalId']), (value, key) => {
       esQuery.body.query.bool.must.push({
         term: {
           [key]: {
@@ -353,7 +353,7 @@ async function searchJobCandidates (currentUser, criteria) {
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
-  _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
+  _.each(_.pick(criteria, ['jobId', 'tcUserId', 'status', 'externalId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (criteria.statuses && criteria.statuses.length > 0) {
@@ -392,7 +392,7 @@ searchJobCandidates.schema = Joi.object().keys({
     sortBy: Joi.string().valid('id', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     jobId: Joi.string().uuid(),
-    userId: Joi.string().uuid(),
+    tcUserId: Joi.number().integer(),
     status: Joi.jobCandidateStatus(),
     statuses: Joi.array().items(Joi.jobCandidateStatus()),
     externalId: Joi.string()
@@ -406,13 +406,12 @@ searchJobCandidates.schema = Joi.object().keys({
  */
 async function downloadJobCandidateResume (currentUser, id) {
   const jobCandidate = await JobCandidate.findById(id)
-  const { id: currentUserUserId } = await helper.getUserByExternalId(currentUser.userId)
 
   // customer role
-  if (!jobCandidate.viewedByCustomer && currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
+  if (!jobCandidate.viewedByCustomer && currentUser.userId !== jobCandidate.tcUserId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
     try {
       const job = await models.Job.findById(jobCandidate.jobId)
-      const { handle } = await helper.getUserById(jobCandidate.userId, true)
+      const { handle } = await helper.ensureTopcoderUserIdExists(jobCandidate.tcUserId)
 
       await NotificationSchedulerService.sendNotification(currentUser, {
         template: 'taas.notification.job-candidate-resume-viewed',

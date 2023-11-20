@@ -1074,32 +1074,6 @@ async function getProjects (currentUser, criteria = {}) {
 }
 
 /**
- * Get topcoder user by id from /v3/users.
- *
- * @param {String} userId the legacy user id
- * @returns {Object} the user
- */
-async function getTopcoderUserById (userId) {
-  const token = await getM2MToken()
-  const res = await request
-    .get(config.TOPCODER_USERS_API)
-    .query({ filter: `id=${userId}` })
-    .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getTopcoderUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  const user = _.get(res.body, 'result.content[0]')
-  if (!user) {
-    throw new errors.NotFoundError(
-      `userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`
-    )
-  }
-  return user
-}
-
-/**
  * Function to get users
  * @param {String} userId the user id
  * @returns the request result
@@ -1207,48 +1181,6 @@ async function searchUsersByQuery (query) {
 
   logger.verbose(`Searched users: ${JSON.stringify(users)}`)
   return users
-}
-
-/**
- * Function to create user in ubahn
- * @param {Object} data the user data
- * @returns the request result
- */
-async function createUbahnUser ({ handle, firstName, lastName }) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .post(`${config.TC_API}/users`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-    .send({ handle, firstName, lastName })
-  localLogger.debug({
-    context: 'createUbahnUser',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  return _.pick(res.body, ['id'])
-}
-
-/**
- * Function to create external profile for a ubahn user
- * @param {String} userId the user id(with uuid format)
- * @param {Object} data the profile data
- */
-async function createUserExternalProfile (
-  userId,
-  { organizationId, externalId }
-) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .post(`${config.TC_API}/users/${userId}/externalProfiles`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-    .send({ organizationId, externalId: String(externalId) })
-  localLogger.debug({
-    context: 'createUserExternalProfile',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
 }
 
 /**
@@ -1390,35 +1322,6 @@ async function getSkillById (skillId) {
     message: `response body: ${JSON.stringify(res.body)}`
   })
   return _.pick(res.body, ['id', 'name'])
-}
-
-/**
- * Encapsulate the getUserByExternalId function.
- * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
- *
- * In the case the user does not exist in /v5/users but can be found in /v3/users
- * Fetch the user info from /v3/users and create a new user in /v5/users.
- *
- * @params {Object} currentUser the user who perform this operation
- * @returns {String} the ubahn user id
- */
-async function ensureUbahnUserId (currentUser) {
-  try {
-    return (await getUserByExternalId(currentUser.userId)).id
-  } catch (err) {
-    if (!(err instanceof errors.NotFoundError)) {
-      throw err
-    }
-    const topcoderUser = await getTopcoderUserById(currentUser.userId)
-    const user = await createUbahnUser(
-      _.pick(topcoderUser, ['handle', 'firstName', 'lastName'])
-    )
-    await createUserExternalProfile(user.id, {
-      organizationId: config.ORG_ID,
-      externalId: currentUser.userId
-    })
-    return user.id
-  }
 }
 
 /**
@@ -2287,6 +2190,31 @@ function verifyZoomLinkToken (token) {
   }
 }
 
+/**
+ * Check if the user id (Number) exists in member-api
+ * If it exists return it, otherwise throw en error
+ * @param {number} userId - The Topcoder userId to check
+ */
+async function ensureTopcoderUserIdExists (userId) {
+  const token = await getM2MToken()
+  const url = `${config.TOPCODER_MEMBERS_API}?userId=${userId}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'ensureTopcoderUserIdExists',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  if (res.body.length === 0) {
+    throw new errors.NotFoundError(
+      `userId: ${userId} "user" not found from ${config.TOPCODER_MEMBERS_API}`
+    )
+  }
+  return res.body[0]
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
@@ -2307,7 +2235,7 @@ module.exports = {
     if (userId === config.m2m.M2M_AUDIT_USER_ID) {
       return config.m2m.M2M_AUDIT_USER_ID
     }
-    return ensureUbahnUserId({ userId })
+    return userId
   },
   getUserByExternalId,
   getM2MToken,
@@ -2361,5 +2289,6 @@ module.exports = {
   runExclusiveInterviewEventHandler,
   runExclusiveByNamedMutex,
   signZoomLink,
-  verifyZoomLinkToken
+  verifyZoomLinkToken,
+  ensureTopcoderUserIdExists
 }

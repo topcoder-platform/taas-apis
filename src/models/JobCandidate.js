@@ -49,7 +49,12 @@ module.exports = (sequelize) => {
       userId: {
         field: 'user_id',
         type: Sequelize.UUID,
-        allowNull: false
+        allowNull: true // temporarly mark it as nullable until complete removal
+      },
+      tcUserId: {
+        field: 'tc_user_id',
+        type: Sequelize.INTEGER,
+        allowNull: true // temporarly mark it nullable until historical data is processed
       },
       viewedByCustomer: {
         field: 'viewed_by_customer',
