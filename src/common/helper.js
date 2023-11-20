@@ -2139,8 +2139,6 @@ async function getMembersSuggest (fragment) {
 async function registerSkills (job) {
   const token = await getM2MToken()
   const body = {
-    workId: job.id,
-    workTypeId: config.STANDARDIZED_SKILL_WORK_TYPE_ID,
     skillIds: job.skills
   }
   localLogger.debug({
@@ -2148,7 +2146,7 @@ async function registerSkills (job) {
     message: `request: ${JSON.stringify(body)}`
   })
   const res = await request
-    .post(`${config.TC_API}/standardized-skills/work-skills`)
+    .post(`${config.TC_API}/standardized-skills/job-skills/${job.id}`)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
