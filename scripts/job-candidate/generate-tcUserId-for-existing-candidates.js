@@ -6,10 +6,22 @@ const logger = require('../../src/common/logger')
 const config = require('config')
 
 // The number of job candidates to process in a single batch
-const JOB_CANDIDATES_BATCH_SIZE = Number(process.env.JOB_CANDIDATES_BATCH_SIZE) || 200
+const JOB_CANDIDATES_BATCH_SIZE = Number(process.env.JOB_CANDIDATES_BATCH_SIZE) || 500
 
-// The number of milliseconds to wait before proceeding to the next candidates batch (defaults to 1 second)
-const BATCH_WAIT_TIME_MILLISECONDS = Number(process.env.BATCH_WAIT_TIME_MILLISECONDS) || 1000
+// This will hold the mapping between the member handles and Topcoder legacy user ids
+// This will be loaded from static json files, the handles to userid is unlikely to change
+// If the handle is not found in this mapping file, then member-api will be used to fetch it
+// This will reduce the number of calls to make to member-api when running the script
+let handleToUserIdMap
+
+if (process.env.NODE_ENV === 'development') {
+  handleToUserIdMap = require('./data/dev/dev_candidates_handle_to_userId.map.json')
+} else if (process.env.NODE_ENV === 'production') {
+  handleToUserIdMap = require('./data/prod/prod_candidates_handle_to_userId.map.json')
+} else {
+  console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
+  process.exit(0)
+}
 
 /**
  * This script will populate the tc_user_id field for all the existing job candidates
@@ -49,17 +61,23 @@ const generateTcUserIdForExistingCandidates = async () => {
   for (const candidatesBatch of candidatesBatches) {
     // Prepare the data for updating the candidates in the current batch in parallel
     const candidatesToUpdateInTaasDbPromises = _.map(candidatesBatch, async candidate => {
-      if (!_.isUndefined(ubahnUUIDToHandleMap[candidate.userId])) {
-        // Get the member details from member-api by handle
-        const [memberDetails] = await helper.getMemberDetailsByHandles([ubahnUUIDToHandleMap[candidate.userId]])
-        if (!memberDetails) {
-          logger.info(`member details for handle ${ubahnUUIDToHandleMap[candidate.userId]} does not exist`)
-          return null
-        } else {
-          return {
-            id: candidate.id,
-            tcUserId: memberDetails.userId // This is the Topcoder legacy userId (Number)
+      const handle = ubahnUUIDToHandleMap[candidate.userId]
+      if (!_.isUndefined(handle)) {
+        // Get the member legacy user_id from the map
+        let tcUserId = handleToUserIdMap[handle]
+        if (_.isUndefined(tcUserId)) {
+          // Get the member details from member-api if it is not in the mapping file
+          const [memberDetails] = await helper.getMemberDetailsByHandles([handle])
+          if (!memberDetails) {
+            logger.info(`member details for handle ${ubahnUUIDToHandleMap[candidate.userId]} does not exist`)
+            return null
+          } else {
+            tcUserId = memberDetails.userId
           }
+        }
+        return {
+          id: candidate.id,
+          tcUserId
         }
       } else {
         logger.info(`handle for user UUID ${candidate.userId} does not exist`)
@@ -86,9 +104,6 @@ const generateTcUserIdForExistingCandidates = async () => {
 
     // update the candidates in Elasticsearch
     await bulkUpdateJobCandidatesInElasticsearch(candidatesToUpdateInTaasDB)
-
-    // wait for some time before proceeding to next batch
-    await new Promise((resolve) => setTimeout(resolve, BATCH_WAIT_TIME_MILLISECONDS))
   }
 }
 

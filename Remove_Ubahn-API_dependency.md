@@ -23,4 +23,7 @@ The updates performed on taas-apis to remove the dependency on Ubahn-API are the
      Manual checks of the `tc-taas-rcrm-data-sync-api`/`taas-apis` are needed right after deployment to fix any data loss in the deployment window.
    - This scenario is unlikely to happen though, there are not too many Job applications, only a few
    - For example, in the last 30 minutes, there are only 2 job applications updates: ![JobCandiatesUpdates](docs/tc-taas-rcrm-data-sync-api-logInsights.png)
-3. Run the script to generate `tcUserId` for existing job candidates: `npm run job-candidate:tcUserId:generate`
+3. Run the script to generate `tcUserId` for existing job candidates using the command specific to each environment
+   3.1 - Set the required environment variables: `export UBAHN_DB_URL=<UBAHN-db URL>` - the script also uses the taas-api configuration
+   3.2 - For Development environment `NODE_ENV='development' npm run job-candidate:tcUserId:generate`
+   3.3 - For Production environment `NODE_ENV='production' npm run job-candidate:tcUserId:generate`

@@ -16,6 +16,7 @@ const syncJobCandidate = async () => {
 
 syncJobCandidate().then(res => {
   console.log('job_candidates table successfully synchronized')
+  process.exit(0)
 }).catch(err => {
   console.log('An error happened when synchronizing the job_candidates table')
   console.log(err)
