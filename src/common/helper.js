@@ -1393,6 +1393,33 @@ async function getSkillById (skillId) {
 }
 
 /**
+ * Function to get skills by names
+ * 
+ * @param {Array<String>} names - the skill name
+ * @returns the request result
+ */
+async function getSkillsByExactNames (names) {
+  if (!names || !_.isArray(names) || !names.length) {
+    return []
+  }
+  const token = await getM2MToken()
+  localLogger.debug({
+    context: 'getSkillsByNames',
+    message: `M2M Token: ${token}`
+  })
+  const res = await request
+    .get(`${config.TC_API}/standardized-skills/skills?name=${encodeURIComponent(names.join('&name='))}`)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'getSkillsByNames',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  return res.body
+}
+
+/**
  * Encapsulate the getUserByExternalId function.
  * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
  *
@@ -2361,5 +2388,6 @@ module.exports = {
   runExclusiveInterviewEventHandler,
   runExclusiveByNamedMutex,
   signZoomLink,
-  verifyZoomLinkToken
+  verifyZoomLinkToken,
+  getSkillsByExactNames
 }
