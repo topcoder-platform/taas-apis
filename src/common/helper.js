@@ -1407,14 +1407,15 @@ async function getSkillsByExactNames (names) {
     context: 'getSkillsByNames',
     message: `M2M Token: ${token}`
   })
+  const url = `${config.TC_API}/standardized-skills/skills?name=${encodeURIComponent(names.join('&name='))}`
   const res = await request
-    .get(`${config.TC_API}/standardized-skills/skills?name=${encodeURIComponent(names.join('&name='))}`)
+    .get(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({
     context: 'getSkillsByNames',
-    message: `response body: ${JSON.stringify(res.body)}`
+    message: `response body of GET ${url} is ${JSON.stringify(res.body)}`
   })
   return res.body
 }
