@@ -1407,7 +1407,7 @@ async function getSkillsByExactNames (names) {
     context: 'getSkillsByNames',
     message: `M2M Token: ${token}`
   })
-  const url = `${config.TC_API}/standardized-skills/skills?name=${encodeURIComponent(names.join('&name='))}`
+  const url = `${config.TC_API}/standardized-skills/skills?${names.map(skill => `name=${encodeURIComponent(skill)}`).join('&')}`
   const res = await request
     .get(url)
     .set('Authorization', `Bearer ${token}`)
