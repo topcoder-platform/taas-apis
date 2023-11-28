@@ -284,7 +284,7 @@ async function updateJob (currentUser, id, data) {
     data = _.omit(data, 'skillNames')
   }
   // Compact the skills to *just* the IDs for saving to ES
-  data.skills = _.chain(skills).map(data.skillNames ? 'skillId' : 'id').uniq().compact().value()
+  data.skills = _.chain(skills).map(!data.skillNames ? 'skillId' : 'id').uniq().compact().value()
 
   if (data.roleIds) {
     data.roleIds = _.uniq(data.roleIds)
