@@ -28,7 +28,7 @@ const esClient = helper.getESClient()
  * @param {String} jobId the job id
  * @returns {Array} the list of candidates
  */
-async function _getJobCandidates (jobId) {
+async function _getJobCandidates(jobId) {
   const { body } = await esClient.search({
     index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
     body: {
@@ -60,7 +60,7 @@ async function _getJobCandidates (jobId) {
  * @param {Array} skills the list of skills
  * @returns {undefined}
  */
-async function _validateSkills (skills) {
+async function _validateSkills(skills) {
   const responses = await Promise.all(
     skills.map(
       skill => helper.getSkillById(skill.skillId)
@@ -87,7 +87,7 @@ async function _validateSkills (skills) {
  * @param {Array} skills the list of skill names to validate
  * @returns {Array} the list of matches skill objects
  */
-async function _validateAndGetSkillsByNames (skillNames) {
+async function _validateAndGetSkillsByNames(skillNames) {
   const skills = await helper.getSkillsByExactNames(skillNames)
   if (skills.length !== skillNames.length) {
     const foundSkillNames = skills.map(skill => skill.name)
@@ -103,7 +103,7 @@ async function _validateAndGetSkillsByNames (skillNames) {
  * @param {Array} roles the list of roles
  * @returns {undefined}
  */
-async function _validateRoles (roles) {
+async function _validateRoles(roles) {
   const foundRolesObj = await models.Role.findAll({
     where: {
       id: roles
@@ -125,7 +125,7 @@ async function _validateRoles (roles) {
  * @param {String} projectId the project id
  * @returns {undefined}
  */
-async function _checkUserPermissionForGetJob (currentUser, projectId) {
+async function _checkUserPermissionForGetJob(currentUser, projectId) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
     await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
@@ -138,7 +138,7 @@ async function _checkUserPermissionForGetJob (currentUser, projectId) {
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the job
  */
-async function getJob (currentUser, id, fromDb = false) {
+async function getJob(currentUser, id, fromDb = false) {
   if (!fromDb) {
     try {
       const job = await esClient.get({
@@ -186,7 +186,7 @@ getJob.schema = Joi.object().keys({
  * @params {Object} job the job to be created
  * @returns {Object} the created job
  */
-async function createJob (currentUser, job, onTeamCreating) {
+async function createJob(currentUser, job, onTeamCreating) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
@@ -274,19 +274,25 @@ createJob.schema = Joi.object()
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function updateJob (currentUser, id, data) {
+async function updateJob(currentUser, id, data) {
   logger.debug({ component: 'JobService', context: 'updateJob start', message: `Arguments: ${JSON.stringify(currentUser)} job id: ${id} data: ${JSON.stringify(data)}` })
 
   let skills = data.skills
+
   if (data.skills) {
     await _validateSkills(data.skills)
+
+    // Compact the skills to *just* the IDs for saving to ES
+    data.skills = _.chain(skills).map('skillId').uniq().compact().value()
   }
   if (data.skillNames) {
     skills = await _validateAndGetSkillsByNames(data.skillNames)
+
     data = _.omit(data, 'skillNames')
+
+    // Compact the skills to *just* the IDs for saving to ES
+    data.skills = _.chain(skills).map('id').uniq().compact().value()
   }
-  // Compact the skills to *just* the IDs for saving to ES
-  data.skills = _.chain(skills).map(data.skillNames ? 'skillId' : 'id').uniq().compact().value()
 
   if (data.roleIds) {
     data.roleIds = _.uniq(data.roleIds)
@@ -314,6 +320,8 @@ async function updateJob (currentUser, id, data) {
 
   let entity
   try {
+    logger.debug({ component: 'JobService', context: 'updateJob update transaction', message: `Data: ${JSON.stringify(data)}` })
+
     await sequelize.transaction(async (t) => {
       const updated = await job.update(data, { transaction: t })
       entity = updated.toJSON()
@@ -339,7 +347,7 @@ async function updateJob (currentUser, id, data) {
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function partiallyUpdateJob (currentUser, id, data) {
+async function partiallyUpdateJob(currentUser, id, data) {
   return updateJob(currentUser, id, data, false)
 }
 
@@ -387,7 +395,7 @@ partiallyUpdateJob.schema = Joi.object()
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function fullyUpdateJob (currentUser, id, data) {
+async function fullyUpdateJob(currentUser, id, data) {
   return updateJob(currentUser, id, data, true)
 }
 
@@ -429,7 +437,7 @@ fullyUpdateJob.schema = Joi.object().keys({
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
-async function deleteJob (currentUser, id) {
+async function deleteJob(currentUser, id) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -460,7 +468,7 @@ deleteJob.schema = Joi.object().keys({
  * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobs (currentUser, criteria, options = { returnAll: false }) {
+async function searchJobs(currentUser, criteria, options = { returnAll: false }) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
     if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
