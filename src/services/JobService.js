@@ -275,6 +275,8 @@ createJob.schema = Joi.object()
  * @returns {Object} the updated job
  */
 async function updateJob (currentUser, id, data) {
+  logger.debug({ component: 'JobService', context: 'updateJob start', message: `Arguments: ${JSON.stringify(currentUser)} job id: ${id} data: ${JSON.stringify(data)}` })
+
   let skills = data.skills
   if (data.skills) {
     await _validateSkills(data.skills)
