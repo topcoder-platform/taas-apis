@@ -84,16 +84,18 @@ async function _validateSkills(skills) {
 /**
  * Validate by exact match on name field if all skills exist.
  *
- * @param {Array} skills the list of skill names to validate
- * @returns {Array} the list of matches skill objects
+ * @param {Array} skillNames the list of skill names to validate
+ * @returns {Array} the list of matching skill objects
  */
 async function _validateAndGetSkillsByNames(skillNames) {
   const skills = await helper.getSkillsByExactNames(skillNames)
+  
   if (skills.length !== skillNames.length) {
     const foundSkillNames = skills.map(skill => skill.name)
     const notFoundSkillNames = _.difference(skillNames, foundSkillNames)
     throw new errors.BadRequestError(`Invalid skills: [${notFoundSkillNames}]`)
   }
+  
   return skills
 }
 
