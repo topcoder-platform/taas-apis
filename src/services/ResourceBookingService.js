@@ -339,9 +339,6 @@ async function createResourceBooking (currentUser, resourceBooking) {
   resourceBooking.id = uuid()
   resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
 
-  console.log('createResourceBooking currentUser', JSON.stringify(currentUser))
-  console.log('createResourceBooking resourceBooking', JSON.stringify(resourceBooking))
-
   let entity
   try {
     await sequelize.transaction(async (t) => {
