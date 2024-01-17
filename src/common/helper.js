@@ -2231,10 +2231,6 @@ module.exports = {
   setResHeaders,
   getESClient,
   getUserId: async (userId) => {
-    // check m2m user id
-    if (userId === config.m2m.M2M_AUDIT_USER_ID) {
-      return config.m2m.M2M_AUDIT_USER_ID
-    }
     return userId
   },
   getUserByExternalId,

@@ -334,10 +334,10 @@ async function createResourceBooking (currentUser, resourceBooking) {
   if (resourceBooking.jobId) {
     await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
   }
-  await helper.ensureUserById(resourceBooking.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(resourceBooking.tcUserId) // ensure user exists
 
   resourceBooking.id = uuid()
-  resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
+  resourceBooking.createdBy = toString(await helper.getUserId(currentUser.userId))
 
   let entity
   try {
@@ -361,7 +361,7 @@ createResourceBooking.schema = Joi.object().keys({
   resourceBooking: Joi.object().keys({
     status: Joi.resourceBookingStatus().default('placed'),
     projectId: Joi.number().integer().required(),
-    userId: Joi.string().uuid().required(),
+    tcUserId: Joi.integer().required(),
     jobId: Joi.string().uuid().allow(null),
     sendWeeklySurvey: Joi.boolean().default(true),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null),
@@ -402,7 +402,7 @@ async function updateResourceBooking (currentUser, id, data) {
   // before updating the record, we need to check if any paid work periods tried to be deleted
   await _ensurePaidWorkPeriodsNotDeleted(id, oldValue, data)
 
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+  data.updatedBy = toString(await helper.getUserId(currentUser.userId))
 
   let entity
   try {
@@ -466,7 +466,7 @@ async function fullyUpdateResourceBooking (currentUser, id, data) {
   if (data.jobId) {
     await helper.ensureJobById(data.jobId) // ensure job exists
   }
-  await helper.ensureUserById(data.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(data.tcUserId) // ensure user exists
   return updateResourceBooking(currentUser, id, data)
 }
 
@@ -475,7 +475,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    userId: Joi.string().uuid().required(),
+    tcUserId: Joi.integer().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
     endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
