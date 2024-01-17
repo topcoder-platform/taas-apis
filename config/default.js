@@ -78,8 +78,6 @@ module.exports = {
     ES_INDEX_JOB: process.env.ES_INDEX_JOB || 'job',
     // the job candidate index
     ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
-    // the resource booking index
-    ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
     // the role index
     ES_INDEX_ROLE: process.env.ES_INDEX_ROLE || 'role',
     // the userMeetingSettings index
