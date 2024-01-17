@@ -139,7 +139,7 @@ module.exports = (sequelize) => {
       },
       createdBy: {
         field: 'created_by',
-        type: Sequelize.TEXT,
+        type: Sequelize.TEXT
       },
       updatedBy: {
         field: 'updated_by',

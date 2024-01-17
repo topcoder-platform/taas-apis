@@ -3,7 +3,6 @@ const _ = require('lodash')
 const models = require('../../src/models')
 const helper = require('../../src/common/helper')
 const logger = require('../../src/common/logger')
-const config = require('config')
 
 // The number of resource booking records to process in a single batch
 const RESOURCE_BOOKINGS_BATCH_SIZE = Number(process.env.RESOURCE_BOOKINGS_BATCH_SIZE) || 500
@@ -62,7 +61,6 @@ const generateTcUserIdForExistingRecordBookings = async () => {
   for (const recordBookingBatch of recordBookingBatches) {
     // Prepare the data for updating the record bookings in the current batch in parallel
     const recordBookingsToUpdateInTaasDbPromises = _.map(recordBookingBatch, async recordBooking => {
-
       const userHandle = ubahnUUIDToHandleMap[recordBooking.userId]
       const creadtedByHandle = ubahnUUIDToHandleMap[recordBooking.creadtedBy]
       const updatedByHandle = ubahnUUIDToHandleMap[recordBooking.updatedBy]
@@ -126,7 +124,7 @@ const generateTcUserIdForExistingRecordBookings = async () => {
         tcUpdatedById = null
       }
 
-      let recordBookingId = recordBooking.id
+      const recordBookingId = recordBooking.id
       return {
         recordBookingId,
         tcUserId,
@@ -145,18 +143,18 @@ const generateTcUserIdForExistingRecordBookings = async () => {
     // bulkUpdate is not supported by sequelize, we perform the update using SQL
     let updateBatchTcUserIdsSQL = ''
     for (const recordBookingToUpdate of recordBookingsToUpdateInTaasDB) {
-        let sqlPrefix = 'UPDATE bookings.record_bookings SET '
-        if(recordBookingToUpdate.tcUserId !== null){
-            sqlPrefix += `tc_user_id = ${recordBookingToUpdate.tcUserId}`
-        }
-        if(recordBookingToUpdate.tcCreatedById !== null){
-            sqlPrefix += ` created_by = '${recordBookingToUpdate.tcCreatedById}'`
-        }
-        if(recordBookingToUpdate.tcUpdatedById !== null){
-            sqlPrefix += ` updated_by = '${recordBookingToUpdate.tcUpdatedById}'`
-        }
-        sqlPrefix += ` WHERE id = '${recordBookingToUpdate.recordBookingId}';`
-        updateBatchTcUserIdsSQL += sqlPrefix
+      let sqlPrefix = 'UPDATE bookings.record_bookings SET '
+      if (recordBookingToUpdate.tcUserId !== null) {
+        sqlPrefix += `tc_user_id = ${recordBookingToUpdate.tcUserId}`
+      }
+      if (recordBookingToUpdate.tcCreatedById !== null) {
+        sqlPrefix += ` created_by = '${recordBookingToUpdate.tcCreatedById}'`
+      }
+      if (recordBookingToUpdate.tcUpdatedById !== null) {
+        sqlPrefix += ` updated_by = '${recordBookingToUpdate.tcUpdatedById}'`
+      }
+      sqlPrefix += ` WHERE id = '${recordBookingToUpdate.recordBookingId}';`
+      updateBatchTcUserIdsSQL += sqlPrefix
     }
 
     // Run the query to update record_bookings record in batch

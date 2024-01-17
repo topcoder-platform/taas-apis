@@ -5,20 +5,19 @@ const models = require('../../src/models')
  * including (new columns change, removed columns)
  * @returns {Promise<void>}
  */
-const syncResourceBookings = async() => {
-
-    /**
+const syncResourceBookings = async () => {
+  /**
      * Do not set force to true - it will lead to dropping all records
      */
 
-    await models.ResourceBooking.sync({force: false, alter: true})
+  await models.ResourceBooking.sync({ force: false, alter: true })
 }
 
 syncResourceBookings().then(res => {
-    console.log('resource_bookings table successfully synchronized')
-    process.exit(0)
-  }).catch(err => {
-    console.log('An error happened when synchronizing the resource_bookings table')
-    console.log(err)
-    process.exit(1)
-  })
+  console.log('resource_bookings table successfully synchronized')
+  process.exit(0)
+}).catch(err => {
+  console.log('An error happened when synchronizing the resource_bookings table')
+  console.log(err)
+  process.exit(1)
+})
