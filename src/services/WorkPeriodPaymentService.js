@@ -5,7 +5,6 @@
 const _ = require('lodash')
 const Joi = require('joi').extend(require('@joi/date'))
 const config = require('config')
-const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const uuid = require('uuid')
 const moment = require('moment')
@@ -15,16 +14,10 @@ const errors = require('../common/errors')
 const models = require('../models')
 const { WorkPeriodPaymentStatus, ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const { searchResourceBookings } = require('./ResourceBookingService')
-const {
-  processCreate,
-  processUpdate
-} = require('../esProcessors/WorkPeriodPaymentProcessor')
 
 const sequelize = models.sequelize
-
 const WorkPeriodPayment = models.WorkPeriodPayment
 const WorkPeriod = models.WorkPeriod
-const esClient = helper.getESClient()
 
 /**
  * Check user permission for creating, updating or getting
@@ -132,7 +125,6 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
     await sequelize.transaction(async (t) => {
       const created = await WorkPeriodPayment.create(workPeriodPayment, { transaction: t })
       entity = created.toJSON()
-      await processCreate({ ...entity, key })
     })
   } catch (err) {
     if (entity) {
@@ -148,55 +140,12 @@ async function _createSingleWorkPeriodPaymentWithWorkPeriodAndResourceBooking (w
  * Get workPeriodPayment by id
  * @param {Object} currentUser the user who perform this operation.
  * @param {String} id the workPeriodPayment id
- * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the workPeriodPayment
  */
-async function getWorkPeriodPayment (currentUser, id, fromDb = false) {
+async function getWorkPeriodPayment (currentUser, id) {
   // check user permission
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
-  if (!fromDb) {
-    try {
-      const resourceBooking = await esClient.search({
-        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
-        _source: 'workPeriods.payments',
-        body: {
-          query: {
-            nested: {
-              path: 'workPeriods.payments',
-              query: {
-                match: { 'workPeriods.payments.id': id }
-              }
-            }
-          }
-        }
-      })
 
-      if (!resourceBooking.body.hits.total.value) {
-        throw new errors.NotFoundError()
-      }
-      let workPeriodPaymentRecord = null
-      _.forEach(resourceBooking.body.hits.hits[0]._source.workPeriods, wp => {
-        _.forEach(wp.payments, p => {
-          if (p.id === id) {
-            workPeriodPaymentRecord = p
-            return false
-          }
-        })
-        if (workPeriodPaymentRecord) {
-          return false
-        }
-      })
-      return workPeriodPaymentRecord
-    } catch (err) {
-      if (err.httpStatus === HttpStatus.NOT_FOUND) {
-        throw new errors.NotFoundError(`id: ${id} "WorkPeriodPayment" not found`)
-      }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'WorkPeriodPaymentService', context: 'getWorkPeriodPayment' })
-    }
-  }
   logger.info({ component: 'WorkPeriodPaymentService', context: 'getWorkPeriodPayment', message: 'try to query db for data' })
   const workPeriodPayment = await WorkPeriodPayment.findById(id)
 
@@ -322,8 +271,6 @@ async function updateWorkPeriodPayment (id, data) {
     await sequelize.transaction(async (t) => {
       const updated = await workPeriodPayment.update(data, { transaction: t })
       entity = updated.toJSON()
-
-      await processUpdate({ ...entity, key })
     })
   } catch (e) {
     if (entity) {
@@ -399,10 +346,9 @@ updateBulkOfWorkPeriodPayments.schema = Joi.object().keys({
  * List workPeriodPayments
  * @param {Object} currentUser the user who perform this operation.
  * @param {Object} criteria the search criteria
- * @param {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchWorkPeriodPayments (currentUser, criteria, options = { returnAll: false }) {
+async function searchWorkPeriodPayments (currentUser, criteria) {
   // check user permission
   _checkUserPermissionForCRUWorkPeriodPayment(currentUser)
 
@@ -417,71 +363,7 @@ async function searchWorkPeriodPayments (currentUser, criteria, options = { retu
   }
   const page = criteria.page
   const perPage = criteria.perPage
-  try {
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-      _source: 'workPeriods.payments',
-      body: {
-        query: {
-          nested: {
-            path: 'workPeriods.payments',
-            query: { bool: { must: [] } }
-          }
-        },
-        size: 10000
-        // We use a very large number for size, because we can't paginate nested documents
-        // and in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
-        // the number is limited by `index.max_result_window`, its default value is 10000, see
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
-      }
-    }
-    _.each(_.pick(criteria, ['status', 'workPeriodId']), (value, key) => {
-      esQuery.body.query.nested.query.bool.must.push({
-        term: {
-          [`workPeriods.payments.${key}`]: {
-            value
-          }
-        }
-      })
-    })
-    if (criteria.workPeriodIds) {
-      esQuery.body.query.nested.query.bool.filter = [{
-        terms: {
-          'workPeriods.payments.workPeriodId': criteria.workPeriodIds
-        }
-      }]
-    }
-    logger.debug({ component: 'WorkPeriodPaymentService', context: 'searchWorkPeriodPayment', message: `Query: ${JSON.stringify(esQuery)}` })
 
-    const { body } = await esClient.search(esQuery)
-    const workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
-    let payments = _.reduce(workPeriods, (acc, workPeriod) => _.concat(acc, workPeriod.payments), [])
-    if (criteria.workPeriodId) {
-      payments = _.filter(payments, { workPeriodId: criteria.workPeriodId })
-    } else if (criteria.workPeriodIds) {
-      payments = _.filter(payments, p => _.includes(criteria.workPeriodIds, p.workPeriodId))
-    }
-    if (criteria.status) {
-      payments = _.filter(payments, { status: criteria.status })
-    }
-    payments = _.sortBy(payments, [criteria.sortBy])
-    if (criteria.sortOrder === 'desc') {
-      payments = _.reverse(payments)
-    }
-    const total = payments.length
-    if (!options.returnAll) {
-      payments = _.slice(payments, (page - 1) * perPage, page * perPage)
-    }
-
-    return {
-      total,
-      page,
-      perPage,
-      result: payments
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'WorkPeriodPaymentService', context: 'searchWorkPeriodPaymentService' })
-  }
   logger.info({ component: 'WorkPeriodPaymentService', context: 'searchWorkPeriodPayments', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   _.each(_.pick(criteria, ['status', 'workPeriodId']), (value, key) => {
