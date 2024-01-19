@@ -326,7 +326,7 @@ createResourceBooking.schema = Joi.object().keys({
   resourceBooking: Joi.object().keys({
     status: Joi.resourceBookingStatus().default('placed'),
     projectId: Joi.number().integer().required(),
-    tcUserId: Joi.integer().required(),
+    tcUserId: Joi.number().integer().required(),
     jobId: Joi.string().uuid().allow(null),
     sendWeeklySurvey: Joi.boolean().default(true),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null),
@@ -434,7 +434,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    tcUserId: Joi.integer().required(),
+    tcUserId: Joi.number().integer().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
     endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
@@ -545,7 +545,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   // Apply ResourceBooking filters
-  _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
+  _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'tcUserId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (!_.isUndefined(criteria.billingAccountId)) {
@@ -685,7 +685,7 @@ searchResourceBookings.schema = Joi.object().keys({
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
     jobIds: Joi.array().items(Joi.string().uuid()),
-    userId: Joi.string().uuid(),
+    tcUserId: Joi.number().integer(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),
