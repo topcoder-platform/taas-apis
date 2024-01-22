@@ -148,10 +148,10 @@ const generateTcUserIdForExistingResourceBookings = async () => {
         sqlPrefix += `tc_user_id = ${resourceBookingToUpdate.tcUserId}`
       }
       if (resourceBookingToUpdate.tcCreatedById !== null) {
-        sqlPrefix += ` created_by = '${resourceBookingToUpdate.tcCreatedById}'`
+        sqlPrefix += `, created_by = '${resourceBookingToUpdate.tcCreatedById}'`
       }
       if (resourceBookingToUpdate.tcUpdatedById !== null) {
-        sqlPrefix += ` updated_by = '${resourceBookingToUpdate.tcUpdatedById}'`
+        sqlPrefix += `, updated_by = '${resourceBookingToUpdate.tcUpdatedById}'`
       }
       sqlPrefix += ` WHERE id = '${resourceBookingToUpdate.resourceBookingId}';`
       updateBatchTcUserIdsSQL += sqlPrefix

@@ -121,7 +121,7 @@ const generateTcUserIdForExistingInterviews = async () => {
         sqlPrefix += `created_by = '${interviewToUpdate.tcCreatedById}'`
       }
       if (interviewToUpdate.tcUpdatedById !== null) {
-        sqlPrefix += ` updated_by = '${interviewToUpdate.tcUpdatedById}'`
+        sqlPrefix += `, updated_by = '${interviewToUpdate.tcUpdatedById}'`
       }
       sqlPrefix += ` WHERE id = '${interviewToUpdate.interviewId}';`
       updateBatchTcUserIdsSQL += sqlPrefix
