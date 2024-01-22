@@ -1,25 +1,6 @@
 const Sequelize = require('sequelize')
 const _ = require('lodash')
 const helper = require('../../src/common/helper')
-const logger = require('../../src/common/logger')
-
-// The number of records to process in a single batch
-const BATCH_SIZE = Number(process.env.BATCH_SIZE) || 500
-
-// This will hold the mapping between the member handles and Topcoder legacy user ids
-// This will be loaded from static json files, the handles to userid is unlikely to change
-// If the handle is not found in this mapping file, then member-api will be used to fetch it
-// This will reduce the number of calls to make to member-api when running the script
-let handleToUserIdMap
-
-if (process.env.NODE_ENV === 'development') {
-    handleToUserIdMap = require('../job-candidate/data/dev/dev_candidates_handle_to_userId.map.json')
-} else if (process.env.NODE_ENV === 'production') {
-    handleToUserIdMap = require('../job-candidate/data/prod/prod_candidates_handle_to_userId.map.json')
-} else {
-    console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
-    process.exit(1)
-}
 
 /**
  * This function gets the mapping between UBAHN user ids and Topcoder handles
@@ -32,20 +13,20 @@ if (process.env.NODE_ENV === 'development') {
  * @param uniqueUUIDs - The list of records with UUIDs in UBAHN
  */
 const getUserUbahnUUIDToHandleMap = async (connection, uniqueUUIDs) => {
-    // make sure we are working with unique array of UUIDs
-    const _uniqueUUIDs = _.uniq(uniqueUUIDs)
+  // make sure we are working with unique array of UUIDs
+  const _uniqueUUIDs = _.uniq(uniqueUUIDs)
 
-    const commaSeparatedUbahnUUIDs = _.join(_.map(_uniqueUUIDs, u => `'${u}'`), ',')
+  const commaSeparatedUbahnUUIDs = _.join(_.map(_uniqueUUIDs, u => `'${u}'`), ',')
 
-    const query = `SELECT id, handle from "Users" where id in (${commaSeparatedUbahnUUIDs})`
-    const userUUIDsWithHandles = await connection.query(query, { type: Sequelize.QueryTypes.SELECT })
+  const query = `SELECT id, handle from "Users" where id in (${commaSeparatedUbahnUUIDs})`
+  const userUUIDsWithHandles = await connection.query(query, { type: Sequelize.QueryTypes.SELECT })
 
-    const ubahnIdToHandleMap = {}
-    for (const userUbahnDetails of userUUIDsWithHandles) {
-        ubahnIdToHandleMap[userUbahnDetails.id] = userUbahnDetails.handle
-    }
+  const ubahnIdToHandleMap = {}
+  for (const userUbahnDetails of userUUIDsWithHandles) {
+    ubahnIdToHandleMap[userUbahnDetails.id] = userUbahnDetails.handle
+  }
 
-    return ubahnIdToHandleMap
+  return ubahnIdToHandleMap
 }
 
 /**
@@ -53,39 +34,38 @@ const getUserUbahnUUIDToHandleMap = async (connection, uniqueUUIDs) => {
  * @param url - The Ubahn PostgreSQL database url
  */
 const getUbahnDatabaseConnection = async (url) => {
-    return new Sequelize(url)
+  return new Sequelize(url)
 }
 
 const getTcUserIdByHandle = async (handle) => {
-    let handleToUserIdMap;
+  let handleToUserIdMap
 
-    if (process.env.NODE_ENV === 'development') {
-        handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
-    } else if (process.env.NODE_ENV === 'production') {
-        handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
+  if (process.env.NODE_ENV === 'development') {
+    handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
+  } else if (process.env.NODE_ENV === 'production') {
+    handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
+  } else {
+    console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
+    process.exit(1)
+  }
+
+  let tcCreatedById = handleToUserIdMap[handle]
+
+  if (_.isUndefined(tcCreatedById)) {
+    // Get the member details from member-api if it is not in the mapping file
+    const [memberDetails] = await helper.getMemberDetailsByHandles([handle])
+    if (!memberDetails) {
+      tcCreatedById = ''
     } else {
-        console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
-        process.exit(1)
+      tcCreatedById = memberDetails.userId
     }
+  }
 
-    const tcUserId = handleToUserIdMap[handle]
-
-    if (_.isUndefined(tcUserId)) {
-        // Get the member details from member-api if it is not in the mapping file
-        const [memberDetails] = await helper.getMemberDetailsByHandles([handle])
-        if (!memberDetails) {
-            logger.info(`member details for handle ${ubahnUUIDToHandleMap[recordBooking.createdBy]} does not exist`)
-            tcCreatedById = ''
-        } else {
-            tcCreatedById = memberDetails.userId
-        }
-    }
-
-    return toString(tcUserId)
+  return toString(tcCreatedById)
 }
 
 module.exports = {
-    getUbahnDatabaseConnection,
-    getUserUbahnUUIDToHandleMap,
-    getTcUserIdByHandle
+  getUbahnDatabaseConnection,
+  getUserUbahnUUIDToHandleMap,
+  getTcUserIdByHandle
 }

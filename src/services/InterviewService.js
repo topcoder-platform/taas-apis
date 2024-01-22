@@ -584,6 +584,7 @@ async function updateCompletedInterviews () {
           transaction: t
         }
       )
+      // eslint-disable-next-line no-unused-vars
       let updatedRows
       [affectedCount, updatedRows] = updated
     })
