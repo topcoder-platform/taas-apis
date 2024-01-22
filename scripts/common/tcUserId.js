@@ -60,9 +60,9 @@ const getTcUserIdByHandle = async (handle) => {
     let handleToUserIdMap;
 
     if (process.env.NODE_ENV === 'development') {
-        handleToUserIdMap = require('../job-candidate/data/dev/dev_candidates_handle_to_userId.map.json')
+        handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
     } else if (process.env.NODE_ENV === 'production') {
-        handleToUserIdMap = require('../job-candidate/data/prod/prod_candidates_handle_to_userId.map.json')
+        handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
     } else {
         console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
         process.exit(1)
