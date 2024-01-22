@@ -34,7 +34,6 @@ async function indexAll () {
       await helper.indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
       await helper.indexBulkDataToES(jobCandidateModelOpts, config.get('esConfig.ES_INDEX_JOB_CANDIDATE'), logger)
       await helper.indexBulkDataToES(resourceBookingModelOpts, config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'), logger)
-      await helper.indexBulkDataToES('Role', config.get('esConfig.ES_INDEX_ROLE'), logger)
       await helper.indexBulkDataToES('UserMeetingSettings', config.get('esConfig.ES_INDEX_USER_MEETING_SETTINGS'), logger)
       process.exit(0)
     } catch (err) {

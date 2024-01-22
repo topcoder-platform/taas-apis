@@ -11,15 +11,9 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/RoleProcessor')
 
 const sequelize = models.sequelize
 const Role = models.Role
-const esClient = helper.getESClient()
 
 /**
   * Check user permission for deleting, creating or updating role.
@@ -80,20 +74,7 @@ async function _checkIfSameNamedRoleExists (roleName) {
   * @param {Boolean} fromDb flag if query db for data or not
   * @returns {Object} the role
   */
-async function getRole (id, fromDb = false) {
-  if (!fromDb) {
-    try {
-      const role = await esClient.get({
-        index: config.esConfig.ES_INDEX_ROLE,
-        id
-      })
-      return { id: role.body._id, ...role.body._source }
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "Role" not found`)
-      }
-    }
-  }
+async function getRole (id) {
   logger.info({ component: 'RoleService', context: 'getRole', message: 'try to query db for data' })
   const role = await Role.findById(id)
 
@@ -129,7 +110,6 @@ async function createRole (currentUser, role) {
     await sequelize.transaction(async (t) => {
       const created = await Role.create(role, { transaction: t })
       entity = created.toJSON()
-      await processCreate(entity)
     })
   } catch (e) {
     if (entity) {
@@ -198,7 +178,6 @@ async function updateRole (currentUser, id, data) {
     await sequelize.transaction(async (t) => {
       const updated = await role.update(data, { transaction: t })
       entity = updated.toJSON()
-      await processUpdate(entity)
     })
   } catch (e) {
     if (entity) {
@@ -253,7 +232,6 @@ async function deleteRole (currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await role.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'role.delete')
@@ -276,43 +254,7 @@ deleteRole.schema = Joi.object().keys({
 async function searchRoles (criteria) {
   // clean skill names and convert into an array
   criteria.skillsList = _.filter(_.map(_.split(criteria.skillsList, ','), skill => _.trim(skill)), skill => !_.isEmpty(skill))
-  try {
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_ROLE'),
-      body: {
-        query: {
-          bool: {
-            must: []
-          }
-        },
-        size: 10000,
-        sort: [{ name: { order: 'asc' } }]
-      }
-    }
-    // Apply skill name filters. listOfSkills array should include all skills provided in criteria.
-    _.each(criteria.skillsList, skill => {
-      esQuery.body.query.bool.must.push({
-        term: {
-          listOfSkills: skill
-        }
-      })
-    })
-    // Apply name filter, allow partial match
-    if (criteria.keyword) {
-      esQuery.body.query.bool.must.push({
-        wildcard: {
-          name: `*${criteria.keyword}*`
 
-        }
-      })
-    }
-    logger.debug({ component: 'RoleService', context: 'searchRoles', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-    return _.map(body.hits.hits, (hit) => _.assign(hit._source, { id: hit._id }))
-  } catch (err) {
-    logger.logFullError(err, { component: 'RoleService', context: 'searchRoles' })
-  }
   logger.info({ component: 'RoleService', context: 'searchRoles', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   // Apply skill name filters. listOfSkills array should include all skills provided in criteria.
