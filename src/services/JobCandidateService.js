@@ -5,7 +5,6 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
-const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const { Scopes, UserRoles } = require('../../app-constants')
@@ -14,16 +13,10 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const JobService = require('./JobService')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/JobCandidateProcessor')
 
 const sequelize = models.sequelize
 const NotificationSchedulerService = require('./NotificationsSchedulerService')
 const JobCandidate = models.JobCandidate
-const esClient = helper.getESClient()
 
 /**
  * Check user permission for getting job candidate.
@@ -66,27 +59,7 @@ function getJobCandidateOmitList (currentUser) {
  */
 async function getJobCandidate (currentUser, id, fromDb = false) {
   const omitList = getJobCandidateOmitList(currentUser)
-  if (!fromDb) {
-    try {
-      const jobCandidate = await esClient.get({
-        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-        id
-      })
 
-      await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.body._source.jobId) // check user permisson
-
-      const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
-      return _.omit(jobCandidateRecord, omitList)
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
-      }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'JobCandidateService', context: 'getJobCandidate' })
-    }
-  }
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
   // include interviews if user has permission
   const include = []
@@ -128,17 +101,12 @@ async function createJobCandidate (currentUser, jobCandidate) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const created = await JobCandidate.create(jobCandidate, { transaction: t })
-      entity = created.toJSON()
-      await processCreate(entity)
+      await JobCandidate.create(jobCandidate, { transaction: t })
     })
   } catch (e) {
-    if (entity) {
-      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.create')
-    }
+    logger.error(`Error encountered in creating job candidate: ${JSON.stringify(e)}`)
     throw e
   }
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, entity)
   return entity
 }
 
@@ -177,14 +145,10 @@ async function updateJobCandidate (currentUser, id, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const updated = await jobCandidate.update(data, { transaction: t })
-      entity = updated.toJSON()
-      await processUpdate(entity)
+      await jobCandidate.update(data, { transaction: t })
     })
   } catch (e) {
-    if (entity) {
-      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.update')
-    }
+    logger.error(`Error encountered in updating job candidate with id ${id}: ${JSON.stringify(e)}`)
     throw e
   }
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, entity, { oldValue: oldValue })
@@ -261,13 +225,11 @@ async function deleteJobCandidate (currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await jobCandidate.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
-    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'jobcandidate.delete')
+    logger.error(`Error encountered in deleting job candidate with id ${id}: ${JSON.stringify(e)}`)
     throw e
   }
-  await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
 deleteJobCandidate.schema = Joi.object().keys({
@@ -298,58 +260,6 @@ async function searchJobCandidates (currentUser, criteria) {
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-      body: {
-        query: {
-          bool: {
-            must: []
-          }
-        },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort
-      }
-    }
-
-    _.each(_.pick(criteria, ['jobId', 'tcUserId', 'status', 'externalId']), (value, key) => {
-      esQuery.body.query.bool.must.push({
-        term: {
-          [key]: {
-            value
-          }
-        }
-      })
-    })
-
-    // if criteria contains statuses, filter statuses with this value
-    if (criteria.statuses && criteria.statuses.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          status: criteria.statuses
-        }
-      })
-    }
-    logger.debug({ component: 'JobCandidateService', context: 'searchJobCandidates', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-
-    return {
-      total: body.hits.total.value,
-      page,
-      perPage,
-      result: _.map(body.hits.hits, (hit) => {
-        const obj = _.cloneDeep(hit._source)
-        obj.id = hit._id
-        return _.omit(obj, omitList)
-      })
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }

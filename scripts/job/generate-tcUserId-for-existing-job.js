@@ -4,7 +4,7 @@ const models = require('../../src/models')
 const helper = require('../../src/common/helper')
 const logger = require('../../src/common/logger')
 
-// The number of job candidate records to process in a single batch
+// The number of job records to process in a single batch
 const PROCESSING_BATCH_SIZE = Number(process.env.PROCESSING_BATCH_SIZE) || 500
 
 // This will hold the mapping between the member handles and Topcoder legacy user ids
@@ -23,68 +23,42 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /**
- * This script will populate the tc_user_id field for all the existing job candidate user ids (uuids)
- * along with converting the created_by and updated_by uuids to topcoder legacy user ids
+ * This script will populate the created_by and updated_by uuids to topcoder legacy user ids
  * This is a one time use script which loads the users data from u-bahn database and
- * populates the tc_user_id based on ubahn user UUID
+ * populates the tc legacy user id based on ubahn user UUID
  *
  * In addition to the taas-apis configuration parameters, this script requires the following environment variable:
  * - UBAHN_DB_URL: The ubahn database URL
  */
-const generateTcUserIdForExistingJobCanidates = async () => {
+const generateTcUserIdForExistingJobs = async () => {
   const dbUrl = process.env.UBAHN_DB_URL
   if (_.isUndefined(dbUrl)) {
     console.log('UBAHN_DB_URL environment variable is required to be set. Exiting!!')
     process.exit(1)
   }
 
-  // Get the list of job candidates from TaaS database where ubahn user UUID is not null
-  const jobCandidates = await models.JobCandidate.findAll({
-    attributes: ['id', 'userId', 'createdBy', 'updatedBy'], // userId refers to UUID in Ubahn
-    where: {
-      userId: {
-        [Sequelize.Op.ne]: null
-      }
-    },
+  // Get the list of jobs from TaaS database
+  const jobs = await models.Job.findAll({
+    attributes: ['id', 'createdBy', 'updatedBy'],
     distinct: true
   })
 
   // Get the mapping between the Ubahn user UUID and user handle
   const ubahnDbConnection = await getUbahnDatabaseConnection(dbUrl)
-  const ubahnUUIDToHandleMap = await getUserUbahnUUIDToHandleMap(ubahnDbConnection, jobCandidates)
+  const ubahnUUIDToHandleMap = await getUserUbahnUUIDToHandleMap(ubahnDbConnection, jobs)
   await ubahnDbConnection.close()
 
   // split the job candidates in order to update in chunks
-  const jobCandidateBatches = _.chunk(jobCandidates, PROCESSING_BATCH_SIZE)
+  const jobBatches = _.chunk(jobs, PROCESSING_BATCH_SIZE)
 
   // process record booking batches in sequence
-  for (const jobCandidateBatch of jobCandidateBatches) {
+  for (const jobBatch of jobBatches) {
     // Prepare the data for updating the job candidates in the current batch in parallel
-    const jobCandidatesToUpdateInTaasDbPromises = _.map(jobCandidateBatch, async jobCandidate => {
-      const userHandle = ubahnUUIDToHandleMap[jobCandidate.userId]
-      const createdByHandle = ubahnUUIDToHandleMap[jobCandidate.createdBy]
-      const updatedByHandle = ubahnUUIDToHandleMap[jobCandidate.updatedBy]
+    const jobToUpdateInTaasDbPromises = _.map(jobBatch, async job => {
+      const createdByHandle = ubahnUUIDToHandleMap[job.createdBy]
+      const updatedByHandle = ubahnUUIDToHandleMap[job.updatedBy]
 
-      let tcUserId, tcCreatedById, tcUpdatedById
-
-      // get the user id
-      if (!_.isUndefined(userHandle)) {
-        // Get the member legacy user_id from the map
-        tcUserId = handleToUserIdMap[userHandle]
-        if (_.isUndefined(tcUserId)) {
-          // Get the member details from member-api if it is not in the mapping file
-          const [memberDetails] = await helper.getMemberDetailsByHandles([userHandle])
-          if (!memberDetails) {
-            logger.info(`member details for handle ${userHandle} does not exist`)
-            tcUserId = null
-          } else {
-            tcUserId = memberDetails.userId
-          }
-        }
-      } else {
-        logger.info(`handle for user UUID ${jobCandidate.userId} does not exist`)
-        tcUserId = null
-      }
+      let tcCreatedById, tcUpdatedById
 
       // get the createdBy id
       if (!_.isUndefined(createdByHandle)) {
@@ -101,7 +75,7 @@ const generateTcUserIdForExistingJobCanidates = async () => {
           }
         }
       } else {
-        logger.info(`handle for user UUID ${jobCandidate.createdBy} does not exist`)
+        logger.info(`handle for user UUID ${job.createdBy} does not exist`)
         tcCreatedById = null
       }
 
@@ -120,40 +94,36 @@ const generateTcUserIdForExistingJobCanidates = async () => {
           }
         }
       } else {
-        logger.info(`handle for user UUID ${jobCandidate.updatedBy} does not exist`)
+        logger.info(`handle for user UUID ${job.updatedBy} does not exist`)
         tcUpdatedById = null
       }
 
-      const jobCandidateId = jobCandidate.id
+      const jobId = job.id
       return {
-        jobCandidateId,
-        tcUserId,
+        jobId,
         tcCreatedById,
         tcUpdatedById
       }
     })
 
     // wait for all promises to resolve
-    let jobCandidatesToUpdateInTaasDB = await Promise.all(jobCandidatesToUpdateInTaasDbPromises)
+    let jobsToUpdateInTaasDB = await Promise.all(jobToUpdateInTaasDbPromises)
 
     // remove null values (i.e where member details does not exist)
-    jobCandidatesToUpdateInTaasDB = _.filter(jobCandidatesToUpdateInTaasDB, jc => !_.isNull(jc.tcUserId) && !_.isNull(jc.tcCreatedById) && !_.isNull(jc.tcUpdatedById))
+    jobsToUpdateInTaasDB = _.filter(jobsToUpdateInTaasDB, i => !_.isNull(i.tcCreatedById) && !_.isNull(i.tcUpdatedById))
 
-    // Generate SQL statements to update tc_user_id for the current users batch in Postgres
+    // Generate SQL statements to update created_by and updated_by for the current users batch in Postgres
     // bulkUpdate is not supported by sequelize, we perform the update using SQL
     let updateBatchTcUserIdsSQL = ''
-    for (const jobCandidateToUpdate of jobCandidatesToUpdateInTaasDB) {
-      let sqlPrefix = 'UPDATE bookings.job_candidates SET '
-      if (jobCandidateToUpdate.tcUserId !== null) {
-        sqlPrefix += `tc_user_id = ${jobCandidateToUpdate.tcUserId}`
+    for (const interviewToUpdate of jobsToUpdateInTaasDB) {
+      let sqlPrefix = 'UPDATE bookings.jobs SET '
+      if (interviewToUpdate.tcCreatedById !== null) {
+        sqlPrefix += `created_by = '${interviewToUpdate.tcCreatedById}'`
       }
-      if (jobCandidateToUpdate.tcCreatedById !== null) {
-        sqlPrefix += `, created_by = '${jobCandidateToUpdate.tcCreatedById}'`
+      if (interviewToUpdate.tcUpdatedById !== null) {
+        sqlPrefix += `, updated_by = '${interviewToUpdate.tcUpdatedById}'`
       }
-      if (jobCandidateToUpdate.tcUpdatedById !== null) {
-        sqlPrefix += `, updated_by = '${jobCandidateToUpdate.tcUpdatedById}'`
-      }
-      sqlPrefix += ` WHERE id = '${jobCandidateToUpdate.jobCandidateId}';`
+      sqlPrefix += ` WHERE id = '${interviewToUpdate.jobId}';`
       updateBatchTcUserIdsSQL += sqlPrefix
     }
 
@@ -170,16 +140,14 @@ const generateTcUserIdForExistingJobCanidates = async () => {
  *   "95e7970f-12b4-43b7-ab35-38c34bf033c7": "testfordevemail"
  * }
  * @param connection - The Ubahn database connection object
- * @param jobCandidates - The list of job candidate objects we are interested in, each object should have `userId` field
- *                        Which represents the user UUID in UBAHN
+ * @param jobs - The list of job objects we are interested in
  */
-const getUserUbahnUUIDToHandleMap = async (connection, jobCandidates) => {
+const getUserUbahnUUIDToHandleMap = async (connection, jobs) => {
   // filter by unique not null userIds
-  const uniqUserIds = _.map(_.filter(_.uniqBy(jobCandidates, jc => jc.userId), jc => !_.isNull(jc.userId)), val => val.userId)
-  const uniqCreatedByIds = _.map(_.filter(_.uniqBy(jobCandidates, jc => jc.createdBy), jc => !_.isNull(jc.createdBy)), val => val.createdBy)
-  const uniqUpdatedByByIds = _.map(_.filter(_.uniqBy(jobCandidates, jc => jc.updatedBy), jc => !_.isNull(jc.updatedBy)), val => val.updatedBy)
+  const uniqCreatedByIds = _.map(_.filter(_.uniqBy(jobs, j => j.createdBy), j => !_.isNull(j.createdBy)), val => val.createdBy)
+  const uniqUpdatedByByIds = _.map(_.filter(_.uniqBy(jobs, j => j.updatedBy), j => !_.isNull(j.updatedBy)), val => val.updatedBy)
 
-  const uniqueUUIDs = _.uniq(_.concat(uniqUserIds, uniqCreatedByIds, uniqUpdatedByByIds))
+  const uniqueUUIDs = _.uniq(_.concat(uniqCreatedByIds, uniqUpdatedByByIds))
 
   const commaSeparatedUbahnUUIDs = _.join(_.map(uniqueUUIDs, u => `'${u}'`), ',')
 
@@ -202,11 +170,11 @@ const getUbahnDatabaseConnection = async (url) => {
   return new Sequelize(url)
 }
 
-generateTcUserIdForExistingJobCanidates().then(res => {
-  console.log('tc_user_id, created_by and updated_by has been successfully populated for all job candidates in TaaS database')
+generateTcUserIdForExistingJobs().then(res => {
+  console.log('created_by and updated_by has been successfully populated for all jobs in TaaS database')
   process.exit(0)
 }).catch(err => {
-  console.log('An error occurred when populating the tc_user_id, created_by and updated_by fields for job candidates')
+  console.log('An error occurred when populating the created_by and updated_by fields for jobs')
   console.log(err)
   process.exit(1)
 })

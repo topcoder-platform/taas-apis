@@ -78,12 +78,11 @@ module.exports = (sequelize) => {
       },
       createdBy: {
         field: 'created_by',
-        type: Sequelize.UUID,
-        allowNull: false
+        type: Sequelize.TEXT
       },
       updatedBy: {
         field: 'updated_by',
-        type: Sequelize.UUID
+        type: Sequelize.TEXT
       },
       createdAt: {
         field: 'created_at',
