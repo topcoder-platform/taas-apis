@@ -2,6 +2,17 @@ const Sequelize = require('sequelize')
 const _ = require('lodash')
 const helper = require('../../src/common/helper')
 
+let handleToUserIdMap
+
+if (process.env.NODE_ENV === 'development') {
+  handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
+} else if (process.env.NODE_ENV === 'production') {
+  handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
+} else {
+  console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
+  process.exit(1)
+}
+
 /**
  * This function gets the mapping between UBAHN user ids and Topcoder handles
  * The return value is a Promise of a Map between user ubahn ids and Topcoder handles:
@@ -38,30 +49,22 @@ const getUbahnDatabaseConnection = async (url) => {
 }
 
 const getTcUserIdByHandle = async (handle) => {
-  let handleToUserIdMap
-
-  if (process.env.NODE_ENV === 'development') {
-    handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
-  } else if (process.env.NODE_ENV === 'production') {
-    handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
-  } else {
-    console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
-    process.exit(1)
-  }
-
   let tcCreatedById = handleToUserIdMap[handle]
 
   if (_.isUndefined(tcCreatedById)) {
+    console.log(`Could not find mapping for TC handle ${handle} to TC user id in the mapping file. Trying to get it from member-api...`)
     // Get the member details from member-api if it is not in the mapping file
     const [memberDetails] = await helper.getMemberDetailsByHandles([handle])
     if (!memberDetails) {
       tcCreatedById = ''
     } else {
       tcCreatedById = memberDetails.userId
+      console.log(`Got tc user id ${tcCreatedById} for handle ${handle} from member-api. Adding it to the mapping in memory...`)
+      handleToUserIdMap[handle] = tcCreatedById
     }
   }
 
-  return toString(tcCreatedById)
+  return tcCreatedById
 }
 
 module.exports = {

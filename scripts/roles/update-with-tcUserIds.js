@@ -22,7 +22,7 @@ const updateRolesWithTcUserIds = async () => {
         [Sequelize.Op.ne]: '00000000-0000-0000-0000-000000000000'
       }
     },
-    distinct: true
+    // distinct: true
   })
 
   console.log(`Found ${recordsToProcess.length} records to process`)
@@ -44,8 +44,16 @@ const updateRolesWithTcUserIds = async () => {
       const createdByHandle = uuidToHandleMap[record.createdBy]
       const updatedByHandle = uuidToHandleMap[record.updatedBy]
 
-      const createdByTcUserId = await tcUserId.getTcUserIdByHandle(createdByHandle)
+      let createdByTcUserId = record.createdBy
       let updatedByTcUserId = null
+
+      // if we do not have mapping for createdBy, memberId or updatedBy,
+      // then skip the data upate and leave the record as is
+      if (createdByHandle) {
+        createdByTcUserId = await tcUserId.getTcUserIdByHandle(createdByHandle)
+      } else {
+        console.log(`Could not find mapping for createdBy ${record.createdBy} to TC handle in the Ubahn database. Skipping update for role_search_request with id ${record.id}`)
+      }
 
       if (updatedByHandle) {
         updatedByTcUserId = await tcUserId.getTcUserIdByHandle(updatedByHandle)

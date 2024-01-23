@@ -48,9 +48,23 @@ const updateRolesWithTcUserIds = async () => {
       const createdByHandle = uuidToHandleMap[record.createdBy]
       const updatedByHandle = uuidToHandleMap[record.updatedBy]
 
-      const createdByTcUserId = await tcUserId.getTcUserIdByHandle(createdByHandle)
-      const memberIdTcUserId = await tcUserId.getTcUserIdByHandle(memberIdHandle)
+      let createdByTcUserId = record.createdBy
+      let memberIdTcUserId = record.memberId
       let updatedByTcUserId = null
+
+      // if we do not have mapping for createdBy, memberId or updatedBy,
+      // then skip the data upate and leave the record as is
+      if (createdByHandle) {
+        createdByTcUserId = await tcUserId.getTcUserIdByHandle(createdByHandle)
+      } else {
+        console.log(`Could not find mapping for createdBy ${record.createdBy} to TC handle in the Ubahn database. Skipping update for role_search_request with id ${record.id}`)
+      }
+
+      if (memberIdHandle) {
+        memberIdTcUserId = await tcUserId.getTcUserIdByHandle(memberIdHandle)
+      } else {
+        console.log(`Could not find mapping for memberId ${record.memberId} to TC handle in the Ubahn database. Skipping update for role_search_request with id ${record.id}`)
+      }
 
       if (updatedByHandle) {
         updatedByTcUserId = await tcUserId.getTcUserIdByHandle(updatedByHandle)
