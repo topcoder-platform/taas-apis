@@ -7,14 +7,14 @@ ALTER COLUMN created_by TYPE TEXT,
 ALTER COLUMN updated_by TYPE TEXT;
 
 ALTER TABLE bookings.job_candidates
+ALTER COLUMN user_id TYPE TEXT,
 ALTER COLUMN created_by TYPE TEXT,
-ALTER COLUMN updated_by TYPE TEXT,
-ADD COLUMN tc_user_id INTEGER;
+ALTER COLUMN updated_by TYPE TEXT;
 
 ALTER TABLE bookings.resource_bookings
+ALTER COLUMN user_id TYPE TEXT,
 ALTER COLUMN created_by TYPE TEXT,
-ALTER COLUMN updated_by TYPE TEXT,
-ADD COLUMN tc_user_id INTEGER;
+ALTER COLUMN updated_by TYPE TEXT;
 
 ALTER TABLE bookings.roles
 ALTER COLUMN created_by TYPE TEXT,

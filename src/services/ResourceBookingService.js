@@ -305,7 +305,7 @@ async function createResourceBooking (currentUser, resourceBooking) {
   if (resourceBooking.jobId) {
     await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
   }
-  await helper.ensureTopcoderUserIdExists(resourceBooking.tcUserId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(resourceBooking.userId) // ensure user exists
 
   resourceBooking.id = uuid()
   resourceBooking.createdBy = toString(await helper.getUserId(currentUser.userId))
@@ -330,7 +330,7 @@ createResourceBooking.schema = Joi.object().keys({
   resourceBooking: Joi.object().keys({
     status: Joi.resourceBookingStatus().default('placed'),
     projectId: Joi.number().integer().required(),
-    tcUserId: Joi.number().integer().required(),
+    userId: Joi.string().required(),
     jobId: Joi.string().uuid().allow(null),
     sendWeeklySurvey: Joi.boolean().default(true),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null),
@@ -432,7 +432,7 @@ async function fullyUpdateResourceBooking (currentUser, id, data) {
   if (data.jobId) {
     await helper.ensureJobById(data.jobId) // ensure job exists
   }
-  await helper.ensureTopcoderUserIdExists(data.tcUserId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(data.userId) // ensure user exists
   return updateResourceBooking(currentUser, id, data)
 }
 
@@ -441,7 +441,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    tcUserId: Joi.number().integer().required(),
+    userId: Joi.string().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
     endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
@@ -553,7 +553,7 @@ async function searchResourceBookings (currentUser, criteria, options) {
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
   // Apply ResourceBooking filters
-  _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'tcUserId']), (value, key) => {
+  _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId']), (value, key) => {
     filter[Op.and].push({ [key]: value })
   })
   if (!_.isUndefined(criteria.billingAccountId)) {
@@ -693,7 +693,7 @@ searchResourceBookings.schema = Joi.object().keys({
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
     jobIds: Joi.array().items(Joi.string().uuid()),
-    tcUserId: Joi.number().integer(),
+    userId: Joi.string(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),

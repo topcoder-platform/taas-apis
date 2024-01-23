@@ -90,13 +90,7 @@ module.exports = (sequelize) => {
       },
       userId: {
         field: 'user_id',
-        type: Sequelize.UUID,
-        allowNull: true
-      },
-      tcUserId: {
-        field: 'tc_user_id',
-        type: Sequelize.INTEGER,
-        allowNull: true // temporarly mark it nullable until historical data is processed
+        type: Sequelize.TEXT
       },
       jobId: {
         field: 'job_id',
