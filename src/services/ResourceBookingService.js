@@ -312,12 +312,15 @@ async function createResourceBooking (currentUser, resourceBooking) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      await ResourceBooking.create(resourceBooking, { transaction: t })
+      entity = (await ResourceBooking.create(resourceBooking, { transaction: t })).toJSON()
     })
   } catch (e) {
-    logger.error(`Error encountered while creating resource booking: ${JSON.stringify(e)}`)
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'resourcebooking.create')
+    }
     throw e
   }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_CREATE_TOPIC, entity)
   return entity
 }
 
@@ -372,12 +375,15 @@ async function updateResourceBooking (currentUser, id, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      await resourceBooking.update(data, { transaction: t })
+      entity = (await resourceBooking.update(data, { transaction: t })).toJSON()
     })
   } catch (e) {
-    logger.error(`Error encountered while updating resource booking: ${JSON.stringify(e)}`)
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'resourcebooking.update')
+    }
     throw e
   }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_UPDATE_TOPIC, entity, { oldValue: oldValue })
   return entity
 }
 
@@ -474,9 +480,10 @@ async function deleteResourceBooking (currentUser, id) {
       await resourceBooking.destroy({ transaction: t })
     })
   } catch (e) {
-    logger.error(`Error encountered while deleting resource booking: ${JSON.stringify(e)}`)
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'resourcebooking.delete')
     throw e
   }
+  await helper.postEvent(config.TAAS_RESOURCE_BOOKING_DELETE_TOPIC, { id })
 }
 
 deleteResourceBooking.schema = Joi.object().keys({

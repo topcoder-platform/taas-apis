@@ -101,12 +101,15 @@ async function createJobCandidate (currentUser, jobCandidate) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      await JobCandidate.create(jobCandidate, { transaction: t })
+     entity = (await JobCandidate.create(jobCandidate, { transaction: t })).toJSON()
     })
   } catch (e) {
-    logger.error(`Error encountered in creating job candidate: ${JSON.stringify(e)}`)
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.create')
+    }
     throw e
   }
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_CREATE_TOPIC, entity)
   return entity
 }
 
@@ -145,10 +148,12 @@ async function updateJobCandidate (currentUser, id, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      await jobCandidate.update(data, { transaction: t })
+      entity = (await jobCandidate.update(data, { transaction: t })).toJSON()
     })
   } catch (e) {
-    logger.error(`Error encountered in updating job candidate with id ${id}: ${JSON.stringify(e)}`)
+    if (entity) {
+      helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'jobcandidate.update')
+    }
     throw e
   }
   await helper.postEvent(config.TAAS_JOB_CANDIDATE_UPDATE_TOPIC, entity, { oldValue: oldValue })
@@ -227,9 +232,10 @@ async function deleteJobCandidate (currentUser, id) {
       await jobCandidate.destroy({ transaction: t })
     })
   } catch (e) {
-    logger.error(`Error encountered in deleting job candidate with id ${id}: ${JSON.stringify(e)}`)
+    helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'jobcandidate.delete')
     throw e
   }
+  await helper.postEvent(config.TAAS_JOB_CANDIDATE_DELETE_TOPIC, { id })
 }
 
 deleteJobCandidate.schema = Joi.object().keys({
