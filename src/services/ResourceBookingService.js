@@ -13,6 +13,7 @@ const errors = require('../common/errors')
 const models = require('../models')
 const constants = require('../../app-constants')
 const moment = require('moment')
+const config = require('config')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod

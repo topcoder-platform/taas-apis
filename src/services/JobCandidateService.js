@@ -101,7 +101,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-     entity = (await JobCandidate.create(jobCandidate, { transaction: t })).toJSON()
+      entity = (await JobCandidate.create(jobCandidate, { transaction: t })).toJSON()
     })
   } catch (e) {
     if (entity) {
