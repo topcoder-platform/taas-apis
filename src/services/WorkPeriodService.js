@@ -12,7 +12,6 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const constants = require('../../app-constants')
-const moment = require('moment')
 
 const WorkPeriod = models.WorkPeriod
 const sequelize = models.sequelize
@@ -366,68 +365,6 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-      _source_includes: 'workPeriods',
-      _source_excludes: queryOpt.excludeES,
-      body: {
-        query: {
-          nested: {
-            path: 'workPeriods',
-            query: { bool: { must: [] } }
-          }
-        },
-        size: 10000
-        // We use a very large number for size, because we can't paginate nested documents
-        // and in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
-        // the number is limited by `index.max_result_window`, its default value is 10000, see
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
-      }
-    }
-    // change the date format to match with database model
-    if (criteria.startDate) {
-      criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
-    }
-    if (criteria.endDate) {
-      criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
-    }
-    // Apply filters
-    _.each(_.pick(criteria, ['resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate']), (value, key) => {
-      esQuery.body.query.nested.query.bool.must.push({
-        term: {
-          [`workPeriods.${key}`]: {
-            value
-          }
-        }
-      })
-    })
-    if (criteria.paymentStatus) {
-      esQuery.body.query.nested.query.bool.must.push({
-        terms: {
-          'workPeriods.paymentStatus': criteria.paymentStatus
-        }
-      })
-    }
-    // if criteria contains resourceBookingIds, filter resourceBookingId with this value
-    if (criteria.resourceBookingIds) {
-      esQuery.body.query.nested.query.bool.filter = [{
-        terms: {
-          'workPeriods.resourceBookingId': criteria.resourceBookingIds
-        }
-      }]
-    }
-    logger.debug({ component: 'WorkPeriodService', context: 'searchWorkPeriods', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    return {
-      total: 0,
-      page,
-      perPage,
-      result: []
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'WorkPeriodService', context: 'searchWorkPeriods' })
   }
   logger.info({ component: 'WorkPeriodService', context: 'searchWorkPeriods', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }

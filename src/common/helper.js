@@ -7,7 +7,6 @@ const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
 const Bottleneck = require('bottleneck')
 const URI = require('urijs')
-const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
@@ -43,8 +42,6 @@ const localLogger = {
       message: message.message
     })
 }
-
-AWS.config.region = config.esConfig.AWS_REGION
 
 const m2mAuth = require('tc-core-library-js').auth.m2m
 
@@ -93,156 +90,6 @@ function getBusApiClient () {
     ])
   )
   return busApiClient
-}
-
-// The es index property mapping
-const esIndexPropertyMapping = {}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
-  projectId: { type: 'integer' },
-  externalId: { type: 'keyword' },
-  description: { type: 'text' },
-  title: { type: 'text' },
-  startDate: { type: 'date', format: 'yyyy-MM-dd' },
-  duration: { type: 'integer' },
-  numPositions: { type: 'integer' },
-  resourceType: { type: 'keyword' },
-  rateType: { type: 'keyword' },
-  workload: { type: 'keyword' },
-  skills: { type: 'keyword' },
-  status: { type: 'keyword' },
-  isApplicationPageActive: { type: 'boolean' },
-  minSalary: { type: 'integer' },
-  maxSalary: { type: 'integer' },
-  hoursPerWeek: { type: 'integer' },
-  jobLocation: { type: 'keyword' },
-  jobTimezone: { type: 'keyword' },
-  currency: { type: 'keyword' },
-  roleIds: { type: 'keyword' },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
-  jobId: { type: 'keyword' },
-  userId: { type: 'keyword' },
-  status: { type: 'keyword' },
-  viewedByCustomer: { type: 'boolean' },
-  externalId: { type: 'keyword' },
-  resume: { type: 'text' },
-  remark: { type: 'keyword' },
-  interviews: {
-    type: 'nested',
-    properties: {
-      id: { type: 'keyword' },
-      nylasPageId: { type: 'keyword' },
-      nylasPageSlug: { type: 'keyword' },
-      nylasCalendarId: { type: 'keyword' },
-      hostTimezone: { type: 'keyword' },
-      guestTimezone: { type: 'keyword' },
-      availableTime: {
-        type: 'nested',
-        properties: {
-          days: { type: 'keyword' },
-          end: { type: 'date', format: 'HH:mm' },
-          start: { type: 'date', format: 'HH:mm' }
-        }
-      },
-      hostUserId: { type: 'keyword' },
-      expireTimestamp: { type: 'date' },
-      jobCandidateId: { type: 'keyword' },
-      duration: { type: 'integer' },
-      startTimestamp: { type: 'date' },
-      endTimestamp: { type: 'date' },
-      round: { type: 'integer' },
-      status: { type: 'keyword' },
-      createdAt: { type: 'date' },
-      createdBy: { type: 'keyword' },
-      updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' },
-      deletedAt: { type: 'date' }
-    }
-  },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
-  projectId: { type: 'integer' },
-  userId: { type: 'keyword' },
-  jobId: { type: 'keyword' },
-  status: { type: 'keyword' },
-  startDate: { type: 'date', format: 'yyyy-MM-dd' },
-  endDate: { type: 'date', format: 'yyyy-MM-dd' },
-  memberRate: { type: 'float' },
-  customerRate: { type: 'float' },
-  sendWeeklySurvey: { type: 'boolean' },
-  rateType: { type: 'keyword' },
-  billingAccountId: { type: 'integer', null_value: 0 },
-  workPeriods: {
-    type: 'nested',
-    properties: {
-      id: { type: 'keyword' },
-      resourceBookingId: { type: 'keyword' },
-      userHandle: {
-        type: 'keyword',
-        normalizer: 'lowercaseNormalizer'
-      },
-      projectId: { type: 'integer' },
-      userId: { type: 'keyword' },
-      sentSurvey: { type: 'boolean' },
-      sentSurveyError: {
-        type: 'nested',
-        properties: {
-          errorCode: { type: 'integer' },
-          errorMessage: { type: 'keyword' }
-        }
-      },
-      startDate: { type: 'date', format: 'yyyy-MM-dd' },
-      endDate: { type: 'date', format: 'yyyy-MM-dd' },
-      daysWorked: { type: 'integer' },
-      daysPaid: { type: 'integer' },
-      paymentTotal: { type: 'float' },
-      paymentStatus: { type: 'keyword' },
-      payments: {
-        type: 'nested',
-        properties: {
-          id: { type: 'keyword' },
-          workPeriodId: { type: 'keyword' },
-          challengeId: { type: 'keyword' },
-          memberRate: { type: 'float' },
-          customerRate: { type: 'float' },
-          days: { type: 'integer' },
-          amount: { type: 'float' },
-          status: { type: 'keyword' },
-          statusDetails: {
-            type: 'nested',
-            properties: {
-              errorMessage: { type: 'text' },
-              errorCode: { type: 'integer' },
-              retry: { type: 'integer' },
-              step: { type: 'keyword' },
-              challengeId: { type: 'keyword' }
-            }
-          },
-          billingAccountId: { type: 'integer' },
-          createdAt: { type: 'date' },
-          createdBy: { type: 'keyword' },
-          updatedAt: { type: 'date' },
-          updatedBy: { type: 'keyword' }
-        }
-      },
-      createdAt: { type: 'date' },
-      createdBy: { type: 'keyword' },
-      updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' }
-    }
-  },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
 }
 
 /**

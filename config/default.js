@@ -58,37 +58,6 @@ module.exports = {
   // the default path for importing and exporting data
   DEFAULT_DATA_FILE_PATH: './data/demo-data.json',
 
-  esConfig: {
-    // the elasticsearch host
-    HOST: process.env.ES_HOST || 'http://localhost:9200',
-
-    ELASTICCLOUD: {
-      // The elastic cloud id, if your elasticsearch instance is hosted on elastic cloud. DO NOT provide a value for ES_HOST if you are using this
-      id: process.env.ELASTICCLOUD_ID,
-      // The elastic cloud username for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
-      username: process.env.ELASTICCLOUD_USERNAME,
-      // The elastic cloud password for basic authentication. Provide this only if your elasticsearch instance is hosted on elastic cloud
-      password: process.env.ELASTICCLOUD_PASSWORD
-    },
-
-    // The Amazon region to use when using AWS Elasticsearch service
-    AWS_REGION: process.env.AWS_REGION || 'us-east-1', // AWS Region to be used if we use AWS ES
-
-    // the job index
-    ES_INDEX_JOB: process.env.ES_INDEX_JOB || 'job',
-    // the job candidate index
-    ES_INDEX_JOB_CANDIDATE: process.env.ES_INDEX_JOB_CANDIDATE || 'job_candidate',
-    // the resource booking index
-    ES_INDEX_RESOURCE_BOOKING: process.env.ES_INDEX_RESOURCE_BOOKING || 'resource_booking',
-    // the userMeetingSettings index
-    ES_INDEX_USER_MEETING_SETTINGS: process.env.ES_INDEX_USER_MEETING_SETTINGS || 'user_meeting_settings',
-
-    // the max bulk size in MB for ES indexing
-    MAX_BULK_REQUEST_SIZE_MB: process.env.MAX_BULK_REQUEST_SIZE_MB || 20,
-    // the max number of documents per bulk for ES indexing
-    MAX_BULK_NUM_DOCUMENTS: process.env.MAX_BULK_NUM_DOCUMENTS || 100
-  },
-
   // Topcoder Bus API URL
   BUSAPI_URL: process.env.BUSAPI_URL || 'https://api.topcoder-dev.com/v5',
   // The error topic at which bus api will publish any errors
