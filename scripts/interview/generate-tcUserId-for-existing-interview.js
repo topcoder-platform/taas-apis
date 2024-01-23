@@ -58,7 +58,7 @@ const generateTcUserIdForExistingInterviews = async () => {
       const createdByHandle = ubahnUUIDToHandleMap[interview.createdBy]
       const updatedByHandle = ubahnUUIDToHandleMap[interview.updatedBy]
 
-      let tcCreatedById, tcUpdatedById
+      let tcCreatedById = null, tcUpdatedById = null
 
       // get the createdBy id
       if (!_.isUndefined(createdByHandle)) {
@@ -128,7 +128,8 @@ const generateTcUserIdForExistingInterviews = async () => {
     }
 
     // Run the query to update record_bookings record in batch
-    await models.sequelize.query(updateBatchTcUserIdsSQL)
+    logger.info(`update statements: ${updateBatchTcUserIdsSQL}`)
+    await models.sequelize.query(updateBatchTcUserIdsSQL, Sequelize.QueryTypes.UPDATE)
   }
 }
 
