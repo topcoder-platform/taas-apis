@@ -12,10 +12,6 @@ const config = require('config')
 const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
 const request = require('superagent')
-const elasticsearch = require('@elastic/elasticsearch')
-const {
-  ResponseError: ESResponseError
-} = require('@elastic/elasticsearch/lib/errors')
 const errors = require('../common/errors')
 const logger = require('./logger')
 const models = require('../models')
@@ -98,9 +94,6 @@ function getBusApiClient () {
   )
   return busApiClient
 }
-
-// ES Client mapping
-const esClients = {}
 
 // The es index property mapping
 const esIndexPropertyMapping = {}
@@ -295,221 +288,6 @@ async function sleep (milliseconds) {
 }
 
 /**
- * Create index in elasticsearch
- * @param {Object} index the index name
- * @param {Object} logger the logger object
- * @param {Object} esClient the elasticsearch client (optional, will create if not given)
- */
-async function createIndex (index, logger, esClient = null) {
-  if (!esClient) {
-    esClient = getESClient()
-  }
-
-  await esClient.indices.create({ index })
-  await esClient.indices.close({ index })
-  await esClient.indices.putSettings({
-    index: index,
-    body: {
-      settings: {
-        analysis: {
-          normalizer: {
-            lowercaseNormalizer: {
-              filter: ['lowercase']
-            }
-          }
-        }
-      }
-    }
-  })
-  await esClient.indices.open({ index })
-  await esClient.indices.putMapping({
-    index,
-    body: {
-      properties: esIndexPropertyMapping[index]
-    }
-  })
-  logger.info({
-    component: 'createIndex',
-    message: `ES Index ${index} creation succeeded!`
-  })
-}
-
-/**
- * Delete index in elasticsearch
- * @param {Object} index the index name
- * @param {Object} logger the logger object
- * @param {Object} esClient the elasticsearch client (optional, will create if not given)
- */
-async function deleteIndex (index, logger, esClient = null) {
-  if (!esClient) {
-    esClient = getESClient()
-  }
-
-  await esClient.indices.delete({ index })
-  logger.info({
-    component: 'deleteIndex',
-    message: `ES Index ${index} deletion succeeded!`
-  })
-}
-
-/**
- * Split data into bulks
- * @param {Array} data the array of data to split
- */
-function getBulksFromDocuments (data) {
-  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6
-  const bulks = []
-  let documentIndex = 0
-  let currentBulkSize = 0
-  let currentBulk = []
-
-  while (true) {
-    // break loop when parsed all documents
-    if (documentIndex >= data.length) {
-      bulks.push(currentBulk)
-      break
-    }
-
-    // check if current document size is greater than the max bulk size, if so, throw error
-    const currentDocumentSize = Buffer.byteLength(
-      JSON.stringify(data[documentIndex]),
-      'utf-8'
-    )
-    if (maxBytes < currentDocumentSize) {
-      throw new Error(
-        `Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`
-      )
-    }
-
-    if (
-      currentBulkSize + currentDocumentSize > maxBytes ||
-      currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')
-    ) {
-      // if adding the current document goes over the max bulk size OR goes over max number of docs
-      // then push the current bulk to bulks array and reset the current bulk
-      bulks.push(currentBulk)
-      currentBulk = []
-      currentBulkSize = 0
-    } else {
-      // otherwise, add document to current bulk
-      currentBulk.push(data[documentIndex])
-      currentBulkSize += currentDocumentSize
-      documentIndex++
-    }
-  }
-  return bulks
-}
-
-/**
- * Index records in bulk
- * @param {Object | String} modelOpts the model name in db, or model options
- * @param {Object} indexName the index name
- * @param {Object} logger the logger object
- */
-async function indexBulkDataToES (modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
-
-  logger.info({
-    component: 'indexBulkDataToES',
-    message: `Reindexing of ${modelName}s started!`
-  })
-
-  const esClient = getESClient()
-
-  // clear index
-  const indexExistsRes = await esClient.indices.exists({ index: indexName })
-  if (indexExistsRes.statusCode !== 404) {
-    await deleteIndex(indexName, logger, esClient)
-  }
-  await createIndex(indexName, logger, esClient)
-
-  // get data from db
-  logger.info({
-    component: 'indexBulkDataToES',
-    message: 'Getting data from database'
-  })
-  const model = models[modelName]
-  const data = await model.findAll({ include })
-  const rawObjects = _.map(data, (r) => r.toJSON())
-  if (_.isEmpty(rawObjects)) {
-    logger.info({
-      component: 'indexBulkDataToES',
-      message: `No data in database for ${modelName}`
-    })
-    return
-  }
-  const bulks = getBulksFromDocuments(rawObjects)
-
-  const startTime = Date.now()
-  let doneCount = 0
-  for (const bulk of bulks) {
-    // send bulk to esclient
-    const body = bulk.flatMap((doc) => [
-      { index: { _index: indexName, _id: doc.id } },
-      doc
-    ])
-    await esClient.bulk({ refresh: true, body })
-    doneCount += bulk.length
-
-    // log metrics
-    const timeSpent = Date.now() - startTime
-    const avgTimePerDocument = timeSpent / doneCount
-    const estimatedLength = avgTimePerDocument * data.length
-    const timeLeft = startTime + estimatedLength - Date.now()
-    logger.info({
-      component: 'indexBulkDataToES',
-      message: `Processed ${doneCount} of ${
-        data.length
-      } documents, average time per document ${formatTime(
-        avgTimePerDocument
-      )}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(
-        timeLeft
-      )}`
-    })
-  }
-}
-
-/**
- * Index job by id
- * @param {Object | String} modelOpts the model name in db, or model options
- * @param {Object} indexName the index name
- * @param {string} id the job id
- * @param {Object} logger the logger object
- */
-async function indexDataToEsById (id, modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
-
-  logger.info({
-    component: 'indexDataToEsById',
-    message: `Reindexing of ${modelName} with id ${id} started!`
-  })
-  const esClient = getESClient()
-
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Getting data from database'
-  })
-  const model = models[modelName]
-
-  const data = await model.findById(id, include)
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Indexing data into Elasticsearch'
-  })
-  await esClient.index({
-    index: indexName,
-    id: id,
-    body: data.dataValues
-  })
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Indexing complete!'
-  })
-}
-
-/**
  * Import data from a json file into the database
  * @param {string} pathToFile the path to the json file
  * @param {Array} dataModels the data models to import
@@ -593,43 +371,6 @@ async function importData (pathToFile, dataModels, logger) {
       throw error
     }
   }
-
-  // after importing, index data
-  const jobCandidateModelOpts = {
-    modelName: 'JobCandidate',
-    include: [
-      {
-        model: models.Interview,
-        as: 'interviews'
-      }
-    ]
-  }
-  const resourceBookingModelOpts = {
-    modelName: 'ResourceBooking',
-    include: [
-      {
-        model: models.WorkPeriod,
-        as: 'workPeriods',
-        include: [
-          {
-            model: models.WorkPeriodPayment,
-            as: 'payments'
-          }
-        ]
-      }
-    ]
-  }
-  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
-  await indexBulkDataToES(
-    jobCandidateModelOpts,
-    config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    logger
-  )
-  await indexBulkDataToES(
-    resourceBookingModelOpts,
-    config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    logger
-  )
 }
 
 /**
@@ -663,49 +404,6 @@ async function exportData (pathToFile, dataModels, logger) {
     component: 'exportData',
     message: 'End Saving data to file....'
   })
-}
-
-/**
- * Format a time in milliseconds into a human readable format
- * @param {Date} milliseconds the number of milliseconds
- */
-function formatTime (millisec) {
-  const ms = Math.floor(millisec % 1000)
-  const secs = Math.floor((millisec / 1000) % 60)
-  const mins = Math.floor((millisec / (1000 * 60)) % 60)
-  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24)
-  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7)
-  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4)
-  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12)
-  const yrs = Math.floor(millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12))
-
-  let formattedTime = '0 milliseconds'
-  if (ms > 0) {
-    formattedTime = `${ms} milliseconds`
-  }
-  if (secs > 0) {
-    formattedTime = `${secs} seconds ${formattedTime}`
-  }
-  if (mins > 0) {
-    formattedTime = `${mins} minutes ${formattedTime}`
-  }
-  if (hrs > 0) {
-    formattedTime = `${hrs} hours ${formattedTime}`
-  }
-  if (days > 0) {
-    formattedTime = `${days} days ${formattedTime}`
-  }
-  if (weeks > 0) {
-    formattedTime = `${weeks} weeks ${formattedTime}`
-  }
-  if (mnths > 0) {
-    formattedTime = `${mnths} months ${formattedTime}`
-  }
-  if (yrs > 0) {
-    formattedTime = `${yrs} years ${formattedTime}`
-  }
-
-  return formattedTime.trim()
 }
 
 /**
@@ -818,35 +516,6 @@ function setResHeaders (req, res, result) {
     }
     res.set('Link', link)
   }
-}
-
-/**
- * Get ES Client
- * @return {Object} Elastic Host Client Instance
- */
-function getESClient () {
-  if (esClients.client) {
-    return esClients.client
-  }
-  const host = config.esConfig.HOST
-  const cloudId = config.esConfig.ELASTICCLOUD.id
-  if (cloudId) {
-    // Elastic Cloud configuration
-    esClients.client = new elasticsearch.Client({
-      cloud: {
-        id: cloudId
-      },
-      auth: {
-        username: config.esConfig.ELASTICCLOUD.username,
-        password: config.esConfig.ELASTICCLOUD.password
-      }
-    })
-  } else {
-    esClients.client = new elasticsearch.Client({
-      node: host
-    })
-  }
-  return esClients.client
 }
 
 /*
@@ -985,19 +654,6 @@ async function postErrorEvent (topic, payload, action) {
   }
   logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message, null, 2)}`)
   await client.postEvent(message)
-}
-
-/**
- * Test if an error is document missing exception
- *
- * @param {Object} err the err
- * @returns {Boolean} the result
- */
-function isDocumentMissingException (err) {
-  if (err.statusCode === 404 && err instanceof ESResponseError) {
-    return true
-  }
-  return false
 }
 
 /**
@@ -2183,18 +1839,13 @@ module.exports = {
   getParamFromCliArgs,
   promptUser,
   sleep,
-  createIndex,
-  deleteIndex,
-  indexBulkDataToES,
-  indexDataToEsById,
   importData,
   exportData,
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
-  getESClient,
   getUserId: async (userId) => {
-    return userId
+    return toString(userId)
   },
   getUserByExternalId,
   getM2MToken,
@@ -2202,7 +1853,6 @@ module.exports = {
   postEvent,
   postErrorEvent,
   getBusApiClient,
-  isDocumentMissingException,
   getProjects,
   getUserById,
   getMembers,
