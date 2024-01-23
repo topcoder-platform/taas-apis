@@ -14,7 +14,7 @@ const helper = require('../../src/common/helper')
  */
 const getUserUbahnUUIDToHandleMap = async (connection, uniqueUUIDs) => {
   // make sure we are working with unique array of UUIDs
-  const _uniqueUUIDs = _.uniq(uniqueUUIDs)
+  const _uniqueUUIDs = _.compact(_.uniq(uniqueUUIDs))
 
   const commaSeparatedUbahnUUIDs = _.join(_.map(_uniqueUUIDs, u => `'${u}'`), ',')
 

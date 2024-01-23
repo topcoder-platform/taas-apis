@@ -28,6 +28,8 @@ const updateRolesWithTcUserIds = async () => {
     distinct: true
   })
 
+  console.log(`Found ${recordsToProcess.length} records to process`)
+
   // get list of unique user ids from memberId, created by and updated by fields
   const userIds = _.uniq(_.concat(_.map(recordsToProcess, 'memberId'), _.map(recordsToProcess, 'createdBy'), _.map(recordsToProcess, 'updatedBy')))
 
