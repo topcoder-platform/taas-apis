@@ -78,6 +78,7 @@ workflows:
             branches:
               only:
                 - dev
+                - feature/tsjr-313-generate-tcUserId-for-existing-job_candidates
 
       # Development builds are executed on "develop" branch only.
       - "build-qa":
