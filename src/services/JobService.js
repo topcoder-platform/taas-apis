@@ -12,47 +12,9 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/JobProcessor')
 
 const sequelize = models.sequelize
 const Job = models.Job
-const esClient = helper.getESClient()
-
-/**
- * populate candidates for a job.
- *
- * @param {String} jobId the job id
- * @returns {Array} the list of candidates
- */
-async function _getJobCandidates (jobId) {
-  const { body } = await esClient.search({
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    body: {
-      query: {
-        term: {
-          jobId: {
-            value: jobId
-          }
-        }
-      },
-      size: 10000
-    }
-  })
-
-  if (body.hits.total.value === 0) {
-    return []
-  }
-  const candidates = _.map(body.hits.hits, (hit) => {
-    const candidateRecord = _.cloneDeep(hit._source)
-    candidateRecord.id = hit._id
-    return candidateRecord
-  })
-  return candidates
-}
 
 /**
  * Validate if all skills exist.
@@ -123,32 +85,6 @@ async function _checkUserPermissionForGetJob (currentUser, projectId) {
  * @returns {Object} the job
  */
 async function getJob (currentUser, id, fromDb = false) {
-  if (!fromDb) {
-    try {
-      const job = await esClient.get({
-        index: config.esConfig.ES_INDEX_JOB,
-        id
-      })
-
-      await _checkUserPermissionForGetJob(currentUser, job.body._source.projectId) // check user permission
-
-      const jobId = job.body._id
-      const jobRecord = { id: jobId, ...job.body._source }
-      const candidates = await _getJobCandidates(jobId)
-      if (candidates.length) {
-        jobRecord.candidates = candidates
-      }
-      return jobRecord
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "Job" not found`)
-      }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'JobService', context: 'getJob' })
-    }
-  }
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
 
@@ -196,9 +132,7 @@ async function createJob (currentUser, job, onTeamCreating) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const created = await Job.create(job, { transaction: t })
-      entity = created.toJSON()
-      await processCreate(entity)
+      await Job.create(job, { transaction: t })
       await helper.registerSkills(job)
     })
   } catch (e) {
@@ -292,9 +226,7 @@ async function updateJob (currentUser, id, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const updated = await job.update(data, { transaction: t })
-      entity = updated.toJSON()
-      await processUpdate(entity)
+      await job.update(data, { transaction: t })
       await helper.registerSkills(job)
     })
   } catch (e) {
@@ -415,7 +347,6 @@ async function deleteJob (currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await job.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'job.delete')
@@ -463,167 +394,6 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_JOB'),
-      body: {
-        query: {
-          bool: {
-            must: [],
-            filter: []
-          }
-        },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort
-      }
-    }
-
-    _.each(_.pick(criteria, [
-      'isApplicationPageActive',
-      'projectId',
-      'externalId',
-      'description',
-      'startDate',
-      'resourceType',
-      'skill',
-      'role',
-      'rateType',
-      'workload',
-      'title',
-      'status',
-      'minSalary',
-      'maxSalary',
-      'jobLocation',
-      'specialJob',
-      'featured',
-      'rcrmStatus'
-    ]), (value, key) => {
-      let must
-      if (key === 'description' || key === 'title' || key === 'rcrmStatus') {
-        must = {
-          match: {
-            [key]: {
-              query: value
-            }
-          }
-        }
-      } else if (key === 'skill' || key === 'role') {
-        must = {
-          terms: {
-            [`${key}s`]: [value]
-          }
-        }
-      } else if (key === 'jobLocation' && value && value.length > 0) {
-        must = {
-          wildcard: {
-            [key]: `*${value}*`
-          }
-        }
-      } else if (key === 'minSalary' || key === 'maxSalary') {
-        const salaryOp = key === 'minSalary' ? 'gte' : 'lte'
-        must = {
-          range: {
-            [key]: {
-              [salaryOp]: value
-            }
-          }
-        }
-      } else if (key === 'specialJob') {
-        if (value === true) {
-          must = {
-            bool: {
-              should: [
-                {
-                  term: {
-                    featured: value
-                  }
-                },
-                {
-                  term: {
-                    showInHotList: value
-                  }
-                }
-              ]
-            }
-          }
-        } else {
-          must = {
-            bool: {
-              must: [
-                {
-                  term: {
-                    featured: value
-                  }
-                },
-                {
-                  term: {
-                    showInHotList: value
-                  }
-                }
-              ]
-            }
-          }
-        }
-      } else {
-        must = {
-          term: {
-            [key]: {
-              value
-            }
-          }
-        }
-      }
-      esQuery.body.query.bool.must.push(must)
-    })
-    // If criteria contains projectIds, filter projectId with this value
-    if (criteria.projectIds) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          projectId: criteria.projectIds
-        }
-      })
-    }
-    // if criteria contains jobIds, filter jobIds with this value
-    if (criteria.jobIds && criteria.jobIds.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          _id: criteria.jobIds
-        }
-      })
-    }
-    // if critera contains bodySkills, filter skills with this value
-    if (criteria.bodySkills && criteria.bodySkills.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          skills: criteria.bodySkills
-        }
-      })
-    }
-    logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-    const result = await Promise.all(_.map(body.hits.hits, async (hit) => {
-      const jobRecord = _.cloneDeep(hit._source)
-      jobRecord.id = hit._id
-      const candidates = await _getJobCandidates(jobRecord.id)
-      if (candidates.length) {
-        jobRecord.candidates = candidates
-      }
-      return jobRecord
-    }))
-
-    return {
-      total: body.hits.total.value,
-      page,
-      perPage,
-      result
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
