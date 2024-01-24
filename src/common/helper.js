@@ -1692,7 +1692,7 @@ module.exports = {
   autoWrapExpress,
   setResHeaders,
   getUserId: async (userId) => {
-    return toString(userId)
+    return userId
   },
   getUserByExternalId,
   getM2MToken,
