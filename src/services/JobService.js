@@ -132,7 +132,7 @@ async function createJob (currentUser, job, onTeamCreating) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      await Job.create(job, { transaction: t })
+      entity = (await Job.create(job, { transaction: t })).toJSON()
       await helper.registerSkills(job)
     })
   } catch (e) {
