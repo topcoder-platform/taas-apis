@@ -136,6 +136,8 @@ async function createJob (currentUser, job, onTeamCreating) {
       await helper.registerSkills(job)
     })
   } catch (e) {
+    logger.error(`Error occurred while creating job, rolling back, error: ${e.message || JSON.stringify(e)}`)
+
     if (entity) {
       helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'job.create')
     }
