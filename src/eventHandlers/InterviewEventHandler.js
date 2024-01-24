@@ -12,7 +12,7 @@ const helper = require('../common/helper')
 const Constants = require('../../app-constants')
 const notificationsSchedulerService = require('../services/NotificationsSchedulerService')
 const Interview = models.Interview
-const { updateZoomMeeting, cancelZoomMeeting } = require('../services/ZoomService')
+const { generateZoomMeetingLink, updateZoomMeeting, cancelZoomMeeting } = require('../services/ZoomService')
 /**
  * Send interview invitaion notifications
  * @param {*} interview the requested interview
@@ -126,6 +126,9 @@ async function sendInterviewScheduledNotifications (payload) {
     // send host email
     const data = await notificationsSchedulerService.getDataForInterview(interviewEntity)
     if (!data) { return }
+
+    const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration)
+    await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
