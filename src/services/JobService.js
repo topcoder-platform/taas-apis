@@ -267,7 +267,7 @@ async function updateJob (currentUser, id, data) {
     logger.debug({ component: 'JobService', context: 'updateJob update transaction', message: `Data: ${JSON.stringify(data)}` })
 
     await sequelize.transaction(async (t) => {
-      await job.update(data, { transaction: t })
+      entity = (await job.update(data, { transaction: t })).toJSON()
       await helper.registerSkills(job)
     })
   } catch (e) {

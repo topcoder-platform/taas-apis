@@ -260,6 +260,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       }
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
+      entity = created.toJSON()
 
       // update jobCandidate.status to Interview
       const [, affectedRows] = await models.JobCandidate.update(
@@ -353,7 +354,7 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
         })
       }
 
-      await interview.update(data, { transaction: t })
+      entity = (await interview.update(data, { transaction: t })).toJSON()
     })
   } catch (err) {
     if (entity) {
@@ -587,6 +588,24 @@ async function updateCompletedInterviews () {
       // eslint-disable-next-line no-unused-vars
       let updatedRows
       [affectedCount, updatedRows] = updated
+
+      // post event if there are affected/updated interviews
+      if (affectedCount > 0) {
+        // payload format:
+        // {
+        //   jobCandidateId: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
+        //   jobCandidateId2: { interviewId: { affectedFields }, interviewId2: { affectedFields }, ... },
+        //   ...
+        // }
+        const bulkUpdatePayload = {}
+        // construct payload
+        _.forEach(updatedRows, row => {
+          const interview = row.toJSON()
+          const affectedFields = _.pick(interview, ['status', 'updatedBy', 'updatedAt'])
+          _.set(bulkUpdatePayload, [interview.jobCandidateId, interview.id], affectedFields)
+        })
+        entity = bulkUpdatePayload
+      }
     })
   } catch (e) {
     if (entity) {
