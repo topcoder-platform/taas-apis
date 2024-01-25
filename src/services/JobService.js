@@ -151,14 +151,19 @@ async function createJob (currentUser, job, onTeamCreating) {
   try {
     await sequelize.transaction(async (t) => {
       entity = (await Job.create(job, { transaction: t })).toJSON()
-      await helper.registerSkills(job)
     })
+    await helper.registerSkills(job)
   } catch (e) {
     logger.error(`Error occurred while creating job, rolling back, error: ${e.message}`)
     logger.debug(`Job object dump: ${JSON.stringify(job)}`)
 
     if (entity) {
       helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'job.create')
+      await Job.destroy({
+        where: {
+          id: entity.id
+        }
+      })
     }
     throw e
   }
