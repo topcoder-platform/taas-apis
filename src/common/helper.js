@@ -499,7 +499,7 @@ async function postErrorEvent (topic, payload, action) {
     'mime-type': 'application/json',
     payload
   }
-  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message, null, 2)}`)
+  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message)}`)
   await client.postEvent(message)
 }
 
