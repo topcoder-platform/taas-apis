@@ -739,7 +739,10 @@ deleteMember.schema = Joi.object()
  * @returns {Object} the user data for current user
  */
 async function getMe (currentUser) {
-  return helper.getUserByExternalId(currentUser.userId)
+  return {
+    id: currentUser.userId,
+    handle: currentUser.handle
+  }
 }
 
 getMe.schema = Joi.object()

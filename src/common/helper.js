@@ -407,54 +407,6 @@ function encodeQueryString (queryObj, nesting = '') {
 }
 
 /**
- * Function to list users by external id.
- * @param {Integer} externalId the legacy user id
- * @returns {Array} the users found
- */
-async function listUsersByExternalId (externalId) {
-  // return empty list if externalId is null or undefined
-  if (!!externalId !== true) {
-    return []
-  }
-
-  const token = await getM2MUbahnToken()
-  const q = {
-    enrich: true,
-    externalProfile: {
-      organizationId: config.ORG_ID,
-      externalId
-    }
-  }
-  const url = `${config.TC_API}/users?${encodeQueryString(q)}`
-  const res = await request
-    .get(url)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'listUserByExternalId',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-
-  return res.body
-}
-
-/**
- * Function to get user by external id.
- * @param {Integer} externalId the legacy user id
- * @returns {Object} the user
- */
-async function getUserByExternalId (externalId) {
-  const users = await listUsersByExternalId(externalId)
-  if (_.isEmpty(users)) {
-    throw new errors.NotFoundError(
-      `externalId: ${externalId} "user" not found`
-    )
-  }
-  return users[0]
-}
-
-/**
  * Send Kafka event message
  * @params {String} topic the topic name
  * @params {Object} payload the payload
@@ -1117,7 +1069,7 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
 
 /**
  * Gets requested attribute value from user's attributes array.
- * @param {Object} user The enriched (i.e. includes attributes) user object from users API. (check getUserById, getUserByExternalId functions)
+ * @param {Object} user The enriched (i.e. includes attributes) user object from users API. (check getUserById functions)
  * @param {String} attributeName Requested attribute name, e.g. "email"
  * @returns attribute value
  */
@@ -1727,7 +1679,6 @@ module.exports = {
   getUserId: async (userId) => {
     return userId
   },
-  getUserByExternalId,
   getM2MToken,
   getM2MUbahnToken,
   postEvent,
