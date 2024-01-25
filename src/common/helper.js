@@ -791,6 +791,39 @@ async function getSkillById (skillId) {
 }
 
 /**
+ * Function to get skills by their exact name, via the standarized skills API
+ * Used in the job service to validate skill names passed in when creating / updating
+ * jobs
+ * @param {Array<String>} names - the skill name
+ * @returns the request result
+ */
+async function getSkillsByExactNames (names) {
+  if (!names || !_.isArray(names) || !names.length) {
+    return []
+  }
+
+  const token = await getM2MToken()
+  localLogger.debug({
+    context: 'getSkillsByNames',
+    message: `M2M Token: ${token}`
+  })
+
+  const url = `${config.TC_API}/standardized-skills/skills?${names.map(skill => `name=${encodeURIComponent(skill)}`).join('&')}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+
+  localLogger.debug({
+    context: 'getSkillsByNames',
+    message: `response body of GET ${url} is ${JSON.stringify(res.body)}`
+  })
+
+  return res.body
+}
+
+/**
  * Ensure job with specific id exists.
  *
  * @param {String} jobId the job id
@@ -1746,5 +1779,6 @@ module.exports = {
   runExclusiveByNamedMutex,
   signZoomLink,
   verifyZoomLinkToken,
-  ensureTopcoderUserIdExists
+  ensureTopcoderUserIdExists,
+  getSkillsByExactNames
 }

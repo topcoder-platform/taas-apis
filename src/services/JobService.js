@@ -44,6 +44,24 @@ async function _validateSkills (skills) {
 }
 
 /**
+ * Validate by exact match on name field if all skills exist.
+ *
+ * @param {Array} skillNames the list of skill names to validate
+ * @returns {Array} the list of matching skill objects
+ */
+async function _validateAndGetSkillsByNames (skillNames) {
+  const skills = await helper.getSkillsByExactNames(skillNames)
+
+  if (skills.length !== skillNames.length) {
+    const foundSkillNames = skills.map(skill => skill.name)
+    const notFoundSkillNames = _.difference(skillNames, foundSkillNames)
+    throw new errors.BadRequestError(`Invalid skills: [${notFoundSkillNames}]`)
+  }
+
+  return skills
+}
+
+/**
  * Validate if all roles exist.
  *
  * @param {Array} roles the list of roles
@@ -196,11 +214,24 @@ createJob.schema = Joi.object()
  * @returns {Object} the updated job
  */
 async function updateJob (currentUser, id, data) {
+  logger.debug({ component: 'JobService', context: 'updateJob start', message: `Arguments: ${JSON.stringify(currentUser)} job id: ${id} data: ${JSON.stringify(data)}` })
+
+  let skills = data.skills
+
   if (data.skills) {
     await _validateSkills(data.skills)
+
+    // Compact the skills to *just* the IDs for saving to ES
+    data.skills = _.chain(skills).map('skillId').uniq().compact().value()
   }
-  // Compact the skills to *just* the IDs for saving to ES
-  data.skills = _.chain(data.skills).map('skillId').uniq().compact().value()
+  if (data.skillNames) {
+    skills = await _validateAndGetSkillsByNames(data.skillNames)
+
+    data = _.omit(data, 'skillNames')
+
+    // Compact the skills to *just* the IDs for saving to ES
+    data.skills = _.chain(skills).map('id').uniq().compact().value()
+  }
 
   if (data.roleIds) {
     data.roleIds = _.uniq(data.roleIds)
@@ -228,6 +259,8 @@ async function updateJob (currentUser, id, data) {
 
   let entity
   try {
+    logger.debug({ component: 'JobService', context: 'updateJob update transaction', message: `Data: ${JSON.stringify(data)}` })
+
     await sequelize.transaction(async (t) => {
       await job.update(data, { transaction: t })
       await helper.registerSkills(job)
@@ -272,6 +305,7 @@ partiallyUpdateJob.schema = Joi.object()
         rateType: Joi.rateType().allow(null),
         workload: Joi.workload().allow(null),
         skills: Joi.array().allow(null),
+        skillNames: Joi.array().allow(null),
         isApplicationPageActive: Joi.boolean(),
         minSalary: Joi.number().integer(),
         maxSalary: Joi.number().integer(),
