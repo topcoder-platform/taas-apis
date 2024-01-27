@@ -180,8 +180,8 @@ async function createWorkPeriod (workPeriod) {
   const resourceBooking = await helper.ensureResourceBookingById(workPeriod.resourceBookingId) // ensure resource booking exists
   workPeriod.projectId = resourceBooking.projectId
 
-  const user = await helper.ensureUserById(resourceBooking.userId) // ensure user exists
-  workPeriod.userHandle = user.handle
+  const tcUser = await helper.ensureTopcoderUserIdExists(resourceBooking.userId) // ensure user exists
+  workPeriod.userHandle = tcUser.handleLower
 
   workPeriod.id = uuid.v4()
   workPeriod.createdBy = config.m2m.M2M_AUDIT_USER_ID

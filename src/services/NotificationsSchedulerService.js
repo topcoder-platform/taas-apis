@@ -58,23 +58,6 @@ function buildProjectTeamRecipients (project) {
 }
 
 /**
- * Gets the user with the given id
- * @param userId the user id
- * @returns the user
- */
-async function getUserWithId (userId) {
-  let user = null
-  try {
-    user = await helper.ensureUserById(userId)
-  } catch (err) {
-    localLogger.error(
-      `exception fetching user with id: ${userId} Status Code: ${err.status} message: ${_.get(err, 'response.text', err.toString())}`, 'getUserWithId')
-  }
-
-  return user
-}
-
-/**
  * Format Interview time according to timezone of host or guest
  *
  * @param {object} interview
@@ -114,8 +97,13 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   const hostUserDetails = await helper.getUserDetailsByUserUUID(interview.hostUserId)
   const userDetails = await helper.getUserDetailsByUserUUID(jobCandidate.userId)
-  const user = await getUserWithId(jobCandidate.userId)
-  if (!user) { return null }
+  let tcUser
+  try {
+    tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
+  } catch (error) {
+    logger.error(`Error encountered while fetching user ${jobCandidate.userId}: ${JSON.stringify(error)}`)
+    return null
+  }
 
   const interviewLink = `${config.TAAS_APP_URL}/${job.projectId}/positions/${job.id}/candidates/interviews`
   const startTime = interview.startTimestamp ? helper.formatDateTimeEDT(interview.startTimestamp) : ''
@@ -128,8 +116,8 @@ async function getDataForInterview (interview, jobCandidate, job) {
     guestEmail: userDetails.email,
     hostEmail: hostUserDetails.email,
     hostFullName: hostUserDetails.firstName + ' ' + hostUserDetails.lastName,
-    candidateName: `${user.firstName} ${user.lastName}`,
-    handle: user.handle,
+    candidateName: `${tcUser.firstName} ${tcUser.lastName}`,
+    handle: tcUser.handleLower,
     startTime: startTime,
     duration: interview.duration,
     interviewId: interview.id,
@@ -176,11 +164,16 @@ async function sendCandidatesAvailableNotifications () {
       // get candidate list
       const jobCandidates = []
       for (const jobCandidate of projectJob.candidates) {
-        const user = await getUserWithId(jobCandidate.userId)
-        if (!user) { continue }
+        let tcUser
+        try {
+          tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
+        } catch (error) {
+          logger.error(`Error encountered while fetching user ${jobCandidate.userId}: ${JSON.stringify(error)}`)
+          continue
+        }
 
         jobCandidates.push({
-          handle: user.handle,
+          handle: tcUser.handleLower,
           status: jobCandidate.status
         })
       }
@@ -550,14 +543,19 @@ async function sendResourceBookingExpirationNotifications () {
       numResourceBookings += resBookings.length
 
       for (const booking of resBookings) {
-        const user = await getUserWithId(booking.userId)
-        if (!user) { continue }
+        let tcUser
+        try {
+          tcUser = await helper.ensureTopcoderUserIdExists(booking.userId)
+        } catch (error) {
+          logger.error(`Error encountered while fetching user ${booking.userId}: ${JSON.stringify(error)}`)
+          continue
+        }
 
         const jobUrl = `${config.TAAS_APP_URL}/${projectId}/positions/${projectJob.id}`
         const resourceBookingUrl = `${config.TAAS_APP_URL}/${projectId}/rb/${booking.id}`
         teamResourceBookings.push({
           jobTitle: projectJob.title,
-          handle: user.handle,
+          handle: tcUser.handleLower,
           endDate: booking.endDate,
           jobUrl,
           resourceBookingUrl

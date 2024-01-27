@@ -805,33 +805,6 @@ async function ensureWorkPeriodById (workPeriodId) {
 }
 
 /**
- * Ensure user with specific id exists.
- *
- * @param {String} jobId the user id
- * @returns {Object} the user data
- */
-async function ensureUserById (userId) {
-  const token = await getM2MUbahnToken()
-  try {
-    const res = await request
-      .get(`${config.TC_API}/users/${userId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({
-      context: 'ensureUserById',
-      message: `response body: ${JSON.stringify(res.body)}`
-    })
-    return res.body
-  } catch (err) {
-    if (err.status === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`id: ${userId} "user" not found`)
-    }
-    throw err
-  }
-}
-
-/**
  * Generate M2M auth user.
  *
  * @returns {Object} the M2M auth user
@@ -1693,7 +1666,6 @@ module.exports = {
   getSkillById,
   ensureJobById,
   ensureResourceBookingById,
-  ensureUserById,
   ensureWorkPeriodById,
   getAuditM2Muser,
   checkIsMemberOfProject,
