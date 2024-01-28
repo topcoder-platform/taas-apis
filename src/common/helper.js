@@ -55,17 +55,6 @@ const m2m = m2mAuth(
   ])
 )
 
-const m2mForUbahn = m2mAuth({
-  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_UBAHN,
-  ..._.pick(config, [
-    'AUTH0_URL',
-    'TOKEN_CACHE_TIME',
-    'AUTH0_CLIENT_ID',
-    'AUTH0_CLIENT_SECRET',
-    'AUTH0_PROXY_SERVER_URL'
-  ])
-})
-
 let busApiClient
 
 /**
@@ -376,17 +365,6 @@ const getM2MToken = async () => {
   )
 }
 
-/*
- * Function to get M2M token for U-Bahn
- * @returns {Promise}
- */
-const getM2MUbahnToken = async () => {
-  return await m2mForUbahn.getMachineToken(
-    config.AUTH0_CLIENT_ID,
-    config.AUTH0_CLIENT_SECRET
-  )
-}
-
 /**
  * Function to encode query string
  * @param {Object} queryObj the query object
@@ -489,36 +467,6 @@ async function getProjects (currentUser, criteria = {}) {
     perPage: Number(_.get(res.headers, 'x-per-page')),
     result
   }
-}
-
-/**
- * Function to get users
- * @param {String} userId the user id
- * @returns the request result
- */
-async function getUserById (userId, enrich) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
-
-  if (enrich) {
-    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => getSkillById(userSkill.skillId)))
-    const attributes = _.get(res, 'body.attributes', [])
-    user.attributes = _.map(attributes, (attr) =>
-      _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
-    )
-  }
-
-  return user
 }
 
 /**
@@ -1619,7 +1567,7 @@ function verifyZoomLinkToken (token) {
  * If it exists return it, otherwise throw en error
  * @param {number} userId - The Topcoder userId to check
  */
-async function ensureTopcoderUserIdExists (userId) {
+async function ensureTopcoderUserIdExists (userId, enrich = false) {
   const token = await getM2MToken()
   const url = `${config.TOPCODER_MEMBERS_API}?userId=${userId}`
   const res = await request
@@ -1636,7 +1584,16 @@ async function ensureTopcoderUserIdExists (userId) {
       `userId: ${userId} "user" not found from ${config.TOPCODER_MEMBERS_API}`
     )
   }
-  return res.body[0]
+  const user = res.body[0]
+  // fetch user skills when enrichement is required
+  if (enrich) {
+    const skillsResponse = await request.get(`${config.TC_API}/standardized-skills/user-skills/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    user.skills = _.map(skillsResponse.body[0], (skill) => _.pick(skill, ['id', 'name']))
+  }
+  return user
 }
 
 module.exports = {
@@ -1653,12 +1610,10 @@ module.exports = {
     return userId
   },
   getM2MToken,
-  getM2MUbahnToken,
   postEvent,
   postErrorEvent,
   getBusApiClient,
   getProjects,
-  getUserById,
   getMembers,
   getProjectById,
   getTopcoderSkills,

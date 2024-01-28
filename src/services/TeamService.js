@@ -247,11 +247,11 @@ async function getTeamDetail (currentUser, projects, isSearch = true) {
 
       const resourceInfos = await Promise.all(
         _.map(rbs, (rb) => {
-          return helper.getUserById(rb.userId, true).then((user) => {
+          return helper.ensureTopcoderUserIdExists(rb.userId, true).then((tcUser) => {
             const resource = {
               id: rb.id,
-              userId: user.id,
-              ..._.pick(user, ['handle', 'firstName', 'lastName', 'skills'])
+              userId: tcUser.userId,
+              ..._.pick(tcUser, ['handle', 'firstName', 'lastName', 'skills'])
             }
             // If call function is not search, add jobId field
             if (!isSearch) {
@@ -391,10 +391,10 @@ async function getTeamJob (currentUser, id, jobId) {
     // find user data for candidates
     const users = await Promise.all(
       _.map(_.uniq(_.map(job.candidates, 'userId')), (userId) =>
-        helper.getUserById(userId, true)
+        helper.ensureTopcoderUserIdExists(userId, true)
       )
     )
-    const userMap = _.groupBy(users, 'id')
+    const userMap = _.groupBy(users, 'userId')
 
     // find photo URLs for users
     const members = await helper.getMembers(_.map(users, 'handle'))

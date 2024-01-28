@@ -3,7 +3,7 @@ const logger = require('../common/logger')
 const { searchResourceBookings } = require('./ResourceBookingService')
 const { partiallyUpdateWorkPeriod } = require('./WorkPeriodService')
 const { Scopes } = require('../../app-constants')
-const { getUserById, getMemberDetailsByHandle } = require('../common/helper')
+const { ensureTopcoderUserIdExists } = require('../common/helper')
 const { getCollectorName, createCollector, createMessage, upsertContactInSurveyMonkey, addContactsToSurvey, sendSurveyAPI } = require('../common/surveyMonkey')
 
 const resourceBookingCache = {}
@@ -73,17 +73,14 @@ async function sendSurveys () {
         const resourceBooking = _.find(resourceBookings, (r) => r.id === workPeriod.resourceBookingId)
         const userInfo = {}
         if (!resourceBookingCache[resourceBooking.userId]) {
-          let user = await getUserById(resourceBooking.userId)
-          if (!user.email && user.handle) {
-            user = await getMemberDetailsByHandle(user.handle)
-          }
-          if (user.email) {
-            userInfo.email = user.email
-            if (user.firstName) {
-              userInfo.first_name = user.firstName
+          const tcUser = await ensureTopcoderUserIdExists(resourceBooking.userId)
+          if (tcUser.email) {
+            userInfo.email = tcUser.email
+            if (tcUser.firstName) {
+              userInfo.first_name = tcUser.firstName
             }
-            if (user.lastName) {
-              userInfo.last_name = user.lastName
+            if (tcUser.lastName) {
+              userInfo.last_name = tcUser.lastName
             }
             resourceBookingCache[resourceBooking.userId] = userInfo
           }

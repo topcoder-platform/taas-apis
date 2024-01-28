@@ -475,13 +475,13 @@ async function checkOverlapping (payload) {
       const jobCandidate = _.find(jobCandidates, { id: oli.jobCandidateId })
       const job = _.find(jobs, { id: jobCandidate.jobId })
       const project = await helper.getProjectById({ isMachine: true }, job.projectId)
-      const user = await helper.getUserById(jobCandidate.userId)
+      const tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
       interviews.push({
         teamName: project.name,
         teamURL: `${config.TAAS_APP_URL}/${project.id}`,
         jobTitle: job.title,
         jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`,
-        candidateUserHandle: user.handle,
+        candidateUserHandle: tcUser.handleLower,
         startTime: helper.formatDateTimeEDT(oli.startTimestamp),
         endTime: helper.formatDateTimeEDT(oli.endTimestamp)
       })
