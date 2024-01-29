@@ -6,7 +6,6 @@ const fs = require('fs')
 const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
 const Bottleneck = require('bottleneck')
-const URI = require('urijs')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
@@ -17,7 +16,7 @@ const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment-timezone')
-const { PaymentStatusRules, SearchUsers, InterviewEventHandlerTimeout } = require('../../app-constants')
+const { PaymentStatusRules, InterviewEventHandlerTimeout } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 const { Mutex, withTimeout } = require('async-mutex')
 const jwt = require('jsonwebtoken')
@@ -467,47 +466,6 @@ async function getProjects (currentUser, criteria = {}) {
     perPage: Number(_.get(res.headers, 'x-per-page')),
     result
   }
-}
-
-/**
- * Search users by query string.
- * @param {String} query the query string
- * @returns {Array} the matched users
- */
-async function searchUsersByQuery (query) {
-  const token = await getM2MToken()
-  let users = []
-  // there may be multiple pages, search all pages
-  let offset = 0
-  const limit = SearchUsers.SEARCH_USERS_PAGE_SIZE
-  // set initial total to 1 so that at least one search is done,
-  // it will be updated from search result
-  let total = 1
-  while (offset < total) {
-    const res = await request
-      .get(`${
-        config.TOPCODER_MEMBERS_API_V3
-        }/_search?query=${
-        query
-        }&offset=${
-        offset
-        }&limit=${
-        limit
-        }&fields=userId,email,handle,firstName,lastName,photoURL,status`)
-      .set('Authorization', `Bearer ${token}`)
-    if (!_.get(res, 'body.result.success')) {
-      throw new Error(`Failed to search users by query: ${query}`)
-    }
-    const records = _.get(res, 'body.result.content') || []
-    // add users
-    users = users.concat(records)
-
-    total = _.get(res, 'body.result.metadata.totalCount') || 0
-    offset += limit
-  }
-
-  logger.verbose(`Searched users: ${JSON.stringify(users)}`)
-  return users
 }
 
 /**
