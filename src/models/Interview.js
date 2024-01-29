@@ -100,8 +100,7 @@ module.exports = (sequelize) => {
       availableTime: nylasAvailableTimeSchema('availableTime'),
       hostUserId: {
         field: 'hostUserId',
-        type: Sequelize.UUID,
-        allowNull: false
+        type: Sequelize.TEXT
       },
       expireTimestamp: {
         field: 'expireTimestamp',

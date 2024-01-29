@@ -292,7 +292,7 @@ async function handleConnectCalendarCallback (reqQuery) {
       // as a current user use the user who is connecting the calendar
       // NOTE, that we cannot use `userId` because it's UUID, while in
       // `currentUser` we need to have integer user id
-      const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
+      const currentUser = _.pick(await helper.ensureTopcoderUserIdExists(userId), ['userId', 'handle'])
 
       await syncUserMeetingsSettings(
         currentUser,

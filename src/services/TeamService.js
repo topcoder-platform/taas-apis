@@ -429,7 +429,7 @@ async function getTeamJob (currentUser, id, jobId) {
     })
 
     // request host user details only one time if all interview are hosted by the same host
-    const hostUserDetails = await Promise.all(_.map(_.keys(hostMap), hostId => helper.getUserDetailsByUserUUID(hostId)))
+    const hostUserDetails = await Promise.all(_.map(_.keys(hostMap), hostId => helper.ensureTopcoderUserIdExists(hostId)))
     _.map(_.keys(hostMap), (hostId, index) => {
       hostMap[hostId] = hostUserDetails[index]
     })

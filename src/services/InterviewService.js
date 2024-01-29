@@ -166,10 +166,10 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
 
   // if M2M require hostUserId
   if (currentUser.isMachine) {
-    const hostUserIdValidator = Joi.string().uuid().required()
+    const hostUserIdValidator = Joi.string().required()
     const { error } = hostUserIdValidator.validate(interview.hostUserId)
     if (error) {
-      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid uuid`)
+      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid topcoder user id`)
     }
   }
 
@@ -203,7 +203,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // get calendar if exists, otherwise create a virtual one for the user
       const existentCalendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
       if (_.isNil(existentCalendar)) {
-        const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+        const { email, firstName, lastName } = await helper.ensureTopcoderUserIdExists(interview.hostUserId)
         const currentUserFullname = `${firstName} ${lastName}`
         calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.hostTimezone)
         // make the new calendar primary
@@ -290,7 +290,7 @@ requestInterview.schema = Joi.object().keys({
   interview: Joi.object().keys({
     duration: Joi.number().integer().positive().required(),
     hostTimezone: Joi.string().required(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({
@@ -400,7 +400,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
     hostTimezone: Joi.string(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({
@@ -448,7 +448,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
     hostTimezone: Joi.string(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({

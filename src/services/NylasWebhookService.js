@@ -297,7 +297,7 @@ async function processCalendarCreatedWebhook (webhookData, webhookId) {
 
       // NOTE, that we cannot use `userId` because it's UUID, while in
       // `currentUser` we need to have integer user id
-      const user = _.pick(await helper.getUserDetailsByUserUUID(userMeetingSettingsForCalendar.id), ['userId', 'handle'])
+      const user = _.pick(await helper.ensureTopcoderUserIdExists(userMeetingSettingsForCalendar.id), ['userId', 'handle'])
 
       await UserMeetingSettingsService.syncUserMeetingsSettings(user, {
         id: userMeetingSettingsForCalendar.id,

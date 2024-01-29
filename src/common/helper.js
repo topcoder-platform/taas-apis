@@ -470,45 +470,6 @@ async function getProjects (currentUser, criteria = {}) {
 }
 
 /**
- * Function to get users
- * @param {String} userId the user UUID
- * @returns the found user details
- */
-async function getUserDetailsByUserUUID (userUUID) {
-  const token = await getM2MToken()
-  const res = await request
-    .get(`${config.TC_API}/users/${userUUID}?enrich=true`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName', 'externalProfiles'])
-
-  if (!_.isUndefined(user.externalProfiles) && !_.isEmpty(user.externalProfiles)) {
-    _.assign(user, { userId: _.toInteger(_.get(user.externalProfiles[0], 'externalId')) })
-  }
-
-  const handleQuery = `handleLower:${user.handle.toLowerCase()}`
-  const userIdQuery = `userId:${user.userId}`
-
-  const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
-  try {
-    const searchResult = await searchUsersByQuery(query)
-    const found = _.find(searchResult, !_.isUndefined(user.handle)
-      ? ['handle', user.handle] : ['userId', user.userId]) || {}
-
-    return found
-  } catch (err) {
-    const error = new Error(err.response.text)
-    error.status = err.status
-    throw error
-  }
-}
-
-/**
  * Search users by query string.
  * @param {String} query the query string
  * @returns {Array} the matched users
@@ -620,7 +581,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2MUbahnToken()
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -1650,7 +1611,6 @@ module.exports = {
   getEmailTemplatesForKey,
   formatDate,
   formatDateTimeEDT,
-  getUserDetailsByUserUUID,
   runExclusiveCalendarConnectionHandler,
   waitForUnlockCalendarConnectionHandler,
   runExclusiveInterviewEventHandler,

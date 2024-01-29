@@ -15,8 +15,6 @@ module.exports = {
   AUTH0_URL: process.env.AUTH0_URL,
   // Auth0 audience, used to get TC M2M token
   AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
-  // Auth0 audience for U-Bahn
-  AUTH0_AUDIENCE_UBAHN: process.env.AUTH0_AUDIENCE_UBAHN,
   // Auth0 token cache time, used to get TC M2M token
   TOKEN_CACHE_TIME: process.env.TOKEN_CACHE_TIME,
   // Auth0 client id, used to get TC M2M token

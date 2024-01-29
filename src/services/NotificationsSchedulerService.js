@@ -95,8 +95,8 @@ async function getDataForInterview (interview, jobCandidate, job) {
 
   job = job || await Job.findById(jobCandidate.jobId)
 
-  const hostUserDetails = await helper.getUserDetailsByUserUUID(interview.hostUserId)
-  const userDetails = await helper.getUserDetailsByUserUUID(jobCandidate.userId)
+  const hostUserDetails = await helper.ensureTopcoderUserIdExists(interview.hostUserId)
+  const userDetails = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
   let tcUser
   try {
     tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
