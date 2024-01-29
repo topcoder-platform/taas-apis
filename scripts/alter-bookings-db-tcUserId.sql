@@ -1,4 +1,7 @@
+BEGIN;
+
 ALTER TABLE bookings.interviews
+ALTER COLUMN hostUserId TYPE TEXT,
 ALTER COLUMN created_by TYPE TEXT,
 ALTER COLUMN updated_by TYPE TEXT;
 
@@ -40,3 +43,5 @@ ALTER COLUMN updated_by TYPE TEXT;
 ALTER TABLE bookings.work_period_payments
 ALTER COLUMN created_by TYPE TEXT,
 ALTER COLUMN updated_by TYPE TEXT;
+
+END;
