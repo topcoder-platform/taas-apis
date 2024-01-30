@@ -20,11 +20,15 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
 
   for (const columnName of _.split(columnNames, ',')) {
     const query = `SELECT DISTINCT ${columnName} FROM bookings.${tableName} WHERE LENGTH(${columnName}) > 9 AND ${columnName} <> '00000000-0000-0000-0000-000000000000';`
+
+    console.log(`Executing query in table ${tableName} against column ${columnName}`)
+    console.log(`SQL query: ${query}`)
+
     let results = await models.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT })
 
     if (results.length > 0) {
       results = _.uniq(_.map(_.filter(results, val => toString(val[`${columnName}`]).length > 9), val => val[`${columnName}`]))
-      console.log(`result: ${JSON.stringify(results)}`)
+      console.log(`SQL query result: ${JSON.stringify(results)}`)
 
       const ubahnConn = await tcUserId.getUbahnDatabaseConnection(dbUrl)
       const uuidToHandleMap = await tcUserId.getUserUbahnUUIDToHandleMap(ubahnConn, results)
@@ -32,6 +36,7 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
       const handleToIDMap = {}
       const batches = _.chunk(Object.values(uuidToHandleMap), 30)
       for (const batch of batches) {
+        console.log(`Batch of handles: ${JSON.stringify(batch)}`)
         const memberAPIRes = await helper.getMemberDetailsByHandles(batch)
         _.forEach(memberAPIRes, member => {
           handleToIDMap[member.handleLower] = member.userId
@@ -44,8 +49,8 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
           sql += `UPDATE bookings.${tableName} SET ${columnName} = '${handleToIDMap[value.toLowerCase()]}' WHERE ${columnName} = '${key}';`
         }
       }
-      console.log(`UPDATE statements: ${sql}`)
-      if (MODE !== test) {
+      console.log(`SQL UPDATE statements: ${sql}`)
+      if (MODE !== test && sql.length > 0) {
         await models.sequelize.query(sql, { type: Sequelize.QueryTypes.UPDATE })
       }
     } else {
