@@ -41,7 +41,7 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
       let sql = ''
       for (const [key, value] of Object.entries(uuidToHandleMap)) {
         if (!_.isUndefined(handleToIDMap[value.toLowerCase()])) {
-          sql += `UPDATE bookings.${tableName} SET ${columnName} = ${handleToIDMap[value]} WHERE ${columnName} = ${key};`
+          sql += `UPDATE bookings.${tableName} SET ${columnName} = ${handleToIDMap[value.toLowerCase()]} WHERE ${columnName} = ${key};`
         }
       }
       console.log(`UPDATE statements: ${sql}`)
