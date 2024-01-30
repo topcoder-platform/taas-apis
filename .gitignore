@@ -76,6 +76,7 @@ web_modules/
 .env
 .env.test
 taas-es-processor.env
+dev-env.sh
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -125,3 +126,6 @@ api.env
 
 # macOS files
 .DS_Store
+
+# db backups
+db-backups

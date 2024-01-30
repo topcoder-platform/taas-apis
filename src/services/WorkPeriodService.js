@@ -5,24 +5,15 @@
 const _ = require('lodash')
 const Joi = require('joi').extend(require('@joi/date'))
 const config = require('config')
-const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const uuid = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/WorkPeriodProcessor')
 const constants = require('../../app-constants')
-const moment = require('moment')
 
 const WorkPeriod = models.WorkPeriod
-const esClient = helper.getESClient()
-
 const sequelize = models.sequelize
 
 // "startDate" and "endDate" should always represent one week:
@@ -158,45 +149,12 @@ function _autoCalculateDates (data) {
   * Get workPeriod by id
   * @param {Object} currentUser the user who perform this operation.
   * @param {String} id the workPeriod id
-  * @param {Boolean} fromDb flag if query db for data or not
   * @returns {Object} the workPeriod
   */
-async function getWorkPeriod (currentUser, id, fromDb = false) {
+async function getWorkPeriod (currentUser, id) {
   // get query options according to currentUser
   const queryOpt = _getWorkPeriodFilteringFields(currentUser)
-  if (!fromDb) {
-    try {
-      const resourceBooking = await esClient.search({
-        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
-        _source_includes: 'workPeriods',
-        _source_excludes: queryOpt.excludeES,
-        body: {
-          query: {
-            nested: {
-              path: 'workPeriods',
-              query: {
-                match: { 'workPeriods.id': id }
-              }
-            }
-          }
-        }
-      })
-      if (!resourceBooking.body.hits.total.value) {
-        throw new errors.NotFoundError()
-      }
-      const workPeriod = _.find(resourceBooking.body.hits.hits[0]._source.workPeriods, { id })
-      await _checkUserPermissionForGetWorkPeriod(currentUser, workPeriod.projectId) // check user permission
-      return workPeriod
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "WorkPeriod" not found`)
-      }
-      if (err.httpStatus === HttpStatus.UNAUTHORIZED) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'WorkPeriodService', context: 'getWorkPeriod' })
-    }
-  }
+
   logger.info({ component: 'WorkPeriodService', context: 'getWorkPeriod', message: 'try to query db for data' })
   const workPeriod = await WorkPeriod.findById(id, { withPayments: queryOpt.withPayments, exclude: queryOpt.excludeDB })
 
@@ -222,8 +180,8 @@ async function createWorkPeriod (workPeriod) {
   const resourceBooking = await helper.ensureResourceBookingById(workPeriod.resourceBookingId) // ensure resource booking exists
   workPeriod.projectId = resourceBooking.projectId
 
-  const user = await helper.ensureUserById(resourceBooking.userId) // ensure user exists
-  workPeriod.userHandle = user.handle
+  const tcUser = await helper.ensureTopcoderUserIdExists(resourceBooking.userId) // ensure user exists
+  workPeriod.userHandle = tcUser.handleLower
 
   workPeriod.id = uuid.v4()
   workPeriod.createdBy = config.m2m.M2M_AUDIT_USER_ID
@@ -235,7 +193,6 @@ async function createWorkPeriod (workPeriod) {
     await sequelize.transaction(async (t) => {
       const created = await WorkPeriod.create(workPeriod, { transaction: t })
       entity = created.toJSON()
-      await processCreate({ ...entity, key })
     })
   } catch (err) {
     if (entity) {
@@ -301,7 +258,6 @@ async function updateWorkPeriod (currentUser, id, data) {
       entity = updated.toJSON()
 
       entity = _.omit(entity, ['payments'])
-      await processUpdate({ ...entity, key })
     })
   } catch (e) {
     if (entity) {
@@ -358,7 +314,6 @@ async function deleteWorkPeriod (id) {
         transaction: t
       })
       await workPeriod.destroy({ transaction: t })
-      await processDelete({ id, key })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'workperiod.delete')
@@ -410,86 +365,6 @@ async function searchWorkPeriods (currentUser, criteria, options = { returnAll: 
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-      _source_includes: 'workPeriods',
-      _source_excludes: queryOpt.excludeES,
-      body: {
-        query: {
-          nested: {
-            path: 'workPeriods',
-            query: { bool: { must: [] } }
-          }
-        },
-        size: 10000
-        // We use a very large number for size, because we can't paginate nested documents
-        // and in practice there could hardly be so many records to be returned.(also consider we are using filters in the meantime)
-        // the number is limited by `index.max_result_window`, its default value is 10000, see
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-max-result-window
-      }
-    }
-    // change the date format to match with database model
-    if (criteria.startDate) {
-      criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
-    }
-    if (criteria.endDate) {
-      criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
-    }
-    // Apply filters
-    _.each(_.pick(criteria, ['resourceBookingId', 'userHandle', 'projectId', 'startDate', 'endDate']), (value, key) => {
-      esQuery.body.query.nested.query.bool.must.push({
-        term: {
-          [`workPeriods.${key}`]: {
-            value
-          }
-        }
-      })
-    })
-    if (criteria.paymentStatus) {
-      esQuery.body.query.nested.query.bool.must.push({
-        terms: {
-          'workPeriods.paymentStatus': criteria.paymentStatus
-        }
-      })
-    }
-    // if criteria contains resourceBookingIds, filter resourceBookingId with this value
-    if (criteria.resourceBookingIds) {
-      esQuery.body.query.nested.query.bool.filter = [{
-        terms: {
-          'workPeriods.resourceBookingId': criteria.resourceBookingIds
-        }
-      }]
-    }
-    logger.debug({ component: 'WorkPeriodService', context: 'searchWorkPeriods', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-    let workPeriods = _.reduce(body.hits.hits, (acc, resourceBooking) => _.concat(acc, resourceBooking._source.workPeriods), [])
-    // ESClient will return ResourceBookings with it's all nested WorkPeriods
-    // We re-apply WorkPeriod filters
-    _.each(_.pick(criteria, ['startDate', 'endDate']), (value, key) => {
-      workPeriods = _.filter(workPeriods, { [key]: value })
-    })
-    if (criteria.paymentStatus) {
-      workPeriods = _.filter(workPeriods, wp => _.includes(criteria.paymentStatus, wp.paymentStatus))
-    }
-    workPeriods = _.sortBy(workPeriods, [criteria.sortBy])
-    if (criteria.sortOrder === 'desc') {
-      workPeriods = _.reverse(workPeriods)
-    }
-    const total = workPeriods.length
-    if (!options.returnAll) {
-      workPeriods = _.slice(workPeriods, (page - 1) * perPage, page * perPage)
-    }
-    return {
-      total,
-      page,
-      perPage,
-      result: workPeriods
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'WorkPeriodService', context: 'searchWorkPeriods' })
   }
   logger.info({ component: 'WorkPeriodService', context: 'searchWorkPeriods', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }

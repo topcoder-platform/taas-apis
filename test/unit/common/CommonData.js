@@ -3,10 +3,12 @@ const currentUser = {
   isMachine: true,
   scopes: []
 }
-const UserTCConnCopilot = {
-  userId: '4709473d-f060-4102-87f8-4d51ff0b34c1',
+
+const UsrTCConnCopilot = {
+  userId: '14848314',
   handle: 'TCConnCopilot'
 }
+
 const userWithManagePermission = {
   hasManagePermission: true
 }
@@ -22,7 +24,7 @@ const ESClient = {
 
 module.exports = {
   currentUser,
-  UserTCConnCopilot,
+  UsrTCConnCopilot,
   userWithManagePermission,
   regularUser,
   ESClient

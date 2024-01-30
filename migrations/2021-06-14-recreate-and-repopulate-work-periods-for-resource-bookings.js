@@ -73,7 +73,7 @@ module.exports = {
       for (const rb of resourceBookings) {
         if (!_.isNil(rb.startDate) && !_.isNil(rb.endDate)) {
           const periods = helper.extractWorkPeriods(rb.startDate, rb.endDate)
-          const user = await helper.ensureUserById(rb.userId)
+          let tcUser = await helper.ensureTopcoderUserIdExists(rb.userId)
           _.forEach(periods, period => {
             workPeriodData.push({
               id: uuid(),

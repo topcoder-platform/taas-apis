@@ -7,10 +7,6 @@ const logger = require('../common/logger')
 const { createChallenge, addResourceToChallenge, activateChallenge, closeChallenge } = require('./PaymentService')
 const { ChallengeStatus, PaymentSchedulerStatus, PaymentProcessingSwitch } = require('../../app-constants')
 
-const {
-  processUpdate
-} = require('../esProcessors/WorkPeriodPaymentProcessor')
-
 const sequelize = models.sequelize
 const WorkPeriodPayment = models.WorkPeriodPayment
 const WorkPeriod = models.WorkPeriod
@@ -100,7 +96,6 @@ async function processPayment (workPeriodPayment) {
         const updated = await workPeriodPayment.update({ status: 'in-progress' }, { transaction: t })
         key = `workPeriodPayment.billingAccountId:${updated.billingAccountId}`
         entity = updated.toJSON()
-        await processUpdate({ ...entity, key })
       })
     } catch (e) {
       if (entity) {
@@ -138,7 +133,6 @@ async function processPayment (workPeriodPayment) {
         // 5. update wp and save  it should only update already existent Work Period Payment record with created "challengeId" and "status=completed".
         const updated = await workPeriodPayment.update({ challengeId: paymentScheduler.challengeId, status: 'completed' }, { transaction: t })
         entity = updated.toJSON()
-        await processUpdate({ ...entity, key })
       })
     } catch (e) {
       if (entity) {
@@ -165,7 +159,6 @@ async function processPayment (workPeriodPayment) {
         const updated = await workPeriodPayment.update({ statusDetails, status: 'failed' }, { transaction: t })
         key = `workPeriodPayment.billingAccountId:${updated.billingAccountId}`
         entity = updated.toJSON()
-        await processUpdate({ ...entity, key })
       })
     } catch (e) {
       if (entity) {

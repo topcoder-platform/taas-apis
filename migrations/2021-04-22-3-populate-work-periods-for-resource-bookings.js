@@ -32,13 +32,13 @@ module.exports = {
       await Promise.all(resourceBookings.map(async rb => {
         if (!_.isNil(rb.startDate) && !_.isNil(rb.endDate)) {
           const periods = helper.extractWorkPeriods(rb.startDate, rb.endDate)
-          const user = await helper.ensureUserById(rb.userId)
+          let tcUser = await helper.ensureTopcoderUserIdExists(rb.userId)
           _.forEach(periods, period => {
             workPeriodData.push({
               id: uuid(),
               resource_booking_id: rb.id,
               project_id: rb.projectId,
-              user_handle: user.handle,
+              user_handle: tcUser.handleLower,
               start_date: period.startDate,
               end_date: period.endDate,
               days_worked: null,

@@ -9,10 +9,6 @@ const logger = require('../common/logger')
 const helper = require('../common/helper')
 const { ActiveWorkPeriodPaymentStatuses } = require('../../app-constants')
 const WorkPeriod = models.WorkPeriod
-const {
-  processUpdate: processUpdateEs
-} = require('../esProcessors/WorkPeriodProcessor')
-
 const sequelize = models.sequelize
 /**
  * When a WorkPeriodPayment is updated or created, the workPeriod related to
@@ -52,7 +48,6 @@ async function updateWorkPeriod (payload) {
       entity = updated.toJSON()
 
       entity = _.omit(entity, ['payments'])
-      await processUpdateEs({ ...entity, key })
     })
   } catch (e) {
     if (entity) {

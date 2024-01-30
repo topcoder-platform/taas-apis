@@ -78,7 +78,6 @@ workflows:
             branches:
               only:
                 - dev
-                - TSJR-246
 
       # Development builds are executed on "develop" branch only.
       - "build-qa":

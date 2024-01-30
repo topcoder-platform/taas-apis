@@ -13,7 +13,6 @@ const Constants = require('../../app-constants')
 const notificationsSchedulerService = require('../services/NotificationsSchedulerService')
 const Interview = models.Interview
 const { generateZoomMeetingLink, updateZoomMeeting, cancelZoomMeeting } = require('../services/ZoomService')
-const { processUpdateInterview } = require('../esProcessors/InterviewProcessor')
 /**
  * Send interview invitaion notifications
  * @param {*} interview the requested interview
@@ -129,9 +128,7 @@ async function sendInterviewScheduledNotifications (payload) {
     if (!data) { return }
 
     const { meeting, zoomAccountApiKey } = await generateZoomMeetingLink(interviewEntity.startTimestamp, interviewEntity.duration)
-
-    const updatedInterview = await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
-    await processUpdateInterview(updatedInterview.toJSON())
+    await interviewEntity.update({ zoomAccountApiKey, zoomMeetingId: meeting.id })
 
     const interviewCancelLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/cancel`
     const interviewRescheduleLink = `${config.TAAS_APP_BASE_URL}/interview/${interview.id}/reschedule`
@@ -478,13 +475,13 @@ async function checkOverlapping (payload) {
       const jobCandidate = _.find(jobCandidates, { id: oli.jobCandidateId })
       const job = _.find(jobs, { id: jobCandidate.jobId })
       const project = await helper.getProjectById({ isMachine: true }, job.projectId)
-      const user = await helper.getUserById(jobCandidate.userId)
+      const tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
       interviews.push({
         teamName: project.name,
         teamURL: `${config.TAAS_APP_URL}/${project.id}`,
         jobTitle: job.title,
         jobURL: `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`,
-        candidateUserHandle: user.handle,
+        candidateUserHandle: tcUser.handleLower,
         startTime: helper.formatDateTimeEDT(oli.startTimestamp),
         endTime: helper.formatDateTimeEDT(oli.endTimestamp)
       })

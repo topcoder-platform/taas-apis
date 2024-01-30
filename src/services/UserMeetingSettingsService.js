@@ -10,14 +10,9 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const { v4: uuid } = require('uuid')
-const {
-  processCreateOrUpdate,
-  processUpdate
-} = require('../esProcessors/UserMeetingSettingsProcessor')
 
 const UserMeetingSettings = models.UserMeetingSettings
 const { Interviews: InterviewConstants, NylasVirtualCalendarProvider } = require('../../app-constants')
-const esClient = helper.getESClient()
 const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
 const { runExclusiveCalendarConnectionHandler } = require('../common/helper')
@@ -78,27 +73,6 @@ function handleUserMeetingSettingsData (data, shouldNotStripUnwantedData) {
 async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb, options = { shouldNotStripUnwantedData: false }) {
   // check permission
   await ensureUserIsPermitted(currentUser, userId)
-  if (!fromDb) {
-    try {
-      // get user meeting settings from ES
-      const userMeetingSettingsES = await esClient.get({
-        index: config.esConfig.ES_INDEX_USER_MEETING_SETTINGS,
-        id: userId
-      })
-      // extract interviews from ES object
-      const userMeetingSettings = _.get(userMeetingSettingsES, 'body._source')
-      if (userMeetingSettings) {
-        return handleUserMeetingSettingsData(userMeetingSettings, options.shouldNotStripUnwantedData)
-      }
-      throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`The userMeetingSettings for userId=${userId} not found.`)
-      }
-      logger.logFullError(err, { component: 'UserMeetingSettingsService', context: 'getInterviewByRound' })
-      throw err
-    }
-  }
 
   // either ES query failed or `fromDb` is set - fallback to DB
   logger.info({ component: 'InterviewService', context: 'getUserMeetingSettingsByUserId', message: 'try to query db for data' })
@@ -109,7 +83,7 @@ async function getUserMeetingSettingsByUserId (currentUser, userId, fromDb, opti
 }
 getUserMeetingSettingsByUserId.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
-  userId: Joi.string().uuid().required(),
+  userId: Joi.string().required(),
   fromDb: Joi.boolean(),
   options: Joi.object().keys({
     shouldNotStripUnwantedData: Joi.boolean()
@@ -157,7 +131,6 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
     }
 
     userMeetingSettings = await UserMeetingSettings.create(entity, { transaction: transaction })
-    await processCreateOrUpdate(userMeetingSettings.toJSON())
 
   // if UserMeetingSettings record already exists for the user we update it
   } else {
@@ -209,7 +182,6 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
 
     const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction })
     userMeetingSettings = updateUserMeetingSettingsResponse[1][0].dataValues
-    await processUpdate(userMeetingSettings)
   }
 
   return userMeetingSettings
@@ -320,7 +292,7 @@ async function handleConnectCalendarCallback (reqQuery) {
       // as a current user use the user who is connecting the calendar
       // NOTE, that we cannot use `userId` because it's UUID, while in
       // `currentUser` we need to have integer user id
-      const currentUser = _.pick(await helper.getUserDetailsByUserUUID(userId), ['userId', 'handle'])
+      const currentUser = _.pick(await helper.ensureTopcoderUserIdExists(userId), ['userId', 'handle'])
 
       await syncUserMeetingsSettings(
         currentUser,
@@ -361,33 +333,6 @@ async function deleteUserCalendar (currentUser, reqParams) {
     // error if no calendar found with the given id in request param
     if (!calendarToDelete) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
-    } else {
-      let newPrimaryCalendarSet = false
-      // map all calenders and check if deleting calendar is primary
-      const updatedCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
-        if (item.id === reqParams.calendarId) {
-          return { ...item, isPrimary: false, isDeleted: true }
-        } else {
-          // check if deleting primary calendar in this endpoint call & if another calendar is not already set as primary,
-          // if not, check the current iterating calendar is not already deleted
-          // then make the current iterating calendar as primary & set newPrimaryCalendarSet = true
-          if (calendarToDelete.isPrimary && !newPrimaryCalendarSet && !item.isDeleted) {
-            newPrimaryCalendarSet = true
-            return { ...item, isPrimary: true }
-          }
-
-          return item
-        }
-      })
-
-      const updatePayload = {
-        ...userMeetingSettings,
-        nylasCalendars: updatedCalendars
-      }
-
-      const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
-      const updatedUserMeetingSettings = updateUserMeetingSettingsResponse[1][0].dataValues
-      await processUpdate(updatedUserMeetingSettings)
     }
   } catch (err) {
     throw new errors.BadRequestError(err.message)
@@ -397,7 +342,7 @@ async function deleteUserCalendar (currentUser, reqParams) {
 deleteUserCalendar.schema = Joi.object().keys({
   currentUser: Joi.object().required(),
   reqParams: Joi.object().keys({
-    userId: Joi.string().uuid().required(),
+    userId: Joi.string().required(),
     calendarId: Joi.string().required()
   }).required()
 }).required()
