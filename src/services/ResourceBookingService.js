@@ -5,26 +5,19 @@
 
 const _ = require('lodash')
 const Joi = require('joi').extend(require('@joi/date'))
-const config = require('config')
-const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/ResourceBookingProcessor')
 const constants = require('../../app-constants')
 const moment = require('moment')
+const config = require('config')
 
 const ResourceBooking = models.ResourceBooking
 const WorkPeriod = models.WorkPeriod
 const WorkPeriodPayment = models.WorkPeriodPayment
-const esClient = helper.getESClient()
 const cachedModelFields = _cacheModelFields()
 
 const sequelize = models.sequelize
@@ -273,28 +266,6 @@ async function getResourceBooking (currentUser, id, criteria) {
   if (queryOpt.regularUser && queryOpt.include.length > 0 && !_.includes(queryOpt.include, 'projectId')) {
     throw new errors.ForbiddenError('Not allowed without including "projectId"')
   }
-  if (!criteria.fromDb) {
-    try {
-      const resourceBooking = await esClient.get({
-        index: config.esConfig.ES_INDEX_RESOURCE_BOOKING,
-        id,
-        _source_includes: [...queryOpt.include],
-        _source_excludes: [...queryOpt.excludeRB, ...queryOpt.excludeWP, ...queryOpt.excludeWPP]
-      })
-      if (queryOpt.regularUser) {
-        await _checkUserPermissionForGetResourceBooking(currentUser, resourceBooking.body._source.projectId) // check user permission
-      }
-      return resourceBooking.body._source
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "ResourceBooking" not found`)
-      }
-      if (err.httpStatus === HttpStatus.UNAUTHORIZED) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'ResourceBookingService', context: 'getResourceBooking' })
-    }
-  }
   logger.info({ component: 'ResourceBookingService', context: 'getResourceBooking', message: 'try to query db for data' })
   let resourceBooking = await ResourceBooking.findById(id, queryOpt)
   resourceBooking = resourceBooking.toJSON()
@@ -334,17 +305,15 @@ async function createResourceBooking (currentUser, resourceBooking) {
   if (resourceBooking.jobId) {
     await helper.ensureJobById(resourceBooking.jobId) // ensure job exists
   }
-  await helper.ensureUserById(resourceBooking.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(resourceBooking.userId) // ensure user exists
 
   resourceBooking.id = uuid()
-  resourceBooking.createdBy = await helper.getUserId(currentUser.userId)
+  resourceBooking.createdBy = toString(await helper.getUserId(currentUser.userId))
 
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const created = await ResourceBooking.create(resourceBooking, { transaction: t })
-      entity = created.toJSON()
-      await processCreate(entity)
+      entity = (await ResourceBooking.create(resourceBooking, { transaction: t })).toJSON()
     })
   } catch (e) {
     if (entity) {
@@ -361,7 +330,7 @@ createResourceBooking.schema = Joi.object().keys({
   resourceBooking: Joi.object().keys({
     status: Joi.resourceBookingStatus().default('placed'),
     projectId: Joi.number().integer().required(),
-    userId: Joi.string().uuid().required(),
+    userId: Joi.string().required(),
     jobId: Joi.string().uuid().allow(null),
     sendWeeklySurvey: Joi.boolean().default(true),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null),
@@ -402,15 +371,12 @@ async function updateResourceBooking (currentUser, id, data) {
   // before updating the record, we need to check if any paid work periods tried to be deleted
   await _ensurePaidWorkPeriodsNotDeleted(id, oldValue, data)
 
-  data.updatedBy = await helper.getUserId(currentUser.userId)
+  data.updatedBy = toString(await helper.getUserId(currentUser.userId))
 
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const updated = await resourceBooking.update(data, { transaction: t })
-
-      entity = updated.toJSON()
-      await processUpdate(entity)
+      entity = (await resourceBooking.update(data, { transaction: t })).toJSON()
     })
   } catch (e) {
     if (entity) {
@@ -466,7 +432,7 @@ async function fullyUpdateResourceBooking (currentUser, id, data) {
   if (data.jobId) {
     await helper.ensureJobById(data.jobId) // ensure job exists
   }
-  await helper.ensureUserById(data.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(data.userId) // ensure user exists
   return updateResourceBooking(currentUser, id, data)
 }
 
@@ -475,7 +441,7 @@ fullyUpdateResourceBooking.schema = Joi.object().keys({
   id: Joi.string().uuid().required(),
   data: Joi.object().keys({
     projectId: Joi.number().integer().required(),
-    userId: Joi.string().uuid().required(),
+    userId: Joi.string().required(),
     jobId: Joi.string().uuid().allow(null).default(null),
     startDate: Joi.date().format('YYYY-MM-DD').allow(null).default(null),
     endDate: Joi.date().format('YYYY-MM-DD').when('startDate', {
@@ -513,7 +479,6 @@ async function deleteResourceBooking (currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await resourceBooking.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'resourcebooking.delete')
@@ -583,182 +548,6 @@ async function searchResourceBookings (currentUser, criteria, options) {
 
   if (_.has(criteria, 'workPeriods.sentSurveyError') && !criteria['workPeriods.sentSurveyError']) {
     criteria['workPeriods.sentSurveyError'] = null
-  }
-  // this option to return data from DB is only for internal usage, and it cannot be passed from the endpoint
-  if (!options.returnFromDB) {
-    try {
-      const esQuery = {
-        index: config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-        _source_includes: queryOpt.include,
-        _source_excludes: [...queryOpt.excludeRB, ...queryOpt.excludeWP, ...queryOpt.excludeWPP],
-        body: {
-          query: {
-            bool: {
-              must: [],
-              filter: []
-            }
-          },
-          from: (page - 1) * perPage,
-          size: perPage,
-          sort: []
-        }
-      }
-      // change the date format to match with index schema
-      if (criteria.startDate) {
-        criteria.startDate = moment(criteria.startDate).format('YYYY-MM-DD')
-      }
-      if (criteria.endDate) {
-        criteria.endDate = moment(criteria.endDate).format('YYYY-MM-DD')
-      }
-      if (criteria['workPeriods.startDate']) {
-        criteria['workPeriods.startDate'] = moment(criteria['workPeriods.startDate']).format('YYYY-MM-DD')
-      }
-      if (criteria['workPeriods.endDate']) {
-        criteria['workPeriods.endDate'] = moment(criteria['workPeriods.endDate']).format('YYYY-MM-DD')
-      }
-      const sort = { [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }
-      if (queryOpt.sortByWP) {
-        const nestedSortFilter = {}
-        if (criteria['workPeriods.startDate']) {
-          nestedSortFilter.term = { 'workPeriods.startDate': criteria['workPeriods.startDate'] }
-        } else if (criteria['workPeriods.endDate']) {
-          nestedSortFilter.term = { 'workPeriods.endDate': criteria['workPeriods.endDate'] }
-        }
-        sort[criteria.sortBy].nested = { path: 'workPeriods', filter: nestedSortFilter }
-      }
-      esQuery.body.sort.push(sort)
-      // Apply ResourceBooking filters
-      _.each(_.pick(criteria, ['sendWeeklySurvey', 'status', 'startDate', 'endDate', 'rateType', 'projectId', 'jobId', 'userId', 'billingAccountId']), (value, key) => {
-        esQuery.body.query.bool.must.push({
-          term: {
-            [key]: {
-              value
-            }
-          }
-        })
-      })
-      // if criteria contains projectIds, filter projectId with this value
-      if (criteria.projectIds) {
-        esQuery.body.query.bool.filter.push({
-          terms: {
-            projectId: criteria.projectIds
-          }
-        })
-      }
-      // if criteria contains jobIds, filter jobIds with this value
-      if (criteria.jobIds && criteria.jobIds.length > 0) {
-        esQuery.body.query.bool.filter.push({
-          terms: {
-            jobId: criteria.jobIds
-          }
-        })
-      }
-      if (criteria['workPeriods.isFirstWeek']) {
-        esQuery.body.query.bool.must.push({
-          range: { startDate: { gte: criteria['workPeriods.startDate'] } }
-        })
-      }
-      if (criteria['workPeriods.isLastWeek']) {
-        esQuery.body.query.bool.must.push({
-          range: { endDate: { lte: moment(criteria['workPeriods.startDate']).add(6, 'day').format('YYYY-MM-DD') } }
-        })
-      }
-      // Apply WorkPeriod and WorkPeriodPayment filters
-      const workPeriodFilters = _.pick(criteria, ['workPeriods.sentSurveyError', 'workPeriods.sentSurvey', 'workPeriods.paymentStatus', 'workPeriods.startDate', 'workPeriods.endDate', 'workPeriods.userHandle'])
-      const workPeriodPaymentFilters = _.pick(criteria, ['workPeriods.payments.status', 'workPeriods.payments.days'])
-      if (!_.isEmpty(workPeriodFilters) || !_.isEmpty(workPeriodPaymentFilters)) {
-        const workPeriodsMust = []
-        _.each(workPeriodFilters, (value, key) => {
-          if (key === 'workPeriods.paymentStatus') {
-            workPeriodsMust.push({
-              terms: {
-                [key]: value
-              }
-            })
-          } else if (key !== 'workPeriods.sentSurveyError') {
-            workPeriodsMust.push({
-              term: {
-                [key]: {
-                  value
-                }
-              }
-            })
-          }
-        })
-        const workPeriodPaymentPath = []
-        if (!_.isEmpty(workPeriodPaymentFilters)) {
-          const workPeriodPaymentsMust = []
-          _.each(workPeriodPaymentFilters, (value, key) => {
-            workPeriodPaymentsMust.push({
-              term: {
-                [key]: {
-                  value
-                }
-              }
-            })
-          })
-          workPeriodPaymentPath.push({
-            nested: {
-              path: 'workPeriods.payments',
-              query: { bool: { must: workPeriodPaymentsMust } }
-            }
-          })
-        }
-
-        esQuery.body.query.bool.must.push({
-          nested: {
-            path: 'workPeriods',
-            query: {
-              bool: {
-                must: [...workPeriodsMust, ...workPeriodPaymentPath]
-              }
-            }
-          }
-        })
-      }
-      logger.debug({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: `Query: ${JSON.stringify(esQuery)}` })
-
-      const { body } = await esClient.search(esQuery)
-      const resourceBookings = _.map(body.hits.hits, '_source')
-      // ESClient will return ResourceBookings with it's all nested WorkPeriods
-      // We re-apply WorkPeriod filters except userHandle because all WPs share same userHandle
-      if (!_.isEmpty(workPeriodFilters) || !_.isEmpty(workPeriodPaymentFilters)) {
-        _.each(resourceBookings, r => {
-          r.workPeriods = _.filter(r.workPeriods, wp => {
-            return _.every(_.omit(workPeriodFilters, 'workPeriods.userHandle'), (value, key) => {
-              key = key.split('.')[1]
-              if (key === 'sentSurveyError' && !workPeriodFilters['workPeriods.sentSurveyError']) {
-                return !wp[key]
-              } else if (key === 'paymentStatus') {
-                return _.includes(value, wp[key])
-              } else {
-                return wp[key] === value
-              }
-            }) && _.every(workPeriodPaymentFilters, (value, key) => {
-              key = key.split('.')[2]
-              wp.payments = _.filter(wp.payments, payment => payment[key] === value)
-              return wp.payments.length > 0
-            })
-          })
-        })
-      }
-
-      // sort Work Periods inside Resource Bookings by startDate just for comfort output
-      _.each(resourceBookings, r => {
-        if (_.isArray(r.workPeriods)) {
-          r.workPeriods = _.sortBy(r.workPeriods, ['startDate'])
-        }
-      })
-
-      return {
-        total: body.hits.total.value,
-        page,
-        perPage,
-        result: resourceBookings
-      }
-    } catch (err) {
-      logger.logFullError(err, { component: 'ResourceBookingService', context: 'searchResourceBookings' })
-    }
   }
 
   logger.info({ component: 'ResourceBookingService', context: 'searchResourceBookings', message: 'fallback to DB query' })
@@ -904,7 +693,7 @@ searchResourceBookings.schema = Joi.object().keys({
     rateType: Joi.rateType(),
     jobId: Joi.string().uuid(),
     jobIds: Joi.array().items(Joi.string().uuid()),
-    userId: Joi.string().uuid(),
+    userId: Joi.string(),
     projectId: Joi.number().integer(),
     projectIds: Joi.alternatives(
       Joi.string(),

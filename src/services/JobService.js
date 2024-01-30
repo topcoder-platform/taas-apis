@@ -12,47 +12,9 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/JobProcessor')
 
 const sequelize = models.sequelize
 const Job = models.Job
-const esClient = helper.getESClient()
-
-/**
- * populate candidates for a job.
- *
- * @param {String} jobId the job id
- * @returns {Array} the list of candidates
- */
-async function _getJobCandidates(jobId) {
-  const { body } = await esClient.search({
-    index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    body: {
-      query: {
-        term: {
-          jobId: {
-            value: jobId
-          }
-        }
-      },
-      size: 10000
-    }
-  })
-
-  if (body.hits.total.value === 0) {
-    return []
-  }
-  const candidates = _.map(body.hits.hits, (hit) => {
-    const candidateRecord = _.cloneDeep(hit._source)
-    candidateRecord.id = hit._id
-    return candidateRecord
-  })
-  return candidates
-}
 
 /**
  * Validate if all skills exist.
@@ -60,7 +22,7 @@ async function _getJobCandidates(jobId) {
  * @param {Array} skills the list of skills
  * @returns {undefined}
  */
-async function _validateSkills(skills) {
+async function _validateSkills (skills) {
   const responses = await Promise.all(
     skills.map(
       skill => helper.getSkillById(skill.skillId)
@@ -87,15 +49,15 @@ async function _validateSkills(skills) {
  * @param {Array} skillNames the list of skill names to validate
  * @returns {Array} the list of matching skill objects
  */
-async function _validateAndGetSkillsByNames(skillNames) {
+async function _validateAndGetSkillsByNames (skillNames) {
   const skills = await helper.getSkillsByExactNames(skillNames)
-  
+
   if (skills.length !== skillNames.length) {
     const foundSkillNames = skills.map(skill => skill.name)
     const notFoundSkillNames = _.difference(skillNames, foundSkillNames)
     throw new errors.BadRequestError(`Invalid skills: [${notFoundSkillNames}]`)
   }
-  
+
   return skills
 }
 
@@ -105,7 +67,7 @@ async function _validateAndGetSkillsByNames(skillNames) {
  * @param {Array} roles the list of roles
  * @returns {undefined}
  */
-async function _validateRoles(roles) {
+async function _validateRoles (roles) {
   const foundRolesObj = await models.Role.findAll({
     where: {
       id: roles
@@ -127,7 +89,7 @@ async function _validateRoles(roles) {
  * @param {String} projectId the project id
  * @returns {undefined}
  */
-async function _checkUserPermissionForGetJob(currentUser, projectId) {
+async function _checkUserPermissionForGetJob (currentUser, projectId) {
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager) {
     await helper.checkIsMemberOfProject(currentUser.userId, projectId)
   }
@@ -140,33 +102,7 @@ async function _checkUserPermissionForGetJob(currentUser, projectId) {
  * @param {Boolean} fromDb flag if query db for data or not
  * @returns {Object} the job
  */
-async function getJob(currentUser, id, fromDb = false) {
-  if (!fromDb) {
-    try {
-      const job = await esClient.get({
-        index: config.esConfig.ES_INDEX_JOB,
-        id
-      })
-
-      await _checkUserPermissionForGetJob(currentUser, job.body._source.projectId) // check user permission
-
-      const jobId = job.body._id
-      const jobRecord = { id: jobId, ...job.body._source }
-      const candidates = await _getJobCandidates(jobId)
-      if (candidates.length) {
-        jobRecord.candidates = candidates
-      }
-      return jobRecord
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "Job" not found`)
-      }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'JobService', context: 'getJob' })
-    }
-  }
+async function getJob (currentUser, id, fromDb = false) {
   logger.info({ component: 'JobService', context: 'getJob', message: 'try to query db for data' })
   const job = await Job.findById(id, true)
 
@@ -188,7 +124,7 @@ getJob.schema = Joi.object().keys({
  * @params {Object} job the job to be created
  * @returns {Object} the created job
  */
-async function createJob(currentUser, job, onTeamCreating) {
+async function createJob (currentUser, job, onTeamCreating) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     await helper.checkIsMemberOfProject(currentUser.userId, job.projectId)
@@ -214,14 +150,20 @@ async function createJob(currentUser, job, onTeamCreating) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const created = await Job.create(job, { transaction: t })
-      entity = created.toJSON()
-      await processCreate(entity)
-      await helper.registerSkills(job)
+      entity = (await Job.create(job, { transaction: t })).toJSON()
     })
+    await helper.registerSkills(job)
   } catch (e) {
+    logger.error(`Error occurred while creating job, rolling back, error: ${e.message}`)
+    logger.debug(`Job object dump: ${JSON.stringify(job)}`)
+
     if (entity) {
       helper.postErrorEvent(config.TAAS_ERROR_TOPIC, entity, 'job.create')
+      await Job.destroy({
+        where: {
+          id: entity.id
+        }
+      })
     }
     throw e
   }
@@ -276,7 +218,7 @@ createJob.schema = Joi.object()
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function updateJob(currentUser, id, data) {
+async function updateJob (currentUser, id, data) {
   logger.debug({ component: 'JobService', context: 'updateJob start', message: `Arguments: ${JSON.stringify(currentUser)} job id: ${id} data: ${JSON.stringify(data)}` })
 
   let skills = data.skills
@@ -325,9 +267,7 @@ async function updateJob(currentUser, id, data) {
     logger.debug({ component: 'JobService', context: 'updateJob update transaction', message: `Data: ${JSON.stringify(data)}` })
 
     await sequelize.transaction(async (t) => {
-      const updated = await job.update(data, { transaction: t })
-      entity = updated.toJSON()
-      await processUpdate(entity)
+      entity = (await job.update(data, { transaction: t })).toJSON()
       await helper.registerSkills(job)
     })
   } catch (e) {
@@ -349,7 +289,7 @@ async function updateJob(currentUser, id, data) {
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function partiallyUpdateJob(currentUser, id, data) {
+async function partiallyUpdateJob (currentUser, id, data) {
   return updateJob(currentUser, id, data, false)
 }
 
@@ -397,7 +337,7 @@ partiallyUpdateJob.schema = Joi.object()
  * @params {Object} data the data to be updated
  * @returns {Object} the updated job
  */
-async function fullyUpdateJob(currentUser, id, data) {
+async function fullyUpdateJob (currentUser, id, data) {
   return updateJob(currentUser, id, data, true)
 }
 
@@ -439,7 +379,7 @@ fullyUpdateJob.schema = Joi.object().keys({
  * @params {Object} currentUser the user who perform this operation
  * @params {String} id the job id
  */
-async function deleteJob(currentUser, id) {
+async function deleteJob (currentUser, id) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine) {
     throw new errors.ForbiddenError('You are not allowed to perform this action!')
@@ -449,7 +389,6 @@ async function deleteJob(currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await job.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'job.delete')
@@ -470,7 +409,7 @@ deleteJob.schema = Joi.object().keys({
  * @params {Object} options the extra options to control the function
  * @returns {Object} the search result, contain total/page/perPage and result array
  */
-async function searchJobs(currentUser, criteria, options = { returnAll: false }) {
+async function searchJobs (currentUser, criteria, options = { returnAll: false }) {
   // check user permission
   if (!currentUser.hasManagePermission && !currentUser.isMachine && !currentUser.isConnectManager && !options.returnAll) {
     if (!criteria.projectId) { // regular user can only search with filtering by "projectId"
@@ -497,167 +436,6 @@ async function searchJobs(currentUser, criteria, options = { returnAll: false })
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_JOB'),
-      body: {
-        query: {
-          bool: {
-            must: [],
-            filter: []
-          }
-        },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort
-      }
-    }
-
-    _.each(_.pick(criteria, [
-      'isApplicationPageActive',
-      'projectId',
-      'externalId',
-      'description',
-      'startDate',
-      'resourceType',
-      'skill',
-      'role',
-      'rateType',
-      'workload',
-      'title',
-      'status',
-      'minSalary',
-      'maxSalary',
-      'jobLocation',
-      'specialJob',
-      'featured',
-      'rcrmStatus'
-    ]), (value, key) => {
-      let must
-      if (key === 'description' || key === 'title' || key === 'rcrmStatus') {
-        must = {
-          match: {
-            [key]: {
-              query: value
-            }
-          }
-        }
-      } else if (key === 'skill' || key === 'role') {
-        must = {
-          terms: {
-            [`${key}s`]: [value]
-          }
-        }
-      } else if (key === 'jobLocation' && value && value.length > 0) {
-        must = {
-          wildcard: {
-            [key]: `*${value}*`
-          }
-        }
-      } else if (key === 'minSalary' || key === 'maxSalary') {
-        const salaryOp = key === 'minSalary' ? 'gte' : 'lte'
-        must = {
-          range: {
-            [key]: {
-              [salaryOp]: value
-            }
-          }
-        }
-      } else if (key === 'specialJob') {
-        if (value === true) {
-          must = {
-            bool: {
-              should: [
-                {
-                  term: {
-                    featured: value
-                  }
-                },
-                {
-                  term: {
-                    showInHotList: value
-                  }
-                }
-              ]
-            }
-          }
-        } else {
-          must = {
-            bool: {
-              must: [
-                {
-                  term: {
-                    featured: value
-                  }
-                },
-                {
-                  term: {
-                    showInHotList: value
-                  }
-                }
-              ]
-            }
-          }
-        }
-      } else {
-        must = {
-          term: {
-            [key]: {
-              value
-            }
-          }
-        }
-      }
-      esQuery.body.query.bool.must.push(must)
-    })
-    // If criteria contains projectIds, filter projectId with this value
-    if (criteria.projectIds) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          projectId: criteria.projectIds
-        }
-      })
-    }
-    // if criteria contains jobIds, filter jobIds with this value
-    if (criteria.jobIds && criteria.jobIds.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          _id: criteria.jobIds
-        }
-      })
-    }
-    // if critera contains bodySkills, filter skills with this value
-    if (criteria.bodySkills && criteria.bodySkills.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          skills: criteria.bodySkills
-        }
-      })
-    }
-    logger.debug({ component: 'JobService', context: 'searchJobs', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-    const result = await Promise.all(_.map(body.hits.hits, async (hit) => {
-      const jobRecord = _.cloneDeep(hit._source)
-      jobRecord.id = hit._id
-      const candidates = await _getJobCandidates(jobRecord.id)
-      if (candidates.length) {
-        jobRecord.candidates = candidates
-      }
-      return jobRecord
-    }))
-
-    return {
-      total: body.hits.total.value,
-      page,
-      perPage,
-      result
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'JobService', context: 'searchJobs' })
   }
   logger.info({ component: 'JobService', context: 'searchJobs', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }

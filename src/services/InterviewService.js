@@ -14,19 +14,10 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
-const {
-  processRequestInterview,
-  processUpdateInterview,
-  processBulkUpdateInterviews
-} = require('../esProcessors/InterviewProcessor')
 
-const {
-  processUpdate: jobCandidateProcessUpdate
-} = require('../esProcessors/JobCandidateProcessor')
 const sequelize = models.sequelize
 const Interview = models.Interview
 const UserMeetingSettings = models.UserMeetingSettings
-const esClient = helper.getESClient()
 const {
   createSchedulingPage,
   createVirtualCalendarForUser,
@@ -108,30 +99,6 @@ function handleSequelizeError (err, jobCandidateId) {
 async function getInterviewByRound (currentUser, jobCandidateId, round, fromDb = false) {
   // check permission
   await ensureUserIsPermitted(currentUser, jobCandidateId, true)
-  if (!fromDb) {
-    try {
-      // get job candidate from ES
-      const jobCandidateES = await esClient.get({
-        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-        id: jobCandidateId
-      })
-      // extract interviews from ES object
-      const jobCandidateInterviews = _.get(jobCandidateES, 'body._source.interviews', [])
-      // find interview by round
-      const interview = _.find(jobCandidateInterviews, interview => interview.round === round)
-      if (interview) {
-        return interview
-      }
-      // if reaches here, the interview with this round is not found
-      throw new errors.NotFoundError(`Interview doesn't exist with round: ${round}`)
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${jobCandidateId} "JobCandidate" not found`)
-      }
-      logger.logFullError(err, { component: 'InterviewService', context: 'getInterviewByRound' })
-      throw err
-    }
-  }
   // either ES query failed or `fromDb` is set - fallback to DB
   logger.info({ component: 'InterviewService', context: 'getInterviewByRound', message: 'try to query db for data' })
 
@@ -161,51 +128,6 @@ getInterviewByRound.schema = Joi.object().keys({
  * @returns {Object} the interview
  */
 async function getInterviewById (currentUser, id, fromDb = false) {
-  if (!fromDb) {
-    try {
-      // construct query for nested search
-      const esQueryBody = {
-        _source: false,
-        query: {
-          nested: {
-            path: 'interviews',
-            query: {
-              bool: {
-                should: []
-              }
-            },
-            inner_hits: {}
-          }
-        }
-      }
-      // add filtering terms
-      // interviewId
-      esQueryBody.query.nested.query.bool.should.push({
-        term: {
-          'interviews.id': {
-            value: id
-          }
-        }
-      })
-      // search
-      const { body } = await esClient.search({
-        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-        body: esQueryBody
-      })
-      // extract inner interview hit from body - there's always one jobCandidate & interview hit as we search with IDs
-      const interview = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits[0]._source')
-      if (interview) {
-        // check permission before returning
-        await ensureUserIsPermitted(currentUser, interview.jobCandidateId, true)
-        return interview
-      }
-      // if reaches here, the interview with this IDs is not found
-      throw new errors.NotFoundError(`Interview doesn't exist with id: ${id}`)
-    } catch (err) {
-      logger.logFullError(err, { component: 'InterviewService', context: 'getInterviewById' })
-      throw err
-    }
-  }
   // either ES query failed or `fromDb` is set - fallback to DB
   logger.info({ component: 'InterviewService', context: 'getInterviewById', message: 'try to query db for data' })
   const interview = await Interview.findOne({
@@ -244,10 +166,10 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
 
   // if M2M require hostUserId
   if (currentUser.isMachine) {
-    const hostUserIdValidator = Joi.string().uuid().required()
+    const hostUserIdValidator = Joi.string().required()
     const { error } = hostUserIdValidator.validate(interview.hostUserId)
     if (error) {
-      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid uuid`)
+      throw new errors.BadRequestError(`interview.hostUserId ${interview.hostUserId} is required and must be a valid topcoder user id`)
     }
   }
 
@@ -281,7 +203,7 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // get calendar if exists, otherwise create a virtual one for the user
       const existentCalendar = await UserMeetingSettings.getPrimaryNylasCalendarForUser(interview.hostUserId)
       if (_.isNil(existentCalendar)) {
-        const { email, firstName, lastName } = await helper.getUserDetailsByUserUUID(interview.hostUserId)
+        const { email, firstName, lastName } = await helper.ensureTopcoderUserIdExists(interview.hostUserId)
         const currentUserFullname = `${firstName} ${lastName}`
         calendar = await createVirtualCalendarForUser(interview.hostUserId, email, currentUserFullname, interview.hostTimezone)
         // make the new calendar primary
@@ -339,14 +261,13 @@ async function requestInterview (currentUser, jobCandidateId, interview) {
       // create the interview
       const created = await Interview.create(interview, { transaction: t })
       entity = created.toJSON()
-      await processRequestInterview(entity)
+
       // update jobCandidate.status to Interview
       const [, affectedRows] = await models.JobCandidate.update(
         { status: 'interview' },
         { where: { id: created.jobCandidateId }, returning: true, transaction: t }
       )
       jobCandidateEntity = _.omit(_.get(affectedRows, '0.dataValues'), 'deletedAt')
-      await jobCandidateProcessUpdate(jobCandidateEntity)
     })
   } catch (err) {
     if (entity) {
@@ -369,7 +290,7 @@ requestInterview.schema = Joi.object().keys({
   interview: Joi.object().keys({
     duration: Joi.number().integer().positive().required(),
     hostTimezone: Joi.string().required(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({
@@ -433,9 +354,7 @@ async function partiallyUpdateInterview (currentUser, interview, data) {
         })
       }
 
-      const updated = await interview.update(data, { transaction: t })
-      entity = updated.toJSON()
-      await processUpdateInterview(entity)
+      entity = (await interview.update(data, { transaction: t })).toJSON()
     })
   } catch (err) {
     if (entity) {
@@ -481,7 +400,7 @@ partiallyUpdateInterviewByRound.schema = Joi.object().keys({
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
     hostTimezone: Joi.string(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({
@@ -529,7 +448,7 @@ partiallyUpdateInterviewById.schema = Joi.object().keys({
   data: Joi.object().keys({
     duration: Joi.number().integer().positive(),
     hostTimezone: Joi.string(),
-    hostUserId: Joi.string().uuid(),
+    hostUserId: Joi.string(),
     expireTimestamp: Joi.date(),
     availableTime: Joi.array().min(1).items(
       Joi.object({
@@ -601,74 +520,6 @@ async function searchInterviews (currentUser, jobCandidateId, criteria) {
 
   const { page, perPage } = criteria
 
-  try {
-    // construct query for nested search
-    const esQueryBody = {
-      _source: false,
-      query: {
-        nested: {
-          path: 'interviews',
-          query: {
-            bool: {
-              must: []
-            }
-          },
-          inner_hits: {
-            size: 100 // max. inner_hits size
-          }
-        }
-      }
-    }
-    // add filtering terms
-    // jobCandidateId
-    esQueryBody.query.nested.query.bool.must.push({
-      term: {
-        'interviews.jobCandidateId': {
-          value: jobCandidateId
-        }
-      }
-    })
-    // criteria
-    _.each(_.pick(criteria, ['status', 'createdAt', 'updatedAt']), (value, key) => {
-      const innerKey = `interviews.${key}`
-      esQueryBody.query.nested.query.bool.must.push({
-        term: {
-          [innerKey]: {
-            value
-          }
-        }
-      })
-    })
-    // search
-    const { body } = await esClient.search({
-      index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-      body: esQueryBody
-    })
-    // get jobCandidate hit from body - there's always one jobCandidate hit as we search via jobCandidateId
-    // extract inner interview hits from jobCandidate
-    const interviewHits = _.get(body, 'hits.hits[0].inner_hits.interviews.hits.hits', [])
-    const interviews = _.map(interviewHits, '_source')
-
-    // we need to sort & paginate interviews manually
-    // as it's not possible with ES query on nested type
-    // (ES applies pagination & sorting on parent documents, not on the nested objects)
-
-    // sort
-    const sortedInterviews = _.orderBy(interviews, criteria.sortBy, criteria.sortOrder)
-    // paginate
-    const start = (page - 1) * perPage
-    const end = start + perPage
-    const paginatedInterviews = _.slice(sortedInterviews, start, end)
-
-    return {
-      total: sortedInterviews.length,
-      page,
-      perPage,
-      result: paginatedInterviews
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'InterviewService', context: 'searchInterviews' })
-  }
   logger.info({ component: 'InterviewService', context: 'searchInterviews', message: 'fallback to DB query' })
   const filter = {
     [Op.and]: [{ jobCandidateId }]
@@ -734,6 +585,7 @@ async function updateCompletedInterviews () {
           transaction: t
         }
       )
+      // eslint-disable-next-line no-unused-vars
       let updatedRows
       [affectedCount, updatedRows] = updated
 
@@ -753,7 +605,6 @@ async function updateCompletedInterviews () {
           _.set(bulkUpdatePayload, [interview.jobCandidateId, interview.id], affectedFields)
         })
         entity = bulkUpdatePayload
-        await processBulkUpdateInterviews(bulkUpdatePayload)
       }
     })
   } catch (e) {

@@ -150,7 +150,7 @@ async function processCreate (payload) {
 async function sendJobCandidateSelectedNotification (payload) {
   const jobCandidate = payload.value
   const job = await models.Job.findById(jobCandidate.jobId)
-  const user = await helper.getUserById(jobCandidate.userId)
+  const tcUser = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.job-candidate-selected']
   const project = await helper.getProjectById({ isMachine: true }, job.projectId)
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
@@ -163,7 +163,7 @@ async function sendJobCandidateSelectedNotification (payload) {
     jobTitle: job.title,
     jobDuration: job.duration,
     jobStartDate: helper.formatDate(job.startDate),
-    userHandle: user.handle,
+    userHandle: tcUser.handleLower,
     jobUrl,
     rcrmJobUrl
   }
@@ -202,7 +202,7 @@ async function sendJobCandidateSelectedNotification (payload) {
               `*Job Title*: <${jobUrl}|${job.title}> (<${rcrmJobUrl}|Open in RCRM>)`,
               `*Job Start Date*: ${helper.formatDate(job.startDate)}`,
               `*Job Duration*: ${job.duration}`,
-              `*Job Candidate*: ${user.handle}`
+              `*Job Candidate*: ${tcUser.handle}`
             ].join('\n')
           }
         }

@@ -5,7 +5,6 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
-const HttpStatus = require('http-status-codes')
 const { Op } = require('sequelize')
 const { v4: uuid } = require('uuid')
 const { Scopes, UserRoles } = require('../../app-constants')
@@ -14,16 +13,10 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const models = require('../models')
 const JobService = require('./JobService')
-const {
-  processCreate,
-  processUpdate,
-  processDelete
-} = require('../esProcessors/JobCandidateProcessor')
 
 const sequelize = models.sequelize
 const NotificationSchedulerService = require('./NotificationsSchedulerService')
 const JobCandidate = models.JobCandidate
-const esClient = helper.getESClient()
 
 /**
  * Check user permission for getting job candidate.
@@ -66,27 +59,7 @@ function getJobCandidateOmitList (currentUser) {
  */
 async function getJobCandidate (currentUser, id, fromDb = false) {
   const omitList = getJobCandidateOmitList(currentUser)
-  if (!fromDb) {
-    try {
-      const jobCandidate = await esClient.get({
-        index: config.esConfig.ES_INDEX_JOB_CANDIDATE,
-        id
-      })
 
-      await _checkUserPermissionForGetJobCandidate(currentUser, jobCandidate.body._source.jobId) // check user permisson
-
-      const jobCandidateRecord = { id: jobCandidate.body._id, ...jobCandidate.body._source }
-      return _.omit(jobCandidateRecord, omitList)
-    } catch (err) {
-      if (helper.isDocumentMissingException(err)) {
-        throw new errors.NotFoundError(`id: ${id} "JobCandidate" not found`)
-      }
-      if (err.httpStatus === HttpStatus.FORBIDDEN) {
-        throw err
-      }
-      logger.logFullError(err, { component: 'JobCandidateService', context: 'getJobCandidate' })
-    }
-  }
   logger.info({ component: 'JobCandidateService', context: 'getJobCandidate', message: 'try to query db for data' })
   // include interviews if user has permission
   const include = []
@@ -120,7 +93,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
   }
 
   await helper.ensureJobById(jobCandidate.jobId) // ensure job exists
-  await helper.ensureUserById(jobCandidate.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(jobCandidate.userId) // ensure user exists
 
   jobCandidate.id = uuid()
   jobCandidate.createdBy = await helper.getUserId(currentUser.userId)
@@ -128,9 +101,7 @@ async function createJobCandidate (currentUser, jobCandidate) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const created = await JobCandidate.create(jobCandidate, { transaction: t })
-      entity = created.toJSON()
-      await processCreate(entity)
+      entity = (await JobCandidate.create(jobCandidate, { transaction: t })).toJSON()
     })
   } catch (e) {
     if (entity) {
@@ -147,7 +118,7 @@ createJobCandidate.schema = Joi.object().keys({
   jobCandidate: Joi.object().keys({
     status: Joi.jobCandidateStatus().default('open'),
     jobId: Joi.string().uuid().required(),
-    userId: Joi.string().uuid().required(),
+    userId: Joi.string().required(),
     externalId: Joi.string().allow(null),
     resume: Joi.string().uri().allow(null),
     remark: Joi.stringAllowEmpty().allow(null)
@@ -177,9 +148,7 @@ async function updateJobCandidate (currentUser, id, data) {
   let entity
   try {
     await sequelize.transaction(async (t) => {
-      const updated = await jobCandidate.update(data, { transaction: t })
-      entity = updated.toJSON()
-      await processUpdate(entity)
+      entity = (await jobCandidate.update(data, { transaction: t })).toJSON()
     })
   } catch (e) {
     if (entity) {
@@ -224,7 +193,7 @@ partiallyUpdateJobCandidate.schema = Joi.object().keys({
  */
 async function fullyUpdateJobCandidate (currentUser, id, data) {
   await helper.ensureJobById(data.jobId) // ensure job exists
-  await helper.ensureUserById(data.userId) // ensure user exists
+  await helper.ensureTopcoderUserIdExists(data.userId) // ensure user exists
   return updateJobCandidate(currentUser, id, data)
 }
 
@@ -235,7 +204,7 @@ fullyUpdateJobCandidate.schema = Joi.object()
     data: Joi.object()
       .keys({
         jobId: Joi.string().uuid().required(),
-        userId: Joi.string().uuid().required(),
+        userId: Joi.string(),
         status: Joi.jobCandidateStatus().default('open'),
         viewedByCustomer: Joi.boolean().allow(null),
         externalId: Joi.string().allow(null).default(null),
@@ -261,7 +230,6 @@ async function deleteJobCandidate (currentUser, id) {
   try {
     await sequelize.transaction(async (t) => {
       await jobCandidate.destroy({ transaction: t })
-      await processDelete({ id })
     })
   } catch (e) {
     helper.postErrorEvent(config.TAAS_ERROR_TOPIC, { id }, 'jobcandidate.delete')
@@ -298,58 +266,6 @@ async function searchJobCandidates (currentUser, criteria) {
   }
   if (!criteria.sortOrder) {
     criteria.sortOrder = 'desc'
-  }
-  try {
-    const sort = [{ [criteria.sortBy === 'id' ? '_id' : criteria.sortBy]: { order: criteria.sortOrder } }]
-
-    const esQuery = {
-      index: config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-      body: {
-        query: {
-          bool: {
-            must: []
-          }
-        },
-        from: (page - 1) * perPage,
-        size: perPage,
-        sort
-      }
-    }
-
-    _.each(_.pick(criteria, ['jobId', 'userId', 'status', 'externalId']), (value, key) => {
-      esQuery.body.query.bool.must.push({
-        term: {
-          [key]: {
-            value
-          }
-        }
-      })
-    })
-
-    // if criteria contains statuses, filter statuses with this value
-    if (criteria.statuses && criteria.statuses.length > 0) {
-      esQuery.body.query.bool.filter.push({
-        terms: {
-          status: criteria.statuses
-        }
-      })
-    }
-    logger.debug({ component: 'JobCandidateService', context: 'searchJobCandidates', message: `Query: ${JSON.stringify(esQuery)}` })
-
-    const { body } = await esClient.search(esQuery)
-
-    return {
-      total: body.hits.total.value,
-      page,
-      perPage,
-      result: _.map(body.hits.hits, (hit) => {
-        const obj = _.cloneDeep(hit._source)
-        obj.id = hit._id
-        return _.omit(obj, omitList)
-      })
-    }
-  } catch (err) {
-    logger.logFullError(err, { component: 'JobCandidateService', context: 'searchJobCandidates' })
   }
   logger.info({ component: 'JobCandidateService', context: 'searchJobCandidates', message: 'fallback to DB query' })
   const filter = { [Op.and]: [] }
@@ -392,7 +308,7 @@ searchJobCandidates.schema = Joi.object().keys({
     sortBy: Joi.string().valid('id', 'status'),
     sortOrder: Joi.string().valid('desc', 'asc'),
     jobId: Joi.string().uuid(),
-    userId: Joi.string().uuid(),
+    userId: Joi.string(),
     status: Joi.jobCandidateStatus(),
     statuses: Joi.array().items(Joi.jobCandidateStatus()),
     externalId: Joi.string()
@@ -406,13 +322,12 @@ searchJobCandidates.schema = Joi.object().keys({
  */
 async function downloadJobCandidateResume (currentUser, id) {
   const jobCandidate = await JobCandidate.findById(id)
-  const { id: currentUserUserId } = await helper.getUserByExternalId(currentUser.userId)
 
   // customer role
-  if (!jobCandidate.viewedByCustomer && currentUserUserId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
+  if (!jobCandidate.viewedByCustomer && currentUser.userId !== jobCandidate.userId && currentUser.roles.length === 1 && currentUser.roles[0] === UserRoles.TopcoderUser) {
     try {
       const job = await models.Job.findById(jobCandidate.jobId)
-      const { handle } = await helper.getUserById(jobCandidate.userId, true)
+      const { handle } = await helper.ensureTopcoderUserIdExists(jobCandidate.userId)
 
       await NotificationSchedulerService.sendNotification(currentUser, {
         template: 'taas.notification.job-candidate-resume-viewed',

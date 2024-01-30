@@ -34,7 +34,7 @@ describe('resourceBooking service test', () => {
     let stubEnsureUserById
     beforeEach(() => {
       stubEnsureJobById = sinon.stub(helper, 'ensureJobById').callsFake(async () => undefined)
-      stubEnsureUserById = sinon.stub(helper, 'ensureUserById').callsFake(async () => commonData.UserTCConnCopilot)
+      stubEnsureUserById = sinon.stub(helper, 'ensureTopcoderUserIdExists').callsFake(async () => commonData.UsrTCConnCopilot)
     })
     it('T01:Create resource booking start Saturday end Sunday', async () => {
       const data = testData.T01
@@ -108,7 +108,7 @@ describe('resourceBooking service test', () => {
     let stubEnsureUserById
     beforeEach(() => {
       stubEnsureJobById = sinon.stub(helper, 'ensureJobById').callsFake(async () => undefined)
-      stubEnsureUserById = sinon.stub(helper, 'ensureUserById').callsFake(async () => commonData.UserTCConnCopilot)
+      stubEnsureUserById = sinon.stub(helper, 'ensureTopcoderUserIdExists').callsFake(async () => commonData.UsrTCConnCopilot)
     })
     it('T05:Fail to create resource booking with startDate greater then endDate', async () => {
       const data = testData.T05

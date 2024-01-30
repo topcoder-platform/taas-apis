@@ -84,7 +84,7 @@ async function sendPlacedNotifications (payload) {
   const resourceBooking = await models.ResourceBooking.findById(payload.value.id)
   const template = helper.getEmailTemplatesForKey('notificationEmailTemplates')['taas.notification.resource-booking-placed']
   const project = await helper.getProjectById({ isMachine: true }, resourceBooking.projectId)
-  const user = await helper.getUserById(resourceBooking.userId)
+  const tcUser = await helper.ensureTopcoderUserIdExists(resourceBooking.userId)
   const job = await models.Job.findById(resourceBooking.jobId)
   const recipients = _.map(project.members, m => _.pick(m, 'userId'))
   const jobUrl = `${config.TAAS_APP_URL}/${project.id}/positions/${job.id}`
@@ -95,7 +95,7 @@ async function sendPlacedNotifications (payload) {
     teamUrl,
     jobTitle: job.title,
     jobUrl,
-    userHandle: user.handle,
+    userHandle: tcUser.handleLower,
     startDate: resourceBooking.startDate,
     endDate: resourceBooking.endDate
   }
@@ -116,7 +116,7 @@ async function sendPlacedNotifications (payload) {
     type: 'taas.notification.resource-booking-placed',
     details: {
       recipients,
-      contents: { teamName: project.name, projectId: project.id, userHandle: user.handle, jobTitle: job.title },
+      contents: { teamName: project.name, projectId: project.id, userHandle: tcUser.handle, jobTitle: job.title },
       version: 1
     }
   }
@@ -126,7 +126,7 @@ async function sendPlacedNotifications (payload) {
   logger.debug({
     component: 'ResourceBookingEventHandler',
     context: 'placeJobCandidate',
-    message: `send notifications, teamName: ${project.name}, jobTitle: ${job.title}, projectId: ${project.id}, userHandle: ${user.handle}`
+    message: `send notifications, teamName: ${project.name}, jobTitle: ${job.title}, projectId: ${project.id}, userHandle: ${tcUser.handle}`
   })
 }
 

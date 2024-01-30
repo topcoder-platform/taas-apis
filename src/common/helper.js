@@ -6,23 +6,17 @@ const fs = require('fs')
 const querystring = require('querystring')
 const Confirm = require('prompt-confirm')
 const Bottleneck = require('bottleneck')
-const URI = require('urijs')
-const AWS = require('aws-sdk')
 const config = require('config')
 const HttpStatus = require('http-status-codes')
 const _ = require('lodash')
 const request = require('superagent')
-const elasticsearch = require('@elastic/elasticsearch')
-const {
-  ResponseError: ESResponseError
-} = require('@elastic/elasticsearch/lib/errors')
 const errors = require('../common/errors')
 const logger = require('./logger')
 const models = require('../models')
 const eventDispatcher = require('./eventDispatcher')
 const busApi = require('@topcoder-platform/topcoder-bus-api-wrapper')
 const moment = require('moment-timezone')
-const { PaymentStatusRules, SearchUsers, InterviewEventHandlerTimeout } = require('../../app-constants')
+const { PaymentStatusRules, InterviewEventHandlerTimeout } = require('../../app-constants')
 const emailTemplateConfig = require('../../config/email_template.config')
 const { Mutex, withTimeout } = require('async-mutex')
 const jwt = require('jsonwebtoken')
@@ -48,8 +42,6 @@ const localLogger = {
     })
 }
 
-AWS.config.region = config.esConfig.AWS_REGION
-
 const m2mAuth = require('tc-core-library-js').auth.m2m
 
 const m2m = m2mAuth(
@@ -61,17 +53,6 @@ const m2m = m2mAuth(
     'AUTH0_PROXY_SERVER_URL'
   ])
 )
-
-const m2mForUbahn = m2mAuth({
-  AUTH0_AUDIENCE: config.AUTH0_AUDIENCE_UBAHN,
-  ..._.pick(config, [
-    'AUTH0_URL',
-    'TOKEN_CACHE_TIME',
-    'AUTH0_CLIENT_ID',
-    'AUTH0_CLIENT_SECRET',
-    'AUTH0_PROXY_SERVER_URL'
-  ])
-})
 
 let busApiClient
 
@@ -97,195 +78,6 @@ function getBusApiClient () {
     ])
   )
   return busApiClient
-}
-
-// ES Client mapping
-const esClients = {}
-
-// The es index property mapping
-const esIndexPropertyMapping = {}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB')] = {
-  projectId: { type: 'integer' },
-  externalId: { type: 'keyword' },
-  description: { type: 'text' },
-  title: { type: 'text' },
-  startDate: { type: 'date', format: 'yyyy-MM-dd' },
-  duration: { type: 'integer' },
-  numPositions: { type: 'integer' },
-  resourceType: { type: 'keyword' },
-  rateType: { type: 'keyword' },
-  workload: { type: 'keyword' },
-  skills: { type: 'keyword' },
-  status: { type: 'keyword' },
-  isApplicationPageActive: { type: 'boolean' },
-  minSalary: { type: 'integer' },
-  maxSalary: { type: 'integer' },
-  hoursPerWeek: { type: 'integer' },
-  jobLocation: { type: 'keyword' },
-  jobTimezone: { type: 'keyword' },
-  currency: { type: 'keyword' },
-  roleIds: { type: 'keyword' },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_JOB_CANDIDATE')] = {
-  jobId: { type: 'keyword' },
-  userId: { type: 'keyword' },
-  status: { type: 'keyword' },
-  viewedByCustomer: { type: 'boolean' },
-  externalId: { type: 'keyword' },
-  resume: { type: 'text' },
-  remark: { type: 'keyword' },
-  interviews: {
-    type: 'nested',
-    properties: {
-      id: { type: 'keyword' },
-      nylasPageId: { type: 'keyword' },
-      nylasPageSlug: { type: 'keyword' },
-      nylasCalendarId: { type: 'keyword' },
-      hostTimezone: { type: 'keyword' },
-      guestTimezone: { type: 'keyword' },
-      availableTime: {
-        type: 'nested',
-        properties: {
-          days: { type: 'keyword' },
-          end: { type: 'date', format: 'HH:mm' },
-          start: { type: 'date', format: 'HH:mm' }
-        }
-      },
-      hostUserId: { type: 'keyword' },
-      expireTimestamp: { type: 'date' },
-      jobCandidateId: { type: 'keyword' },
-      duration: { type: 'integer' },
-      startTimestamp: { type: 'date' },
-      endTimestamp: { type: 'date' },
-      round: { type: 'integer' },
-      status: { type: 'keyword' },
-      createdAt: { type: 'date' },
-      createdBy: { type: 'keyword' },
-      updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' },
-      deletedAt: { type: 'date' }
-    }
-  },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_RESOURCE_BOOKING')] = {
-  projectId: { type: 'integer' },
-  userId: { type: 'keyword' },
-  jobId: { type: 'keyword' },
-  status: { type: 'keyword' },
-  startDate: { type: 'date', format: 'yyyy-MM-dd' },
-  endDate: { type: 'date', format: 'yyyy-MM-dd' },
-  memberRate: { type: 'float' },
-  customerRate: { type: 'float' },
-  sendWeeklySurvey: { type: 'boolean' },
-  rateType: { type: 'keyword' },
-  billingAccountId: { type: 'integer', null_value: 0 },
-  workPeriods: {
-    type: 'nested',
-    properties: {
-      id: { type: 'keyword' },
-      resourceBookingId: { type: 'keyword' },
-      userHandle: {
-        type: 'keyword',
-        normalizer: 'lowercaseNormalizer'
-      },
-      projectId: { type: 'integer' },
-      userId: { type: 'keyword' },
-      sentSurvey: { type: 'boolean' },
-      sentSurveyError: {
-        type: 'nested',
-        properties: {
-          errorCode: { type: 'integer' },
-          errorMessage: { type: 'keyword' }
-        }
-      },
-      startDate: { type: 'date', format: 'yyyy-MM-dd' },
-      endDate: { type: 'date', format: 'yyyy-MM-dd' },
-      daysWorked: { type: 'integer' },
-      daysPaid: { type: 'integer' },
-      paymentTotal: { type: 'float' },
-      paymentStatus: { type: 'keyword' },
-      payments: {
-        type: 'nested',
-        properties: {
-          id: { type: 'keyword' },
-          workPeriodId: { type: 'keyword' },
-          challengeId: { type: 'keyword' },
-          memberRate: { type: 'float' },
-          customerRate: { type: 'float' },
-          days: { type: 'integer' },
-          amount: { type: 'float' },
-          status: { type: 'keyword' },
-          statusDetails: {
-            type: 'nested',
-            properties: {
-              errorMessage: { type: 'text' },
-              errorCode: { type: 'integer' },
-              retry: { type: 'integer' },
-              step: { type: 'keyword' },
-              challengeId: { type: 'keyword' }
-            }
-          },
-          billingAccountId: { type: 'integer' },
-          createdAt: { type: 'date' },
-          createdBy: { type: 'keyword' },
-          updatedAt: { type: 'date' },
-          updatedBy: { type: 'keyword' }
-        }
-      },
-      createdAt: { type: 'date' },
-      createdBy: { type: 'keyword' },
-      updatedAt: { type: 'date' },
-      updatedBy: { type: 'keyword' }
-    }
-  },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
-}
-esIndexPropertyMapping[config.get('esConfig.ES_INDEX_ROLE')] = {
-  name: {
-    type: 'keyword',
-    normalizer: 'lowercaseNormalizer'
-  },
-  description: { type: 'keyword' },
-  listOfSkills: {
-    type: 'keyword',
-    normalizer: 'lowercaseNormalizer'
-  },
-  rates: {
-    properties: {
-      global: { type: 'integer' },
-      inCountry: { type: 'integer' },
-      offShore: { type: 'integer' },
-      niche: { type: 'integer' },
-      rate20niche: { type: 'integer' },
-      rate30niche: { type: 'integer' },
-      rate30Global: { type: 'integer' },
-      rate30InCountry: { type: 'integer' },
-      rate30OffShore: { type: 'integer' },
-      rate20Global: { type: 'integer' },
-      rate20InCountry: { type: 'integer' },
-      rate20OffShore: { type: 'integer' }
-    }
-  },
-  numberOfMembers: { type: 'integer' },
-  numberOfMembersAvailable: { type: 'integer' },
-  imageUrl: { type: 'keyword' },
-  timeToCandidate: { type: 'integer' },
-  timeToInterview: { type: 'integer' },
-  createdAt: { type: 'date' },
-  createdBy: { type: 'keyword' },
-  updatedAt: { type: 'date' },
-  updatedBy: { type: 'keyword' }
 }
 
 /**
@@ -328,221 +120,6 @@ async function promptUser (promptQuery, cb) {
  */
 async function sleep (milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds))
-}
-
-/**
- * Create index in elasticsearch
- * @param {Object} index the index name
- * @param {Object} logger the logger object
- * @param {Object} esClient the elasticsearch client (optional, will create if not given)
- */
-async function createIndex (index, logger, esClient = null) {
-  if (!esClient) {
-    esClient = getESClient()
-  }
-
-  await esClient.indices.create({ index })
-  await esClient.indices.close({ index })
-  await esClient.indices.putSettings({
-    index: index,
-    body: {
-      settings: {
-        analysis: {
-          normalizer: {
-            lowercaseNormalizer: {
-              filter: ['lowercase']
-            }
-          }
-        }
-      }
-    }
-  })
-  await esClient.indices.open({ index })
-  await esClient.indices.putMapping({
-    index,
-    body: {
-      properties: esIndexPropertyMapping[index]
-    }
-  })
-  logger.info({
-    component: 'createIndex',
-    message: `ES Index ${index} creation succeeded!`
-  })
-}
-
-/**
- * Delete index in elasticsearch
- * @param {Object} index the index name
- * @param {Object} logger the logger object
- * @param {Object} esClient the elasticsearch client (optional, will create if not given)
- */
-async function deleteIndex (index, logger, esClient = null) {
-  if (!esClient) {
-    esClient = getESClient()
-  }
-
-  await esClient.indices.delete({ index })
-  logger.info({
-    component: 'deleteIndex',
-    message: `ES Index ${index} deletion succeeded!`
-  })
-}
-
-/**
- * Split data into bulks
- * @param {Array} data the array of data to split
- */
-function getBulksFromDocuments (data) {
-  const maxBytes = config.get('esConfig.MAX_BULK_REQUEST_SIZE_MB') * 1e6
-  const bulks = []
-  let documentIndex = 0
-  let currentBulkSize = 0
-  let currentBulk = []
-
-  while (true) {
-    // break loop when parsed all documents
-    if (documentIndex >= data.length) {
-      bulks.push(currentBulk)
-      break
-    }
-
-    // check if current document size is greater than the max bulk size, if so, throw error
-    const currentDocumentSize = Buffer.byteLength(
-      JSON.stringify(data[documentIndex]),
-      'utf-8'
-    )
-    if (maxBytes < currentDocumentSize) {
-      throw new Error(
-        `Document with id ${data[documentIndex]} has size ${currentDocumentSize}, which is greater than the max bulk size, ${maxBytes}. Consider increasing the max bulk size.`
-      )
-    }
-
-    if (
-      currentBulkSize + currentDocumentSize > maxBytes ||
-      currentBulk.length >= config.get('esConfig.MAX_BULK_NUM_DOCUMENTS')
-    ) {
-      // if adding the current document goes over the max bulk size OR goes over max number of docs
-      // then push the current bulk to bulks array and reset the current bulk
-      bulks.push(currentBulk)
-      currentBulk = []
-      currentBulkSize = 0
-    } else {
-      // otherwise, add document to current bulk
-      currentBulk.push(data[documentIndex])
-      currentBulkSize += currentDocumentSize
-      documentIndex++
-    }
-  }
-  return bulks
-}
-
-/**
- * Index records in bulk
- * @param {Object | String} modelOpts the model name in db, or model options
- * @param {Object} indexName the index name
- * @param {Object} logger the logger object
- */
-async function indexBulkDataToES (modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
-
-  logger.info({
-    component: 'indexBulkDataToES',
-    message: `Reindexing of ${modelName}s started!`
-  })
-
-  const esClient = getESClient()
-
-  // clear index
-  const indexExistsRes = await esClient.indices.exists({ index: indexName })
-  if (indexExistsRes.statusCode !== 404) {
-    await deleteIndex(indexName, logger, esClient)
-  }
-  await createIndex(indexName, logger, esClient)
-
-  // get data from db
-  logger.info({
-    component: 'indexBulkDataToES',
-    message: 'Getting data from database'
-  })
-  const model = models[modelName]
-  const data = await model.findAll({ include })
-  const rawObjects = _.map(data, (r) => r.toJSON())
-  if (_.isEmpty(rawObjects)) {
-    logger.info({
-      component: 'indexBulkDataToES',
-      message: `No data in database for ${modelName}`
-    })
-    return
-  }
-  const bulks = getBulksFromDocuments(rawObjects)
-
-  const startTime = Date.now()
-  let doneCount = 0
-  for (const bulk of bulks) {
-    // send bulk to esclient
-    const body = bulk.flatMap((doc) => [
-      { index: { _index: indexName, _id: doc.id } },
-      doc
-    ])
-    await esClient.bulk({ refresh: true, body })
-    doneCount += bulk.length
-
-    // log metrics
-    const timeSpent = Date.now() - startTime
-    const avgTimePerDocument = timeSpent / doneCount
-    const estimatedLength = avgTimePerDocument * data.length
-    const timeLeft = startTime + estimatedLength - Date.now()
-    logger.info({
-      component: 'indexBulkDataToES',
-      message: `Processed ${doneCount} of ${
-        data.length
-      } documents, average time per document ${formatTime(
-        avgTimePerDocument
-      )}, time spent: ${formatTime(timeSpent)}, time left: ${formatTime(
-        timeLeft
-      )}`
-    })
-  }
-}
-
-/**
- * Index job by id
- * @param {Object | String} modelOpts the model name in db, or model options
- * @param {Object} indexName the index name
- * @param {string} id the job id
- * @param {Object} logger the logger object
- */
-async function indexDataToEsById (id, modelOpts, indexName, logger) {
-  const modelName = _.isString(modelOpts) ? modelOpts : modelOpts.modelName
-  const include = _.get(modelOpts, 'include', [])
-
-  logger.info({
-    component: 'indexDataToEsById',
-    message: `Reindexing of ${modelName} with id ${id} started!`
-  })
-  const esClient = getESClient()
-
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Getting data from database'
-  })
-  const model = models[modelName]
-
-  const data = await model.findById(id, include)
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Indexing data into Elasticsearch'
-  })
-  await esClient.index({
-    index: indexName,
-    id: id,
-    body: data.dataValues
-  })
-  logger.info({
-    component: 'indexDataToEsById',
-    message: 'Indexing complete!'
-  })
 }
 
 /**
@@ -629,44 +206,6 @@ async function importData (pathToFile, dataModels, logger) {
       throw error
     }
   }
-
-  // after importing, index data
-  const jobCandidateModelOpts = {
-    modelName: 'JobCandidate',
-    include: [
-      {
-        model: models.Interview,
-        as: 'interviews'
-      }
-    ]
-  }
-  const resourceBookingModelOpts = {
-    modelName: 'ResourceBooking',
-    include: [
-      {
-        model: models.WorkPeriod,
-        as: 'workPeriods',
-        include: [
-          {
-            model: models.WorkPeriodPayment,
-            as: 'payments'
-          }
-        ]
-      }
-    ]
-  }
-  await indexBulkDataToES('Job', config.get('esConfig.ES_INDEX_JOB'), logger)
-  await indexBulkDataToES(
-    jobCandidateModelOpts,
-    config.get('esConfig.ES_INDEX_JOB_CANDIDATE'),
-    logger
-  )
-  await indexBulkDataToES(
-    resourceBookingModelOpts,
-    config.get('esConfig.ES_INDEX_RESOURCE_BOOKING'),
-    logger
-  )
-  await indexBulkDataToES('Role', config.get('esConfig.ES_INDEX_ROLE'), logger)
 }
 
 /**
@@ -700,49 +239,6 @@ async function exportData (pathToFile, dataModels, logger) {
     component: 'exportData',
     message: 'End Saving data to file....'
   })
-}
-
-/**
- * Format a time in milliseconds into a human readable format
- * @param {Date} milliseconds the number of milliseconds
- */
-function formatTime (millisec) {
-  const ms = Math.floor(millisec % 1000)
-  const secs = Math.floor((millisec / 1000) % 60)
-  const mins = Math.floor((millisec / (1000 * 60)) % 60)
-  const hrs = Math.floor((millisec / (1000 * 60 * 60)) % 24)
-  const days = Math.floor((millisec / (1000 * 60 * 60 * 24)) % 7)
-  const weeks = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7)) % 4)
-  const mnths = Math.floor((millisec / (1000 * 60 * 60 * 24 * 7 * 4)) % 12)
-  const yrs = Math.floor(millisec / (1000 * 60 * 60 * 24 * 7 * 4 * 12))
-
-  let formattedTime = '0 milliseconds'
-  if (ms > 0) {
-    formattedTime = `${ms} milliseconds`
-  }
-  if (secs > 0) {
-    formattedTime = `${secs} seconds ${formattedTime}`
-  }
-  if (mins > 0) {
-    formattedTime = `${mins} minutes ${formattedTime}`
-  }
-  if (hrs > 0) {
-    formattedTime = `${hrs} hours ${formattedTime}`
-  }
-  if (days > 0) {
-    formattedTime = `${days} days ${formattedTime}`
-  }
-  if (weeks > 0) {
-    formattedTime = `${weeks} weeks ${formattedTime}`
-  }
-  if (mnths > 0) {
-    formattedTime = `${mnths} months ${formattedTime}`
-  }
-  if (yrs > 0) {
-    formattedTime = `${yrs} years ${formattedTime}`
-  }
-
-  return formattedTime.trim()
 }
 
 /**
@@ -857,52 +353,12 @@ function setResHeaders (req, res, result) {
   }
 }
 
-/**
- * Get ES Client
- * @return {Object} Elastic Host Client Instance
- */
-function getESClient () {
-  if (esClients.client) {
-    return esClients.client
-  }
-  const host = config.esConfig.HOST
-  const cloudId = config.esConfig.ELASTICCLOUD.id
-  if (cloudId) {
-    // Elastic Cloud configuration
-    esClients.client = new elasticsearch.Client({
-      cloud: {
-        id: cloudId
-      },
-      auth: {
-        username: config.esConfig.ELASTICCLOUD.username,
-        password: config.esConfig.ELASTICCLOUD.password
-      }
-    })
-  } else {
-    esClients.client = new elasticsearch.Client({
-      node: host
-    })
-  }
-  return esClients.client
-}
-
 /*
  * Function to get M2M token
  * @returns {Promise}
  */
 const getM2MToken = async () => {
   return await m2m.getMachineToken(
-    config.AUTH0_CLIENT_ID,
-    config.AUTH0_CLIENT_SECRET
-  )
-}
-
-/*
- * Function to get M2M token for U-Bahn
- * @returns {Promise}
- */
-const getM2MUbahnToken = async () => {
-  return await m2mForUbahn.getMachineToken(
     config.AUTH0_CLIENT_ID,
     config.AUTH0_CLIENT_SECRET
   )
@@ -925,54 +381,6 @@ function encodeQueryString (queryObj, nesting = '') {
     }
   })
   return pairs.join('&')
-}
-
-/**
- * Function to list users by external id.
- * @param {Integer} externalId the legacy user id
- * @returns {Array} the users found
- */
-async function listUsersByExternalId (externalId) {
-  // return empty list if externalId is null or undefined
-  if (!!externalId !== true) {
-    return []
-  }
-
-  const token = await getM2MUbahnToken()
-  const q = {
-    enrich: true,
-    externalProfile: {
-      organizationId: config.ORG_ID,
-      externalId
-    }
-  }
-  const url = `${config.TC_API}/users?${encodeQueryString(q)}`
-  const res = await request
-    .get(url)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'listUserByExternalId',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-
-  return res.body
-}
-
-/**
- * Function to get user by external id.
- * @param {Integer} externalId the legacy user id
- * @returns {Object} the user
- */
-async function getUserByExternalId (externalId) {
-  const users = await listUsersByExternalId(externalId)
-  if (_.isEmpty(users)) {
-    throw new errors.NotFoundError(
-      `externalId: ${externalId} "user" not found`
-    )
-  }
-  return users[0]
 }
 
 /**
@@ -1020,21 +428,8 @@ async function postErrorEvent (topic, payload, action) {
     'mime-type': 'application/json',
     payload
   }
-  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message, null, 2)}`)
+  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message)}`)
   await client.postEvent(message)
-}
-
-/**
- * Test if an error is document missing exception
- *
- * @param {Object} err the err
- * @returns {Boolean} the result
- */
-function isDocumentMissingException (err) {
-  if (err.statusCode === 404 && err instanceof ESResponseError) {
-    return true
-  }
-  return false
 }
 
 /**
@@ -1071,184 +466,6 @@ async function getProjects (currentUser, criteria = {}) {
     perPage: Number(_.get(res.headers, 'x-per-page')),
     result
   }
-}
-
-/**
- * Get topcoder user by id from /v3/users.
- *
- * @param {String} userId the legacy user id
- * @returns {Object} the user
- */
-async function getTopcoderUserById (userId) {
-  const token = await getM2MToken()
-  const res = await request
-    .get(config.TOPCODER_USERS_API)
-    .query({ filter: `id=${userId}` })
-    .set('Authorization', `Bearer ${token}`)
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getTopcoderUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  const user = _.get(res.body, 'result.content[0]')
-  if (!user) {
-    throw new errors.NotFoundError(
-      `userId: ${userId} "user" not found from ${config.TOPCODER_USERS_API}`
-    )
-  }
-  return user
-}
-
-/**
- * Function to get users
- * @param {String} userId the user id
- * @returns the request result
- */
-async function getUserById (userId, enrich) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .get(`${config.TC_API}/users/${userId}` + (enrich ? '?enrich=true' : ''))
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName'])
-
-  if (enrich) {
-    user.skills = await Promise.all((res.body.skills || []).map(async (userSkill) => getSkillById(userSkill.skillId)))
-    const attributes = _.get(res, 'body.attributes', [])
-    user.attributes = _.map(attributes, (attr) =>
-      _.pick(attr, ['id', 'value', 'attribute.id', 'attribute.name'])
-    )
-  }
-
-  return user
-}
-
-/**
- * Function to get users
- * @param {String} userId the user UUID
- * @returns the found user details
- */
-async function getUserDetailsByUserUUID (userUUID) {
-  const token = await getM2MToken()
-  const res = await request
-    .get(`${config.TC_API}/users/${userUUID}?enrich=true`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-  localLogger.debug({
-    context: 'getUserById',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  const user = _.pick(res.body, ['id', 'handle', 'firstName', 'lastName', 'externalProfiles'])
-
-  if (!_.isUndefined(user.externalProfiles) && !_.isEmpty(user.externalProfiles)) {
-    _.assign(user, { userId: _.toInteger(_.get(user.externalProfiles[0], 'externalId')) })
-  }
-
-  const handleQuery = `handleLower:${user.handle.toLowerCase()}`
-  const userIdQuery = `userId:${user.userId}`
-
-  const query = _.concat(handleQuery, userIdQuery).join(URI.encodeQuery(' OR ', 'utf8'))
-  try {
-    const searchResult = await searchUsersByQuery(query)
-    const found = _.find(searchResult, !_.isUndefined(user.handle)
-      ? ['handle', user.handle] : ['userId', user.userId]) || {}
-
-    return found
-  } catch (err) {
-    const error = new Error(err.response.text)
-    error.status = err.status
-    throw error
-  }
-}
-
-/**
- * Search users by query string.
- * @param {String} query the query string
- * @returns {Array} the matched users
- */
-async function searchUsersByQuery (query) {
-  const token = await getM2MToken()
-  let users = []
-  // there may be multiple pages, search all pages
-  let offset = 0
-  const limit = SearchUsers.SEARCH_USERS_PAGE_SIZE
-  // set initial total to 1 so that at least one search is done,
-  // it will be updated from search result
-  let total = 1
-  while (offset < total) {
-    const res = await request
-      .get(`${
-        config.TOPCODER_MEMBERS_API_V3
-        }/_search?query=${
-        query
-        }&offset=${
-        offset
-        }&limit=${
-        limit
-        }&fields=userId,email,handle,firstName,lastName,photoURL,status`)
-      .set('Authorization', `Bearer ${token}`)
-    if (!_.get(res, 'body.result.success')) {
-      throw new Error(`Failed to search users by query: ${query}`)
-    }
-    const records = _.get(res, 'body.result.content') || []
-    // add users
-    users = users.concat(records)
-
-    total = _.get(res, 'body.result.metadata.totalCount') || 0
-    offset += limit
-  }
-
-  logger.verbose(`Searched users: ${JSON.stringify(users)}`)
-  return users
-}
-
-/**
- * Function to create user in ubahn
- * @param {Object} data the user data
- * @returns the request result
- */
-async function createUbahnUser ({ handle, firstName, lastName }) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .post(`${config.TC_API}/users`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-    .send({ handle, firstName, lastName })
-  localLogger.debug({
-    context: 'createUbahnUser',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
-  return _.pick(res.body, ['id'])
-}
-
-/**
- * Function to create external profile for a ubahn user
- * @param {String} userId the user id(with uuid format)
- * @param {Object} data the profile data
- */
-async function createUserExternalProfile (
-  userId,
-  { organizationId, externalId }
-) {
-  const token = await getM2MUbahnToken()
-  const res = await request
-    .post(`${config.TC_API}/users/${userId}/externalProfiles`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-    .send({ organizationId, externalId: String(externalId) })
-  localLogger.debug({
-    context: 'createUserExternalProfile',
-    message: `response body: ${JSON.stringify(res.body)}`
-  })
 }
 
 /**
@@ -1322,7 +539,7 @@ async function getProjectById (currentUser, id) {
  * @returns the request result
  */
 async function getTopcoderSkills (criteria) {
-  const token = await getM2MUbahnToken()
+  const token = await getM2MToken()
   try {
     const res = await request
       .get(`${config.TC_API}/skills`)
@@ -1409,49 +626,20 @@ async function getSkillsByExactNames (names) {
     context: 'getSkillsByNames',
     message: `M2M Token: ${token}`
   })
-  
+
   const url = `${config.TC_API}/standardized-skills/skills?${names.map(skill => `name=${encodeURIComponent(skill)}`).join('&')}`
   const res = await request
     .get(url)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
-  
-    localLogger.debug({
+
+  localLogger.debug({
     context: 'getSkillsByNames',
     message: `response body of GET ${url} is ${JSON.stringify(res.body)}`
   })
-  
-  return res.body
-}
 
-/**
- * Encapsulate the getUserByExternalId function.
- * Make sure a user exists in ubahn(/v5/users) and return the id of the user.
- *
- * In the case the user does not exist in /v5/users but can be found in /v3/users
- * Fetch the user info from /v3/users and create a new user in /v5/users.
- *
- * @params {Object} currentUser the user who perform this operation
- * @returns {String} the ubahn user id
- */
-async function ensureUbahnUserId (currentUser) {
-  try {
-    return (await getUserByExternalId(currentUser.userId)).id
-  } catch (err) {
-    if (!(err instanceof errors.NotFoundError)) {
-      throw err
-    }
-    const topcoderUser = await getTopcoderUserById(currentUser.userId)
-    const user = await createUbahnUser(
-      _.pick(topcoderUser, ['handle', 'firstName', 'lastName'])
-    )
-    await createUserExternalProfile(user.id, {
-      organizationId: config.ORG_ID,
-      externalId: currentUser.userId
-    })
-    return user.id
-  }
+  return res.body
 }
 
 /**
@@ -1481,33 +669,6 @@ async function ensureResourceBookingById (resourceBookingId) {
  */
 async function ensureWorkPeriodById (workPeriodId) {
   return models.WorkPeriod.findById(workPeriodId)
-}
-
-/**
- * Ensure user with specific id exists.
- *
- * @param {String} jobId the user id
- * @returns {Object} the user data
- */
-async function ensureUserById (userId) {
-  const token = await getM2MUbahnToken()
-  try {
-    const res = await request
-      .get(`${config.TC_API}/users/${userId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    localLogger.debug({
-      context: 'ensureUserById',
-      message: `response body: ${JSON.stringify(res.body)}`
-    })
-    return res.body
-  } catch (err) {
-    if (err.status === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`id: ${userId} "user" not found`)
-    }
-    throw err
-  }
 }
 
 /**
@@ -1748,7 +909,7 @@ async function deleteProjectMember (currentUser, projectId, projectMemberId) {
 
 /**
  * Gets requested attribute value from user's attributes array.
- * @param {Object} user The enriched (i.e. includes attributes) user object from users API. (check getUserById, getUserByExternalId functions)
+ * @param {Object} user The enriched (i.e. includes attributes) user object from users API. (check getUserById functions)
  * @param {String} attributeName Requested attribute name, e.g. "email"
  * @returns attribute value
  */
@@ -2320,37 +1481,58 @@ function verifyZoomLinkToken (token) {
   }
 }
 
+/**
+ * Check if the user id (Number) exists in member-api
+ * If it exists return it, otherwise throw en error
+ * @param {number} userId - The Topcoder userId to check
+ */
+async function ensureTopcoderUserIdExists (userId, enrich = false) {
+  const token = await getM2MToken()
+  const url = `${config.TOPCODER_MEMBERS_API}?userId=${userId}`
+  const res = await request
+    .get(url)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+  localLogger.debug({
+    context: 'ensureTopcoderUserIdExists',
+    message: `response body: ${JSON.stringify(res.body)}`
+  })
+  if (res.body.length === 0) {
+    throw new errors.NotFoundError(
+      `userId: ${userId} "user" not found from ${config.TOPCODER_MEMBERS_API}`
+    )
+  }
+  const user = res.body[0]
+  // fetch user skills when enrichement is required
+  if (enrich) {
+    const skillsResponse = await request.get(`${config.TC_API}/standardized-skills/user-skills/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+    user.skills = _.map(skillsResponse.body[0], (skill) => _.pick(skill, ['id', 'name']))
+  }
+  return user
+}
+
 module.exports = {
   encodeQueryString,
   getParamFromCliArgs,
   promptUser,
   sleep,
-  createIndex,
-  deleteIndex,
-  indexBulkDataToES,
-  indexDataToEsById,
   importData,
   exportData,
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
-  getESClient,
   getUserId: async (userId) => {
-    // check m2m user id
-    if (userId === config.m2m.M2M_AUDIT_USER_ID) {
-      return config.m2m.M2M_AUDIT_USER_ID
-    }
-    return ensureUbahnUserId({ userId })
+    return userId
   },
-  getUserByExternalId,
   getM2MToken,
-  getM2MUbahnToken,
   postEvent,
   postErrorEvent,
   getBusApiClient,
-  isDocumentMissingException,
   getProjects,
-  getUserById,
   getMembers,
   getProjectById,
   getTopcoderSkills,
@@ -2358,7 +1540,6 @@ module.exports = {
   getSkillById,
   ensureJobById,
   ensureResourceBookingById,
-  ensureUserById,
   ensureWorkPeriodById,
   getAuditM2Muser,
   checkIsMemberOfProject,
@@ -2388,12 +1569,12 @@ module.exports = {
   getEmailTemplatesForKey,
   formatDate,
   formatDateTimeEDT,
-  getUserDetailsByUserUUID,
   runExclusiveCalendarConnectionHandler,
   waitForUnlockCalendarConnectionHandler,
   runExclusiveInterviewEventHandler,
   runExclusiveByNamedMutex,
   signZoomLink,
   verifyZoomLinkToken,
+  ensureTopcoderUserIdExists,
   getSkillsByExactNames
 }
