@@ -1525,8 +1525,8 @@ module.exports = {
   checkIfExists,
   autoWrapExpress,
   setResHeaders,
-  getUserId: async (userId) => {
-    return userId
+  getUserId: (userId) => {
+    return String(userId)
   },
   getM2MToken,
   postEvent,
