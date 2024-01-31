@@ -18,7 +18,7 @@ async function getMemberDetailsByHandle (handle) {
     res = await request
       .get(`${config.TOPCODER_MEMBERS_API}/${handle}`)
       .query({
-        fields: 'userId,handle,handleLower,firstName,lastName,email'
+        fields: 'userId,handle,handleLower'
       })
       .set('Authorization', `Bearer ${token}`)
       .set('Accept', 'application/json')
