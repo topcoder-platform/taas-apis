@@ -1526,7 +1526,7 @@ module.exports = {
   autoWrapExpress,
   setResHeaders,
   getUserId: async (userId) => {
-    return userId
+    return String(userId)
   },
   getM2MToken,
   postEvent,
