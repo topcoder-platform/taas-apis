@@ -28,10 +28,6 @@ ALTER COLUMN member_id TYPE TEXT,
 ALTER COLUMN created_by TYPE TEXT,
 ALTER COLUMN updated_by TYPE TEXT;
 
-ALTER TABLE bookings.roles
-ALTER COLUMN created_by TYPE TEXT,
-ALTER COLUMN updated_by TYPE TEXT;
-
 ALTER TABLE bookings.user_meeting_settings
 ALTER COLUMN created_by TYPE TEXT,
 ALTER COLUMN updated_by TYPE TEXT;
