@@ -7,11 +7,11 @@ const request = require('superagent')
 const config = require('config')
 
 /**
- * 
+ *
  * @param {string} handle - The member handle
- * @returns {Promise<object>} The member details from the member API 
+ * @returns {Promise<object>} The member details from the member API
  */
-async function getMemberDetailsByHandle(handle) {
+async function getMemberDetailsByHandle (handle) {
   const token = await helper.getM2MToken()
   let res
   try {
@@ -45,8 +45,7 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
   console.log()
 
   for (const columnName of _.split(columnNames, ',')) {
-
-    let transaction = await models.sequelize.transaction()
+    const transaction = await models.sequelize.transaction()
 
     try {
       // check each column to find distinct existing uuids which have not yet been converted to TC legacy user id
@@ -54,15 +53,15 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
       console.log(`Executing query in table ${tableName} against column ${columnName}`)
       console.log(`SQL query: ${query}`)
       let results = await models.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT })
-  
+
       if (results.length > 0) {
         results = _.uniq(_.map(_.filter(results, val => toString(val[`${columnName}`]).length > 9), val => val[`${columnName}`]))
         console.log(`SQL query result: ${JSON.stringify(results)}`)
-  
+
         // get the ubahn uuid to handle map
         const ubahnConn = await tcUserId.getUbahnDatabaseConnection(dbUrl)
         const uuidToHandleMap = await tcUserId.getUserUbahnUUIDToHandleMap(ubahnConn, results)
-  
+
         // get the handle to legacy topcoder id map
         for (const handle of Object.values(uuidToHandleMap)) {
           console.log(`handle to search for ${handle}`)
@@ -71,7 +70,7 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
             handleToIDMap[member.handleLower] = member.userId
           }
         }
-  
+
         // build the update queries
         let sql = ''
         for (const [key, value] of Object.entries(uuidToHandleMap)) {
@@ -79,12 +78,12 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
             sql += `UPDATE bookings.${tableName} SET ${columnName} = '${handleToIDMap[value.toLowerCase()]}' WHERE ${columnName} = '${key}';`
           }
         }
-  
+
         // execute update queries if and only if it's not in test mode
         if (sql !== '') {
           console.log(`SQL UPDATE statements: ${sql}`)
           if (MODE !== 'test') {
-            console.log(`Executing UPDATE statements`)
+            console.log('Executing UPDATE statements')
             await models.sequelize.query(sql, { type: Sequelize.QueryTypes.UPDATE, transaction: transaction })
           }
         } else {
@@ -93,15 +92,14 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
       } else {
         console.log(`No data eligible to be updated for table: ${tableName} against column ${columnName}`)
       }
-  
+
       // only for readability
       console.log('---------------------------------------------------------------------------------------------------------------')
       console.log()
 
       await transaction.commit()
-
     } catch (error) {
-      console.log(`Error encountered`)
+      console.log('Error encountered')
       console.error(JSON.stringify(error))
       await transaction.rollback()
     }
@@ -119,7 +117,7 @@ processRemainingUUIDs(tableName, columnNames).then(res => {
   console.log(`Processed remaining records for model '${tableName}' against columns: ${columnNames}`)
   process.exit(0)
 }).catch(err => {
-  console.log(`Error encountered!`)
+  console.log('Error encountered!')
   console.error(`${JSON.stringify(err)}`)
   process.exit(1)
 })
