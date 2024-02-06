@@ -592,14 +592,12 @@ async function getAllTopcoderSkills (criteria) {
  * @returns the request result
  */
 async function getSkillById (skillId) {
-  const token = await getM2MToken()
   localLogger.debug({
     context: 'getSkillById',
-    message: `M2M Token: ${token}`
+    message: `skillId: ${skillId}`
   })
   const res = await request
     .get(`${config.TC_API}/standardized-skills/skills/${skillId}`)
-    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
   localLogger.debug({
@@ -621,16 +619,14 @@ async function getSkillsByExactNames (names) {
     return []
   }
 
-  const token = await getM2MToken()
   localLogger.debug({
     context: 'getSkillsByNames',
-    message: `M2M Token: ${token}`
+    message: `skill names: ${names}`
   })
 
   const url = `${config.TC_API}/standardized-skills/skills?${names.map(skill => `name=${encodeURIComponent(skill)}`).join('&')}`
   const res = await request
     .get(url)
-    .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
 
