@@ -1,7 +1,7 @@
 version: 2
 defaults: &defaults
     docker:
-      - image: cimg/python:3.11.0-browsers
+      - image: cimg/python:3.11.7-browsers
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
@@ -9,7 +9,8 @@ install_dependency: &install_dependency
     sudo apt install jq
     sudo apt install python3-pip
     sudo pip3 install awscli --upgrade
-    sudo pip3 install docker-compose
+    sudo pip3 install docker==6.1.3
+
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
   command: |
@@ -30,7 +31,7 @@ builddeploy_steps: &builddeploy_steps
       - setup_remote_docker
       - run: *install_dependency
       - run: *install_deploysuite
-      - restore_cache: *restore_cache_settings_for_build
+      #- restore_cache: *restore_cache_settings_for_build
       - run: ./build.sh ${APPNAME}
       - save_cache: *save_cache_settings
       - deploy:
@@ -78,6 +79,7 @@ workflows:
             branches:
               only:
                 - dev
+                - CORE-363-fix
 
       # Development builds are executed on "develop" branch only.
       - "build-qa":
