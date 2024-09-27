@@ -702,9 +702,6 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
           }
         }
 
-        // update the Nylas event to set custom metadata
-        await updateEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
-
         await internallyUpdateInterviewById(
           m2mUser,
           interviewId,
@@ -718,6 +715,9 @@ async function partiallyUpdateInterviewByWebhook (interviewId, authToken, webhoo
             guestTimezone: interview.guestTimezone || bookingDetails.recipient_tz
           }
         )
+
+        // update the Nylas event to set custom metadata
+        await updateEvent(bookingDetails.calendar_event_id, updateEventData, accessToken)
 
         logger.debug({
           component: 'InterviewService',
