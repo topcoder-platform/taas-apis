@@ -1,23 +1,23 @@
-version: 2
+version: 2.1
 defaults: &defaults
-    docker:
-      - image: cimg/python:3.11.7-browsers
+  docker:
+    - image: docker:20.10.18-git
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
-    sudo apt update
-    sudo apt install jq
-    sudo apt install python3-pip
-    sudo pip3 install awscli --upgrade
-    sudo pip3 install docker==6.1.3
-
+    apk update
+    apk add --no-cache bash curl
+    apk upgrade
+    apk add --no-cache jq py-pip sudo
+    sudo pip install awscli --upgrade
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
   command: |
-    git clone --branch master_hotfix_v1 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
+    git clone --branch v1.4.17 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
     cp ./../buildscript/master_deploy.sh .
     cp ./../buildscript/buildenv.sh .
     cp ./../buildscript/awsconfiguration.sh .
+    cp ./../buildscript/psvar-processor.sh .
 restore_cache_settings_for_build: &restore_cache_settings_for_build
   key: docker-node-modules-{{ checksum "package-lock.json" }}
 
@@ -26,22 +26,30 @@ save_cache_settings: &save_cache_settings
   paths:
     - node_modules
 
+run_build: &run_build
+  name: Build of Docker image
+  command: ./build.sh ${APPNAME}
+
 builddeploy_steps: &builddeploy_steps
-      - checkout
-      - setup_remote_docker
-      - run: *install_dependency
-      - run: *install_deploysuite
-      #- restore_cache: *restore_cache_settings_for_build
-      - run: ./build.sh ${APPNAME}
-      - save_cache: *save_cache_settings
-      - deploy:
-          name: Running MasterScript.
-          command: |
-            ./awsconfiguration.sh $DEPLOY_ENV
-            source awsenvconf
-            ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
-            source buildenvvar
-            ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME} -p FARGATE
+  - checkout
+  - setup_remote_docker
+  - run: *install_dependency
+  - run: *install_deploysuite
+  - restore_cache: *restore_cache_settings_for_build
+  - run: *run_build
+  - save_cache: *save_cache_settings
+  - deploy:
+      name: Running deployment.
+      command: |
+        ./awsconfiguration.sh $DEPLOY_ENV
+        source awsenvconf
+        #./buildenv.sh -e DEV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
+        #source buildenvvar
+        #./master_deploy.sh -d ECS -e DEV -t latest -s dev-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME} -p FARGATE
+        #./deploy.sh DEV $CIRCLE_SHA1  
+        ./psvar-processor.sh -t appenv -p /config/${APPNAME}/deployvar
+        source deployvar_env
+        ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -j /config/${APPNAME}/appvar,/config/common/global-appvar -i ${APPNAME} -p FARGATE
 jobs:
   # Build & Deploy against development backend
   "build-dev":
@@ -74,7 +82,7 @@ workflows:
     jobs:
       # Development builds are executed on "develop" branch only.
       - "build-dev":
-          context : org-global
+          context: org-global
           filters:
             branches:
               only:
@@ -83,7 +91,7 @@ workflows:
 
       # Development builds are executed on "develop" branch only.
       - "build-qa":
-          context : org-global
+          context: org-global
           filters:
             branches:
               only:
@@ -92,7 +100,7 @@ workflows:
       # Production builds are exectuted only on tagged commits to the
       # master branch.
       - "build-prod":
-          context : org-global
+          context: org-global
           filters:
             branches:
               only: master
