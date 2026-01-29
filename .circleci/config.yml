@@ -5,9 +5,9 @@ defaults: &defaults
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
-    sudo apt update
-    sudo apt install jq
-    sudo apt install python3-pip
+    sudo rm -f /etc/apt/sources.list.d/google-chrome.list || true
+    sudo apt-get update || true
+    sudo apt-get install -y jq python3-pip
     sudo pip3 install awscli --upgrade
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
