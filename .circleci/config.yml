@@ -1,15 +1,14 @@
 version: 2.1
 defaults: &defaults
   docker:
-    - image: docker:20.10.18-git
+    - image: cimg/python:3.11.7-browsers
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
-    apk update
-    apk add --no-cache bash curl
-    apk upgrade
-    apk add --no-cache jq py-pip sudo
-    sudo pip install awscli --upgrade
+    sudo apt update
+    sudo apt install jq
+    sudo apt install python3-pip
+    sudo pip3 install awscli --upgrade
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
   command: |
