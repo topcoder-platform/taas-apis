@@ -67,7 +67,7 @@
     "sequelize": "^6.3.5",
     "stripe": "^8.168.0",
     "superagent": "^6.1.0",
-    "tc-core-library-js": "github:appirio-tech/tc-core-library-js#v2.6.4",
+    "tc-core-library-js": "github:topcoder-platform/tc-core-library-js#v2.6.4",
     "urijs": "^1.19.7",
     "util": "^0.12.3",
     "uuid": "^8.3.1",
