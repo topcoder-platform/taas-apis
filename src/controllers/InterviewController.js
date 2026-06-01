@@ -3,6 +3,7 @@
  */
 const service = require('../services/InterviewService')
 const helper = require('../common/helper')
+const config = require('config')
 
 /**
  * Get interview by round
@@ -72,6 +73,7 @@ async function searchInterviews (req, res) {
 }
 
 /**
+<<<<<<< HEAD
  * Get a fresh Zoom Links from Zoom Meeting and redirect to Zoom Link
  * @param req the request
  * @param res the response
@@ -79,6 +81,22 @@ async function searchInterviews (req, res) {
 async function getZoomLink (req, res) {
   const zoomLink = await service.getZoomLink(req.params.id, req.query)
   return res.redirect(zoomLink)
+=======
+ * Handle Nylas Page scheduling webhook
+ * Authenticates request using authToken from URL query parameter
+ * @param req the request
+ * @param res the response
+ */
+async function handleNylasPageWebhook (req, res) {
+  // Verify webhook authentication token
+  const authToken = req.query.authToken
+  if (!authToken || authToken !== config.NYLAS_WEBHOOK_SECRET) {
+    res.status(401).send({ error: 'Unauthorized - Invalid or missing auth token' })
+    return
+  }
+  // Process the webhook
+  res.send(await service.handleNylasPageWebhook(req.params.id, req.body))
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
 }
 
 module.exports = {
@@ -88,6 +106,10 @@ module.exports = {
   partiallyUpdateInterviewByRound,
   partiallyUpdateInterviewById,
   searchInterviews,
+<<<<<<< HEAD
   partiallyUpdateInterviewByWebhook,
   getZoomLink
+=======
+  handleNylasPageWebhook
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
 }

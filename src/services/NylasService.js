@@ -169,15 +169,22 @@ function getTimezoneFromSchedulingPage (page) {
   return page.config.timezone
 }
 
+<<<<<<< HEAD
 async function createSchedulingPage (interview, calendar, options) {
   const webhookAuthTokenSecret = config.NYLAS_SCHEDULER_WEBHOOK_SECRET
   const authTokenHash = createHash('sha256')
     .update(webhookAuthTokenSecret)
     .digest('hex')
+=======
+async function createSchedulingPage (interview, calendar, eventLocation, eventTitle) {
+  // Generate webhook URL with authentication token
+  const webhookUrl = `${config.TAAS_API_URL}/api/v5/updateInterview/${interview.id}/nylas-webhooks?authToken=${config.NYLAS_WEBHOOK_SECRET}`
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
 
   const res = await axios.post('https://api.schedule.nylas.com/manage/pages', {
     access_tokens: [calendar.accessToken],
     slug: `tc-taas-interview-${interview.id}`,
+    webhook_url: webhookUrl,
     config: {
       appearance: {
         thank_you_redirect: `${config.TAAS_APP_BFF_BASE_URL}/misc/interview-thank-you-page`,

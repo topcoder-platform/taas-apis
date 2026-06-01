@@ -58,10 +58,20 @@ module.exports = {
       scopes: [constants.Scopes.READ_INTERVIEW, constants.Scopes.ALL_INTERVIEW]
     }
   },
+<<<<<<< HEAD
   '/getInterview/:id/zoom-link': {
     get: {
       controller: 'InterviewController',
       method: 'getZoomLink'
+=======
+  '/updateInterview/:id/nylas-webhooks': {
+    post: {
+      controller: 'InterviewController',
+      method: 'handleNylasPageWebhook',
+      // Note: Authentication is handled via query parameter check inside the controller
+      // to support Nylas Page webhook callbacks
+      allowAnonymous: true
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
     }
   }
 }
