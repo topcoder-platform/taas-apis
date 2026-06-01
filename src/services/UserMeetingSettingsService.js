@@ -21,6 +21,35 @@ const NylasService = require('./NylasService')
 const jwt = require('jsonwebtoken')
 
 /**
+ * Sanitizes calendar objects to ensure all required fields are present.
+ * This prevents missing field issues when data comes from various sources (ES, DB, etc.)
+ *
+ * Required fields per #590:
+ * - id: calendar id
+ * - accountId: Nylas account ID
+ * - accountProvider: provider (google, microsoft, etc.)
+ * - accessToken: Nylas access token
+ * - isPrimary: boolean flag for primary calendar
+ *
+ * @param {Array} calendars array of calendar objects
+ * @returns {Array} sanitized calendars with all required fields
+ */
+function sanitizeCalendars (calendars) {
+  if (!Array.isArray(calendars)) {
+    return []
+  }
+
+  return calendars.map(calendar => ({
+    id: calendar.id || null,
+    accountId: calendar.accountId || null,
+    accountProvider: calendar.accountProvider || null,
+    accessToken: calendar.accessToken || null,
+    isPrimary: Boolean(calendar.isPrimary),
+    isDeleted: Boolean(calendar.isDeleted)
+  }))
+}
+
+/**
   * Ensures user is permitted for the operation.
   *
   * @param {Object} currentUser the user who perform this operation.
@@ -49,7 +78,9 @@ async function ensureUserIsPermitted (currentUser, userMeetingSettingsUserId) {
  */
 function stripUnwantedData (userMeetingSettings) {
   if (userMeetingSettings.nylasCalendars) {
-    const availableCalendars = _.filter(userMeetingSettings.nylasCalendars, (item) => {
+    // Sanitize to ensure all required fields are present before filtering
+    const sanitizedCalendars = sanitizeCalendars(userMeetingSettings.nylasCalendars)
+    const availableCalendars = _.filter(sanitizedCalendars, (item) => {
       if (!item.isDeleted) {
         return _.omit(item, ['accessToken', 'accountId'])
       }
@@ -255,16 +286,26 @@ async function handleConnectCalendarCallback (reqQuery) {
       // map Nylas calendar array and
       // if current item's index doesn't match with calendar index saved in UserMeetingSettings, make it non-primary
       // but if it matches, update the calendar with newer details (which also makes it primary & marks isDeleted = false)
-      const updatedNylasCalendarsArray = _.map(Array.from(userMeetingSettings.nylasCalendars), (item, index) => {
+      // Sanitize existing calendars to ensure all required fields are present before updating
+      const sanitizedExistingCalendars = sanitizeCalendars(userMeetingSettings.nylasCalendars)
+
+      const updatedNylasCalendarsArray = _.map(Array.from(sanitizedExistingCalendars), (item, index) => {
         if (index !== calendarIndexInUserMeetingSettings) { return { ...item, isPrimary: false } }
 
         return { ...item, ...calendarDetails }
       })
 
       // if calendar doesn't exist in Nylas calendars array then add it in the array
+      const finalCalendars = calendarIndexInUserMeetingSettings === -1
+        ? updatedNylasCalendarsArray.concat(calendarDetails)
+        : updatedNylasCalendarsArray
+
+      // Final sanitization to ensure all 5 required fields are present
+      const sanitizedCalendars = sanitizeCalendars(finalCalendars)
+
       const updatePayload = {
         ...userMeetingSettings,
-        nylasCalendars: calendarIndexInUserMeetingSettings === -1 ? updatedNylasCalendarsArray.concat(calendarDetails) : updatedNylasCalendarsArray
+        nylasCalendars: sanitizedCalendars
       }
 
       const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
@@ -304,8 +345,11 @@ async function deleteUserCalendar (currentUser, reqParams) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     } else {
       let newPrimaryCalendarSet = false
+      // Sanitize existing calendars to ensure all required fields are present before updating
+      const sanitizedCalendars = sanitizeCalendars(userMeetingSettings.nylasCalendars)
+
       // map all calenders and check if deleting calendar is primary
-      const updatedCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
+      const updatedCalendars = _.map(sanitizedCalendars, (item) => {
         if (item.id === reqParams.calendarId) {
           return { ...item, isPrimary: false, isDeleted: true }
         } else {
@@ -321,9 +365,12 @@ async function deleteUserCalendar (currentUser, reqParams) {
         }
       })
 
+      // Final sanitization to ensure all 5 required fields are present
+      const finalCalendars = sanitizeCalendars(updatedCalendars)
+
       const updatePayload = {
         ...userMeetingSettings,
-        nylasCalendars: updatedCalendars
+        nylasCalendars: finalCalendars
       }
 
       const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction: null })
