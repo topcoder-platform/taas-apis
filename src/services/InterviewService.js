@@ -622,6 +622,7 @@ async function updateCompletedInterviews () {
 }
 
 /**
+<<<<<<< HEAD
  * Update interview using received webhook data
  *
  * This method would be always called when someone selects time for new interview using Nylas Page.
@@ -780,6 +781,36 @@ getZoomLink.schema = Joi.object().keys({
   }).required()
 }).required()
 
+=======
+ * Handle Nylas Page scheduling webhook
+ * Processes booking events from Nylas Page
+ * @param {String} interviewId - the interview id
+ * @param {Object} payload - the webhook payload from Nylas
+ * @returns {Object} - processing result
+ */
+async function handleNylasPageWebhook (interviewId, payload) {
+  logger.info({ component: 'InterviewService', context: 'handleNylasPageWebhook', message: `Received Nylas Page webhook for interview ${interviewId}` })
+  
+  // Validate interview exists
+  const interview = await Interview.findById(interviewId)
+  if (!interview) {
+    throw new errors.NotFoundError(`Interview with id: ${interviewId} does not exist`)
+  }
+  
+  // Process the webhook payload based on event type
+  const eventType = payload.type || 'unknown'
+  logger.info({ component: 'InterviewService', context: 'handleNylasPageWebhook', message: `Processing event type: ${eventType}` })
+  
+  // Return acknowledgment
+  return {
+    success: true,
+    interviewId,
+    eventType,
+    receivedAt: new Date().toISOString()
+  }
+}
+
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
 module.exports = {
   getInterviewByRound,
   getInterviewById,
@@ -789,6 +820,10 @@ module.exports = {
   internallyUpdateInterviewById,
   searchInterviews,
   updateCompletedInterviews,
+<<<<<<< HEAD
   partiallyUpdateInterviewByWebhook,
   getZoomLink
+=======
+  handleNylasPageWebhook
+>>>>>>> f77686c (feat: add authentication for Nylas Page webhooks)
 }
