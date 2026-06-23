@@ -35,7 +35,7 @@ const { getZoomMeeting } = require('./ZoomService')
 // request param. Verifying this hash lets us authenticate the request.
 function verifyNylasWebhookRequest (authToken) {
   const digest = createHash('sha256')
-    .update(config.NYLAS_SCHEDULER_WEBHOOK_SECRET)
+    .update(config.NYLAS_SCHEDULER_WEBHOOK_AUTH_SECRET)
     .digest('hex')
 
   return digest === authToken
