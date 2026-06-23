@@ -19,6 +19,12 @@ function buildSentSurveyError (e) {
  * Scheduler process entrance
  */
 async function sendSurveys () {
+  // Check if weekly survey is switched off
+  if (config.WEEKLY_SURVEY.SWITCH === 'OFF') {
+    logger.info({ component: 'SurveyService', context: 'sendSurvey', message: 'Weekly survey is switched off via WEEKLY_SURVEY_SWITCH env variable' })
+    return
+  }
+
   const currentUser = {
     isMachine: true,
     scopes: [Scopes.ALL_WORK_PERIOD, Scopes.ALL_WORK_PERIOD_PAYMENT]

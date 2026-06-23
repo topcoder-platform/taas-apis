@@ -91,6 +91,39 @@ getUserMeetingSettingsByUserId.schema = Joi.object().keys({
 }).required()
 
 /**
+ * Normalizes a calendar object to ensure all required fields are present.
+ * This prevents missing fields like 'id' and 'isPrimary' that can cause
+ * issues when calendars are synced via webhooks or callbacks.
+ *
+ * @param {Object} calendar the calendar object to normalize
+ * @returns {Object} normalized calendar object with all required fields
+ */
+function normalizeCalendar (calendar) {
+  if (!calendar) {
+    return calendar
+  }
+
+  const normalized = { ...calendar }
+
+  // Ensure 'id' field is present (generate UUID if missing)
+  if (!normalized.id) {
+    normalized.id = uuid()
+  }
+
+  // Ensure 'isPrimary' field is present (default to false if missing)
+  if (!_.has(normalized, 'isPrimary')) {
+    normalized.isPrimary = false
+  }
+
+  // Ensure required fields are present
+  if (!_.has(normalized, 'isDeleted')) {
+    normalized.isDeleted = false
+  }
+
+  return normalized
+}
+
+/**
  * Create UserMeetingSettings if it doesn't exist for user
  * or updates existent records if it exists
  *
@@ -122,7 +155,7 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
     entity.createdBy = await helper.getUserId(currentUser.userId)
 
     if (data.calendar) {
-      entity.nylasCalendars = [data.calendar]
+      entity.nylasCalendars = [normalizeCalendar(data.calendar)]
     }
 
     // set empty array by default if not defined
@@ -173,11 +206,17 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
         }
 
         // if we are updating existent calendar, then update it
-        return { ...item, ...data.calendar }
+        // if it was deleted, mark it as not deleted (re-connected)
+        const updated = { ...item, ...data.calendar }
+        if (item.isDeleted) {
+          updated.isDeleted = false
+        }
+        return updated
       })
 
       // add new calendar to the list updated list or just use updated list
-      updatePayload.nylasCalendars = calendarIndexInUserMeetingSettings === -1 ? [...updatedNylasCalendarsArray, data.calendar] : updatedNylasCalendarsArray
+      const normalizedCalendar = normalizeCalendar(data.calendar)
+      updatePayload.nylasCalendars = calendarIndexInUserMeetingSettings === -1 ? [...updatedNylasCalendarsArray, normalizedCalendar] : updatedNylasCalendarsArray
     }
 
     const updateUserMeetingSettingsResponse = await UserMeetingSettings.update(updatePayload, { where: { id: userMeetingSettings.id }, returning: true, transaction })
@@ -334,6 +373,19 @@ async function deleteUserCalendar (currentUser, reqParams) {
     if (!calendarToDelete) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     }
+
+    // Mark the calendar as deleted instead of actually removing it
+    const updatedNylasCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
+      if (item.id === reqParams.calendarId) {
+        return { ...item, isDeleted: true }
+      }
+      return item
+    })
+
+    await UserMeetingSettings.update(
+      { nylasCalendars: updatedNylasCalendars },
+      { where: { id: reqParams.userId } }
+    )
   } catch (err) {
     throw new errors.BadRequestError(err.message)
   }

@@ -170,7 +170,7 @@ function getTimezoneFromSchedulingPage (page) {
 }
 
 async function createSchedulingPage (interview, calendar, options) {
-  const webhookAuthTokenSecret = config.NYLAS_SCHEDULER_WEBHOOK_SECRET
+  const webhookAuthTokenSecret = config.NYLAS_SCHEDULER_WEBHOOK_AUTH_SECRET
   const authTokenHash = createHash('sha256')
     .update(webhookAuthTokenSecret)
     .digest('hex')
