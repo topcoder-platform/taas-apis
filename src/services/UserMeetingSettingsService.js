@@ -206,7 +206,12 @@ async function syncUserMeetingsSettings (currentUser, data, transaction) {
         }
 
         // if we are updating existent calendar, then update it
-        return { ...item, ...data.calendar }
+        // if it was deleted, mark it as not deleted (re-connected)
+        const updated = { ...item, ...data.calendar }
+        if (item.isDeleted) {
+          updated.isDeleted = false
+        }
+        return updated
       })
 
       // add new calendar to the list updated list or just use updated list
@@ -368,6 +373,19 @@ async function deleteUserCalendar (currentUser, reqParams) {
     if (!calendarToDelete) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     }
+
+    // Mark the calendar as deleted instead of actually removing it
+    const updatedNylasCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
+      if (item.id === reqParams.calendarId) {
+        return { ...item, isDeleted: true }
+      }
+      return item
+    })
+
+    await UserMeetingSettings.update(
+      { nylasCalendars: updatedNylasCalendars },
+      { where: { id: reqParams.userId } }
+    )
   } catch (err) {
     throw new errors.BadRequestError(err.message)
   }
