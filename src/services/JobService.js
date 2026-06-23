@@ -534,7 +534,8 @@ async function searchJobs (currentUser, criteria, options = { returnAll: false }
     include: [{
       model: models.JobCandidate,
       as: 'candidates',
-      required: false
+      required: false,
+      separate: true
     }]
   })
   const total = await Job.count({ where: filter })
