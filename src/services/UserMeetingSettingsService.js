@@ -320,7 +320,8 @@ handleConnectCalendarCallback.schema = Joi.object().keys({
 }).required()
 
 /**
- * Delete a calendar from UserMeetingSettings object
+ * Soft-delete a calendar from UserMeetingSettings object by marking it as deleted.
+ * Keeps the calendar record so access tokens remain available for existing scheduled interviews.
  */
 async function deleteUserCalendar (currentUser, reqParams) {
   // check permission
@@ -334,6 +335,20 @@ async function deleteUserCalendar (currentUser, reqParams) {
     if (!calendarToDelete) {
       throw new errors.NotFoundError(`Calendar with id "${reqParams.calendarId}" not found in UserMeetingSettings record.`)
     }
+
+    // Mark calendar as deleted instead of removing it, so we keep access tokens
+    // for any already-scheduled interviews that reference this calendar
+    const updatedCalendars = _.map(userMeetingSettings.nylasCalendars, (item) => {
+      if (item.id === reqParams.calendarId) {
+        return { ...item, isDeleted: true }
+      }
+      return item
+    })
+
+    await UserMeetingSettings.update(
+      { nylasCalendars: updatedCalendars },
+      { where: { id: userMeetingSettings.id } }
+    )
   } catch (err) {
     throw new errors.BadRequestError(err.message)
   }
