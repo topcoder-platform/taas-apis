@@ -65,17 +65,19 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
         // get the handle to legacy topcoder id map
         for (const handle of Object.values(uuidToHandleMap)) {
           console.log(`handle to search for ${handle}`)
-          if (_.isUndefined(handleToIDMap[handle])) {
+          const handleLower = handle.toLowerCase()
+          if (_.isUndefined(handleToIDMap[handleLower])) {
             const member = await getMemberDetailsByHandle(handle)
-            handleToIDMap[member.handleLower] = member.userId
+            handleToIDMap[handleLower] = (member && member.userId) || null
           }
         }
 
         // build the update queries
         let sql = ''
         for (const [key, value] of Object.entries(uuidToHandleMap)) {
-          if (!_.isUndefined(handleToIDMap[value.toLowerCase()])) {
-            sql += `UPDATE bookings.${tableName} SET ${columnName} = '${handleToIDMap[value.toLowerCase()]}' WHERE ${columnName} = '${key}';`
+          const matchedUserId = handleToIDMap[value.toLowerCase()]
+          if (matchedUserId) {
+            sql += `UPDATE bookings.${tableName} SET ${columnName} = '${matchedUserId}' WHERE ${columnName} = '${key}';`
           }
         }
 

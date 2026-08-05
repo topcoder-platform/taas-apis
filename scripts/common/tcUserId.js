@@ -4,12 +4,14 @@ const helper = require('../../src/common/helper')
 
 let handleToUserIdMap
 
-if (process.env.NODE_ENV === 'development') {
+const env = process.env.NODE_ENV || 'development'
+
+if (env === 'development' || env === 'test') {
   handleToUserIdMap = require('../data/dev/dev_handle_to_userId.map.json')
-} else if (process.env.NODE_ENV === 'production') {
+} else if (env === 'production') {
   handleToUserIdMap = require('../data/prod/prod_handle_to_userId.map.json')
 } else {
-  console.log('NODE_ENV should be one of \'development\' or \'production\' - Exiting!!')
+  console.log('NODE_ENV should be one of \'development\', \'test\' or \'production\' - Exiting!!')
   process.exit(1)
 }
 
@@ -26,6 +28,10 @@ if (process.env.NODE_ENV === 'development') {
 const getUserUbahnUUIDToHandleMap = async (connection, uniqueUUIDs) => {
   // make sure we are working with unique array of UUIDs
   const _uniqueUUIDs = _.compact(_.uniq(uniqueUUIDs))
+
+  if (_uniqueUUIDs.length === 0) {
+    return {}
+  }
 
   const commaSeparatedUbahnUUIDs = _.join(_.map(_uniqueUUIDs, u => `'${u}'`), ',')
 
@@ -49,7 +55,7 @@ const getUbahnDatabaseConnection = async (url) => {
 }
 
 const getTcUserIdByHandle = async (handle) => {
-  let tcCreatedById = handleToUserIdMap[handle]
+  let tcCreatedById = handleToUserIdMap[handle] || handleToUserIdMap[handle.toLowerCase()]
 
   if (_.isUndefined(tcCreatedById)) {
     console.log(`Could not find mapping for TC handle ${handle} to TC user id in the mapping file. Trying to get it from member-api...`)
@@ -61,6 +67,7 @@ const getTcUserIdByHandle = async (handle) => {
       tcCreatedById = memberDetails.userId
       console.log(`Got tc user id ${tcCreatedById} for handle ${handle} from member-api. Adding it to the mapping in memory...`)
       handleToUserIdMap[handle] = tcCreatedById
+      handleToUserIdMap[handle.toLowerCase()] = tcCreatedById
     }
   }
 
