@@ -55,7 +55,7 @@ const processRemainingUUIDs = async (tableName, columnNames) => {
       let results = await models.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT })
 
       if (results.length > 0) {
-        results = _.uniq(_.map(_.filter(results, val => toString(val[`${columnName}`]).length > 9), val => val[`${columnName}`]))
+        results = _.uniq(_.map(_.filter(results, val => _.toString(val[`${columnName}`]).length > 9), val => val[`${columnName}`]))
         console.log(`SQL query result: ${JSON.stringify(results)}`)
 
         // get the ubahn uuid to handle map
